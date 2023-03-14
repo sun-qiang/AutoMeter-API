@@ -9,7 +9,7 @@ import javax.xml.xpath.XPathConstants;
 public class ParseResponeHelp {
     public String ParseRespone(String ResponeResultType,String Respone,String Path) throws Exception {
         String Result="";
-        if (ResponeResultType.equalsIgnoreCase("json")||ResponeResultType.equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.equalsIgnoreCase("application/json")) {
+        if (ResponeResultType.trim().equalsIgnoreCase("json")||ResponeResultType.trim().equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.trim().equalsIgnoreCase("application/json")) {
             Result = ParseJsonRespone(Path, Respone);
         }
         if (ResponeResultType.equalsIgnoreCase("xml")||ResponeResultType.equalsIgnoreCase("application/xml;charset=utf-8")||ResponeResultType.equalsIgnoreCase("application/xml")) {

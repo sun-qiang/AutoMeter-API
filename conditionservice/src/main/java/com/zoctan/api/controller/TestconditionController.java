@@ -313,6 +313,7 @@ public class TestconditionController {
         } finally {
             End = new Date().getTime();
         }
+        TestconditionController.log.info("接口子条件条件响应内容-============：" + Respone);
 
         //根据用例是否有中间变量（多个），如果有变量，解析（header,cookies,json，xml，html）保存变量值表，如果解析失败，置条件为失败
         Condition con = new Condition(ApicasesVariables.class);
@@ -365,6 +366,7 @@ public class TestconditionController {
                 try {
                     switch (VariablesResoruce) {
                         case "Body":
+                            TestconditionController.log.info("接口子条件处理变量【Body】类型响应内容-============：" + Respone + " JsonPath" + VariablesPath);
                             ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
                             break;
                         case "Header":

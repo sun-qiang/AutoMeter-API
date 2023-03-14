@@ -1,0 +1,11 @@
+ALTER TABLE testcenter.apicases_assert MODIFY COLUMN expression varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '断言表达式';
+ALTER TABLE testcenter.api MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '接口名';
+ALTER TABLE testcenter.api_params MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT 'api名';
+ALTER TABLE testcenter.apicases MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT 'API';
+ALTER TABLE testcenter.apicases_condition MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '调用接口的api';
+ALTER TABLE testcenter.apicases_variables MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'api';
+ALTER TABLE testcenter.condition_api MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT 'api名';
+ALTER TABLE testcenter.executeplan_testcase MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'API名';
+ALTER TABLE testcenter.mockapi MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '接口';
+ALTER TABLE testcenter.process_testcase MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'API名';
+ALTER TABLE testcenter.testcondition MODIFY COLUMN apiname varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT 'api名';

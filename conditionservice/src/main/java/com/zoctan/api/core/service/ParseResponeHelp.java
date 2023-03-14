@@ -16,11 +16,12 @@ import java.util.List;
 @Slf4j
 public class ParseResponeHelp {
     public String ParseRespone(String ResponeResultType,String Respone,String Path) throws Exception {
+        ParseResponeHelp.log.info("接口子条件解析json内容-============：" + Respone + " 响应数据类型" + ResponeResultType+" JsonPath is:"+Path);
         String Result="";
-        if (ResponeResultType.equalsIgnoreCase("json")||ResponeResultType.equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.equalsIgnoreCase("application/json")) {
+        if (ResponeResultType.trim().equalsIgnoreCase("json")||ResponeResultType.trim().equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.trim().equalsIgnoreCase("application/json")) {
             Result = ParseJsonRespone(Path, Respone);
         }
-        if (ResponeResultType.equalsIgnoreCase("xml")||ResponeResultType.equalsIgnoreCase("application/xml;charset=utf-8")||ResponeResultType.equalsIgnoreCase("application/xml")) {
+        if (ResponeResultType.trim().equalsIgnoreCase("xml")||ResponeResultType.trim().equalsIgnoreCase("application/xml;charset=utf-8")||ResponeResultType.trim().equalsIgnoreCase("application/xml")) {
             Result = ParseXmlRespone(Path, Respone);
             //处理xml
         }
@@ -31,7 +32,7 @@ public class ParseResponeHelp {
         String Result="";
         try {
              Result= JsonPath.read(JsonRespone,JSPath).toString();
-            ParseResponeHelp.log.info("接口子条件条件报告子条件处理变量表达式-============：" + JSPath + " 响应数据类型" + JsonRespone+" Result is:"+Result);
+            ParseResponeHelp.log.info("接口子条件条件报告子条件处理变量表达式-============：" + JSPath + " 响应内容" + JsonRespone+" 解析结果 is:"+Result);
         }
         catch (Exception ex)
         {
