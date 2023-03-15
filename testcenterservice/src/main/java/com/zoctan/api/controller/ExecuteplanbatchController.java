@@ -16,6 +16,7 @@ import com.zoctan.api.mapper.SlaverMapper;
 import com.zoctan.api.service.ExecuteplanService;
 import com.zoctan.api.service.ExecuteplanbatchService;
 import com.zoctan.api.service.ProjectService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import java.util.Map;
  * @author SeasonFan
  * @date 2020/10/22
  */
+@Slf4j
 @RestController
 @RequestMapping("/executeplanbatch")
 public class ExecuteplanbatchController {
@@ -109,6 +111,7 @@ public class ExecuteplanbatchController {
         String BatchName=param.get("BatchName").toString();
         String Source=param.get("Source").toString();
         String ProjectName=param.get("ProjectName").toString();
+        ExecuteplanbatchController.log.info("TestPlanName:"+TestPlanName+" BatchName:"+BatchName+" Source:"+Source+ " ProjectName:"+ProjectName);
 
         Project project= projectService.getBy("",ProjectName);
         if(project==null)
@@ -137,6 +140,9 @@ public class ExecuteplanbatchController {
                 executeplanbatch.setExecuteplanid(PlanID);
                 executeplanbatch.setExecuteplanname(TestPlanName);
                 executeplanbatch.setProjectid(ProjectId);
+                executeplanbatch.setExectype("立即执行");
+                executeplanbatch.setExecdate(":00");
+                executeplanbatch.setCreator("CI");
                 executeplanbatchService.save(executeplanbatch);
 
                 List<Testplanandbatch> list=new ArrayList<>();
