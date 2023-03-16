@@ -715,7 +715,7 @@
         <el-form-item label="表达式" prop="expression" required>
           <el-input
             type="text"
-            maxlength="40"
+            maxlength="400"
             prefix-icon="el-icon-edit"
             auto-complete="off"
             v-model="tmpassert.expression"
