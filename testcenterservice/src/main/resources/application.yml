@@ -136,7 +136,7 @@ jwt:
 # 日志
 logging:
 #  # 以文件方式记录日志
-  level.com.zo ctan.api: INFO
+  level.com.zo ctan.api: DEBUG
   file: testcenterservice.log
 #  # 设置目录
   path: /opt/testcenterservice/log

@@ -16,6 +16,14 @@ export function searchassert(apicasesassertForm) {
   })
 }
 
+export function batchassertapicase(apicasesForm) {
+  return request({
+    url: '/apicases/batchassertapicase',
+    method: 'post',
+    data: apicasesForm
+  })
+}
+
 export function getassertbycaseid(params) {
   return request({
     url: '/apicases/assert/getassertbycaseid',

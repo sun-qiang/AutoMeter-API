@@ -23,24 +23,32 @@
           <el-button
             type="primary"
             size="mini"
-            v-if="hasPermission('apicases:add')"
+            v-if="hasPermission('apicases:copy')"
             @click.native.prevent="showCopyapicasesDialog"
           >复制用例
           </el-button>
           <el-button
             type="primary"
             size="mini"
-            v-if="hasPermission('apicases:add')"
+            v-if="hasPermission('apicases:batchcopy')"
             @click.native.prevent="showCopyBatchapicasesDialog"
           >批量复制
           </el-button>
           <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:batchassert')"
+            @click.native.prevent="showBatchAssertDialog"
+          >批量断言
+          </el-button>
+          <el-button
             type="danger"
             size="mini"
-            v-if="hasPermission('apicases:add')"
+            v-if="hasPermission('apicases:batchdelete')"
             @click.native.prevent="removebatchapicase"
           >批量删除
           </el-button>
+
 <!--          <el-button-->
 <!--            type="primary"-->
 <!--            size="mini"-->
@@ -1203,6 +1211,92 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog title="批量断言" :visible.sync="BatchAssertdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="150px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpbatchassert"
+        ref="tmpbatchassert"
+      >
+        <el-form-item label="断言类型" prop="asserttype" required >
+          <el-select v-model="tmpbatchassert.asserttype" style="width:100%" placeholder="断言类型" @change="asserttypeselectChanged($event)">
+            <el-option label="Respone断言" value="Respone"></el-option>
+            <el-option label="Json断言" value="Json"></el-option>
+            <el-option label="Xml断言" value="Xml"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <div v-if="AssertSubVisible">
+          <el-form-item label="断言子类型" prop="assertsubtype" required >
+            <el-select v-model="tmpbatchassert.assertsubtype" style="width:100%" placeholder="断言子类型">
+              <el-option label="Code" value="Code"></el-option>
+              <el-option label="文本" value="文本"></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div v-if="ExpressionVisible">
+          <el-form-item label="表达式" prop="expression" required>
+            <el-input
+              type="text"
+              maxlength="400"
+              prefix-icon="el-icon-edit"
+              auto-complete="off"
+              v-model="tmpbatchassert.expression"
+            />
+            <div class="right">
+              <el-tooltip placement="right-end">
+                <div slot="content">1.如果断言类型是Json则使用JsonPath表示, 例如：$.store.book[0].title  在线解析网站：http://www.e123456.com/aaaphp/online/jsonpath/<br/>2.如果断言类型为XML，则使用XPath表示， 例如：//div/h3//text()=hello|//div/h4//text()   在线解析网站： http://www.ab173.com/other/xpath.php</div>
+                <el-button>表达式语法</el-button>
+              </el-tooltip>
+            </div>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="条件" prop="assertcondition" required >
+          <el-select v-model="tmpbatchassert.assertcondition" style="width:100%" placeholder="条件">
+            <el-option label="等于" value="="></el-option>
+            <el-option label="大于" value=">"></el-option>
+            <el-option label="小于" value="<"></el-option>
+            <el-option label="包含" value="Contain"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="断言值" prop="assertvalues" required>
+          <el-input
+            type="text"
+            maxlength="2000"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpbatchassert.assertvalues"
+          />
+        </el-form-item>
+        <el-form-item label="断言值类型" prop="assertvaluetype" required >
+          <el-select v-model="tmpbatchassert.assertvaluetype" style="width:100%" placeholder="断言值类型">
+            <el-option label="int" value="int"></el-option>
+            <el-option label="Long" value="Long"></el-option>
+            <el-option label="Float" value="Float"></el-option>
+            <el-option label="Double" value="Double"></el-option>
+            <el-option label="Decimal" value="Decimal"></el-option>
+            <el-option label="字符串" value="String"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="BatchAssertdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          :loading="btnLoading"
+          @click.native.prevent="addbatchassert"
+        >保存
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -1223,7 +1317,7 @@
   import { getcaseparatype as getcaseparatype } from '@/api/deployunit/apiparams'
   import { getdepunitLists as getdepunitLists, findDeployNameValueWithCode as findDeployNameValueWithCode } from '@/api/deployunit/depunit'
   import { unix2CurrentTime } from '@/utils'
-  import { addapicasesassert, getassertbycaseid as getassertbycaseid, searchassert as searchassert, removeapicasesassert, updateapicasesassert } from '@/api/assets/apicasesassert'
+  import { addapicasesassert, getassertbycaseid as getassertbycaseid, searchassert as searchassert, removeapicasesassert, updateapicasesassert, batchassertapicase } from '@/api/assets/apicasesassert'
   import { mapGetters } from 'vuex'
   import { searchheadernotexist, searchheaderexist, addheadercasesdebug, deleteheadercase } from '@/api/assets/globalheaderuse'
   import { searchnotexist, searchexist, addcasesdebugcondition, delatedebugconditiontestcase } from '@/api/assets/apicasesdebugcondition'
@@ -1307,6 +1401,7 @@
         AssertSubVisible: false, // 断言子条件显示
         AssertdialogFormVisible: false,
         AssertAUdialogFormVisible: false,
+        BatchAssertdialogFormVisible: false,
         TestdialogFormVisible: false,
         HeaderandParamsVisible: false,
         casedataialogFormVisible: false,
@@ -1419,6 +1514,17 @@
           destinationdeployunitname: ''
         },
         tmpassert: {
+          id: '',
+          caseid: '',
+          asserttype: '',
+          assertsubtype: '',
+          expression: '',
+          assertcondition: '',
+          assertvalues: '',
+          assertvaluetype: '',
+          creator: ''
+        },
+        tmpbatchassert: {
           id: '',
           caseid: '',
           asserttype: '',
@@ -2114,6 +2220,48 @@
         this.tmpbatchcopycase.destinationdeployunitname = ''
         this.tmpbatchcopycase.sourcedeployunitid = ''
       },
+
+      showBatchAssertDialog() {
+        // 显示新增对话框
+        this.BatchAssertdialogFormVisible = true
+        this.tmpbatchassert.assertvaluetype = ''
+        this.tmpbatchassert.expression = ''
+        this.tmpbatchassert.assertcondition = ''
+        this.tmpbatchassert.assertvalues = ''
+        this.tmpbatchassert.asserttype = ''
+        this.tmpbatchassert.caseid = ''
+        this.tmpbatchassert.creator = ''
+        this.tmpbatchassert.assertsubtype = ''
+      },
+      /**
+       * 批量用例断言
+       */
+      addbatchassert() {
+        this.testcasebatchassertList = []
+        if (this.multipleSelection.length === 0) {
+          this.$message.error('请选择需要断言的用例')
+        } else {
+          for (let i = 0; i < this.multipleSelection.length; i++) {
+            this.testcasebatchassertList.push({
+              'asserttype': this.tmpbatchassert.asserttype,
+              'assertsubtype': this.tmpbatchassert.assertsubtype,
+              'assertvalues': this.tmpbatchassert.assertvalues,
+              'expression': this.tmpbatchassert.expression,
+              'assertcondition': this.tmpbatchassert.assertcondition,
+              'assertvaluetype': this.tmpbatchassert.assertvaluetype,
+              'caseid': this.multipleSelection[i].id,
+              'creator': this.name
+            })
+          }
+          batchassertapicase(this.testcasebatchassertList).then(() => {
+            this.getapicasesList()
+            this.$message.success('添加成功')
+            this.BatchAssertdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加失败')
+          })
+        }
+      },
       /**
        * 复制用例
        */
@@ -2195,7 +2343,6 @@
           }
         })
       },
-
       /**
        * 调试
        */
