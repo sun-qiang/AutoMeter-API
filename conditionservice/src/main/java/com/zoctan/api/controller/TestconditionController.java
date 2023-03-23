@@ -480,6 +480,7 @@ public class TestconditionController {
         TestconditionController.log.info("调试接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
         for (ConditionApi conditionApi : conditionApiList) {
             Long CaseID = conditionApi.getCaseid();
+            //增加判断case是否有前置条件
             Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
             if (apicases == null) {
                 return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口用例，请检查是否存在或已被删除！");

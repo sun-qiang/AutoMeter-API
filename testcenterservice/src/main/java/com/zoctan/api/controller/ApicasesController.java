@@ -725,6 +725,7 @@ public class ApicasesController {
                         if (conditionOrder.getSubconditiontype().equals("接口")) {
                             ApicasesController.log.info("。。。。。。。。接口前置子条件请求数据：" + params);
                             APIRespone = getSubConditionRespone(APIConditionServerurl, params, header);
+                            param.put("apivariablesvalues", APIRespone);
                         }
                         if (conditionOrder.getSubconditiontype().equals("数据库")) {
                             DBRespone = getSubConditionRespone(DBConditionServerurl, params, header);
