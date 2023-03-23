@@ -111,6 +111,7 @@
             <el-option label="GUID" value="GUID"></el-option>
             <el-option label="随机字符串" value="随机字符串"></el-option>
             <el-option label="随机整数" value="随机整数"></el-option>
+            <el-option label="随机数组值" value="随机数组值"></el-option>
           </el-select>
         </el-form-item>
 
@@ -261,7 +262,7 @@
        * 条件下拉选择事件获取条件id  e的值为options的选值
        */
       variablestypeselectChanged(e) {
-        if (e === '随机字符串' || e === '随机整数' || e === '随机小数' || e === '当前日期') {
+        if (e === '随机字符串' || e === '随机整数' || e === '随机小数' || e === '当前日期' || e === '随机数组值') {
           this.variablecondition = true
         } else {
           this.variablecondition = false

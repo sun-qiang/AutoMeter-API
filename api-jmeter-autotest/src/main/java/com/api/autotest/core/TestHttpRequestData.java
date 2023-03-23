@@ -599,6 +599,18 @@ public class TestHttpRequestData {
                 Result = "随机变量GetRadmomStr输入参数不合法，请填写参数为数字类型表示字符串长度";
             }
         }
+
+        if (Variablestype.equalsIgnoreCase("随机数组值")) {
+            try {
+                String[] array=Params.split(",");
+                long length=array.length;
+                Long ResultIndex = radomVariables.GetRadmomNum(new Long(0), length-1);
+                Result = array[ResultIndex.intValue()];
+            } catch (Exception ex) {
+                Result = "随机数组输入参数不合法，请填写使用英文逗号分隔的内容";
+            }
+        }
+
         if (Variablestype.equalsIgnoreCase("随机整数")) {
             String ParamsArray[] = Params.split(",");
             if (ParamsArray.length < 2) {
