@@ -445,6 +445,8 @@ public class TestconditionController {
         Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
         String DBVariablesValue=param.get("dbvariablesvalue").toString();
         String APIVariablesValue=param.get("apivariablesvalues").toString();
+        TestconditionController.log.info("调试接口子条件接口变量值-==================：" + APIVariablesValue);
+
 
         //准备数据库变量
         HashMap<String, String> DBVariableNameValueMap = new HashMap<>();

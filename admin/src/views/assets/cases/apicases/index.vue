@@ -1590,7 +1590,8 @@
           apiname: null,
           casetype: null,
           casename: null,
-          projectid: ''
+          projectid: '',
+          creator: this.name
         },
         searchassert: {
           page: 1,
@@ -1876,6 +1877,7 @@
         this.search.apiid = this.tmpapiid
         this.search.casetype = this.tmpcasetype
         this.search.casename = this.tmpcasename
+        this.search.creator = this.name
         search(this.search).then(response => {
           this.apicasesList = response.data.list
           this.total = response.data.total
