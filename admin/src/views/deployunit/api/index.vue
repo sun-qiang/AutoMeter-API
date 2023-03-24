@@ -845,7 +845,8 @@ export default {
         apiname: null,
         deployunitname: null,
         modelname: null,
-        projectid: ''
+        projectid: '',
+        creator: ''
       },
       tmpmodelquery: {
         page: 1,
@@ -1411,6 +1412,7 @@ export default {
       this.search.apiname = this.tmpapiname
       this.search.deployunitname = this.tmpdeployunitname
       this.search.modelname = this.modelname
+      this.search.creator = this.name
       search(this.search).then(response => {
         this.apiList = response.data.list
         this.total = response.data.total

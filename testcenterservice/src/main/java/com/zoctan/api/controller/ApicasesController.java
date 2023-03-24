@@ -720,17 +720,26 @@ public class ApicasesController {
             try {
                 if (conditionOrderList.size() > 0) {
                     for (ConditionOrder conditionOrder : conditionOrderList) {
+                        ApicasesController.log.info("条件顺序接口前置子条件名===================："+conditionOrder.getSubconditionname()+" 子条件名" + conditionOrder.getConditionorder());
                         param.put("dbvariablesvalue", DBRespone);
-                        String params = JSON.toJSONString(param);
+                        String params = "";
                         if (conditionOrder.getSubconditiontype().equals("接口")) {
+                            long subconditionid= conditionOrder.getSubconditionid();
+                            ConditionApi conditionApi=conditionApiService.getBy("id",subconditionid);
+                            long apicaseid= conditionApi.getCaseid();
+                            param.put("apicaseid",apicaseid);
+                            ApicasesController.log.info("条件顺序接口前置子条件名===================：" + conditionApi.getCasename());
+                            params = JSON.toJSONString(param);
                             ApicasesController.log.info("。。。。。。。。接口前置子条件请求数据：" + params);
                             APIRespone = getSubConditionRespone(APIConditionServerurl, params, header);
                             param.put("apivariablesvalues", APIRespone);
+                            params = JSON.toJSONString(param);
                             ApicasesController.log.info("条件顺序接口前置子条件请求结果===================：" + APIRespone);
                         }
                         if (conditionOrder.getSubconditiontype().equals("数据库")) {
                             DBRespone = getSubConditionRespone(DBConditionServerurl, params, header);
                             param.put("dbvariablesvalue", DBRespone);
+                            params = JSON.toJSONString(param);
                         }
                         if (conditionOrder.getSubconditiontype().equals("脚本")) {
                             getSubConditionRespone(ScriptConditionServerurl, params, header);

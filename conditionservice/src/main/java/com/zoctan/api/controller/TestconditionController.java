@@ -443,6 +443,9 @@ public class TestconditionController {
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
         Long ConditionID = Long.parseLong(param.get("ConditionID").toString());
         Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
+        Long ApiCaseID = Long.parseLong(param.get("apicaseid").toString());
+        TestconditionController.log.info("调试接口子条件接口用例id-==================：" + ApiCaseID);
+
         String DBVariablesValue=param.get("dbvariablesvalue").toString();
         String APIVariablesValue=param.get("apivariablesvalues").toString();
         TestconditionController.log.info("调试接口子条件接口变量值-==================：" + APIVariablesValue);
@@ -480,8 +483,8 @@ public class TestconditionController {
 
         List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID);
         TestconditionController.log.info("调试接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
-        for (ConditionApi conditionApi : conditionApiList) {
-            Long CaseID = conditionApi.getCaseid();
+        //for (ConditionApi conditionApi : conditionApiList) {
+            Long CaseID =ApiCaseID; //conditionApi.getCaseid();
             //增加判断case是否有前置条件
             Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
             if (apicases == null) {
@@ -567,7 +570,7 @@ public class TestconditionController {
                     return ResultGenerator.genFailedResult("前置接口子条件执行异常:接口子条件未找到变量:" + apicasesVariables.getVariablesname() + "，请检查变量管理-变量管理中是否存在！");
                 }
             }
-        }
+        //}
         return ResultGenerator.genOkResult(VariableNameValueMap);
     }
 
