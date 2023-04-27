@@ -35,7 +35,7 @@ public class TestCore {
         String MysqlUrl = context.getParameter("mysqlurl");
         String MysqlUserName = context.getParameter("mysqlusername");
         String MysqlPass = context.getParameter("mysqlpassword");
-        String JdbcMysql = "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=GMT+8";
+        String JdbcMysql = "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai";
         logger.info("TestCore 数据库连接字 is :  " + MysqlUrl + JdbcMysql + "   " + MysqlUserName + "   " + MysqlPass);
         //GetDBConnection(MysqlUrl, MysqlUserName, MysqlPass);
         testHttp=new TestHttp(log);
