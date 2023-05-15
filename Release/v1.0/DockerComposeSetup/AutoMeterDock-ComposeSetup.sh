@@ -60,8 +60,20 @@ function isValidIp()
 }
  
 local_ip=''
+input=""
+input2=""
+read -r -p "*请选择设置ip方式：[1]自定义输入IP地址 [2]自动获取环境IP地址 : " input
+if [ $input == 1 ]; then
+        read -r -p "*请输入自定义IP地址: " input2
+        local_ip=$input2
+    elif [ $input == 2 ];then
+        getIpAddr
+    else
+        echo "*请输入有效的数字[1或2]！"
+        exit 1
+fi
 #echo "开始getIpAddr"
-getIpAddr       #自动获取IP
+# getIpAddr       #自动获取IP
 #echo "结束getIpAddr"
 isValidIp ${local_ip}   # IP校验
 if [ $? -ne 0 ]; then
@@ -77,20 +89,20 @@ d="ubuntu"
 
 if [[ $os =~ $b ]];then
     echo "mac"
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/conditionservice/config/application.yml
-	sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/dispatchservice/config/application.yml 
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/mockservice/config/application.yml 
-	sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/slaverservice/config/application.yml 
-	sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterservice/config/application.yml 
-	sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterapp/dist/static/config.js
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/conditionservice/config/application.yml
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/dispatchservice/config/application.yml 
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/mockservice/config/application.yml 
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/slaverservice/config/application.yml 
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterservice/config/application.yml 
+    sed -i "" "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterapp/dist/static/config.js
 else
     echo $os
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/conditionservice/config/application.yml
-	sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/dispatchservice/config/application.yml 
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/mockservice/config/application.yml 
-	sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/slaverservice/config/application.yml 
-	sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterservice/config/application.yml 
-	sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterapp/dist/static/config.js
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/conditionservice/config/application.yml
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/dispatchservice/config/application.yml 
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/mockservice/config/application.yml 
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/slaverservice/config/application.yml 
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterservice/config/application.yml 
+    sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterapp/dist/static/config.js
 fi
 #echo "修改IP成功"
 docker-compose -f docker-compose.yaml up -d 
