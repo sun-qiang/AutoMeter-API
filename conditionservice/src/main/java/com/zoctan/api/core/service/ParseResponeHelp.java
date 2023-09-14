@@ -68,17 +68,41 @@ public class ParseResponeHelp {
     }
 
     public String ParseHeader(TestResponeData testResponeData, String Path) throws Exception {
-        String Result="";
-        List<Header> headerList=testResponeData.getHeaderList();
-        for (Header header:headerList) {
-            if(header.getName().equalsIgnoreCase(Path))
-            {
-                Result=header.getValue();
+//        String Result="";
+//        List<Header> headerList=testResponeData.getHeaderList();
+//        for (Header header:headerList) {
+//            if(header.getName().equalsIgnoreCase(Path))
+//            {
+//                Result=header.getValue();
+//            }
+//        }
+//        if(Result=="")
+//        {
+//            throw new Exception("接口变量来源Header："+Path+" 在绑定的接口的请求响应中没有对应的值");
+//        }
+//        return Result;
+        String Result = "";
+        List<Header> headerList = testResponeData.getHeaderList();
+        int index = 1;
+        if (!Path.contains("[")) {
+            throw new Exception("接口变量来源Header不符合表达式规范，正确例如Vary[1]");
+        }
+        for (Header header : headerList) {
+            String Key = Path.substring(0, Path.indexOf("["));
+            if (header.getName().equalsIgnoreCase(Key)) {
+                if (Path.contains("]")) {
+                    int KeyIndex = Integer.parseInt(Path.replace("[", "").replace("]", ""));
+                    if (KeyIndex == index) {
+                        Result = header.getValue();
+                    }
+                } else {
+                    throw new Exception("接口变量来源Header不符合表达式规范，正确例如Vary[1]");
+                }
+                index++;
             }
         }
-        if(Result=="")
-        {
-            throw new Exception("接口变量来源Header："+Path+" 在绑定的接口的请求响应中没有对应的值");
+        if (Result == "") {
+            throw new Exception("接口变量来源Header：" + Path + " 在绑定的接口的请求响应中没有对应的值");
         }
         return Result;
     }

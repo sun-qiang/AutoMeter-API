@@ -211,19 +211,24 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
 
     // 本地调试
     public static void main(String[] args) {
-        Arguments params = new Arguments();
-        params.addArgument("DispatchIds", "210,211");
-        params.addArgument("SlaverId", "8");
-        params.addArgument("mysqlurl", "jdbc:mysql://127.0.0.1:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
-        params.addArgument("mysqlusername", "test");
-        params.addArgument("mysqlpassword", "test");
 
-        JavaSamplerContext ctx = new JavaSamplerContext(params);
-        HttpApiFunction test = new HttpApiFunction();
-        test.setupTest(ctx);
-        test.runTest(ctx);
-        test.teardownTest(ctx);
-        System.exit(0);
+
+        String index="var09900y[1]";
+        String Key = index.substring(0, index.indexOf("["));
+        System.out.println(Key);
+//        Arguments params = new Arguments();
+//        params.addArgument("DispatchIds", "210,211");
+//        params.addArgument("SlaverId", "8");
+//        params.addArgument("mysqlurl", "jdbc:mysql://127.0.0.1:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
+//        params.addArgument("mysqlusername", "test");
+//        params.addArgument("mysqlpassword", "test");
+//
+//        JavaSamplerContext ctx = new JavaSamplerContext(params);
+//        HttpApiFunction test = new HttpApiFunction();
+//        test.setupTest(ctx);
+//        test.runTest(ctx);
+//        test.teardownTest(ctx);
+//        System.exit(0);
 
     }
 }
