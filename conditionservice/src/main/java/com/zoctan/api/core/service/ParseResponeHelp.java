@@ -91,7 +91,8 @@ public class ParseResponeHelp {
             String Key = Path.substring(0, Path.indexOf("["));
             if (header.getName().equalsIgnoreCase(Key)) {
                 if (Path.contains("]")) {
-                    int KeyIndex = Integer.parseInt(Path.replace("[", "").replace("]", ""));
+                    String IndexNum=Path.substring(Path.indexOf("[")+1,Path.indexOf("]"));
+                    int KeyIndex = Integer.parseInt(IndexNum);
                     if (KeyIndex == index) {
                         Result = header.getValue();
                     }

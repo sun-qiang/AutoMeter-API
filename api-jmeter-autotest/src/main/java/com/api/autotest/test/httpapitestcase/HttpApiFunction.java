@@ -213,9 +213,11 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
     public static void main(String[] args) {
 
 
-        String index="var09900y[1]";
+        String index="vary111212121[100]dsd";
         String Key = index.substring(0, index.indexOf("["));
-        System.out.println(Key);
+        String IndexNum=index.substring(index.indexOf("[")+1,index.indexOf("]"));
+
+        System.out.println(IndexNum);
 //        Arguments params = new Arguments();
 //        params.addArgument("DispatchIds", "210,211");
 //        params.addArgument("SlaverId", "8");
