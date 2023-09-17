@@ -133,7 +133,12 @@ public class ApiController {
                                     }
                                 }
                             }
-                            String ApiName = entry.getKey().toString().substring(entry.getKey().toString().lastIndexOf("/") + 1);
+                            //String ApiName = entry.getKey().toString().substring(entry.getKey().toString().lastIndexOf("/") + 1);
+
+                            JsonObject jsonObjectsm = (JsonObject) entryjs.getValue();
+
+                            String ApiName = jsonObjectsm.get("summary").getAsString();
+
                             if (menthodnums > 1) {
                                 ApiName = ApiName + "-" + entryjs.getKey().toString();
                             }
