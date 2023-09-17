@@ -561,7 +561,7 @@ public class ApicasesController {
                 con.createCriteria().andCondition("caseid = " + apicasesAssert.getCaseid())
                         .andCondition("asserttype = '" + apicasesAssert.getAsserttype() + "'");
                 if (apicasesAssertService.ifexist(con) > 0) {
-                    List<ApicasesAssert> apicasesAssertList1= apicasesAssertService.listByCondition(con);
+                    List<ApicasesAssert> apicasesAssertList1 = apicasesAssertService.listByCondition(con);
                     apicasesAssert.setId(apicasesAssertList1.get(0).getId());
                     apicasesAssertService.updateAssert(apicasesAssert);
                 } else {
@@ -720,14 +720,14 @@ public class ApicasesController {
             try {
                 if (conditionOrderList.size() > 0) {
                     for (ConditionOrder conditionOrder : conditionOrderList) {
-                        ApicasesController.log.info("条件顺序接口前置子条件名===================："+conditionOrder.getSubconditionname()+" 子条件名" + conditionOrder.getConditionorder());
+                        ApicasesController.log.info("条件顺序接口前置子条件名===================：" + conditionOrder.getSubconditionname() + " 子条件名" + conditionOrder.getConditionorder());
                         param.put("dbvariablesvalue", DBRespone);
                         String params = "";
                         if (conditionOrder.getSubconditiontype().equals("接口")) {
-                            long subconditionid= conditionOrder.getSubconditionid();
-                            ConditionApi conditionApi=conditionApiService.getBy("id",subconditionid);
-                            long apicaseid= conditionApi.getCaseid();
-                            param.put("apicaseid",apicaseid);
+                            long subconditionid = conditionOrder.getSubconditionid();
+                            ConditionApi conditionApi = conditionApiService.getBy("id", subconditionid);
+                            long apicaseid = conditionApi.getCaseid();
+                            param.put("apicaseid", apicaseid);
                             ApicasesController.log.info("条件顺序接口前置子条件名===================：" + conditionApi.getCasename());
                             params = JSON.toJSONString(param);
                             ApicasesController.log.info("。。。。。。。。接口前置子条件请求数据：" + params);
@@ -759,7 +759,10 @@ public class ApicasesController {
                     Condition apicon = new Condition(ConditionApi.class);
                     apicon.createCriteria().andCondition("conditionid=" + ConditionID);
                     List<ConditionApi> conditionApiList = conditionApiService.listByCondition(apicon);
+                    //需要增加多个接口子条件的处理逻辑
                     if (conditionApiList.size() > 0) {
+                        long apicaseid = conditionApiList.get(0).getCaseid();
+                        param.put("apicaseid", apicaseid);
                         params = JSON.toJSONString(param);
                         ApicasesController.log.info("。。。。。。。。接口前置子条件非顺序请求数据：" + params);
                         APIRespone = getSubConditionRespone(APIConditionServerurl, params, header);
@@ -770,6 +773,8 @@ public class ApicasesController {
                     List<ConditionScript> conditionScriptList = conditionScriptService.listByCondition(scriptcon);
 
                     if (conditionScriptList.size() > 0) {
+                        long apicaseid = conditionApiList.get(0).getCaseid();
+                        param.put("apicaseid", apicaseid);
                         ApicasesController.log.info("。。。。。。。。脚本前置子条件非顺序请求数据：" + params);
                         getSubConditionRespone(ScriptConditionServerurl, params, header);
                     }
@@ -819,42 +824,55 @@ public class ApicasesController {
 
         String APIRespone = "";
         String DBRespone = "";
-        if (conditionid != 0) {
-            //先处理测试集合前置父条件
-            ConditionResult conditionResult = new ConditionResult();
-            try {
-                Condition con = new Condition(Testcondition.class);
-                con.createCriteria().andCondition("id = " + conditionid);
-                List<Testcondition> testconditionList = testconditionService.listByCondition(con);
-                param.put("apivariablesvalues", APIRespone);
-                conditionResult = FixCondition(testconditionList, param, Caseid, "调试用例");
-                APIRespone = conditionResult.getAPIRespone();
-                ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + APIRespone);
-                ParamsValuesMap = GetResponeMap(APIRespone, ParamsValuesMap);
-                DBRespone = conditionResult.getDBRespone();
-                ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + DBRespone);
-                DBParamsValuesMap = GetResponeMap(DBRespone, DBParamsValuesMap);
-            } catch (Exception exception) {
-                return ResultGenerator.genFailedResult(exception.getMessage());
-            }
-        }
 
-        //用例前置条件
-        ConditionResult CaseconditionResult = new ConditionResult();
-        String CaseAPIRespone = "";
-        String CaseDBRespone = "";
-        try {
-            List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Caseid, "前置条件", "测试用例");
-            param.put("apivariablesvalues", APIRespone);
-            CaseconditionResult = FixCondition(testconditionList, param, Caseid, "测试用例");
-            CaseAPIRespone = CaseconditionResult.getAPIRespone();
-            ApicasesController.log.info("。。。。。。。。接口前置用例子条件响应数据：" + CaseAPIRespone);
-            ParamsValuesMap = GetResponeMap(CaseAPIRespone, ParamsValuesMap);
-            CaseDBRespone = CaseconditionResult.getDBRespone();
-            ApicasesController.log.info("。。。。。。。。数据库前置用例子条件响应数据：" + CaseDBRespone);
-            DBParamsValuesMap = GetResponeMap(CaseDBRespone, DBParamsValuesMap);
-        } catch (Exception exception) {
-            return ResultGenerator.genFailedResult(exception.getMessage());
+        Condition parecon = new Condition(Testcondition.class);
+        parecon.createCriteria().andCondition("id = " + conditionid);
+        List<Testcondition> testconditionList = testconditionService.listByCondition(parecon);
+//        if (conditionid != 0) {
+        if (testconditionList.size() > 0) {
+            Testcondition testcondition = testconditionList.get(0);
+            if (testcondition.getObjecttype().equalsIgnoreCase("测试集合")) {
+                //处理测试集合前置父条件
+                ConditionResult conditionResult = new ConditionResult();
+                try {
+//                Condition con = new Condition(Testcondition.class);
+//                con.createCriteria().andCondition("id = " + conditionid);
+//                List<Testcondition> testconditionList = testconditionService.listByCondition(con);
+                    param.put("apivariablesvalues", APIRespone);
+                    conditionResult = FixCondition(testconditionList, param, Caseid, "调试用例");
+                    APIRespone = conditionResult.getAPIRespone();
+                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + APIRespone);
+                    ParamsValuesMap = GetResponeMap(APIRespone, ParamsValuesMap);
+                    DBRespone = conditionResult.getDBRespone();
+                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + DBRespone);
+                    DBParamsValuesMap = GetResponeMap(DBRespone, DBParamsValuesMap);
+                } catch (Exception exception) {
+                    return ResultGenerator.genFailedResult(exception.getMessage());
+                }
+            } else {
+                //用例前置条件
+                long conditioncaseid = testcondition.getObjectid();
+                if (conditioncaseid != Caseid) {
+                    return ResultGenerator.genFailedResult("当前用例选择的前置条件是用例父条件，但是用例父条件绑定的用例不是当前用例，调试取消");
+                } else {
+                    ConditionResult CaseconditionResult = new ConditionResult();
+                    String CaseAPIRespone = "";
+                    String CaseDBRespone = "";
+                    try {
+                        //List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Caseid, "前置条件", "测试用例");
+                        param.put("apivariablesvalues", APIRespone);
+                        CaseconditionResult = FixCondition(testconditionList, param, Caseid, "测试用例");
+                        CaseAPIRespone = CaseconditionResult.getAPIRespone();
+                        ApicasesController.log.info("。。。。。。。。接口前置用例子条件响应数据：" + CaseAPIRespone);
+                        ParamsValuesMap = GetResponeMap(CaseAPIRespone, ParamsValuesMap);
+                        CaseDBRespone = CaseconditionResult.getDBRespone();
+                        ApicasesController.log.info("。。。。。。。。数据库前置用例子条件响应数据：" + CaseDBRespone);
+                        DBParamsValuesMap = GetResponeMap(CaseDBRespone, DBParamsValuesMap);
+                    } catch (Exception exception) {
+                        return ResultGenerator.genFailedResult(exception.getMessage());
+                    }
+                }
+            }
         }
 
         Apicases apicases = apicasesService.getBy("id", Caseid);
@@ -1260,9 +1278,9 @@ public class ApicasesController {
                 }
                 if (Variablestype.equalsIgnoreCase("随机数组值")) {
                     try {
-                        String[] array=Params.split(",");
-                        long length=array.length;
-                        Long ResultIndex = radomVariables.GetRadmomNum(new Long(0), length-1);
+                        String[] array = Params.split(",");
+                        long length = array.length;
+                        Long ResultIndex = radomVariables.GetRadmomNum(new Long(0), length - 1);
                         Result = array[ResultIndex.intValue()];
                     } catch (Exception ex) {
                         Result = "随机数组输入参数不合法，请填写使用英文逗号分隔的内容";
