@@ -161,6 +161,7 @@ public class ApiController {
                                 api.setCreateTime(new Date());
                                 api.setLastmodifyTime(new Date());
                                 api.setMemo(pathsob1.getDescription());
+                                api.setProjectid(pid);
 
                                 api.setModelname(Modelname);
                                 api.setModelid(ModelID);
