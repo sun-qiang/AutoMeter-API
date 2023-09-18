@@ -804,6 +804,7 @@ export default {
         responecontenttype: '',
         memo: '',
         creator: '',
+        casecounts: 0,
         projectid: ''
       },
       tmpcopyapi: {
@@ -1872,6 +1873,7 @@ export default {
       this.tmpapi.apistyle = this.apiList[index].apistyle
       this.tmpapi.responecontenttype = this.apiList[index].responecontenttype
       this.tmpapi.memo = this.apiList[index].memo
+      this.tmpapi.casecounts = this.apiList[index].casecounts
       this.tmpapi.creator = this.name
       this.tmpapi.requestcontenttype = this.apiList[index].requestcontenttype
       this.tmpapi.projectid = window.localStorage.getItem('pid')
