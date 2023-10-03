@@ -896,6 +896,11 @@ public class ApicasesController {
         if (macdepunit != null) {
             String testserver = "";
             String resource = "";
+            String ApiUrl=api.getPath();
+            if(!ApiUrl.startsWith("/"))
+            {
+                ApiUrl="/"+ApiUrl;
+            }
             if (macdepunit.getVisittype().equals("ip")) {
                 Long MachineID = macdepunit.getMachineid();
                 Machine machine = machineService.getBy("id", MachineID);
@@ -907,24 +912,25 @@ public class ApicasesController {
                     return ResultGenerator.genFailedResult("当前用例调试的环境不存在，请检查是否被删除！");
                 }
                 testserver = machine.getIp();
+
                 if (BaseUrl == null || BaseUrl.isEmpty()) {
-                    resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + api.getPath();
+                    resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + ApiUrl;
                 } else {
                     if (BaseUrl.startsWith("/")) {
-                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + ApiUrl;
                     } else {
-                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + ApiUrl;
                     }
                 }
             } else {
                 testserver = macdepunit.getDomain();
                 if (BaseUrl == null || BaseUrl.isEmpty()) {
-                    resource = deployunit.getProtocal() + "://" + testserver + api.getPath();
+                    resource = deployunit.getProtocal() + "://" + testserver + ApiUrl;
                 } else {
                     if (BaseUrl.startsWith("/")) {
-                        resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + ApiUrl;
                     } else {
-                        resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + ApiUrl;
                     }
                 }
             }

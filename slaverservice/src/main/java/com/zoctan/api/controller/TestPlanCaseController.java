@@ -437,6 +437,11 @@ public class TestPlanCaseController {
             String testserver = "";
             String resource = "";
             String BaseUrl = deployunit.getBaseurl();
+            String ApiUrl=api.getPath();
+            if(!ApiUrl.startsWith("/"))
+            {
+                ApiUrl="/"+ApiUrl;
+            }
             if (macdepunit.getVisittype().equalsIgnoreCase("ip")) {
                 Long MachineID = macdepunit.getMachineid();
                 Machine machine = machineService.getBy("id", MachineID);
@@ -447,25 +452,25 @@ public class TestPlanCaseController {
                 testserver = machine.getIp();
 
                 if (BaseUrl == null || BaseUrl.isEmpty()) {
-                    resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + api.getPath();
+                    resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + ApiUrl;
                 } else {
                     if (BaseUrl.startsWith("/")) {
-                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + ApiUrl;
                     } else {
-                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + ApiUrl;
                     }
                     TestPlanCaseController.log.info("GetJmeterPerformanceCaseData resource ip is:"+resource);
                 }
             } else {
                 testserver = macdepunit.getDomain();
                 if (BaseUrl == null || BaseUrl.isEmpty()) {
-                    resource = deployunit.getProtocal() + "://" + testserver + api.getPath();
+                    resource = deployunit.getProtocal() + "://" + testserver + ApiUrl;
                 } else {
                     if (BaseUrl.startsWith("/")) {
-                        resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + ApiUrl;
 
                     } else {
-                        resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + api.getPath();
+                        resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + ApiUrl;
                     }
                 }
                 TestPlanCaseController.log.info("GetJmeterPerformanceCaseData resource domain is:"+resource);

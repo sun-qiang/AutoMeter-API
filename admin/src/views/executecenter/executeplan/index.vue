@@ -764,7 +764,7 @@
                 executeplan(this.tmpplanbatchList).then(() => {
                   this.$message.success('测试集合已经提交，即将开始执行')
                 }).catch(res => {
-                  this.$message.error('计划失败')
+                  this.$message.error('执行测试集合失败')
                 })
               }
             }

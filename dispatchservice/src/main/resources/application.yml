@@ -7,10 +7,10 @@ spring:
       enabled: true
     # 条件服务地址
   conditionserver:
-    serverurl: http://192.168.3.95:8083
+    serverurl: http://127.0.0.1:8083
   datasource:
     # 连接，注意各个配置，尤其是要一次性执行多条 SQL 时，要 allowMultiQueries=true
-    url: jdbc:mysql://192.168.3.95:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC
     # 用户名 root
     username: MyEnc({Qjn8FaKnAiApiz6g3RM5Ow==})
     # 密码 123456

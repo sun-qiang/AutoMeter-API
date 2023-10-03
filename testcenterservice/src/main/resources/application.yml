@@ -6,9 +6,9 @@ spring:
       # 修改代码后自动重启
       enabled: true
   dispatchserver:
-    serverurl: http://192.168.3.95:8082
+    serverurl: http://127.0.0.1:8082
   conditionserver:
-    serverurl: http://192.168.3.95:8083
+    serverurl: http://127.0.0.1:8083
     # 数据源（应该全部加密）
     # 文件上传
   servlet:

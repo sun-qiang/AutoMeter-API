@@ -98,13 +98,13 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
                         ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
                         TestHttp testHttp=new TestHttp();
                         header.addParam("Content-Type", "application/json;charset=utf-8");
-                        TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",30000);
+                        TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
                         ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
                     } catch (Exception e) {
                         ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
-                        if(e.getMessage().contains("Connection refused"))
+                        if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
                         {
-                            throw new ServiceException("调度服务DispatchService未正常启动，请检查！");
+                            throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
                         }
                         else
                         {
