@@ -19,6 +19,7 @@ import tk.mybatis.mapper.entity.Condition;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -118,9 +119,9 @@ public class TestPlanCaseController {
 
 
     @PostMapping("/TestPlanRun")
-    public Result TestPlanRun(@RequestBody final Map<String, Object> param)  {
-        String TestPlanName=param.get("TestPlanName").toString();
-        String BatchName=param.get("BatchName").toString();
+    public Result TestPlanRun(@RequestBody final Map<String, Object> param) throws UnsupportedEncodingException {
+        String TestPlanName=param.get("TestCollectionName").toString();
+        String BatchName=param.get("TestPlan").toString();
         String Source=param.get("Source").toString();
         long PlanID;
         Executeplan executeplan= executeplanService.getBy("executeplanname",TestPlanName);

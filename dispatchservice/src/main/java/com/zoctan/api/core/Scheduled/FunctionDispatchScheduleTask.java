@@ -122,17 +122,10 @@ public class FunctionDispatchScheduleTask {
                                         }
                                         else
                                         {
+                                            //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
                                             CompensateAfterFail(dispatch,PlanID,SlaverDispathcList);
                                         }
                                     } catch (Exception ex) {
-//                                        String ErrorMessage="";
-//                                        if(ex.getMessage().contains("未找到IP为")) {
-//                                            ErrorMessage = "未找到用例所分配的执行机：" + slaver.getSlavername() + "已被删除，请重新注册";
-//                                        }
-//                                        else
-//                                        {
-//                                            ErrorMessage="用例所分配的执行机:"+slaver.getSlavername()+"已下线，请检查此slaver是否正常运行！";
-//                                        }
                                         //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
                                         CompensateAfterFail(dispatch,PlanID,SlaverDispathcList);
                                         FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器请求执行服务异常：" + ex.getMessage());
@@ -164,17 +157,21 @@ public class FunctionDispatchScheduleTask {
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
             dispatchMapper.updatedispatchfail("调度失败", "未找到任何可以用的功能执行机，请检查slaverservice是否启动", dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid());
+            FunctionDispatchScheduleTask.log.info("调度服务【功能】调度失败，未找到任何可以用的功能执行机，请检查slaverservice是否启动。。。。。。。。。。。");
         } else
         {
+            FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，有空闲slaver，开始重新分配。。。。。。。。。。。");
             Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
             if(ep.getRunmode().equalsIgnoreCase("单机运行"))
             {
+
                 for (Dispatch dis: SlaverDispathcList) {
                     dis.setSlaverid(allliveslaver.get(0).getId());
                     dis.setSlavername(allliveslaver.get(0).getSlavername());
                     dis.setLastmodifyTime(new Date());
                     dispatchMapper.updateByPrimaryKey(dis);
                 }
+                FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，测试集合为单机模式，完成用例都分配到执行机。。。。。。。。。。。"+allliveslaver.get(0).getSlavername());
             }
             //平均分配
             else
@@ -189,6 +186,7 @@ public class FunctionDispatchScheduleTask {
                         dispatchMapper.updateByPrimaryKey(dis);
                     }
                 }
+                FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，测试集合为多机模式，完成用例平均分配到所有空闲的执行机。。。。。。。。。。。");
             }
         }
     }

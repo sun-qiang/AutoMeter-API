@@ -262,7 +262,7 @@ public class TestCore {
         if(list.size()>0)
         {
             String PlanName=list.get(0).get("executeplanname");
-            String Subject="测试集合："+PlanName+"| 执行计划："+BatchName+" 执行完成！";
+            String Subject="测试集合："+PlanName+" |  执行计划："+BatchName+" 完成！";
             ArrayList<HashMap<String, String>> liststatics= GetStatic(PlanID,BatchName);
             long tc=0;
             long tpc=0;
@@ -273,7 +273,7 @@ public class TestCore {
                 tpc=Long.parseLong(liststatics.get(0).get("tpc"));
                 tfc=Long.parseLong(liststatics.get(0).get("tfc"));
             }
-            Content=Subject+"---------此测试集合运行完成,总计用例数："+tc+"， 成功数："+tpc+"， 失败数："+tfc+" ，请登陆AutoMeter-报告中心查看详情";
+            Content=Subject+"-------------------------------------------------总计用例数："+tc+"， 成功数："+tpc+"， 失败数："+tfc+" ，请登陆AutoMeter-报告中心查看详情";
         }
         return Content;
     }
@@ -323,7 +323,7 @@ public class TestCore {
     {
         //消息内容
         Map<String, String> contentMap = new HashMap<>();
-        contentMap.put("content", "AutoMeter-"+Content);
+        contentMap.put("content", "AutoMeter自动化测试平台执行"+Content);
         //通知人
         Map<String, Object> atMap = new HashMap<>();;
         //1.是否通知所有人
