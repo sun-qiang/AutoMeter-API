@@ -157,10 +157,10 @@ public class FunctionDispatchScheduleTask {
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
             dispatchMapper.updatedispatchfail("调度失败", "未找到任何可以用的功能执行机，请检查slaverservice是否启动", dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid());
-            FunctionDispatchScheduleTask.log.info("调度服务【功能】调度失败，未找到任何可以用的功能执行机，请检查slaverservice是否启动。。。。。。。。。。。");
+            FunctionDispatchScheduleTask.log.info("容错处理，未找到任何可以用的功能执行机，已将用例都更新为调度失败状态，请检查slaverservice是否启动。。。。。。。。。。。");
         } else
         {
-            FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，有空闲slaver，开始重新分配。。。。。。。。。。。");
+            FunctionDispatchScheduleTask.log.info("调度服务容错，有空闲slaver，开始重新分配。。。。。。。。。。。");
             Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
             if(ep.getRunmode().equalsIgnoreCase("单机运行"))
             {
@@ -171,7 +171,7 @@ public class FunctionDispatchScheduleTask {
                     dis.setLastmodifyTime(new Date());
                     dispatchMapper.updateByPrimaryKey(dis);
                 }
-                FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，测试集合为单机模式，完成用例都分配到执行机。。。。。。。。。。。"+allliveslaver.get(0).getSlavername());
+                FunctionDispatchScheduleTask.log.info("调度服务容错，测试集合为单机模式，完成用例都分配到执行机。。。。。。。。。。。"+allliveslaver.get(0).getSlavername());
             }
             //平均分配
             else
@@ -186,7 +186,7 @@ public class FunctionDispatchScheduleTask {
                         dispatchMapper.updateByPrimaryKey(dis);
                     }
                 }
-                FunctionDispatchScheduleTask.log.info("调度服务【功能】容错，测试集合为多机模式，完成用例平均分配到所有空闲的执行机。。。。。。。。。。。");
+                FunctionDispatchScheduleTask.log.info("调度服务容错，测试集合为多机模式，完成用例平均分配到所有空闲的执行机。。。。。。。。。。。");
             }
         }
     }
