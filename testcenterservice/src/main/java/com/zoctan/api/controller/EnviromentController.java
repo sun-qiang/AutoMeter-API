@@ -40,7 +40,7 @@ public class EnviromentController {
         }
         else {
             enviromentService.save(enviroment);
-            return ResultGenerator.genOkResult();
+            return ResultGenerator.genOkResult("环境创建成功");
         }
     }
 
