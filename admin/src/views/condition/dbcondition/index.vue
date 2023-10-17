@@ -118,7 +118,7 @@
         </el-form-item>
 
         <el-form-item label="父条件：" prop="conditionname" required >
-          <el-select v-model="tmpdbcondition.conditionname"  placeholder="父条件名" style="width:100%" @change="ConditionselectChangedPC($event)" >
+          <el-select v-model="tmpdbcondition.conditionname" filterable  placeholder="父条件名" style="width:100%" @change="ConditionselectChangedPC($event)" >
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(condition, index) in conditionList" :key="index">
               <el-option :label="condition.conditionname" :value="condition.conditionname" required/>
@@ -127,7 +127,7 @@
         </el-form-item>
 
         <el-form-item label="环境：" prop="enviromentname" required >
-          <el-select v-model="tmpdbcondition.enviromentname"  placeholder="环境" style="width:100%" @change="selectChangedEN($event)">
+          <el-select v-model="tmpdbcondition.enviromentname" filterable  placeholder="环境" style="width:100%" @change="selectChangedEN($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(envname, index) in enviromentnameList" :key="index">
               <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
@@ -136,7 +136,7 @@
         </el-form-item>
 
         <el-form-item label="组件：" prop="assemblename" required >
-          <el-select v-model="tmpdbcondition.assemblename" placeholder="组件" style="width:100%" @change="ConditionselectChangedAS($event)">
+          <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件" style="width:100%" @change="ConditionselectChangedAS($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(macname, index) in enviroment_assembleList" :key="index">
               <el-option :label="macname.assemblename" :value="macname.assemblename" required/>

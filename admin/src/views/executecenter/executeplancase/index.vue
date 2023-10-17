@@ -32,7 +32,7 @@
         </el-form-item>
         <span v-if="hasPermission('executeplan:search')">
           <el-form-item  prop="executeplanname" >
-          <el-select v-model="search.executeplanname" clearable placeholder="测试集合" @change="loadtestplanselectChanged($event)">
+          <el-select v-model="search.executeplanname" filterable clearable placeholder="测试集合" @change="loadtestplanselectChanged($event)">
               <el-option label="请选择" value />
             <div v-for="(testplan, index) in execplanList" :key="index">
               <el-option :label="testplan.executeplanname" :value="testplan.executeplanname" />
@@ -41,7 +41,7 @@
         </el-form-item>
 
           <el-form-item prop="deployunitname">
-            <el-select v-model="search.deployunitname" clearable placeholder="微服务" @change="loaddeployunitselectChanged($event)">
+            <el-select v-model="search.deployunitname" filterable clearable placeholder="微服务" @change="loaddeployunitselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(depname, index) in loaddeployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname" required/>
@@ -50,7 +50,7 @@
           </el-form-item>
 
           <el-form-item prop="apiname">
-            <el-select v-model="search.apiname" clearable placeholder="api名" @change="loadApiselectChanged($event)">
+            <el-select v-model="search.apiname" filterable clearable placeholder="api名" @change="loadApiselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(api, index) in loadapiList" :key="index">
                 <el-option :label="api.apiname" :value="api.apiname"/>
@@ -124,7 +124,7 @@
         <el-form :inline="true" :model="searchcase" ref="searchcase" >
 
           <el-form-item label="测试集合:"  prop="executeplanname" required>
-            <el-select style="width: 120px" v-model="searchcase.executeplanname" placeholder="测试集合" @change="testplanselectChanged($event)">
+            <el-select style="width: 120px" v-model="searchcase.executeplanname" filterable placeholder="测试集合" @change="testplanselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(testplan, index) in execplanList" :key="index">
                 <el-option :label="testplan.executeplanname" :value="testplan.executeplanname" />
@@ -133,7 +133,7 @@
           </el-form-item>
 
           <el-form-item  label="微服务:" prop="deployunitname" required>
-            <el-select style="width: 120px" v-model="searchcase.deployunitname" placeholder="微服务" @change="deployunitselectChanged($event)">
+            <el-select style="width: 120px" v-model="searchcase.deployunitname" filterable placeholder="微服务" @change="deployunitselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(depname, index) in deployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname" />
@@ -141,7 +141,7 @@
             </el-select>
           </el-form-item>
           <el-form-item  label="模块:" prop="modelname" >
-            <el-select style="width: 120px" v-model="searchcase.modelname" placeholder="模块" @change="modelselectChanged($event)">
+            <el-select style="width: 120px" v-model="searchcase.modelname" filterable placeholder="模块" @change="modelselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(model, index) in modelList" :key="index">
                 <el-option :label="model.modelname" :value="model.modelname" />
@@ -149,7 +149,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="API:">
-            <el-select style="width: 120px" v-model="searchcase.apiname" placeholder="api名" @change="ApiselectChanged($event)">
+            <el-select style="width: 120px" v-model="searchcase.apiname" filterable placeholder="api名" @change="ApiselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(api, index) in apiList" :key="index">
                 <el-option :label="api.apiname" :value="api.apiname"/>
@@ -212,7 +212,7 @@
         <el-form :inline="true" :model="searchexistcase" ref="searchexistcase" >
 
           <el-form-item label="测试集合:"  prop="executeplanname" required>
-            <el-select v-model="searchexistcase.executeplanname" placeholder="测试集合" @change="existtestplanselectChanged($event)">
+            <el-select v-model="searchexistcase.executeplanname" filterable placeholder="测试集合" @change="existtestplanselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(testplan, index) in execplanList" :key="index">
                 <el-option :label="testplan.executeplanname" :value="testplan.executeplanname" />

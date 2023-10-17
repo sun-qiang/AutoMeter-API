@@ -29,7 +29,7 @@
         <span v-if="hasPermission('macdepunit:search')">
 
           <el-form-item label="测试环境" prop="enviromentname"  >
-          <el-select v-model="search.enviromentname" clearable   placeholder="测试环境名" style="width:100%" @change="selectChangedEN($event)">
+          <el-select v-model="search.enviromentname" clearable filterable   placeholder="测试环境名" style="width:100%" @change="selectChangedEN($event)">
             <div v-for="(envname, index) in enviromentnameList" :key="index">
               <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
             </div>
@@ -37,7 +37,7 @@
         </el-form-item>
 
            <el-form-item label="微服务" prop="deployunitname"  >
-            <el-select v-model="search.deployunitname" clearable  placeholder="微服务" style="width:100%" @change="selectChangedDU($event)">
+            <el-select v-model="search.deployunitname" clearable filterable  placeholder="微服务" style="width:100%" @change="selectChangedDU($event)">
               <div v-for="(depunit, index) in deployUnitList" :key="index">
                 <el-option :label="depunit.deployunitname" :value="depunit.deployunitname" required/>
               </div>
@@ -117,7 +117,7 @@
         ref="tmpmacdepunit"
       >
         <el-form-item label="测试环境" prop="enviromentname" required >
-          <el-select v-model="tmpmacdepunit.enviromentname"  placeholder="测试环境名" style="width:100%" @change="selectChangedEN($event)">
+          <el-select v-model="tmpmacdepunit.enviromentname" filterable  placeholder="测试环境名" style="width:100%" @change="selectChangedEN($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(envname, index) in enviromentnameList" :key="index">
               <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
@@ -126,7 +126,7 @@
         </el-form-item>
 
         <el-form-item label="服务器" prop="machinename" required >
-          <el-select v-model="tmpmacdepunit.machinename" placeholder="服务器" style="width:100%" @change="selectChangedMN($event)">
+          <el-select v-model="tmpmacdepunit.machinename" filterable placeholder="服务器" style="width:100%" @change="selectChangedMN($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(macname, index) in machinenameList" :key="index">
               <el-option :label="`${macname.machinename} ：${macname.ip}`" :value="macname.machinename" required/>
@@ -143,7 +143,7 @@
 
         <div v-if="deployunitVisible">
           <el-form-item label="微服务" prop="deployunitname" required >
-            <el-select v-model="tmpmacdepunit.deployunitname" placeholder="微服务" style="width:100%" @change="selectChangedDU($event)">
+            <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="微服务" style="width:100%" @change="selectChangedDU($event)">
               <el-option label="请选择" value="''" style="display: none" />
               <div v-for="(depunit, index) in deployUnitList" :key="index">
                 <el-option :label="depunit.deployunitname" :value="depunit.deployunitname" required/>
@@ -167,7 +167,7 @@
 
         <div v-if="assembleVisible">
           <el-form-item label="组件" prop="deployunitname" required >
-            <el-select v-model="tmpmacdepunit.deployunitname" placeholder="组件" style="width:100%" @change="selectChangedAS($event)">
+            <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="组件" style="width:100%" @change="selectChangedAS($event)">
               <el-option label="请选择" value="''" style="display: none" />
               <div v-for="(assemble, index) in assembleList" :key="index">
                 <el-option :label="assemble.assemblename" :value="assemble.assemblename" required/>

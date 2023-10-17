@@ -17,7 +17,7 @@
 
         <span v-if="hasPermission('apireport:search')">
           <el-form-item label="功能测试集合" prop="testplanname" required>
-          <el-select v-model="tmpquery.testplanname" clearable placeholder="测试集合" @change="testplanselectChanged($event)">
+          <el-select v-model="tmpquery.testplanname" filterable clearable placeholder="测试集合" @change="testplanselectChanged($event)">
             <el-option label="请选择"/>
             <div v-for="(testplan, index) in execplanList" :key="index">
               <el-option :label="testplan.executeplanname" :value="testplan.executeplanname" />
@@ -25,7 +25,7 @@
           </el-select>
         </el-form-item>
           <el-form-item label="执行计划" prop="batchname" required>
-            <el-select v-model="tmpquery.batchname" clearable placeholder="执行计划" @change="testbatchselectChanged($event)">
+            <el-select v-model="tmpquery.batchname" filterable clearable placeholder="执行计划" @change="testbatchselectChanged($event)">
             <el-option label="请选择"/>
             <div v-for="(planbatch, index) in planbatchList" :key="index">
               <el-option :label="planbatch.batchname" :value="planbatch.batchname" />

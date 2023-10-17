@@ -84,7 +84,7 @@
 <!--      <el-form :inline="true">-->
         <span v-if="hasPermission('apicases:search')" >
           <el-form-item label="微服务：">
-            <el-select style="width: 120px" v-model="search.deployunitname" placeholder="微服务" clearable @change="deployunitselectChanged($event)">
+            <el-select style="width: 120px" v-model="search.deployunitname" filterable placeholder="微服务" clearable @change="deployunitselectChanged($event)">
               <el-option label="请选择" value="请选择" />
               <div v-for="(depname, index) in deployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname"/>
@@ -93,7 +93,7 @@
           </el-form-item>
 
           <el-form-item label="模块：">
-            <el-select style="width: 120px" v-model="search.modelname" placeholder="模块" clearable @change="searchmodelselectChanged($event)">
+            <el-select style="width: 120px" v-model="search.modelname" filterable placeholder="模块" clearable @change="searchmodelselectChanged($event)">
               <el-option label="请选择" value="请选择" />
               <div v-for="(model, index) in modelList" :key="index">
                 <el-option :label="model.modelname" :value="model.modelname"/>
@@ -102,7 +102,7 @@
           </el-form-item>
 
           <el-form-item label="API：">
-            <el-select style="width: 120px" v-model="search.apiname" placeholder="API" clearable @change="searchapiselectChanged($event)">
+            <el-select style="width: 120px" v-model="search.apiname" filterable placeholder="API" clearable @change="searchapiselectChanged($event)">
               <el-option label="请选择" value="请选择" />
               <div v-for="(api, index) in apiList" :key="index">
                 <el-option :label="api.apiname" :value="api.apiname"/>

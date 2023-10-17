@@ -21,7 +21,7 @@
 
         <span v-if="hasPermission('delaycondition:search')">
           <el-form-item label="父条件名:">
-            <el-select v-model="search.conditionname" clearable placeholder="父条件名">
+            <el-select v-model="search.conditionname" filterable clearable placeholder="父条件名">
               <el-option label="请选择" value />
               <div v-for="(condition, index) in conditionList" :key="index">
                 <el-option :label="condition.conditionname" :value="condition.conditionname"/>
@@ -110,7 +110,7 @@
         </el-form-item>
 
         <el-form-item label="父条件名" prop="conditionname" required >
-          <el-select v-model="tmpdelaycondition.conditionname"   placeholder="父条件名" style="width:100%" @change="ConditionselectChanged($event)" >
+          <el-select v-model="tmpdelaycondition.conditionname" filterable   placeholder="父条件名" style="width:100%" @change="ConditionselectChanged($event)" >
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(condition, index) in conditionList" :key="index">
               <el-option :label="condition.conditionname" :value="condition.conditionname" required/>

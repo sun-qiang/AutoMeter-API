@@ -2,17 +2,17 @@
  function getIpAddr() 
  {
         # 获取IP命令
-        echo "开始获取ip"
+        #echo "开始获取ip"
         ipaddr=`ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"`
-        echo "获取ip：$ipaddr"
+        #echo "获取ip：$ipaddr"
         array=(`echo $ipaddr | tr '\n' ' '` )  # IP地址分割，区分是否多网卡
         #array=(172.20.32.214 192.168.1.10 192.168.1.2 192.168.1.10 192.168.1.2 192.168.1.10 192.168.1.2 192.168.1.10 192.168.1.2 192.168.1.10 192.168.1.2);
         num=${#array[@]}                                                #获取数组元素的个数
-        echo "ip数组长度为$num"
+        #echo "ip数组长度为$num"
 
         # 选择安装的IP地址
         if [ $num -eq 1 ]; then
-                echo "*单网卡"
+                #echo "*单网卡"
                 local_ip=${array[*]}
         elif [ $num -gt 1 ];then
                 echo -e "\033[035m******************************\033[0m"
@@ -60,49 +60,16 @@ function isValidIp()
         fi
         return $ret
 }
-
-CURRENT_DIR=$(cd $(dirname $0); pwd)
-
-# 初始化数据库
-# echo "开始数据库操作。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-
-# mysql -u root -p 123456 -e "create database if NOT EXISTS testcenter default character set utf8mb4 collate utf8mb4_bin"
-
-# echo "创建数据库testcenter完成。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-
-
-# initsql=/sql/init-sql/*.sql
-# initsqlfile=$CURRENT_DIR$initsql
-
-# for i in $(find $initsqlfile) ; do
-#   mysql -u root -p 123456 testcenter < ${i};
-# done
-
-# echo "初始化数据库testcenter完成。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-
-
-# updatesql=/sql/update-sql/*.sql
-# updatesqlfile=$CURRENT_DIR$updatesql
-
-# # 更新sql
-# for i in $(find $updatesqlfile) ; do
-#   mysql -u root -p 123456 testcenter < ${i};
-# done
-
-# echo "更新数据库testcenter完成。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-
-# echo "数据库操作完成。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
-
  
 local_ip=''
-echo "开始配置AutoMeter后端服务IP。。。。。。。"
+#echo "开始配置AutoMeter后端服务IP。。。。。。。"
 getIpAddr       #自动获取IP
 isValidIp ${local_ip}   # IP校验
 if [ $? -ne 0 ]; then
         echo -e "\033[31m*自动获取的IP地址无效，请重试！ \033[0m"
         exit 1
 fi
-echo "*选择安装AutoMeter服务的IP地址为：${local_ip}"
+#echo "*选择安装AutoMeter服务的IP地址为：${local_ip}"
 
 os=`uname  -os`
 b="Darwin"
@@ -111,27 +78,12 @@ d="ubuntu"
 
 if [[ $os =~ $b ]];then
     echo "mac"
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/conditionservice/config/application.yml
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/dispatchservice/config/application.yml 
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/slaverservice/config/application.yml 
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/mockservice/config/application.yml 
-    sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterservice/config/application.yml 
     sed -i "" "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterapp/dist/static/config.js
 else
     echo $os
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/conditionservice/config/application.yml
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/dispatchservice/config/application.yml 
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/mockservice/config/application.yml 
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/slaverservice/config/application.yml 
-    sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterservice/config/application.yml 
     sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterapp/dist/static/config.js
 fi
-#sed -i  "s@127.0.0.1@${local_ip}@" ../conditionservice/config/application.yml
-#sed -i  "s@127.0.0.1@${local_ip}@" ../dispatchservice/config/application.yml 
-#sed -i  "s@127.0.0.1@${local_ip}@" ../slaverservice/config/application.yml 
-#sed -i  "s@127.0.0.1@${local_ip}@" ../testcenterservice/config/application.yml 
-#sed -i  "s@127.0.0.1@${local_ip}@" ../testcenterapp/dist/static/config.js
-echo "配置AutoMeter后端服务IP成功。。。。。。。"
+#echo "配置AutoMeter后端服务IP成功。。。。。。。"
 
  
 conditionservicejar=../AutoMeter/conditionservice/conditionservice.jar
@@ -183,8 +135,10 @@ sleep 3
 echo "AutoMeter-dispatchservice启动成功"
 
 
-echo "AutoMeter后台服务部署成功，配置nginx.conf中的http.server.location.root配置testcenterapp所在的目录，例如：/app/AutoMeter/testcenterapp/dist/，访问入口 http://$local_ip:nginx端口  默认账户密码admin admin123"
-
+echo "AutoMeter后台服务部署成功，开始部署前端,请按照如下步骤操作"
+echo "第一步:将nginx.conf中的http.server.location.root配置testcenterapp所在的目录，例如：/app/AutoMeter/testcenterapp/dist/"
+echo "第二步:如果本机是内网可以访问,重启Nginx,访问入口http://$local_ip:nginx端口  默认账户密码admin admin123"
+echo "第三步:如果本机是公网可以访问(例如云服务器),将/app/AutoMeter/testcenterapp/dist/static/config.js中的ip改为公网访问的ip,重启Nginx,访问入口http://公网ip:nginx端口  默认账户密码admin admin123"
 
 
 

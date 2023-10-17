@@ -202,7 +202,7 @@
           />
         </el-form-item>
         <el-form-item label="微服务:" prop="deployunitname" required>
-          <el-select v-model="tmpapi.deployunitname" placeholder="微服务" style="width:100%"
+          <el-select v-model="tmpapi.deployunitname" filterable clearable placeholder="微服务" style="width:100%"
                      @change="selectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(depunitname, index) in deployunitList" :key="index">
@@ -212,7 +212,7 @@
         </el-form-item>
 
         <el-form-item label="模块:" prop="modelname" >
-          <el-select v-model="tmpapi.modelname" placeholder="模块" style="width:100%"
+          <el-select v-model="tmpapi.modelname" filterable clearable placeholder="模块" style="width:100%"
                      @change="modelselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(model, index) in modelList" :key="index">

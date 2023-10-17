@@ -204,7 +204,7 @@
       >
 
         <el-form-item label="微服务" prop="deployunitname" required >
-          <el-select v-model="tmpApicasesVariables.deployunitname" placeholder="微服务" style="width:100%" @change="deployunitselectChanged($event)">
+          <el-select v-model="tmpApicasesVariables.deployunitname" filterable placeholder="微服务" style="width:100%" @change="deployunitselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -213,7 +213,7 @@
         </el-form-item>
 
         <el-form-item label="API" prop="apiname" required >
-          <el-select v-model="tmpApicasesVariables.apiname" placeholder="API" style="width:100%" @change="apiselectChanged($event)">
+          <el-select v-model="tmpApicasesVariables.apiname" filterable placeholder="API" style="width:100%" @change="apiselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(api, index) in apiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
@@ -222,7 +222,7 @@
         </el-form-item>
 
         <el-form-item label="绑定接口" prop="casename" required >
-          <el-select v-model="tmpApicasesVariables.casename" placeholder="绑定接口" style="width:100%" @change="testcaseselectChanged($event)">
+          <el-select v-model="tmpApicasesVariables.casename" filterable placeholder="绑定接口" style="width:100%" @change="testcaseselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(testcase, index) in caseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>

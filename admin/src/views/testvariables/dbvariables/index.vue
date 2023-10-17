@@ -172,7 +172,7 @@
       >
 
         <el-form-item label="数据库子条件" prop="dbconditionname" required >
-          <el-select v-model="tmpDbConditionVariables.dbconditionname" placeholder="数据库子条件" style="width:100%" @change="dbconditionselectChanged($event)">
+          <el-select v-model="tmpDbConditionVariables.dbconditionname" filterable placeholder="数据库子条件" style="width:100%" @change="dbconditionselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(subconditionname, index) in DbconditionList" :key="index">
               <el-option :label="subconditionname.subconditionname" :value="subconditionname.subconditionname" required/>
