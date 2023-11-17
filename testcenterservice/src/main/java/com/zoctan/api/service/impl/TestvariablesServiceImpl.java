@@ -33,6 +33,11 @@ private TestvariablesMapper testvariablesMapper;
     }
 
     @Override
+    public List<Testvariables> findtestvariablesbycaseid(Map<String, Object> params) {
+        return testvariablesMapper.findtestvariablesbycaseid(params);
+    }
+
+    @Override
     public int ifexist(Condition con) {
         return countByCondition(con);
     }

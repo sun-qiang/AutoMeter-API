@@ -23,6 +23,8 @@
     <result column="url" jdbcType="VARCHAR" property="url" />
     <result column="requestmethod" jdbcType="VARCHAR" property="requestmethod" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
   </resultMap>
 
   <select id="findApicasereportWithName" resultMap="BaseResultMap">

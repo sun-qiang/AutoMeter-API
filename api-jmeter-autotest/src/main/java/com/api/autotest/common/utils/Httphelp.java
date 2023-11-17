@@ -650,7 +650,7 @@ public class Httphelp {
         }
         responeData.setResponeContent(ActualResult);
         responeData.setResponeCode(Code);
-        responeData.setHeaderList(Arrays.asList(closeableHttpResponse.getAllHeaders()));
+        responeData.setHeaderarray(closeableHttpResponse.getAllHeaders());
         responeData.setCookies(cookies);
         return responeData;
     }

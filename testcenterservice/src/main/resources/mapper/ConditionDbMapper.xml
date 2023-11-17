@@ -21,16 +21,19 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditiontype" jdbcType="VARCHAR" property="conditiontype" />
   </resultMap>
 
 
   <select id="finddbconditionWithName" resultMap="BaseResultMap">
-    SELECT b.conditionname, a.*
-    FROM condition_db  a inner join testcondition b on a.conditionid=b.id
+    SELECT  a.*
+    FROM condition_db a
     <where>
       <if test="conditionname != null and conditionname != ''">a.conditionname like CONCAT('%',#{conditionname},'%')</if>
-      <if test="subconditionname != null and subconditionname != ''">and a.subconditionname like CONCAT('%',#{subconditionname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
+      <if test="conditiontype != null  and conditiontype != ''">and a.conditiontype =#{conditiontype}</if>
+
     </where>
     order by lastmodify_time  DESC
   </select>

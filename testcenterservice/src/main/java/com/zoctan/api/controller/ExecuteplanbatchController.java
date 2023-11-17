@@ -150,7 +150,7 @@ public class ExecuteplanbatchController {
                 testplanandbatch.setBatchname(BatchName);
                 testplanandbatch.setPlanid(PlanID);
                 list.add(testplanandbatch);
-                executeplanService.executeplancase(list,"立即执行");
+                executeplanService.execcase(testplanandbatch);
                 return ResultGenerator.genOkResult();
             }
         }

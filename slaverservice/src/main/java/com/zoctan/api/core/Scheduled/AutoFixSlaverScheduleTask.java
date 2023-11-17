@@ -56,11 +56,11 @@ public class AutoFixSlaverScheduleTask {
                         List<Slaver> slaverList = slaverMapper.findslaverbyip(ip);
                         if (slaverList.size() > 0) {
                             Slaver slaver = slaverList.get(0);
-                            AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask-AutoFixSlaverScheduleTask，如果是下线状态:......................................................."+slaver.getStatus());
+                            //AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask-AutoFixSlaverScheduleTask，如果是下线状态:......................................................."+slaver.getStatus());
                             if (slaver.getStatus().equals("已下线")) {
                                 slaver.setStatus("空闲");
                                 slaverMapper.updateSlaver(slaver);
-                                AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask-AutoFixSlaverScheduleTask，如果是下线状态则更新为上线空闲.......................................................");
+                                //AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask-AutoFixSlaverScheduleTask，如果是下线状态则更新为上线空闲.......................................................");
                             }
                         }
                     }
@@ -70,11 +70,11 @@ public class AutoFixSlaverScheduleTask {
                     //释放锁
                     redisUtils.deletekey(redisKey);
                 }
-                AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver任务-============释放分布式锁成功=======================");
+                //AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver任务-============释放分布式锁成功=======================");
             } else {
-                AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver-============获得分布式锁失败=======================");
+                //AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver-============获得分布式锁失败=======================");
                 ip = redisUtils.getkey(redisKey);
-                AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver-============{}机器上占用分布式锁，正在执行中=======================" + redisKey + " ip :" + ip);
+                //AutoFixSlaverScheduleTask.log.info("AutoFixSlaverScheduleTask自动修复Slaver-============{}机器上占用分布式锁，正在执行中=======================" + redisKey + " ip :" + ip);
                 return;
             }
         } catch (Exception ex) {

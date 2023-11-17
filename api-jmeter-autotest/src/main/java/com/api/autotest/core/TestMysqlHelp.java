@@ -22,9 +22,8 @@ import static com.api.autotest.core.TestCaseData.logplannameandcasename;
 public class TestMysqlHelp {
     private Logger logger = null;
 
-    public TestMysqlHelp(String MysqlUrl,String MysqlUserName,String MysqlPass,Logger log)
-    {
-        logger=log;
+    public TestMysqlHelp(String MysqlUrl, String MysqlUserName, String MysqlPass, Logger log) {
+        logger = log;
         GetDBConnection(MysqlUrl, MysqlUserName, MysqlPass);
     }
 
@@ -36,7 +35,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> GetStatic(String planid, String Batchname) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "select sum(totalcases) as tc,sum(totalpasscases) as tpc ,sum(totalfailcases) as tfc from apicases_reportstatics where testplanid="+planid +" and batchname='" + Batchname + "'";
+            String sql = "select sum(totalcases) as tc,sum(totalpasscases) as tpc ,sum(totalfailcases) as tfc from apicases_reportstatics where testplanid=" + planid + " and batchname='" + Batchname + "'";
             logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -77,7 +76,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> Getplan(String planid) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT a.* FROM executeplan a where a.id = " + planid ;
+            String sql = "SELECT a.* FROM executeplan a where a.id = " + planid;
             logger.info(logplannameandcasename + "获取数据库 获取测试集合 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -87,10 +86,10 @@ public class TestMysqlHelp {
     }
 
     //获取计划批次
-    public ArrayList<HashMap<String, String>> GetplanBatchCreator(String planid,String BatchName) {
+    public ArrayList<HashMap<String, String>> GetplanBatchCreator(String planid, String BatchName) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT a.* FROM executeplanbatch a where a.executeplanid = " + planid + " and a.batchname='"+BatchName+"'";
+            String sql = "SELECT a.* FROM executeplanbatch a where a.executeplanid = " + planid + " and a.batchname='" + BatchName + "'";
             logger.info(logplannameandcasename + "获取数据库 获取计划批次 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -105,8 +104,8 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
             list = MysqlConnectionUtils.query(Sql);
-            for (HashMap<String, String> maplog:list) {
-                for (String Key: maplog.keySet()) {
+            for (HashMap<String, String> maplog : list) {
+                for (String Key : maplog.keySet()) {
                     //logger.info("获取数据的字段名为:  " + Key + "  字段值为：" + maplog.get(Key));
                 }
             }
@@ -119,28 +118,24 @@ public class TestMysqlHelp {
 
     // 获取用例期望值
     public String getcaseValue(String key, ArrayList<HashMap<String, String>> list) {
-        if(list.size()>0)
-        {
+        if (list.size() > 0) {
             HashMap<String, String> hs = list.get(0);
-            String value=hs.get(key);
-            if(value!=null)
-            {
-                value=value.trim();
+            String value = hs.get(key);
+            if (value != null) {
+                value = value.trim();
             }
             return value;
-        }
-        else
-        {
+        } else {
             return "";
         }
     }
 
 
     //获取变量值类型
-    public String GetVariablesDataType(String VariablesName,long projectid) {
+    public String GetVariablesDataType(String VariablesName, long projectid) {
         String ValueType = "";
         try {
-            String sql = "select valuetype from testvariables where  testvariablesname='" + VariablesName + "' and projectid="+projectid;
+            String sql = "select valuetype from testvariables where  testvariablesname='" + VariablesName + "' and projectid=" + projectid;
             logger.info(logplannameandcasename + "获取数据库 获取变量值类型 result sql is...........: " + sql);
             ArrayList<HashMap<String, String>> result = MysqlConnectionUtils.query(sql);
             if (result.size() > 0) {
@@ -153,10 +148,10 @@ public class TestMysqlHelp {
     }
 
     //获取数据库变量值类型
-    public String GetDBVariablesDataType(String VariablesName,long projectid) {
+    public String GetDBVariablesDataType(String VariablesName, long projectid) {
         String ValueType = "";
         try {
-            String sql = "select valuetype from dbvariables where  dbvariablesname='" + VariablesName + "' and projectid="+projectid;
+            String sql = "select valuetype from dbvariables where  dbvariablesname='" + VariablesName + "' and projectid=" + projectid;
             logger.info(logplannameandcasename + "获取数据库 获取数据库变量值类型 result sql is...........: " + sql);
             ArrayList<HashMap<String, String>> result = MysqlConnectionUtils.query(sql);
             if (result.size() > 0) {
@@ -170,7 +165,7 @@ public class TestMysqlHelp {
 
     //获取接口变量列表
     public ArrayList<HashMap<String, String>> GetInterfaceVariables() {
-        ArrayList<HashMap<String, String>> result=new ArrayList<>();
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
             String sql = "select testvariablesname from testvariables";
             logger.info(logplannameandcasename + "获取数据库 GetInterfaceVariables result sql is...........: " + sql);
@@ -214,6 +209,85 @@ public class TestMysqlHelp {
     }
 
 
+    //根据目标类型和id获取接口条件
+    public ArrayList<HashMap<String, String>> GetConditionApiByObjectIDAndType(Long Objectid, String ObjectType) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from condition_api where conditionid=" + Objectid + " and conditiontype='" + ObjectType + "'";
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+    //根据目标类型和用例id获取接口条件
+    public ArrayList<HashMap<String, String>> GetConditionApiByCaseIDAndType(Long caseid, String ObjectType) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from condition_api where caseid=" + caseid + " and conditiontype='" + ObjectType + "'";
+            logger.info(logplannameandcasename + "获取数据库 根据目标类型和用例id获取接口条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 根据目标类型和用例id获取接口条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+
+    //根据plan,batchname,case,secne获取功能报告
+    public ArrayList<HashMap<String, String>> GetReportByPBST(Long Planid, String Batchname, Long Caseid, Long Sceneid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from apicases_report where testplanid=" + Planid + " and caseid=" + Caseid + " and sceneid=" + Sceneid + " and batchname='" + Batchname + "'";
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+    //根据reportid获取扩展信息
+    public ArrayList<HashMap<String, String>> GetReportEXByReportid(Long ReportID) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from apicases_report_extinfo where reportid=" + ReportID;
+            logger.info(logplannameandcasename + "获取数据库 根据reportid获取扩展信息 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 根据reportid获取扩展信息 异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+    //获取场景用例id
+    public ArrayList<HashMap<String, String>> GetSceneID(Long Caseid, Long Sceneid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from testscene_testcase where testscenenid=" + Sceneid + " and testcaseid=" + Caseid;
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取场景用例id异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+    //根据场景id获取场景用例
+    public ArrayList<HashMap<String, String>> GetSceneCaseByID(Long Sceneid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from testscene_testcase where testscenenid=" + Sceneid;
+            logger.info(logplannameandcasename + "获取数据库 根据场景id获取场景用例 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 根据场景id获取场景用例异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //获取条件
     public ArrayList<HashMap<String, String>> GetConditionByPlanIDAndConditionType(Long Caseid, String ConditionType, String ObjectType) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
@@ -231,7 +305,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> GetConditionOrderByID(Long ConditionID) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
-            String sql = "select * from condition_order where conditionid=" + ConditionID +" order by conditionorder  asc" ;
+            String sql = "select * from condition_order where conditionid=" + ConditionID + " order by conditionorder  asc";
             logger.info(logplannameandcasename + "获取数据库 获取条件顺序 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -245,6 +319,34 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
             String sql = "select * from condition_api where conditionid=" + ConditionID;
+            logger.info(logplannameandcasename + "获取数据库 获取接口条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取接口条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+
+    //获取接口条件
+    public ArrayList<HashMap<String, String>> GetApiCaseReportByPBCID(String planid, String batchname, String caseid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from apicases_report where testplanid=" + planid + " and caseid=" + caseid + " and batchname='" + batchname + "'";
+            logger.info(logplannameandcasename + "获取数据库 获取接口条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取接口条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+
+    //获取报告扩展信息
+    public ArrayList<HashMap<String, String>> GetApiCaseReportExtByID(String reportid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from apicases_report_extinfo where reportid=" + reportid;
             logger.info(logplannameandcasename + "获取数据库 获取接口条件 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -345,13 +447,26 @@ public class TestMysqlHelp {
     }
 
 
+    //获取条件报告结果
+    public ArrayList<HashMap<String, String>> Gettestconditionreport(Long Planid, String Batchname, Long ConditionID,String subconditiontype) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select *  from testcondition_report where planid=" + Planid + " and batchname='" + Batchname + "' and subconditionid=" + ConditionID+" and subconditiontype='" + subconditiontype+"'" ;
+            logger.info(logplannameandcasename + "获取数据库 获取条件报告结果 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取条件报告结果 异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //保存条件结果
     public void SubConditionReportSave(TestconditionReport testconditionReport) {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
-        String sql = "insert testcondition_report (conditionid,conditiontype,subconditionid,conditionresult,conditionstatus,runtime,create_time,lastmodify_time,creator,batchname,planname,testplanid,subconditiontype,status,subconditionname)" +
-                " values(" + testconditionReport.getConditionid() + ", '" + testconditionReport.getConditiontype() + "', " + testconditionReport.getSubconditionid() + ", '" + testconditionReport.getConditionresult() + "', '" + testconditionReport.getConditionstatus() + "', " + testconditionReport.getRuntime() + ", '" + dateNowStr + "', '" + dateNowStr + "','admin'" + ", '" + testconditionReport.getBatchname().replace("'","''") + "',  '" + testconditionReport.getPlanname().replace("'","''") + "'," + testconditionReport.getTestplanid() + ", '" + testconditionReport.getSubconditiontype() + "', '" + testconditionReport.getStatus() + "', '" + testconditionReport.getSubconditionname().replace("'","''") + "')";
+        String sql = "insert testcondition_report (conditiontype,subconditionid,conditionresult,conditionstatus,runtime,create_time,lastmodify_time,creator,batchname,planname,testplanid,subconditiontype,status,subconditionname)" +
+                " values('" + testconditionReport.getConditiontype() + "', " + testconditionReport.getSubconditionid() + ", '" + testconditionReport.getConditionresult() + "', '" + testconditionReport.getConditionstatus() + "', " + testconditionReport.getRuntime() + ", '" + dateNowStr + "', '" + dateNowStr + "','admin'" + ", '" + testconditionReport.getBatchname().replace("'", "''") + "',  '" + testconditionReport.getPlanname().replace("'", "''") + "'," + testconditionReport.getTestplanid() + ", '" + testconditionReport.getSubconditiontype() + "', '" + testconditionReport.getStatus() + "', '" + testconditionReport.getSubconditionname().replace("'", "''") + "')";
         logger.info(logplannameandcasename + "获取数据库 接口条件报告结果 result sql is...........: " + sql);
         try {
             logger.info(logplannameandcasename + "获取数据库 接口条件报告结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
@@ -360,13 +475,26 @@ public class TestMysqlHelp {
         }
     }
 
+    //获取变量结果
+    public ArrayList<HashMap<String, String>> GetTestVariablesValue(Long Planid, String Batchname, Long VariablesID) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select *  from testvariables_value where planid=" + Planid + " and batchname='" + Batchname + "' and variablesid=" + VariablesID;
+            logger.info(logplannameandcasename + "获取数据库 获取变量结果 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取变量结果 异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //保存变量结果
-    public void testVariablesValueSave(TestvariablesValue testvariablesValue)  {
+    public void testVariablesValueSave(TestvariablesValue testvariablesValue) {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
-        String sql = "insert testvariables_value (planid,planname,caseid,casename,variablesid,variablesname,variablesvalue,memo,create_time,lastmodify_time,batchname,variablestype)" +
-                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'","''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'","''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'","''")+ "', '" + testvariablesValue.getVariablesvalue().replace("'","''") + "', '" + testvariablesValue.getMemo().replace("'","''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'","''")+ "', '" + testvariablesValue.getVariablestype().replace("'","''") + "')";
+        String sql = "insert testvariables_value (planid,planname,caseid,casename,variablesid,variablesname,variablesvalue,memo,create_time,lastmodify_time,batchname,variablestype,slaverid)" +
+                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'", "''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'", "''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'", "''") + "', '" + testvariablesValue.getVariablesvalue().replace("'", "''") + "', '" + testvariablesValue.getMemo().replace("'", "''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'", "''") + "', '" + testvariablesValue.getVariablestype().replace("'", "''") + "',"+ testvariablesValue.getSlaverid()+")";
         logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + sql);
         try {
             logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
@@ -375,11 +503,38 @@ public class TestMysqlHelp {
         }
     }
 
+    //更新变量结果
+    public void testVariablesValueUpdate(Long Planid, String Batchname, Long VariablesID, String NewValue) {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateNowStr = sdf.format(d);
+        String sql = "update testvariables_value set variablesvalue='" + NewValue + "' where planid=" + Planid + " and batchname='" + Batchname + "' and variablesid=" + VariablesID;
+        logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + sql);
+        try {
+            logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
+        } catch (Exception exception) {
+            logger.info(logplannameandcasename + "获取数据库 保存变量结果 result 异常...........: " + exception.getMessage());
+        }
+    }
+
+    //查询场景用例
+    public ArrayList<HashMap<String, String>> GetSceneCase(Long SceneID, Long CaseID) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select *  from testscene_testcase where testscenenid=" + SceneID + " and testcaseid=" + CaseID;
+            logger.info(logplannameandcasename + "获取数据库 查询场景用例 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 查询场景用例异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //查询用例变量
     public ArrayList<HashMap<String, String>> GetApiCaseVaribales(Long CaseID) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
-            String sql = "select *  from apicases_variables where caseid=" + CaseID;
+            String sql = "select *  from testvariables where caseid=" + CaseID;
             logger.info(logplannameandcasename + "获取数据库 查询用例变量 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -405,7 +560,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> getbyconditionid(long dbconditionid) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM dbcondition_variables where dbcondition_variables= "+dbconditionid;
+            String sql = "SELECT * FROM dbcondition_variables where dbcondition_variables= " + dbconditionid;
             logger.info(logplannameandcasename + "获取随机变量  result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -413,7 +568,6 @@ public class TestMysqlHelp {
         }
         return list;
     }
-
 
 
     //查询变量
@@ -453,11 +607,14 @@ public class TestMysqlHelp {
     }
 
     // 记录用例测试结果
-    public void savetestcaseresult(boolean status, long time, String respone, String assertvalue, String errorinfo, RequestObject requestObject, JavaSamplerContext context) {
+    public int savetestcaseresult(boolean status, long time, String respone, String assertvalue, String errorinfo, RequestObject requestObject, JavaSamplerContext context) {
+        int returnkey = 0;
         try {
             String resulttable = "";
             String casetype = "";
             String testplanid = "";
+            String sceneid = "";
+            String scenename = "";
             String projectid = "";
             String caseid = "";
             String slaverid = "";
@@ -465,8 +622,8 @@ public class TestMysqlHelp {
             String batchname = "";
             String header = "";
             String Params = "";
-            Map<String, Object> paramsmap =new HashMap<>();
-            String  PostData="";
+            Map<String, Object> paramsmap = new HashMap<>();
+            String PostData = "";
             String Url = "";
             String Method = "";
             if (requestObject == null) {
@@ -476,9 +633,9 @@ public class TestMysqlHelp {
                 caseid = context.getParameter("caseid");
                 slaverid = context.getParameter("slaverid");
                 expect = context.getParameter("expect");
-                Url=context.getParameter("resource");
-                Method=context.getParameter("RequestmMthod");
-                batchname = context.getParameter("batchname").replace("'","''");
+                Url = context.getParameter("resource");
+                Method = context.getParameter("RequestmMthod");
+                batchname = context.getParameter("batchname").replace("'", "''");
             } else {
                 casetype = requestObject.getCasetype();// context.getParameter("casetype");
                 testplanid = requestObject.getTestplanid();// context.getParameter("testplanid");
@@ -486,28 +643,27 @@ public class TestMysqlHelp {
                 caseid = requestObject.getCaseid();// context.getParameter("caseid");
                 slaverid = requestObject.getSlaverid();// context.getParameter("slaverid");
                 expect = requestObject.getExpect();// context.getParameter("expect");
-                batchname = requestObject.getBatchname().replace("'","''");// context.getParameter("batchname");
-                Url = requestObject.getResource().replace("'","''");
+                batchname = requestObject.getBatchname().replace("'", "''");// context.getParameter("batchname");
+                Url = requestObject.getResource().replace("'", "''");
                 Method = requestObject.getRequestmMthod().toUpperCase();
+                sceneid = requestObject.getSceneid().toString();
+                scenename = requestObject.getScenename();
             }
             Map<String, Object> headermap = requestObject.getHeader().getParams();
             for (String key : headermap.keySet()) {
                 header = header + key + " ：" + headermap.get(key);
             }
-            header=header.replace("'","''");
+            header = header.replace("'", "''");
             paramsmap = requestObject.getParamers().getParams();
             for (String key : paramsmap.keySet()) {
-                Params = Params + key + " ：" + paramsmap.get(key)+" ";
+                Params = Params + key + " ：" + paramsmap.get(key) + " ";
             }
-            if(!Params.isEmpty())
-            {
-                PostData="参数："+Params;
+            if (!Params.isEmpty()) {
+                PostData = "参数：" + Params;
+            } else {
+                PostData = requestObject.getPostData();
             }
-            else
-            {
-                PostData= requestObject.getPostData();
-            }
-            PostData=PostData.replace("'","''");
+            PostData = PostData.replace("'", "''");
 
             if (casetype.equals("功能")) {
                 resulttable = "apicases_report";
@@ -520,26 +676,28 @@ public class TestMysqlHelp {
             String dateNowStr = sdf.format(d);
             String sql = "";
             if (status) {
-                sql = "insert " + resulttable + " (caseid,testplanid,batchname,slaverid,status,respone,assertvalue,runtime,expect,errorinfo,create_time,lastmodify_time,creator,requestheader,requestdatas,url,requestmethod,projectid)" +
-                        " values(" + caseid + "," + testplanid + ", '" + batchname + "', " + slaverid + ", '成功" + "' , '" + respone.replace("'","''") + "' ,'" + assertvalue.replace("'","''") + "', " + time + ",'" + expect.replace("'","''") + "','" + errorinfo + "','" + dateNowStr + "', '" + dateNowStr + "','admin', '" + header + "', '" + PostData + "', '" + Url + "', '" + Method + "'," + projectid +")";
+                sql = "insert " + resulttable + " (caseid,testplanid,batchname,slaverid,status,respone,assertvalue,runtime,expect,errorinfo,create_time,lastmodify_time,creator,requestheader,requestdatas,url,requestmethod,projectid, sceneid, scenename)" +
+                        " values(" + caseid + "," + testplanid + ", '" + batchname + "', " + slaverid + ", '成功" + "' , '" + respone.replace("'", "''") + "' ,'" + assertvalue.replace("'", "''") + "', " + time + ",'" + expect.replace("'", "''") + "','" + errorinfo + "','" + dateNowStr + "', '" + dateNowStr + "','admin', '" + header + "', '" + PostData + "', '" + Url + "', '" + Method + "'," + projectid + "," + sceneid + ",'" + scenename + "')";
             } else {
-                sql = "insert  " + resulttable + " (caseid,testplanid,batchname,slaverid,status,respone,assertvalue,runtime,expect,errorinfo,create_time,lastmodify_time,creator,requestheader,requestdatas,url,requestmethod,projectid)" +
-                        " values(" + caseid + "," + testplanid + ", '" + batchname + "', " + slaverid + ", '失败" + "' , '" + respone.replace("'","''") + "','" + assertvalue.replace("'","''") + "'," + time + ",'" + expect.replace("'","''") + "','" + errorinfo + "','" + dateNowStr + "','" + dateNowStr + "','admin', '" + header + "', '" + PostData + "', '" + Url + "', '" + Method + "'," + projectid +")";
+                sql = "insert  " + resulttable + " (caseid,testplanid,batchname,slaverid,status,respone,assertvalue,runtime,expect,errorinfo,create_time,lastmodify_time,creator,requestheader,requestdatas,url,requestmethod,projectid, sceneid, scenename)" +
+                        " values(" + caseid + "," + testplanid + ", '" + batchname + "', " + slaverid + ", '失败" + "' , '" + respone.replace("'", "''") + "','" + assertvalue.replace("'", "''") + "'," + time + ",'" + expect.replace("'", "''") + "','" + errorinfo + "','" + dateNowStr + "','" + dateNowStr + "','admin', '" + header + "', '" + PostData + "', '" + Url + "', '" + Method + "'," + projectid + "," + sceneid + ",'" + scenename + "')";
             }
             logger.info(logplannameandcasename + "获取数据库 测试结果 result sql is...........: " + sql);
-            logger.info(logplannameandcasename + "获取数据库 记录用例测试结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
+            returnkey = MysqlConnectionUtils.updatewithkey(sql);
+            logger.info(logplannameandcasename + "获取数据库 记录用例测试结果 result sql is...........: " + returnkey);
         } catch (Exception ex) {
             logger.info(logplannameandcasename + "获取数据库 记录用例测试结果异常...........: " + ex.getMessage());
         }
+        return returnkey;
     }
 
     // 记录用例测试结果
-    public void SaveReportStatics(ApicasesReportstatics apicasesReportstatics)  {
+    public void SaveReportStatics(ApicasesReportstatics apicasesReportstatics) {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
         String sql = "insert apicases_reportstatics (testplanid,deployunitid,batchname,slaverid,totalcases,totalpasscases,totalfailcases,runtime,create_time,lastmodify_time,creator)" +
-                " values(" + apicasesReportstatics.getTestplanid() + "," + apicasesReportstatics.getDeployunitid() + ", '" + apicasesReportstatics.getBatchname().replace("'","''") + "', " + apicasesReportstatics.getSlaverid() + ", " + apicasesReportstatics.getTotalcases() + ", " + apicasesReportstatics.getTotalpasscases() + ", " + apicasesReportstatics.getTotalfailcases() + ", " + apicasesReportstatics.getRuntime() + ", '" + dateNowStr + "', '" + dateNowStr + "','admin')";
+                " values(" + apicasesReportstatics.getTestplanid() + "," + apicasesReportstatics.getDeployunitid() + ", '" + apicasesReportstatics.getBatchname().replace("'", "''") + "', " + apicasesReportstatics.getSlaverid() + ", " + apicasesReportstatics.getTotalcases() + ", " + apicasesReportstatics.getTotalpasscases() + ", " + apicasesReportstatics.getTotalfailcases() + ", " + apicasesReportstatics.getRuntime() + ", '" + dateNowStr + "', '" + dateNowStr + "','admin')";
         logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 result sql is...........: " + sql);
         try {
             logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
@@ -547,6 +705,22 @@ public class TestMysqlHelp {
             logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 result 异常...........: " + exception.getMessage());
         }
     }
+
+    // 记录用例测试结果扩展信息
+    public void savetestcaseextresult(String reportid, String reportextinfo, String projectid) {
+        Date d = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateNowStr = sdf.format(d);
+        String sql = "insert apicases_report_extinfo (reportid,responeinfo,create_time,lastmodify_time,projectid)" +
+                " values(" + reportid + ", '" + reportextinfo.replace("\\", "\\\\") + "', " + "'" + dateNowStr + "', '" + dateNowStr + "', " + projectid + ")";
+        logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 XXXXXXXXXXXXXXXXXXXXXXXresult sql is...........: " + sql);
+        try {
+            logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
+        } catch (Exception exception) {
+            logger.info(logplannameandcasename + "获取数据库 功能测试统计结果 result 异常...........: " + exception.getMessage());
+        }
+    }
+
 
     //查询此计划下的批次调度是否已经全部完成，如果完成，刷新计划批次状态为finish
     public void PlanBatchAllDipatchFinish(ApicasesReportstatics apicasesReportstatics) {
@@ -577,25 +751,25 @@ public class TestMysqlHelp {
         } catch (Exception e) {
             logger.info(logplannameandcasename + "获取数据库 查询计划下的批次调度是否已经全部完成异常...........: " + e.getMessage());
         }
-        return  DispatchNotFinishNums;
+        return DispatchNotFinishNums;
     }
 
     //查询此计划下的批次调度是否有已取消
     public long PlanBatchAllDipatchCancel(String Testplanid, String batchname) {
         long DispatchCancelNums = 0;
         try {
-            String sql = "select count(*) as nums from dispatch where execplanid=" + Testplanid + " and batchname= '" + batchname + "' and status ='"+"已取消'";
+            String sql = "select count(*) as nums from dispatch where execplanid=" + Testplanid + " and batchname= '" + batchname + "' and status ='" + "已取消'";
             logger.info(logplannameandcasename + "获取数据库 查询计划下的批次调度是否有已取消 result sql is...........: " + sql);
             ArrayList<HashMap<String, String>> result = MysqlConnectionUtils.query(sql);
             DispatchCancelNums = Long.parseLong(getcaseValue("nums", result));
         } catch (Exception e) {
             logger.info(logplannameandcasename + "获取数据库 查询计划下的批次调度是否有已取消异常...........: " + e.getMessage());
         }
-        return  DispatchCancelNums;
+        return DispatchCancelNums;
     }
 
     // 更新计划批次状态
-    public void UpdateReportStatics(String Planid, String BatchName, String status)  {
+    public void UpdateReportStatics(String Planid, String BatchName, String status) {
         String UpdateSql = "update  executeplanbatch set status='" + status + "' where executeplanid=" + Planid + " and batchname= '" + BatchName + "'";
         logger.info(logplannameandcasename + "获取数据库 更新计划批次状态结果完成  sql is...........: " + UpdateSql);
         try {
@@ -605,6 +779,18 @@ public class TestMysqlHelp {
         }
     }
 
+    // 更新计划批次场景状态
+    public void UpdateBatchScene(String planid, String batchname, String sceneid, String status) {
+        String UpdateSql = "update  executeplanbatch set status='" + status + "' where executeplanid=" + planid + " and sceneid=" + sceneid + " and batchname= '" + batchname + "'";
+        logger.info(logplannameandcasename + "获取数据库 更新计划批次场景状态结果完成  sql is...........: " + UpdateSql);
+        try {
+            logger.info(logplannameandcasename + "获取数据库 更新计划批次场景状态结果完成 result sql is...........: " + MysqlConnectionUtils.update(UpdateSql));
+        } catch (Exception exception) {
+            logger.info(logplannameandcasename + "获取数据库 更新计划批次场景状态结果完成 result 异常...........: " + exception.getMessage());
+        }
+    }
+
+
     // 更新Slaver状态
     public void UpdateSlaverStatus(String Slaverid, String status) throws Exception {
         String UpdateSql = "update  slaver set status='" + status + "' where id=" + Slaverid;
@@ -613,13 +799,13 @@ public class TestMysqlHelp {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String batchid) {
+    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname) {
         try {
             Date d = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateNowStr = sdf.format(d);
             String sql = "";
-            sql = "update dispatch set status='已完成',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and batchid=" + batchid + " and testcaseid=" + caseid;
+            sql = "update dispatch set status='已完成',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname + "' and testcaseid=" + caseid;
             logger.info(logplannameandcasename + "获取数据库 更新调度用例状态 result sql is...........: " + sql);
             logger.info(logplannameandcasename + "获取数据库 更新用例调度结果 is...........: " + MysqlConnectionUtils.update(sql));
         } catch (Exception ex) {
@@ -628,14 +814,14 @@ public class TestMysqlHelp {
     }
 
     // 新增性能日志用例记录结果
-    public void generalperformancelogfile(String testplanid, String caseid, String slaverid, String batchid,String filename,String status) {
+    public void generalperformancelogfile(String testplanid, String caseid, String slaverid, String batchid, String filename, String status) {
         try {
             Date d = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateNowStr = sdf.format(d);
             String sql = "";
             sql = "insert performancereportfilelog (execplanid,batchid,caseid,slaverid,filename,status,create_time,lastmodify_time)" +
-                    " values(" + testplanid + "," + batchid  + " , " + caseid + ", " + slaverid + " , '" + filename + "' , '" + status + "' , '"  + dateNowStr + "', '" + dateNowStr +"' )";
+                    " values(" + testplanid + "," + batchid + " , " + caseid + ", " + slaverid + " , '" + filename + "' , '" + status + "' , '" + dateNowStr + "', '" + dateNowStr + "' )";
             logger.info(logplannameandcasename + "获取数据库 新增性能日志用例记录结果 result sql is...........: " + sql);
             logger.info(logplannameandcasename + "获取数据库 新增性能日志用例记录结果 is...........: " + MysqlConnectionUtils.update(sql));
         } catch (Exception ex) {
@@ -644,13 +830,13 @@ public class TestMysqlHelp {
     }
 
     //生成性能报告目录
-    public void genealperformacestaticsreport(String testclass, String batchname, String testplanid, String batchid, String slaverid, String caseid, String casereportfolder, double costtime,String Creator) throws Exception {
+    public void genealperformacestaticsreport(String testclass, String batchname, String testplanid, String batchid, String slaverid, String caseid, String casereportfolder, double costtime, String Creator) throws Exception {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
         String sql = "";
         sql = "insert performancereportsource (planid,batchid,batchname,slaverid,caseid,testclass,runtime,source,status,create_time,lastmodify_time,creator,totalcasenums,totalcasepassnums,totalcasefailnums)" +
-                " values(" + testplanid + "," + batchid + ", '" + batchname.replace("'","''") + "', " + slaverid + ", " + caseid + " , '" + testclass + "' ," + costtime + " , '" + casereportfolder + "', '待解析', '" + dateNowStr + "', '" + dateNowStr +"', '" + Creator  + "' , 0,0,0)";
+                " values(" + testplanid + "," + batchid + ", '" + batchname.replace("'", "''") + "', " + slaverid + ", " + caseid + " , '" + testclass + "' ," + costtime + " , '" + casereportfolder + "', '待解析', '" + dateNowStr + "', '" + dateNowStr + "', '" + Creator + "' , 0,0,0)";
         logger.info(logplannameandcasename + "获取数据库 保存性能统计结果 sql is...........: " + sql);
         logger.info(logplannameandcasename + "获取数据库 保存性能统计结果 is...........: " + MysqlConnectionUtils.update(sql));
     }

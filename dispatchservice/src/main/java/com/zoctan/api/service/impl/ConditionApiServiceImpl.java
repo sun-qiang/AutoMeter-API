@@ -43,7 +43,7 @@ private ConditionApiMapper conditionApiMapper;
     }
 
     @Override
-    public List<ConditionApi> GetCaseListByConditionID(Long conditionid) {
-        return conditionApiMapper.GetCaseListByConditionID(conditionid);
+    public List<ConditionApi> GetCaseListByConditionID(Long conditionid,String conditiontype) {
+        return conditionApiMapper.GetCaseListByConditionID(conditionid,conditiontype);
     }
 }

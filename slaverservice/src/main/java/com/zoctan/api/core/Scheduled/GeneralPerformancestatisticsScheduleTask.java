@@ -93,11 +93,11 @@ public class GeneralPerformancestatisticsScheduleTask {
                 }
                 //TODO 执行任务结束后需要释放锁
                 //释放锁
-                GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============释放分布式锁成功=======================");
+                //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============释放分布式锁成功=======================");
             } else {
-                GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============获得分布式锁失败=======================");
+                //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============获得分布式锁失败=======================");
                 ip =  redisUtils.getkey(redisKey);
-                GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============{}机器上占用分布式锁，正在执行中======================="+redisKey+" ip:"+ip);
+                //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============{}机器上占用分布式锁，正在执行中======================="+redisKey+" ip:"+ip);
                 return;
             }
         } catch (Exception ex) {

@@ -167,19 +167,19 @@ export const asyncRouterMap = [
       // { path: 'testvariablesvalue/list', name: '变量结果', component: _import('testvariables/testvariablesvalue/index'), meta: { title: '变量结果', permission: ['testvariablesvalue:list'] }}
     ]
   },
-  {
-    path: '/condition',
-    component: Layout,
-    name: '条件管理',
-    icon: 'condition',
-    children: [
-      { path: 'condition/list', name: '父条件管理', component: _import('condition/condition/index'), meta: { title: '父条件管理', permission: ['condition:list'] }},
-      { path: 'apicondition/list', name: '接口子条件', component: _import('condition/apicondition/index'), meta: { title: '接口子条件', permission: ['apicondition:list'] }},
-      { path: 'dbcondition/list', name: '数据库子条件', component: _import('condition/dbcondition/index'), meta: { title: 'DB子条件', permission: ['dbcondition:list'] }},
-      { path: 'scriptcondition/list', name: '脚本子条件', component: _import('condition/scriptcondition/index'), meta: { title: '脚本子条件', permission: ['scriptcondition:list'] }},
-      { path: 'delaycondition/list', name: '延时子条件', component: _import('condition/delaycondition/index'), meta: { title: '延时子条件', permission: ['delaycondition:list'] }}
-    ]
-  },
+  // {
+  //   path: '/condition',
+  //   component: Layout,
+  //   name: '条件管理',
+  //   icon: 'condition',
+  //   children: [
+  //     { path: 'condition/list', name: '父条件管理', component: _import('condition/condition/index'), meta: { title: '父条件管理', permission: ['condition:list'] }},
+  //     { path: 'apicondition/list', name: '接口子条件', component: _import('condition/apicondition/index'), meta: { title: '接口子条件', permission: ['apicondition:list'] }},
+  //     { path: 'dbcondition/list', name: '数据库子条件', component: _import('condition/dbcondition/index'), meta: { title: 'DB子条件', permission: ['dbcondition:list'] }},
+  //     { path: 'scriptcondition/list', name: '脚本子条件', component: _import('condition/scriptcondition/index'), meta: { title: '脚本子条件', permission: ['scriptcondition:list'] }},
+  //     { path: 'delaycondition/list', name: '延时子条件', component: _import('condition/delaycondition/index'), meta: { title: '延时子条件', permission: ['delaycondition:list'] }}
+  //   ]
+  // },
   {
     path: '/assets',
     component: Layout,
@@ -211,7 +211,8 @@ export const asyncRouterMap = [
     icon: 'execute',
     children: [
       { path: 'executeplan/list', name: '测试集合', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
-      { path: 'executeplancase/list', name: '集合用例', component: _import('executecenter/executeplancase/index'), meta: { title: '集合用例', permission: ['executeplan:list'] }},
+      { path: 'testscene/list', name: '测试场景', component: _import('executecenter/testscene/index'), meta: { title: '测试场景', permission: ['testscene:list'] }},
+      // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
       // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},
       { path: 'executeplanbatch/list', name: '计划执行', component: _import('executecenter/executeplanbatch/index'), meta: { title: '计划执行', permission: ['executeplanbatch:list'] }}
     ]

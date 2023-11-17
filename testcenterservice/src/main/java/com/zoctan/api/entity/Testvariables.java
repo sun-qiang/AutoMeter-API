@@ -26,6 +26,29 @@ public class Testvariables {
      */
     private String testvariablesname;
 
+
+
+    private Long caseid;
+
+    public Long getCaseid() {
+        return caseid;
+    }
+
+    public void setCaseid(Long caseid) {
+        this.caseid = caseid;
+    }
+
+    public String getCasename() {
+        return casename;
+    }
+
+    public void setCasename(String casename) {
+        this.casename = casename;
+    }
+
+    private String casename;
+
+
     /**
      * 变量类型，用例变量，全局变量
      */

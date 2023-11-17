@@ -24,6 +24,26 @@ public class Executeplanbatch {
 
     private Long projectid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private Long sceneid;
+    private String scenename;
+
+
     /**
      * 执行计划id
      */

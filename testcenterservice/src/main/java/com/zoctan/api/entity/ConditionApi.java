@@ -95,6 +95,39 @@ public class ConditionApi {
     private String apiname;
     private String casename;
 
+    private String modelname;
+
+    public String getModelname() {
+        return modelname;
+    }
+
+    public void setModelname(String modelname) {
+        this.modelname = modelname;
+    }
+
+    public Long getModelid() {
+        return modelid;
+    }
+
+    public void setModelid(Long modelid) {
+        this.modelid = modelid;
+    }
+
+    private Long modelid;
+
+
+
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
+
 
 
     /**

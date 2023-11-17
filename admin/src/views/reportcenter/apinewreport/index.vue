@@ -141,6 +141,7 @@
               </template>
             </el-table-column>
             <el-table-column label="执行计划" align="center" prop="batchname" width="80"/>
+            <el-table-column label="测试场景" align="center" prop="scenename" width="80"/>
             <el-table-column label="用例名" align="center" prop="casename" width="120"/>
             <el-table-column label="API" align="center" prop="apiname" width="80"/>
             <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>
@@ -266,11 +267,10 @@
                 <span v-text="conditiongetIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column label="集合/用例名" align="center" prop="planname" width="150"/>
-            <el-table-column label="执行计划名" align="center" prop="batchname" width="120"/>
-            <el-table-column label="父条件名" align="center" prop="conditionname" width="120"/>
-            <el-table-column label="子条件名" align="center" prop="subconditionname" width="180"/>
-            <el-table-column label="子条件类型" align="center" prop="subconditiontype" width="100"/>
+            <el-table-column label="集合/用例名" align="center" prop="planname" width="180"/>
+            <el-table-column label="执行计划名" align="center" prop="batchname" width="180"/>
+            <el-table-column label="条件名" align="center" prop="subconditionname" width="180"/>
+            <el-table-column label="条件类型" align="center" prop="subconditiontype" width="100"/>
             <el-table-column label="条件结果" align="center" prop="conditionresult" width="100">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">

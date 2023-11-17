@@ -8,6 +8,7 @@ import org.apache.http.Header;
 public class TestHttp {
     public  TestResponeData doService(String Protocal,String ApiStyle,String Url,HttpHeader header,HttpParamers httpParamers,String PostData, String VisitType, String RequestContenType,int connectTimeout) throws Exception {
         TestHttp.log.info( "Http doService 参数.....Protocal： "+Protocal+ "ApiStyle： "+ApiStyle+" Url： "+Url+" PostData： "+PostData+" VisitType： "+VisitType+" RequestContenType："+RequestContenType+" connectTimeout ："+connectTimeout);
+        Url = Url.trim();
         for (String key : header.getParams().keySet()) {
             TestHttp.log.info("Http doService Header key:" + key + "  Header值：" + header.getParams().get(key));
         }

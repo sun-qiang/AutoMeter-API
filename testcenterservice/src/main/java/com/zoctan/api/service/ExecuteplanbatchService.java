@@ -2,6 +2,7 @@ package com.zoctan.api.service;
 
 import com.zoctan.api.core.service.Service;
 import com.zoctan.api.entity.Executeplanbatch;
+import com.zoctan.api.entity.TestplanTestscene;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -21,6 +22,9 @@ public interface ExecuteplanbatchService extends Service<Executeplanbatch> {
     List<Executeplanbatch> findexplanbatchWithName(final Map<String, Object> params);
 
     List<Executeplanbatch> getrecentbatchbyid(Long executeplanid);
+
+    void saveplanbatchscenen(final List<Executeplanbatch> testcase);
+
 
 
 

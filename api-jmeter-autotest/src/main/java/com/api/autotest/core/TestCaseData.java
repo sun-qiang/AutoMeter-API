@@ -37,7 +37,7 @@ public class TestCaseData {
             String testplanid = context.getParameter("testplanid");
             String caseid = context.getParameter("caseid");
             String slaverid = context.getParameter("slaverid");
-            String batchid = context.getParameter("batchid");
+//            String batchid = context.getParameter("batchid");
             String batchname = context.getParameter("batchname");
             String machineip = context.getParameter("machineip");
             String deployvisitytype = context.getParameter("deployvisitytype");
@@ -83,7 +83,7 @@ public class TestCaseData {
             newob.setTestplanid(testplanid);
             newob.setSlaverid(slaverid);
             newob.setBatchname(batchname);
-            newob.setBatchid(batchid);
+//            newob.setBatchid(batchid);
             newob.setCasetype(casetype);
             newob.setResponecontenttype(responecontenttype);
             newob.setResource(resource);
@@ -116,7 +116,7 @@ public class TestCaseData {
     }
 
     // 功能用例拼装请求需要的用例数据
-    public RequestObject GetCaseRequestData(String PlanId, String TestCaseId, String SlaverId, String BatchId, String BatchName, String ExecPlanName) {
+    public RequestObject GetCaseRequestData(String PlanId, String TestCaseId, String SlaverId, String BatchName, String ExecPlanName, String SceneId, String SceneName) {
         RequestObject ro = new RequestObject();
         try {
             //ArrayList<HashMap<String, String>> planlist = getcaseData("select * from executeplan where id=" + PlanId);
@@ -195,6 +195,8 @@ public class TestCaseData {
             logger.info(logplannameandcasename + "用例数据 resource is :  " + resource + "   protocal  is:   " + protocal + "  expect is :      " + expect + "  visittype is: " + method + "   path is: " + path + " casetype is: " + casetype);
 
             ro.setProjectid(ProjectID);
+            ro.setSceneid(Long.parseLong(SceneId));
+            ro.setScenename(SceneName);
             ro.setCaseid(TestCaseId);
             ro.setCasename(CaseName);
             ro.setDeployunitid(deployunitid);
@@ -202,7 +204,7 @@ public class TestCaseData {
             ro.setSlaverid(SlaverId);
             ro.setBatchname(BatchName);
             ro.setTestplanname(ExecPlanName);
-            ro.setBatchid(BatchId);
+//            ro.setBatchid(BatchId);
             ro.setExpect(expect);
             ro.setCasetype(casetype);
             ro.setProtocal(protocal);

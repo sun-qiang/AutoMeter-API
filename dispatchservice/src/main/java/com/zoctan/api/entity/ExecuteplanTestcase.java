@@ -84,6 +84,26 @@ public class ExecuteplanTestcase {
      */
     private Long testcaseid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private Long sceneid;
+
+    private String scenename;
+
     public Long getThreadnum() {
         return threadnum;
     }

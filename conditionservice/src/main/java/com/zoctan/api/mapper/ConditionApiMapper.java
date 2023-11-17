@@ -14,5 +14,5 @@ public interface ConditionApiMapper extends MyMapper<ConditionApi> {
 
     List<ConditionApi> getallTestconditionapi();
 
-    List<ConditionApi> GetCaseListByConditionID(@Param("conditionid")Long conditionid);
+    List<ConditionApi> GetCaseListByConditionID(@Param("conditionid")Long conditionid,@Param("conditiontype")String conditiontype);
 }

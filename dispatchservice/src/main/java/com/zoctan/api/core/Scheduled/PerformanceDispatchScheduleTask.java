@@ -147,7 +147,7 @@ public class PerformanceDispatchScheduleTask {
         List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(PlanID, "前置条件","测试集合");
         if (testconditionList.size() > 0) {
             Long ConditionID = testconditionList.get(0).getId();
-            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID);
+            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID,"");
             int ApiConditionNums = conditionApiList.size();
             List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
             int DBConditionNUms = conditionDbList.size();
@@ -197,7 +197,7 @@ public class PerformanceDispatchScheduleTask {
         PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器前置条件数量..................PlanID:" + PlanID + " BatchName:" + BatchName + testconditionList.size());
         if (testconditionList.size() > 0) {
             long ConditionID = testconditionList.get(0).getId();
-            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID);
+            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID,"");
             PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器API条件数量..................PlanID:" + PlanID + " BatchName:" + BatchName + conditionApiList.size());
             if (conditionApiList.size() > 0) {
                 List<TestconditionReport> testconditionReportList = testconditionReportMapper.getunfinishapiconditionnums(PlanID, BatchName);

@@ -32,8 +32,8 @@
   </select>
 
   <select id="findconditionreport" resultMap="BaseResultMap">
-    SELECT a.*, b.conditionname
-    FROM testcondition_report a inner join testcondition b on a.conditionid=b.id
+    SELECT a.*
+    FROM testcondition_report a
     where a.testplanid =#{testplanid}  and a.batchname=#{batchname}
   </select>
 

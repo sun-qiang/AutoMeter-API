@@ -19,6 +19,6 @@ public interface ConditionApiService extends Service<ConditionApi> {
     int ifexist(Condition condition);
 
     List<ConditionApi> getallTestconditionapi();
-    List<ConditionApi> GetCaseListByConditionID(Long conditionid);
+    List<ConditionApi> GetCaseListByConditionID(Long conditionid,String conditiontype);
 
 }

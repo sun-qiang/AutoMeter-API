@@ -4,6 +4,7 @@ import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.Deployunit;
 import com.zoctan.api.entity.Enviroment;
+import com.zoctan.api.entity.TestplanTestscene;
 import com.zoctan.api.entity.Testvariables;
 import com.zoctan.api.service.ApicasesVariablesService;
 import com.zoctan.api.service.TestvariablesService;
@@ -108,5 +109,11 @@ public class TestvariablesController {
         final List<Testvariables> list = this.testvariablesService.findtestvariablesWithName(param);
         final PageInfo<Testvariables> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
+    }
+
+    @PostMapping("/findtestvariablesbycaseid")
+    public Result findtestvariablesbycaseid(@RequestBody final Map<String, Object> param) {
+        final List<Testvariables> list = this.testvariablesService.findtestvariablesbycaseid(param);
+        return ResultGenerator.genOkResult(list);
     }
 }

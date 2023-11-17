@@ -14,10 +14,52 @@ public class Executeplanbatch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+
+    public Long getSlaverid() {
+        return slaverid;
+    }
+
+    public void setSlaverid(Long slaverid) {
+        this.slaverid = slaverid;
+    }
+
+    private Long slaverid;
+
+    private Long sceneid;
+    private String scenename;
+
     /**
      * 执行计划id
      */
     private Long executeplanid;
+
+
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
 
     public String getStatus() {
         return status;
@@ -71,26 +113,6 @@ public class Executeplanbatch {
      * 创建者
      */
     private String creator;
-
-    public String getExectype() {
-        return exectype;
-    }
-
-    public void setExectype(String exectype) {
-        this.exectype = exectype;
-    }
-
-    public String getExecdate() {
-        return execdate;
-    }
-
-    public void setExecdate(String execdate) {
-        this.execdate = execdate;
-    }
-
-    private String exectype;
-    private String execdate;
-
 
     /**
      * 获取执行计划Id
@@ -199,4 +221,23 @@ public class Executeplanbatch {
     public void setCreator(String creator) {
         this.creator = creator;
     }
+
+    public String getExectype() {
+        return exectype;
+    }
+
+    public void setExectype(String exectype) {
+        this.exectype = exectype;
+    }
+
+    public String getExecdate() {
+        return execdate;
+    }
+
+    public void setExecdate(String execdate) {
+        this.execdate = execdate;
+    }
+
+    private String exectype;
+    private String execdate;
 }

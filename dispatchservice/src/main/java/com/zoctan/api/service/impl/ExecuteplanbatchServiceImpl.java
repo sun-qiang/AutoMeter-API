@@ -32,5 +32,10 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
         return executeplanbatchMapper.getbatchbyplan(executeplanid);
     }
 
+    @Override
+    public void saveplanbatchscenen(List<Executeplanbatch> testcase) {
+        executeplanbatchMapper.saveplanbatchscenen(testcase);
+    }
+
 
 }

@@ -16,6 +16,24 @@ import java.util.List;
 public class RequestObject {
 
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private Long sceneid;
+    private String scenename;
     public List<ApicasesAssert> getApicasesAssertList() {
         return apicasesAssertList;
     }
@@ -42,13 +60,13 @@ public class RequestObject {
         this.caseid = caseid;
     }
 
-    public String getBatchid() {
-        return batchid;
-    }
-
-    public void setBatchid(String batchid) {
-        this.batchid = batchid;
-    }
+//    public String getBatchid() {
+//        return batchid;
+//    }
+//
+//    public void setBatchid(String batchid) {
+//        this.batchid = batchid;
+//    }
 
     public String getSlaverid() {
         return slaverid;
@@ -105,7 +123,7 @@ public class RequestObject {
     private String deployunitid = "";
 
     private String caseid = "";
-    private String batchid = "";
+//    private String batchid = "";
     private String slaverid = "";
     private String batchname = "";
 

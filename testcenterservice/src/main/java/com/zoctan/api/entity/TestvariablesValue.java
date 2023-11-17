@@ -17,6 +17,18 @@ public class TestvariablesValue {
      */
     private Long planid;
 
+    public Long getSlaverid() {
+        return slaverid;
+    }
+
+    public void setSlaverid(Long slaverid) {
+        this.slaverid = slaverid;
+    }
+
+    private Long slaverid;
+
+
+
     /**
      * 计划名
      */

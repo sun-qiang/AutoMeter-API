@@ -22,6 +22,16 @@ public class ConditionScript {
 
     private Long projectid;
 
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
     /**
      * 条件id，只取类型为用例
      */

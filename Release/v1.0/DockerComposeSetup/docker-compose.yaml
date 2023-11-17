@@ -120,6 +120,7 @@ services:
       MYSQL_DATABASE: testcenter
     volumes:
       - "../AutoMeter/sql/init-sql:/docker-entrypoint-initdb.d/"
+      - "../AutoMeter/sql/update-sql:/docker-entrypoint-updtedb.d/"
       - "../AutoMeter/BackupData/mysql/data:/var/lib/mysql"
       - "../AutoMeter/BackupData/mysql/config:/etc/mysql/conf.d"
     depends_on:

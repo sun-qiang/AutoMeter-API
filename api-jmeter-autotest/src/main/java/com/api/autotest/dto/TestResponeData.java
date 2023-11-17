@@ -7,13 +7,7 @@ import java.util.List;
 
 public class TestResponeData {
 
-    public List<Header> getHeaderList() {
-        return headerList;
-    }
 
-    public void setHeaderList(List<Header> headerList) {
-        this.headerList = headerList;
-    }
 
     public String getResponeContent() {
         return ResponeContent;
@@ -23,7 +17,24 @@ public class TestResponeData {
         ResponeContent = responeContent;
     }
 
-    private List<Header> headerList;
+//    public List<Header> getHeaderList() {
+//        return headerList;
+//    }
+//
+//    public void setHeaderList(List<Header> headerList) {
+//        this.headerList = headerList;
+//    }
+
+    public Header[] getHeaderarray() {
+        return headerarray;
+    }
+
+    public void setHeaderarray(Header[] headerarray) {
+        this.headerarray = headerarray;
+    }
+
+    //    private List<Header> headerList;
+    private Header[] headerarray;
 
 
 
@@ -46,7 +57,6 @@ public class TestResponeData {
     }
 
     private List<RequestParams> requestParamsList;
-
 
     private String ResponeContent;
 
@@ -90,7 +100,6 @@ public class TestResponeData {
 
     List<Cookie> cookies;
 
-
     public ResponeGeneral getResponeGeneral() {
         return responeGeneral;
     }
@@ -101,7 +110,6 @@ public class TestResponeData {
 
     private ResponeGeneral responeGeneral;
 
-
     public String getRequestUrl() {
         return RequestUrl;
     }
@@ -111,7 +119,6 @@ public class TestResponeData {
     }
 
     private String RequestUrl;
-
 }
 
 

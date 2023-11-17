@@ -297,7 +297,7 @@ public class TestCaseHelp {
 
 
     // 拼装请求需要的用例数据
-    public RequestObject GetCaseRequestData(Dispatch dispatch, List<ApiCasedata> apiCasedataList, Api api, Apicases apicases, Deployunit deployunit, Macdepunit macdepunit, Machine machine)  {
+    public RequestObject GetCaseRequestData(Long Planid,String Batchname,  List<ApiCasedata> apiCasedataList, Api api, Apicases apicases, Deployunit deployunit, Macdepunit macdepunit, Machine machine)  {
         RequestObject ro = new RequestObject();
         try {
             // url请求资源路径
@@ -353,20 +353,20 @@ public class TestCaseHelp {
 
 
             Condition interfacecon = new Condition(TestvariablesValue.class);
-            interfacecon.createCriteria().andCondition("planid = " + dispatch.getExecplanid())
-                    .andCondition("batchname = '" + dispatch.getBatchname() + "'")
+            interfacecon.createCriteria().andCondition("planid = " + Planid)
+                    .andCondition("batchname = '" + Batchname + "'")
                     .andCondition("variablestype = '" + "接口" + "'");
             List<TestvariablesValue> interfaceValueList = tch.testvariablesValueService.listByCondition(interfacecon);
 
             Condition dbcon = new Condition(TestvariablesValue.class);
-            dbcon.createCriteria().andCondition("planid = " + dispatch.getExecplanid())
-                    .andCondition("batchname = '" + dispatch.getBatchname() + "'")
+            dbcon.createCriteria().andCondition("planid = " + Planid)
+                    .andCondition("batchname = '" + Batchname + "'")
                     .andCondition("variablestype = '" + "数据库" + "'");
             List<TestvariablesValue> dbValueList = tch.testvariablesValueService.listByCondition(dbcon);
 
             Condition scriptcon = new Condition(TestvariablesValue.class);
-            scriptcon.createCriteria().andCondition("planid = " + dispatch.getExecplanid())
-                    .andCondition("batchname = '" + dispatch.getBatchname() + "'")
+            scriptcon.createCriteria().andCondition("planid = " + Planid)
+                    .andCondition("batchname = '" + Batchname + "'")
                     .andCondition("variablestype = '" + "脚本" + "'");
             List<TestvariablesValue> scriptValueList = tch.testvariablesValueService.listByCondition(scriptcon);
 

@@ -14,8 +14,12 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="exectype" jdbcType="VARCHAR" property="exectype" />
     <result column="execdate" jdbcType="VARCHAR" property="execdate" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
   </resultMap>
 
   <select id="getbatchbyplan" resultMap="BaseResultMap">

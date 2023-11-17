@@ -17,13 +17,14 @@
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="exectype" jdbcType="VARCHAR" property="exectype" />
     <result column="execdate" jdbcType="VARCHAR" property="execdate" />
-
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
   </resultMap>
 
   <select id="getbatchbyplan" resultMap="BaseResultMap">
-    SELECT a.*
-    FROM executeplanbatch a
-    where a.executeplanid=#{executeplanid} order by create_time desc
+    SELECT distinct (batchname)
+    FROM executeplanbatch
+    where executeplanid=#{executeplanid}
   </select>
 
 
@@ -63,4 +64,17 @@
     FROM executeplanbatch a
     where a.executeplanid=#{executeplanid} order by a.create_time desc limit 2
   </select>
+
+
+
+  <insert id="saveplanbatchscenen">
+    INSERT INTO executeplanbatch (sceneid,scenename,executeplanid,projectid,status,source,executeplanname,batchname,
+                                  creator,exectype,execdate,create_time,lastmodify_time)
+    VALUES
+    <foreach collection="casedataList" item="item" index="index" separator=",">
+      (#{item.sceneid},#{item.scenename},#{item.executeplanid}, #{item.projectid},#{item.status}, #{item.source},
+       #{item.executeplanname},#{item.batchname},#{item.creator},#{item.exectype},#{item.execdate},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),
+      DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
+    </foreach>
+  </insert>
 </mapper>

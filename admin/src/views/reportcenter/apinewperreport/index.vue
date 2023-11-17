@@ -174,6 +174,7 @@
               </template>
             </el-table-column>
             <el-table-column label="执行计划" align="center" prop="batchname" width="80"/>
+            <el-table-column label="测试场景" align="center" prop="scenename" width="80"/>
             <el-table-column label="用例名" align="center" prop="casename" width="120"/>
             <el-table-column label="API" align="center" prop="apiname" width="80"/>
             <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>

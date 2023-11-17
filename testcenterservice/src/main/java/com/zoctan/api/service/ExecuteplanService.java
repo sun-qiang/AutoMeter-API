@@ -3,6 +3,7 @@ package com.zoctan.api.service;
 import com.zoctan.api.core.service.Service;
 import com.zoctan.api.dto.Testplanandbatch;
 import com.zoctan.api.entity.Executeplan;
+import com.zoctan.api.entity.Executeplanbatch;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -30,7 +31,9 @@ public interface ExecuteplanService extends Service<Executeplan> {
      */
     void updateexecuteplanname(Executeplan params);
 
-    void executeplancase(final List<Testplanandbatch> executeplan,String Exectype);
+    void executeplancase(final List<Executeplanbatch> executeplan, String Exectype);
+
+    void execcase(Executeplanbatch testplanandbatch);
 
     void updatetestplanstatus(Long id, String status);
 

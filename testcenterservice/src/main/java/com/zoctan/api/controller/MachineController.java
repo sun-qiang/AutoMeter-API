@@ -88,20 +88,6 @@ public class MachineController {
             machineService.updateMachine(machine);
             return ResultGenerator.genOkResult();
         }
-//        Condition con=new Condition(Machine.class);
-//        con.createCriteria().andCondition("machinename = '" + machine.getMachinename() + "'")
-//                .orCondition("ip = '" + machine.getIp() + "'")
-//        .andCondition("id <> " + machine.getId());
-//        Machine machine1=machineService.findmachinebymachineandip(machine.getMachinename(),machine.getIp(),machine.getId(),machine.getProjectid());
-//        if(machine1!=null)
-//        {
-//            return ResultGenerator.genFailedResult("IP已经存在");
-//        }
-//        else
-//        {
-//            machineService.updateMachine(machine);
-//            return ResultGenerator.genOkResult();
-//        }
     }
 
     @GetMapping("/{id}")

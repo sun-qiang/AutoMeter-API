@@ -38,6 +38,14 @@ export function addtestvariables(testvariablesForm) {
   })
 }
 
+export function findtestvariablesbycaseid(testplanForm) {
+  return request({
+    url: '/testvariables/findtestvariablesbycaseid',
+    method: 'post',
+    data: testplanForm
+  })
+}
+
 export function updatetestvariables(testvariablesForm) {
   return request({
     url: '/testvariables/detail',

@@ -17,5 +17,6 @@ public interface ExecuteplanbatchService extends Service<Executeplanbatch> {
 
     List<Executeplanbatch> getbatchbyplan(@Param("executeplanid") Long executeplanid);
 
+    void saveplanbatchscenen(final List<Executeplanbatch> testcase);
 
 }

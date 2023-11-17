@@ -32,7 +32,7 @@ public class TestHttpRequestData {
     public RequestObject GetFuntionHttpRequestData(RequestObject requestObject) {
         RequestObject Result = requestObject;
         try {
-            long Projectid=Long.parseLong(requestObject.getProjectid());
+            long Projectid = Long.parseLong(requestObject.getProjectid());
             String TestCaseId = requestObject.getCaseid();
             String PlanId = requestObject.getTestplanid();
             String BatchName = requestObject.getBatchname();
@@ -44,17 +44,17 @@ public class TestHttpRequestData {
             ArrayList<HashMap<String, String>> casedatalist = testMysqlHelp.getcaseData("select * from api_casedata where caseid=" + TestCaseId);
             ArrayList<HashMap<String, String>> caseptlist = testMysqlHelp.getcaseData("select DISTINCT propertytype  from api_casedata where caseid=" + TestCaseId);
             List<String> PropertyList = GetCaseDataPropertyType(caseptlist);
-            ArrayList<HashMap<String, String>> Interfacevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and batchname = '" + BatchName + "' and variablestype='" + "接口" + "'");
+            ArrayList<HashMap<String, String>> Interfacevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "接口" + "'");
             logger.info(logplannameandcasename + "TestHttpRequestData 获取接口变量值。。。。 ");
-            ArrayList<HashMap<String, String>> DBvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and batchname = '" + BatchName + "' and variablestype='" + "数据库" + "'");
+            ArrayList<HashMap<String, String>> DBvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "数据库" + "'");
             logger.info(logplannameandcasename + "TestHttpRequestData 获取数据库变量值。。。。 ");
             //文件变量
-            ArrayList<HashMap<String, String>> Filevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and batchname = '" + BatchName + "' and variablestype='" + "文件" + "'");
+            ArrayList<HashMap<String, String>> Filevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "文件" + "'");
             logger.info(logplannameandcasename + "TestHttpRequestData 获取文件变量值。。。。 ");
-            ArrayList<HashMap<String, String>> radomvariableslist = testMysqlHelp.getcaseData("select variablesname,variablestype,variablecondition   from variables where projectid="+Projectid);
+            ArrayList<HashMap<String, String>> radomvariableslist = testMysqlHelp.getcaseData("select variablesname,variablestype,variablecondition   from variables where projectid=" + Projectid);
             logger.info(logplannameandcasename + "TestHttpRequestData 获取随机变量值。。。。 ");
 
-            ArrayList<HashMap<String, String>> globalvariableslist = testMysqlHelp.getcaseData("select keyname,keyvalue from globalvariables where projectid="+Projectid);
+            ArrayList<HashMap<String, String>> globalvariableslist = testMysqlHelp.getcaseData("select keyname,keyvalue from globalvariables where projectid=" + Projectid);
 
             HashMap<String, String> InterfaceMap = GetMap(Interfacevariableslist, "variablesname", "variablesvalue");
             HashMap<String, String> DBMap = GetMap(DBvariableslist, "variablesname", "variablesvalue");
@@ -115,14 +115,14 @@ public class TestHttpRequestData {
             for (String property : PropertyList) {
                 if (property.equalsIgnoreCase("Header")) {
                     //值支持变量
-                    header = GetHttpHeader(casedatalist, header, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap,ProjectId);
+                    header = GetHttpHeader(casedatalist, header, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap, ProjectId);
                     for (String Key : header.getParams().keySet()) {
                         logger.info(logplannameandcasename + "TestHttpRequestData Header Key :  " + Key + " Value: " + header.getParams().get(Key));
                     }
                 }
                 if (property.equalsIgnoreCase("Params")) {
                     //值支持变量
-                    paramers = GetHttpParams(casedatalist, paramers, RadomMap, InterfaceMap, DBMap, "Params", radomvariableslist, GlobalVariablesHashMap,ProjectId);
+                    paramers = GetHttpParams(casedatalist, paramers, RadomMap, InterfaceMap, DBMap, "Params", radomvariableslist, GlobalVariablesHashMap, ProjectId);
                     for (String Key : paramers.getParams().keySet()) {
                         logger.info(logplannameandcasename + "TestHttpRequestData Params Key :  " + Key + " Value: " + paramers.getParams().get(Key));
                     }
@@ -131,7 +131,7 @@ public class TestHttpRequestData {
                     // 设置Body
                     if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                         //值支持变量
-                        Bodyparamers = GetHttpParams(casedatalist, Bodyparamers, RadomMap, InterfaceMap, DBMap, "Body", radomvariableslist, GlobalVariablesHashMap,ProjectId);
+                        Bodyparamers = GetHttpParams(casedatalist, Bodyparamers, RadomMap, InterfaceMap, DBMap, "Body", radomvariableslist, GlobalVariablesHashMap, ProjectId);
                         if (Bodyparamers.getParams().size() > 0) {
                             try {
                                 PostData = Bodyparamers.getQueryString();
@@ -194,7 +194,7 @@ public class TestHttpRequestData {
             }
 
             //处理全局Header参数
-            header = GetHeaderFromTestPlanParam(header, planparamslist, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap,Projectid);
+            header = GetHeaderFromTestPlanParam(header, planparamslist, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap, Projectid);
             for (String Key : header.getParams().keySet()) {
                 logger.info(logplannameandcasename + "TestHttpRequestData 全局参数Header Key :  " + Key + " Value: " + header.getParams().get(Key));
             }
@@ -360,14 +360,14 @@ public class TestHttpRequestData {
     }
 
     // 设置header
-    private HttpHeader GetHttpHeader(ArrayList<HashMap<String, String>> casedatalist, HttpHeader header, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap,long projectid) {
+    private HttpHeader GetHttpHeader(ArrayList<HashMap<String, String>> casedatalist, HttpHeader header, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, long projectid) {
         HashMap<String, String> headmap = testMysqlHelp.fixhttprequestdatas("Header", casedatalist);
         for (String key : headmap.keySet()) {
             String Value = headmap.get(key);
             Object ObjectValue = Value;
             if ((Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$"))) {
                 try {
-                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap,projectid);
+                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap, projectid);
                 } catch (Exception exception) {
                     logger.info(logplannameandcasename + "TestHttpRequestData Header替换变量异常 :  " + exception.getMessage());
                 }
@@ -397,7 +397,7 @@ public class TestHttpRequestData {
         return flag;
     }
 
-    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap,long projectid) throws Exception {
+    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, long projectid) throws Exception {
         Object ObjectValue = Value;
         boolean exist = false; //标记是否Value有变量处理，false表示没有对应的子条件处理过
         //参数值替换接口变量
@@ -412,7 +412,7 @@ public class TestHttpRequestData {
                     ObjectValue = Value;
                 } else {
                     //无拼接则转换成具体类型,根据变量名获取变量类型
-                    String ValueType = testMysqlHelp.GetVariablesDataType(interfacevariablesName,projectid);
+                    String ValueType = testMysqlHelp.GetVariablesDataType(interfacevariablesName, projectid);
                     if (ValueType.isEmpty()) {
                         ObjectValue = "未找到变量：" + Value + "绑定的接口用例，请检查变量管理-用例变量中是否存在此变量绑定的接口用例";
                     } else {
@@ -434,7 +434,7 @@ public class TestHttpRequestData {
                     ObjectValue = Value;
                 } else {
                     //无拼接则转换成具体类型,根据变量名获取变量类型
-                    String ValueType = testMysqlHelp.GetDBVariablesDataType(DBvariablesName,projectid);
+                    String ValueType = testMysqlHelp.GetDBVariablesDataType(DBvariablesName, projectid);
                     if (ValueType.isEmpty()) {
                         ObjectValue = "未找到变量：" + Value + "绑定的接口用例，请检查变量管理-用例变量中是否存在此变量绑定的接口用例";
                     } else {
@@ -527,7 +527,7 @@ public class TestHttpRequestData {
 
 
     // 设置参数params
-    private HttpParamers GetHttpParams(ArrayList<HashMap<String, String>> casedatalist, HttpParamers paramers, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, String Property, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap,long projectid) {
+    private HttpParamers GetHttpParams(ArrayList<HashMap<String, String>> casedatalist, HttpParamers paramers, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, String Property, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, long projectid) {
         for (HashMap<String, String> data : casedatalist) {
             String propertytype = data.get("propertytype");
             if (propertytype.equals(Property)) {
@@ -537,7 +537,7 @@ public class TestHttpRequestData {
                 Object ObjectValue = Value;
                 try {
                     if ((Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$"))) {
-                        ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap,projectid);
+                        ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap, projectid);
                     }
                     ObjectValue = GetDataByType(ObjectValue.toString(), DataType);
                 } catch (Exception exception) {
@@ -602,9 +602,9 @@ public class TestHttpRequestData {
 
         if (Variablestype.equalsIgnoreCase("随机数组值")) {
             try {
-                String[] array=Params.split(",");
-                long length=array.length;
-                Long ResultIndex = radomVariables.GetRadmomNum(new Long(0), length-1);
+                String[] array = Params.split(",");
+                long length = array.length;
+                Long ResultIndex = radomVariables.GetRadmomNum(new Long(0), length - 1);
                 Result = array[ResultIndex.intValue()];
             } catch (Exception ex) {
                 Result = "随机数组输入参数不合法，请填写使用英文逗号分隔的内容";
@@ -665,7 +665,7 @@ public class TestHttpRequestData {
     }
 
     //获取全局Header
-    private HttpHeader GetHeaderFromTestPlanParam(HttpHeader header, ArrayList<HashMap<String, String>> planparamslist, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap,long projectid) {
+    private HttpHeader GetHeaderFromTestPlanParam(HttpHeader header, ArrayList<HashMap<String, String>> planparamslist, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, long projectid) {
         //HashMap<String, String> headmapfromparam = testMysqlHelp.getparamsdatabytype("Header", planparamslist);
         HashMap<String, String> headmapfromparam = new HashMap<>();
         for (HashMap<String, String> data : planparamslist) {
@@ -676,7 +676,7 @@ public class TestHttpRequestData {
             Object ObjectValue = Value;
             if ((Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$"))) {
                 try {
-                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap,projectid);
+                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, radomvariableslist, GlobalVariablesHashMap, projectid);
                 } catch (Exception exception) {
                     logger.info(logplannameandcasename + "TestHttpRequestData 全局参数Header处理变量替换异常:  " + exception.getMessage());
                 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestplanTestsceneMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.TestplanTestscene">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="testscenenid" jdbcType="BIGINT" property="testscenenid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
+    <result column="planname" jdbcType="VARCHAR" property="planname" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="ordernum" jdbcType="BIGINT" property="ordernum" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+  </resultMap>
+
+  <select id="findscenebyexecplanid" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM testplan_testscene a
+    where a.testplanid=#{testplanid}
+    order by a.ordernum
+  </select>
+
+  <insert id="savetestplanscenen">
+    INSERT INTO testplan_testscene (testscenenid,scenename,testplanid,planname,create_time,lastmodify_time,
+    ordernum,creator,projectid)
+    VALUES
+    <foreach collection="casedataList" item="item" index="index" separator=",">
+      (#{item.testscenenid},#{item.scenename},#{item.testplanid}, #{item.planname},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),
+      DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'), #{item.ordernum},#{item.creator},#{item.projectid})
+    </foreach>
+  </insert>
+
+  <update id="updateplanscenenorder" >
+    update testplan_testscene set ordernum = #{ordernum},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+</mapper>

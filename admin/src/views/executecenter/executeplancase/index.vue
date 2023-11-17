@@ -98,7 +98,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center"
+      <el-table-column label="管理" align="center" width="290"
                        v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
         <template slot-scope="scope">
           <el-button
@@ -107,6 +107,18 @@
             v-if="hasPermission('executeplan:delete') && scope.row.id !== id"
             @click.native.prevent="removeexecuteplantestcase(scope.$index)"
           >删除</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:delete') && scope.row.id !== id"
+            @click.native.prevent="removeexecuteplantestcase(scope.$index)"
+          >提取变量</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:delete') && scope.row.id !== id"
+            @click.native.prevent="removeexecuteplantestcase(scope.$index)"
+          >前置条件</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -248,6 +260,7 @@
         <el-table-column label="用例名" align="center" prop="casename" width="100"/>
         <el-table-column label="微服务" align="center" prop="deployunitname" width="100"/>
         <el-table-column label="API" align="center" prop="apiname" width="100"/>
+
         <el-table-column min-width="200px" align="center" label="用例顺序">
           <template slot-scope="{row}">
             <template v-if="row.edit">

@@ -1,6 +1,7 @@
 package com.zoctan.api.service;
 
 import com.zoctan.api.entity.Enviroment;
+import com.zoctan.api.entity.TestplanTestscene;
 import com.zoctan.api.entity.Testvariables;
 import com.zoctan.api.core.service.Service;
 import tk.mybatis.mapper.entity.Condition;
@@ -23,6 +24,9 @@ public interface TestvariablesService extends Service<Testvariables> {
      * @return 用户列表
      */
     void updatetestvariables(Testvariables params);
+
+
+    List<Testvariables> findtestvariablesbycaseid(final Map<String, Object> params);
 
 
     int ifexist(Condition condition);

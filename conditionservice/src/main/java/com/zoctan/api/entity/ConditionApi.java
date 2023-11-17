@@ -12,6 +12,16 @@ public class ConditionApi {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
     /**
      * 条件id
      */
@@ -70,9 +80,6 @@ public class ConditionApi {
     }
 
     private String conditionname;
-    private String deployunitname;
-    private String apiname;
-    private String casename;
 
     public String getSubconditionname() {
         return subconditionname;
@@ -83,6 +90,45 @@ public class ConditionApi {
     }
 
     private String subconditionname;
+
+    private String deployunitname;
+    private String apiname;
+    private String casename;
+
+    private String modelname;
+
+    public String getModelname() {
+        return modelname;
+    }
+
+    public void setModelname(String modelname) {
+        this.modelname = modelname;
+    }
+
+    public Long getModelid() {
+        return modelid;
+    }
+
+    public void setModelid(Long modelid) {
+        this.modelid = modelid;
+    }
+
+    private Long modelid;
+
+
+
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
+
+
 
     /**
      * 备注

@@ -59,7 +59,7 @@ public class TestAssert {
 
     public String ParseHeader(TestResponeData testResponeData, String Path) {
         String Result = "";
-        List<Header> headerList = testResponeData.getHeaderList();
+        Header[] headerList = testResponeData.getHeaderarray();
         int index = 1;
         try {
             if (!Path.contains("[")) {

@@ -22,6 +22,16 @@ public class ConditionDelay {
 
     private Long projectid;
 
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
     /**
      * 父条件id
      */

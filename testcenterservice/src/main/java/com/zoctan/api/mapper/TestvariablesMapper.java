@@ -17,6 +17,7 @@ public interface TestvariablesMapper extends MyMapper<Testvariables> {
      * @return 用户列表
      */
     void updatetestvariables(Testvariables params);
+    List<Testvariables> findtestvariablesbycaseid(final Map<String, Object> params);
 
 
     int ifexist(Condition condition);

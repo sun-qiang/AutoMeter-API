@@ -3,18 +3,22 @@ package com.api.autotest.core;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 import cn.hutool.db.ds.simple.SimpleDataSource;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.api.autotest.common.utils.DnamicCompilerHelp;
 import com.api.autotest.common.utils.PgsqlConnectionUtils;
-import com.api.autotest.dto.*;
+import com.api.autotest.dto.RequestObject;
+import com.api.autotest.dto.TestResponeData;
+import com.api.autotest.dto.TestconditionReport;
+import com.api.autotest.dto.TestvariablesValue;
 import org.apache.http.Header;
+import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
+import org.apache.jmeter.samplers.SampleResult;
 import org.apache.log.Logger;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.api.autotest.core.TestCaseData.logplannameandcasename;
 
@@ -22,61 +26,119 @@ import static com.api.autotest.core.TestCaseData.logplannameandcasename;
 public class TestCondition {
 
     private Logger logger = null;
+    private JavaSamplerContext ctx = null;
+    private SampleResult results = null;
+
     TestMysqlHelp testMysqlHelp = null;
     private TestCaseData testCaseData = null;
     private TestHttpRequestData testHttpRequestData = null;
     private TestHttp testHttp = null;
 
-    public TestCondition(Logger log, TestMysqlHelp mysqlHelp, TestCaseData casedata, TestHttpRequestData httprequestdata, TestHttp ttHttp) {
+    public TestCondition(Logger log, SampleResult result, JavaSamplerContext context, TestMysqlHelp mysqlHelp, TestCaseData casedata, TestHttpRequestData httprequestdata, TestHttp ttHttp) {
         testMysqlHelp = mysqlHelp;
         testCaseData = casedata;
         testHttpRequestData = httprequestdata;
         testHttp = ttHttp;
         logger = log;
+        ctx = context;
+        results = result;
     }
 
 
     //接口子条件处理
-    public void conditionapi(HashMap<String, String> conditionApi,long ConditionID, RequestObject requestObject,long PlanID) throws Exception {
-        long Start = 0;
-        long End = 0;
-        long CostTime = 0;
+    public void conditionapi(HashMap<String, String> conditionApi, RequestObject requestObject) throws Exception {
+        long PlanID = Long.parseLong(requestObject.getTestplanid());
+        String Batchname = requestObject.getBatchname();
+        String CondionCaseID = conditionApi.get("caseid");
+        requestObject.setCasename(conditionApi.get("casename"));
         String Respone = "";
-        String ConditionResultStatus = "成功";
-        RequestObject re = new RequestObject();
-        String CondionCaseID = "";
-        String ConditionCaseName="";
-        TestResponeData responeData =new TestResponeData();
-        try {
-            CondionCaseID = conditionApi.get("caseid");
-            ConditionCaseName = conditionApi.get("casename");
-            Start = new Date().getTime();
-            re = testCaseData.GetCaseRequestData(requestObject.getTestplanid(), CondionCaseID, requestObject.getSlaverid(), requestObject.getBatchid(), requestObject.getBatchname(), requestObject.getTestplanname());
-            re = testHttpRequestData.GetFuntionHttpRequestData(re);
-            End = new Date().getTime();
-            responeData = testHttp.doService(re,30000);
-            Respone = responeData.getResponeContent();
+        TestResponeData responeData = new TestResponeData();
+        //查看条件是否已经保存过，有则返回，无则执行
+        ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID, Batchname, Long.parseLong(conditionApi.get("id")), "接口");
+        if (ApiConditionReportList.size() == 0)
+//        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetReportByPBST(PlanID, Batchname, Long.parseLong(CondionCaseID), Sceneid);
+//        if (result.size() > 0) {
+//            try {
+//                //条件已经执行过，则将用例结果保存为前置结果
+//                String Reportid = result.get(0).get("id");
+//                ArrayList<HashMap<String, String>> resultex = testMysqlHelp.GetReportEXByReportid(Long.parseLong(Reportid));
+//                //将报告扩展信息还原成TestResponeData
+//                String ReportexInfo = resultex.get(0).get("responeinfo");
+//                logger.info("111111111111111111111111111111111111111111111111111111111111111-============：" + ReportexInfo);
+//                responeData = JSON.parseObject(ReportexInfo, TestResponeData.class);
+//                String ResponeContentType = "application/json;charset=utf-8";
+//                Header[] responeheaderArray = responeData.getHeaderarray();
+////                for (Header head : responeheaderArray) {
+////                    logger.info("44444444444444444444444444444444444444444444444444444444444444444444444444444444444-============：" );
+////                    if (head.getName().equalsIgnoreCase("Content-Type")) {
+////                        ResponeContentType = head.getValue();
+////                        logger.info("555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-============：" );
+////                    }
+////                }
+//                requestObject.setResponecontenttype(ResponeContentType);
+//                Respone = result.get(0).get("respone");
+//                String status = result.get(0).get("status");
+//                Long runtime = Long.parseLong(result.get(0).get("runtime"));
+//                TestconditionReport testconditionReport = new TestconditionReport();
+//                testconditionReport.setTestplanid(PlanID);
+//                testconditionReport.setPlanname(requestObject.getTestplanname());
+//                testconditionReport.setBatchname(Batchname);
+//                testconditionReport.setConditiontype("前置条件");
+//                testconditionReport.setConditionresult(Respone);
+//                testconditionReport.setConditionstatus(status);
+//                testconditionReport.setRuntime(runtime);
+//                testconditionReport.setSubconditionid(Long.parseLong(conditionApi.get("id")));
+//                testconditionReport.setSubconditionname(conditionApi.get("subconditionname"));
+//                testconditionReport.setSubconditiontype("接口");
+//                testconditionReport.setStatus("已完成");
+//                logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
+//                //增加判断是否已经存在
+//                testMysqlHelp.SubConditionReportSave(testconditionReport);
+//            } catch (Exception ex) {
+//                logger.info("111111111111111111111111111111111111111111111111111111111111111 xxxxxxxxxxxxxxxxxxxxxxx-============：" + ex.getMessage());
+//            }
+//
+//        } else  //条件未执行
+        {
+            long Start = 0;
+            long End = 0;
+            long CostTime = 0;
+            String ConditionResultStatus = "成功";
+            RequestObject re = new RequestObject();
+            //String ConditionCaseName="";
+            try {
+                //ConditionCaseName = conditionApi.get("casename");
+                Start = new Date().getTime();
+                re = testCaseData.GetCaseRequestData(requestObject.getTestplanid(), CondionCaseID, requestObject.getSlaverid(), requestObject.getBatchname(), requestObject.getTestplanname(), requestObject.getSceneid().toString(), requestObject.getScenename());
+                re = testHttpRequestData.GetFuntionHttpRequestData(re);
+                End = new Date().getTime();
+                responeData = testHttp.doService(re, 30000);
+                Respone = responeData.getResponeContent();
 
-            String ResponeContentType = "application/json;charset=utf-8";
-            List<Header> responeheaderlist = responeData.getHeaderList();
-            for (Header head : responeheaderlist) {
-                if (head.getName().equalsIgnoreCase("Content-Type")) {
-                    ResponeContentType = head.getValue();
+                String ResponeContentType = "application/json;charset=utf-8";
+                Header[] responeheaderArray = responeData.getHeaderarray();
+                for (Header head : responeheaderArray) {
+                    if (head.getName().equalsIgnoreCase("Content-Type")) {
+                        ResponeContentType = head.getValue();
+                    }
                 }
+                requestObject.setResponecontenttype(ResponeContentType);
+                re.setResponecontenttype(ResponeContentType);
+                CostTime = End - Start;
+                SaveApiSubCondition(re, responeData, conditionApi, Respone, ConditionResultStatus, CostTime);
+            } catch (Exception ex) {
+                ConditionResultStatus = "失败";
+                End = new Date().getTime();
+                Respone = ex.getMessage();
+                CostTime = End - Start;
+                SaveApiSubCondition(re, responeData, conditionApi, Respone, ConditionResultStatus, CostTime);
+                throw new Exception("接口子条件执行异常：" + ex.getMessage());
             }
-            requestObject.setResponecontenttype(ResponeContentType);
-            re.setResponecontenttype(ResponeContentType);
-            CostTime = End - Start;
-            SaveApiSubCondition(re, responeData,ConditionCaseName, PlanID, requestObject.getTestplanname(), requestObject.getBatchname(), Long.parseLong(CondionCaseID), ConditionID, conditionApi, Respone, ConditionResultStatus, CostTime);
-        } catch (Exception ex) {
-            ConditionResultStatus = "失败";
-            End = new Date().getTime();
-            Respone = ex.getMessage();
-            CostTime = End - Start;
-            SaveApiSubCondition(re, responeData,ConditionCaseName, PlanID, requestObject.getTestplanname(), requestObject.getBatchname(), Long.parseLong(CondionCaseID), ConditionID, conditionApi, Respone, ConditionResultStatus, CostTime);
-            throw new Exception("接口子条件执行异常：" + ex.getMessage());
         }
+        //根据用例是否有中间变量(多个)，如果有变量，解析（header,cookies,json，xml，html）保存变量值表，没有变量直接保存条件结果表
+        FixInterfaceVariables(requestObject, Long.parseLong(CondionCaseID), responeData, Respone, PlanID, requestObject.getTestplanname(), Batchname);
     }
+
 
     //接口条件入口
     public void APICondition(long ConditionID, RequestObject requestObject) throws Exception {
@@ -84,7 +146,49 @@ public class TestCondition {
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         logger.info("TestCondition条件报告API子条件数量-============：" + conditionApiList.size());
         for (HashMap<String, String> conditionApi : conditionApiList) {
-            conditionapi(conditionApi,ConditionID,requestObject,PlanID);
+            String ConditionCaseType = conditionApi.get("runtype");
+            //只处理集合外接口子条件
+            if (ConditionCaseType.equalsIgnoreCase("测试集合外")) {
+                //集合外
+                //conditionapi(conditionApi,ConditionID,requestObject,PlanID);
+            } else {
+                //集合内
+                String planid = requestObject.getTestplanid();
+                String BatchName = requestObject.getBatchname();
+                //根据当前用例获取接口子条件用例id，再根据集合id，批次id，用例id到报告中获取用例的响应结果
+                String CondionCaseID = conditionApi.get("caseid");
+                String ConditionCaseName = conditionApi.get("casename");
+
+                ArrayList<HashMap<String, String>> ApiCaseReportList = testMysqlHelp.GetApiCaseReportByPBCID(planid, BatchName, CondionCaseID);
+                for (HashMap<String, String> apicaserep : ApiCaseReportList) {
+                    String Reportid = apicaserep.get("id");
+                    String respone = apicaserep.get("respone");
+                    String status = apicaserep.get("status");
+                    Long runtime = Long.parseLong(apicaserep.get("runtime"));
+
+                    TestconditionReport testconditionReport = new TestconditionReport();
+                    testconditionReport.setTestplanid(PlanID);
+                    testconditionReport.setPlanname(ConditionCaseName);
+                    testconditionReport.setBatchname(BatchName);
+                    testconditionReport.setConditionid(new Long(ConditionID));
+                    testconditionReport.setConditiontype("前置条件");
+                    testconditionReport.setConditionresult(respone);
+                    testconditionReport.setConditionstatus(status);
+                    testconditionReport.setRuntime(runtime);
+                    testconditionReport.setSubconditionid(Long.parseLong(conditionApi.get("id")));
+                    testconditionReport.setSubconditionname(conditionApi.get("subconditionname"));
+                    testconditionReport.setSubconditiontype("接口");
+                    testconditionReport.setStatus("已完成");
+                    logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
+                    testMysqlHelp.SubConditionReportSave(testconditionReport);
+                    //从响应中提取变量值
+                    ArrayList<HashMap<String, String>> ApiCaseReportExtList = testMysqlHelp.GetApiCaseReportExtByID(Reportid);
+                    for (HashMap<String, String> apicasereportext : ApiCaseReportExtList) {
+                        String ExtInfo = apicasereportext.get("responeinfo");
+                        TestResponeData testResponeData = (TestResponeData) JSONObject.parse(ExtInfo);
+                    }
+                }
+            }
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;
@@ -122,12 +226,14 @@ public class TestCondition {
         }
     }
 
-    private void SaveApiSubCondition(RequestObject requestObject,TestResponeData testResponeData, String CaseName, Long PlanID, String PlanName, String BatchName, Long CaseID, Long ConditionID, HashMap<String, String> conditionApi, String Respone, String ConditionResultStatus, long CostTime) {
+    private void SaveApiSubCondition(RequestObject requestObject, TestResponeData testResponeData, HashMap<String, String> conditionApi, String Respone, String ConditionResultStatus, long CostTime) throws Exception {
+        Long CaseID = Long.parseLong(conditionApi.get("caseid"));
+        Long PlanID = Long.parseLong(requestObject.getTestplanid());
+        String BatchName = requestObject.getBatchname();
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(PlanID);
-        testconditionReport.setPlanname(CaseName);
+        testconditionReport.setPlanname(requestObject.getTestplanname());
         testconditionReport.setBatchname(BatchName);
-        testconditionReport.setConditionid(new Long(ConditionID));
         testconditionReport.setConditiontype("前置条件");
         testconditionReport.setConditionresult(Respone);
         testconditionReport.setConditionstatus(ConditionResultStatus);
@@ -137,115 +243,114 @@ public class TestCondition {
         testconditionReport.setSubconditiontype("接口");
         testconditionReport.setStatus("已完成");
         logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
-
         //增加判断是否已经存在
         testMysqlHelp.SubConditionReportSave(testconditionReport);
-        //根据用例是否有中间变量(多个)，如果有变量，解析（header,cookies,json，xml，html）保存变量值表，没有变量直接保存条件结果表
-        FixInterfaceVariables(requestObject, CaseID, testResponeData, Respone, PlanID, PlanName, BatchName);
-//        ArrayList<HashMap<String, String>> apicasesVariablesList = testMysqlHelp.GetApiCaseVaribales(CaseID);
-//        if (apicasesVariablesList.size() > 0) {
-//            for (HashMap<String, String> map : apicasesVariablesList) {
+        //判断此前置用例在测试场景中是否存在，如果存在则保存报告表，如果不存在则不保存报告表
+        Long Sceneid = requestObject.getSceneid();
+        ArrayList<HashMap<String, String>> sceneCaseList = testMysqlHelp.GetSceneID(CaseID, Sceneid);
+        if (sceneCaseList.size() > 0) {
+            //保存报告表
+            TestCore core = new TestCore(ctx, logger, results);
+            core.FixCaseData(requestObject, ctx, results, false, testResponeData);
+        }
+    }
+
+    public void FixInterfaceVariables(RequestObject requestObject, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {
+        ArrayList<HashMap<String, String>> apicasesVariablesList = testMysqlHelp.GetApiCaseVaribales(CaseID);
+        if (apicasesVariablesList.size() > 0) {
+            for (HashMap<String, String> map : apicasesVariablesList) {
+                String Variablesid = map.get("id");
+                String variablesname = map.get("testvariablesname");
+                String VariablesPath = map.get("variablesexpress");
+                String VariablesResoruce = map.get("testvariablestype");
+                logger.info("TestCondition条件报告子条件处理变量-============：" + variablesname + " Respone:" + Respone);
+//                        if (VariablesList.size() > 0) {
+                String ParseValue = "";
+                logger.info("TestCondition条件报告子条件处理变量表达式-============：" + VariablesPath + " 响应数据类型:" + requestObject.getResponecontenttype());
+                TestAssert testAssert = new TestAssert(logger);
+                switch (VariablesResoruce) {
+                    case "Body":
+                        ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
+                        break;
+                    case "Header":
+                        ParseValue = testAssert.ParseHeader(testResponeData, VariablesPath);
+                        break;
+                    case "Cookies":
+                        ParseValue = testAssert.ParseCookies(testResponeData, VariablesPath);
+                        break;
+                    default:
+                        ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
+                }
+                //String ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
+                ArrayList<HashMap<String, String>> testVariablesValueList = testMysqlHelp.GetTestVariablesValue(PlanID, BatchName, Long.parseLong(Variablesid));
+                if (testVariablesValueList.size() > 0) {
+                    testMysqlHelp.testVariablesValueUpdate(PlanID, BatchName, Long.parseLong(Variablesid), ParseValue);
+                    logger.info("TestCondition条件报告子条件变量值已存在则更新：-============：" + ParseValue);
+                } else {
+                    TestvariablesValue testvariablesValue = new TestvariablesValue();
+                    testvariablesValue.setPlanid(PlanID);
+                    testvariablesValue.setPlanname(PlanName);
+                    testvariablesValue.setBatchname(BatchName);
+                    testvariablesValue.setCaseid(CaseID);
+                    testvariablesValue.setVariablestype("接口");
+                    testvariablesValue.setCasename(requestObject.getCasename());
+                    testvariablesValue.setVariablesid(Long.parseLong(Variablesid));
+                    testvariablesValue.setVariablesname(variablesname);
+                    testvariablesValue.setVariablesvalue(ParseValue);
+                    testvariablesValue.setMemo("test");
+                    testvariablesValue.setSlaverid(Long.parseLong(requestObject.getSlaverid()));
+                    //增加判断是否已经存在
+                    testMysqlHelp.testVariablesValueSave(testvariablesValue);
+                    logger.info("TestCondition条件报告子条件处理变量不存在则新增-============：" + ParseValue);
+                }
+                //}
+            }
 //                for (String Key : map.keySet()) {
 //                    if (Key.equalsIgnoreCase("variablesid")) {
 //                        logger.info("TestCondition条件报告子条件处理变量-============：" + map.get("variablesname"));
 //                        String Variablesid = map.get(Key);
-//                        ArrayList<HashMap<String, String>> VariablesList = testMysqlHelp.GetVaribales(Variablesid);
-//                        if (VariablesList.size() > 0) {
-//                            String VariablesPath = VariablesList.get(0).get("variablesexpress");
-//                            String VariablesResoruce=VariablesList.get(0).get("testvariablestype");
-//                            String ParseValue ="";
-//                            logger.info("TestCondition条件报告子条件处理变量表达式-============：" + VariablesPath + " 响应数据类型" + requestObject.getResponecontenttype());
-//                            TestAssert testAssert = new TestAssert(logger);
-//
-//                            switch (VariablesResoruce) {
-//                                case "Body":
-//                                    ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-//                                    break;
-//                                case "Header":
-//                                    ParseValue = testAssert.ParseHeader(testResponeData,VariablesPath);
-//                                    break;
-//                                case "Cookies":
-//                                    ParseValue = testAssert.ParseCookies(testResponeData,VariablesPath);
-//                                    break;
-//                                default:
-//                                    ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-//                            }
-//
-//                            //String ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
-//                            logger.info("TestCondition条件报告子条件处理变量取值-============：" + ParseValue);
-//                            TestvariablesValue testvariablesValue = new TestvariablesValue();
-//                            testvariablesValue.setPlanid(PlanID);
-//                            testvariablesValue.setPlanname(PlanName);
-//                            testvariablesValue.setBatchname(BatchName);
-//                            testvariablesValue.setCaseid(CaseID);
-//                            testvariablesValue.setVariablestype("接口");
-//                            testvariablesValue.setCasename(requestObject.getCasename());
-//                            testvariablesValue.setVariablesid(Long.parseLong(Variablesid));
-//                            testvariablesValue.setVariablesname(map.get("variablesname"));
-//                            testvariablesValue.setVariablesvalue(ParseValue);
-//                            testvariablesValue.setMemo("test");
-//                            //增加判断是否已经存在
-//                            testMysqlHelp.testVariablesValueSave(testvariablesValue);
+//                        String VariablesPath = map.get("variablesexpress");
+//                        String VariablesResoruce = map.get("testvariablestype");
+////                        if (VariablesList.size() > 0) {
+//                        String ParseValue = "";
+//                        logger.info("TestCondition条件报告子条件处理变量表达式-============：" + VariablesPath + " 响应数据类型" + requestObject.getResponecontenttype());
+//                        TestAssert testAssert = new TestAssert(logger);
+//                        switch (VariablesResoruce) {
+//                            case "Body":
+//                                ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
+//                                break;
+//                            case "Header":
+//                                ParseValue = testAssert.ParseHeader(testResponeData, VariablesPath);
+//                                break;
+//                            case "Cookies":
+//                                ParseValue = testAssert.ParseCookies(testResponeData, VariablesPath);
+//                                break;
+//                            default:
+//                                ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
 //                        }
+//                        //String ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
+//                        logger.info("TestCondition条件报告子条件处理变量取值-============：" + ParseValue);
+//                        TestvariablesValue testvariablesValue = new TestvariablesValue();
+//                        testvariablesValue.setPlanid(PlanID);
+//                        testvariablesValue.setPlanname(PlanName);
+//                        testvariablesValue.setBatchname(BatchName);
+//                        testvariablesValue.setCaseid(CaseID);
+//                        testvariablesValue.setVariablestype("接口");
+//                        testvariablesValue.setCasename(requestObject.getCasename());
+//                        testvariablesValue.setVariablesid(Long.parseLong(Variablesid));
+//                        testvariablesValue.setVariablesname(map.get("variablesname"));
+//                        testvariablesValue.setVariablesvalue(ParseValue);
+//                        testvariablesValue.setMemo("test");
+//                        //增加判断是否已经存在
+//                        testMysqlHelp.testVariablesValueSave(testvariablesValue);
+//                        //}
 //                    }
 //                }
-//            }
-//        }
-    }
-
-    public void FixInterfaceVariables(RequestObject requestObject,Long CaseID,TestResponeData testResponeData,String Respone,Long PlanID, String PlanName, String BatchName)
-    {
-        ArrayList<HashMap<String, String>> apicasesVariablesList = testMysqlHelp.GetApiCaseVaribales(CaseID);
-        if (apicasesVariablesList.size() > 0) {
-            for (HashMap<String, String> map : apicasesVariablesList) {
-                for (String Key : map.keySet()) {
-                    if (Key.equalsIgnoreCase("variablesid")) {
-                        logger.info("TestCondition条件报告子条件处理变量-============：" + map.get("variablesname"));
-                        String Variablesid = map.get(Key);
-                        ArrayList<HashMap<String, String>> VariablesList = testMysqlHelp.GetVaribales(Variablesid);
-                        if (VariablesList.size() > 0) {
-                            String VariablesPath = VariablesList.get(0).get("variablesexpress");
-                            String VariablesResoruce=VariablesList.get(0).get("testvariablestype");
-                            String ParseValue ="";
-                            logger.info("TestCondition条件报告子条件处理变量表达式-============：" + VariablesPath + " 响应数据类型" + requestObject.getResponecontenttype());
-                            TestAssert testAssert = new TestAssert(logger);
-                            switch (VariablesResoruce) {
-                                case "Body":
-                                    ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath,Respone);
-                                    break;
-                                case "Header":
-                                    ParseValue = testAssert.ParseHeader(testResponeData,VariablesPath);
-                                    break;
-                                case "Cookies":
-                                    ParseValue = testAssert.ParseCookies(testResponeData,VariablesPath);
-                                    break;
-                                default:
-                                    ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath,Respone);
-                            }
-                            //String ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
-                            logger.info("TestCondition条件报告子条件处理变量取值-============：" + ParseValue);
-                            TestvariablesValue testvariablesValue = new TestvariablesValue();
-                            testvariablesValue.setPlanid(PlanID);
-                            testvariablesValue.setPlanname(PlanName);
-                            testvariablesValue.setBatchname(BatchName);
-                            testvariablesValue.setCaseid(CaseID);
-                            testvariablesValue.setVariablestype("接口");
-                            testvariablesValue.setCasename(requestObject.getCasename());
-                            testvariablesValue.setVariablesid(Long.parseLong(Variablesid));
-                            testvariablesValue.setVariablesname(map.get("variablesname"));
-                            testvariablesValue.setVariablesvalue(ParseValue);
-                            testvariablesValue.setMemo("test");
-                            //增加判断是否已经存在
-                            testMysqlHelp.testVariablesValueSave(testvariablesValue);
-                        }
-                    }
-                }
-            }
         }
     }
 
     //处理脚本子条件
-    public void conditionscript(HashMap<String, String> conditionScript, long ConditionID, RequestObject requestObject,Long PlanID,Long CaseID) throws Exception {
+    public void conditionscript(HashMap<String, String> conditionScript, long ConditionID, RequestObject requestObject, Long PlanID, Long CaseID) throws Exception {
         long Start = 0;
         long End = 0;
         long CostTime = 0;
@@ -278,7 +383,7 @@ public class TestCondition {
         Long CaseID = Long.parseLong(requestObject.getCaseid());
         ArrayList<HashMap<String, String>> conditionScriptList = testMysqlHelp.GetScriptConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionScript : conditionScriptList) {
-            conditionscript(conditionScript,ConditionID,requestObject,PlanID,CaseID);
+            conditionscript(conditionScript, ConditionID, requestObject, PlanID, CaseID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;
@@ -308,7 +413,7 @@ public class TestCondition {
 
 
     //延时子条件处理
-    public void conditiondelay(HashMap<String, String> conditionDelay,long ConditionID, RequestObject requestObject,Long PlanID) throws Exception {
+    public void conditiondelay(HashMap<String, String> conditionDelay, long ConditionID, RequestObject requestObject, Long PlanID) throws Exception {
         long Start = 0;
         long End = 0;
         long CostTime = 0;
@@ -316,7 +421,7 @@ public class TestCondition {
         String ConditionResultStatus = "成功";
         try {
             Start = new Date().getTime();
-            long delaytime = Long.parseLong(conditionDelay.get("delaytime"))*1000;
+            long delaytime = Long.parseLong(conditionDelay.get("delaytime")) * 1000;
             logger.info("TestCondition条件报告延时子条件，延时时间为（毫秒）:-============：" + delaytime);
             Thread.sleep(delaytime);
             Respone = Respone + "（毫秒）:" + delaytime;
@@ -339,7 +444,7 @@ public class TestCondition {
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         ArrayList<HashMap<String, String>> conditionDelayList = testMysqlHelp.GetDelayConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionDelay : conditionDelayList) {
-            conditiondelay(conditionDelay,ConditionID,requestObject,PlanID);
+            conditiondelay(conditionDelay, ConditionID, requestObject, PlanID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;
@@ -391,7 +496,7 @@ public class TestCondition {
 
 
     //处理数据库子条件
-    public void conditiondb(HashMap<String, String> conditionDb,long ConditionID, RequestObject requestObject,Long PlanID) throws Exception {
+    public void conditiondb(HashMap<String, String> conditionDb, long ConditionID, RequestObject requestObject, Long PlanID) throws Exception {
         long Start = 0;
         long End = 0;
         long CostTime = 0;
@@ -454,7 +559,7 @@ public class TestCondition {
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         ArrayList<HashMap<String, String>> conditionDbListList = testMysqlHelp.GetDBConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionDb : conditionDbListList) {
-            conditiondb(conditionDb,ConditionID,requestObject,PlanID);
+            conditiondb(conditionDb, ConditionID, requestObject, PlanID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;

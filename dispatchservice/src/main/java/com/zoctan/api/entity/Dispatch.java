@@ -19,6 +19,37 @@ public class Dispatch {
      */
     private Long execplanid;
 
+    public Long getCaseorder() {
+        return caseorder;
+    }
+
+    public void setCaseorder(Long caseorder) {
+        this.caseorder = caseorder;
+    }
+
+    private Long caseorder;
+
+
+
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private Long sceneid;
+    private String scenename;
+
 
     public String getPlantype() {
         return plantype;

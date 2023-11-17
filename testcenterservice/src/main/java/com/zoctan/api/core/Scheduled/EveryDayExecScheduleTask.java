@@ -79,11 +79,11 @@ public class EveryDayExecScheduleTask {
                                 Testplanandbatch testplanandbatch = new Testplanandbatch();
                                 testplanandbatch.setBatchname(ex.getBatchname());
                                 testplanandbatch.setPlanid(ex.getExecuteplanid());
-                                testplanandbatchList.add(testplanandbatch);
+//                                testplanandbatchList.add(testplanandbatch);
                                 String memo = "";
                                 try {
                                     EveryDayExecScheduleTask.log.info("【每天定时执行任务】-============开始执行当天的用例======================"+ CurrentTime);
-                                    ExecPlanCase(testplanandbatchList);
+                                    ExecPlanCase(testplanandbatch);
                                     EveryDayExecScheduleTask.log.info("【每天定时执行任务】-============完成执行当天的用例======================"+ CurrentTime);
                                 } catch (Exception exp) {
                                     memo = exp.getMessage();
@@ -132,7 +132,7 @@ public class EveryDayExecScheduleTask {
         return MonthDate;
     }
 
-    private void ExecPlanCase(List<Testplanandbatch> testplanlist) {
-        executeplanService.executeplancase(testplanlist,"每天定时");
+    private void ExecPlanCase(Testplanandbatch testplanlist) {
+        executeplanService.execcase(testplanlist);
     }
 }

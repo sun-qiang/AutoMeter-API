@@ -47,4 +47,9 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
         return executeplanbatchMapper.getrecentbatchbyid(executeplanid);
     }
 
+    @Override
+    public void saveplanbatchscenen(List<Executeplanbatch> testcase) {
+        executeplanbatchMapper.saveplanbatchscenen(testcase);
+    }
+
 }

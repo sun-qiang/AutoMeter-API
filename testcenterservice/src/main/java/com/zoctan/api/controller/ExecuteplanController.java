@@ -8,6 +8,7 @@ import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.dto.Testplanandbatch;
 import com.zoctan.api.entity.Executeplan;
 import com.zoctan.api.entity.ExecuteplanTestcase;
+import com.zoctan.api.entity.Executeplanbatch;
 import com.zoctan.api.entity.Routeperformancereport;
 import com.zoctan.api.mapper.ExecuteplanParamsMapper;
 import com.zoctan.api.service.*;
@@ -69,7 +70,7 @@ public class ExecuteplanController {
     }
 
     @PostMapping("/execplancases")
-    public Result execcases(@RequestBody final List<Testplanandbatch> planbatchList) {
+    public Result execcases(@RequestBody final List<Executeplanbatch> planbatchList) {
         //暂时支持单计划执行
         try {
             executeplanService.executeplancase(planbatchList,"立即执行");

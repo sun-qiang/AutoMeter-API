@@ -30,7 +30,6 @@ public class HttpApiPerformance extends AbstractJavaSamplerClient {
 
     // 初始化方法，实际运行时每个线程仅执行一次，在测试方法运行前执行，类似于LoadRunner中的init方法
     public void setupTest(JavaSamplerContext context) {
-        Core = new TestCore(context, getLogger());
         super.setupTest(context);
     }
 
@@ -74,6 +73,7 @@ public class HttpApiPerformance extends AbstractJavaSamplerClient {
     public SampleResult runTest(JavaSamplerContext ctx) {
         String reportlogfolder = ctx.getParameter("reportlogfolder").replace("Autometer", " ");
         SampleResult results = new SampleResult();
+        Core = new TestCore(ctx, getLogger(),results);
         //Jmeter java实例开始执行
         results.sampleStart();
         //用例运行开始时间
@@ -210,7 +210,7 @@ public class HttpApiPerformance extends AbstractJavaSamplerClient {
             stringBuilder.append(requestObject.getRequestmMthod() + "$$");
             stringBuilder.append(requestObject.getProjectid());
 
-            String LogFileName = requestObject.getTestplanid() + "-" + requestObject.getBatchid() + "-" + requestObject.getSlaverid()+"-" + requestObject.getCaseid();
+            String LogFileName = requestObject.getTestplanid() + "-"+requestObject.getBatchname()+"-" + requestObject.getSceneid() + "-" + requestObject.getSlaverid()+"-" + requestObject.getCaseid();
             String os = System.getProperty("os.name");
 
             String Filepath="";

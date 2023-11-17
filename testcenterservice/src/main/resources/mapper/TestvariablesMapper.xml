@@ -16,6 +16,10 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
+    <result column="caseid" jdbcType="BIGINT" property="caseid" />
+
+
   </resultMap>
 
   <select id="findtestvariablesWithName" resultMap="BaseResultMap">
@@ -26,6 +30,13 @@
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
     </where>
     order by lastmodify_time  DESC
+  </select>
+
+  <select id="findtestvariablesbycaseid" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM testvariables a
+    where a.caseid=#{caseid}
+    order by  lastmodify_time  DESC
   </select>
 
 

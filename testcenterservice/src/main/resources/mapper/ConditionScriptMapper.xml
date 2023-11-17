@@ -13,6 +13,7 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditiontype" jdbcType="VARCHAR" property="conditiontype" />
   </resultMap>
 
   <select id="findtestconditionscriptWithName" resultMap="BaseResultMap">

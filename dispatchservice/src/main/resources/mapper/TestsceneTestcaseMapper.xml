@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestsceneTestcaseMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.TestsceneTestcase">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="testscenenid" jdbcType="BIGINT" property="testscenenid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="apiid" jdbcType="BIGINT" property="apiid" />
+    <result column="deployunitid" jdbcType="BIGINT" property="deployunitid" />
+    <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
+    <result column="modelid" jdbcType="BIGINT" property="modelid" />
+    <result column="modelname" jdbcType="VARCHAR" property="modelname" />
+    <result column="apiname" jdbcType="VARCHAR" property="apiname" />
+    <result column="testcaseid" jdbcType="BIGINT" property="testcaseid" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+  </resultMap>
+
+  <select id="findCasebyscenenid" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM testscene_testcase a
+    <where>
+      <if test="deployunitid != null  and deployunitid != ''">and a.deployunitid =#{deployunitid}</if>
+      <if test="modelid != null  and modelid != ''">and a.modelid =#{modelid}</if>
+      <if test="apiid != null  and apiid != ''">and a.apiid =#{apiid}</if>
+      and a.testscenenid=#{testscenenid}
+    </where>
+    order by a.caseorder
+  </select>
+
+
+
+  <insert id="savetestscenencase">
+    INSERT INTO testscene_testcase (testscenenid,scenename,apiid,deployunitid,deployunitname,modelid,modelname,apiname,
+    testcaseid,casename,create_time,lastmodify_time,
+    creator,caseorder,projectid)
+    VALUES
+    <foreach collection="casedataList" item="item" index="index" separator=",">
+      (#{item.testscenenid},#{item.scenename},#{item.apiid}, #{item.deployunitid},#{item.deployunitname},
+      #{item.modelid},#{item.modelname},#{item.apiname},
+      #{item.testcaseid}, #{item.casename},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),
+      DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'), #{item.creator},#{item.caseorder},#{item.projectid})
+    </foreach>
+  </insert>
+
+  <update id="updatescenenCaseorder" >
+    update testscene_testcase set caseorder = #{caseorder},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+  <select id="findcasebytestscenenid" resultMap="BaseResultMap">
+    select a.testscenenid,a.caseorder, a.scenename, a.testcaseid, c.deployunitname,b.casejmxname,b.casename,b.expect,b.threadnum,b.loops from
+      testscene_testcase a join apicases b join deployunit c on a.testcaseid = b.id and c.id = a.deployunitid
+    where a.testscenenid = #{testscenenid} and b.casetype= #{casetype} order by a.caseorder asc
+  </select>
+
+</mapper>

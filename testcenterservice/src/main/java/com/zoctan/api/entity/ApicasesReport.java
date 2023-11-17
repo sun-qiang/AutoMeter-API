@@ -52,7 +52,24 @@ public class ApicasesReport extends Apicases {
      * 返回结果
      */
     private String respone;
+    public Long getSceneid() {
+        return sceneid;
+    }
 
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private Long sceneid;
+    private String scenename;
 
     public String getRequestheader() {
         return requestheader;

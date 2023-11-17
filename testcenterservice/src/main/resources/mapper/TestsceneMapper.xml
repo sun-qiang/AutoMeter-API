@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestsceneMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Testscene">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="usetype" jdbcType="VARCHAR" property="usetype" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+  </resultMap>
+
+
+  <select id="findtestsceneWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM testscene a
+    <where>
+      <if test="scenename != null and scenename != ''">a.scenename like CONCAT('%',#{scenename},'%')</if>
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+  <update id="updatescene" parameterType="com.zoctan.api.entity.Testscene">
+    update testscene set scenename = #{scenename},usetype = #{usetype},creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+</mapper>

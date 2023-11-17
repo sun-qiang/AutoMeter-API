@@ -72,11 +72,11 @@ public class SomeDayExecScheduleTask {
                                 Testplanandbatch testplanandbatch = new Testplanandbatch();
                                 testplanandbatch.setBatchname(ex.getBatchname());
                                 testplanandbatch.setPlanid(ex.getExecuteplanid());
-                                testplanandbatchList.add(testplanandbatch);
+                                //testplanandbatchList.add(testplanandbatch);
                                 String memo = "";
                                 try {
                                     SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============开始执行某天的用例======================"+ CurrentTime);
-                                    ExecPlanCase(testplanandbatchList);
+                                    ExecPlanCase(testplanandbatch);
                                     SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============完成执行某天的用例======================"+ CurrentTime);
                                 } catch (Exception exp) {
                                     memo = exp.getMessage();
@@ -126,8 +126,8 @@ public class SomeDayExecScheduleTask {
     }
 
 
-    private void ExecPlanCase(List<Testplanandbatch> testplanlist) {
-        executeplanService.executeplancase(testplanlist,"某天定时");
+    private void ExecPlanCase(Testplanandbatch testplanandbatch) {
+        executeplanService.execcase(testplanandbatch);
     }
 
 }

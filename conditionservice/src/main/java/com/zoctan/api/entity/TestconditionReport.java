@@ -15,7 +15,6 @@ public class TestconditionReport {
     /**
      * 条件id
      */
-    private Long conditionid;
 
     public Long getSubconditionid() {
         return subconditionid;
@@ -156,18 +155,7 @@ public class TestconditionReport {
      *
      * @return conditionid - 条件id
      */
-    public Long getConditionid() {
-        return conditionid;
-    }
 
-    /**
-     * 设置条件id
-     *
-     * @param conditionid 条件id
-     */
-    public void setConditionid(Long conditionid) {
-        this.conditionid = conditionid;
-    }
 
     /**
      * 获取条件类型，接口，数据库，其他

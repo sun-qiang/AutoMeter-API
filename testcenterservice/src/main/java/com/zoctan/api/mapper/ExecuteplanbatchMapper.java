@@ -2,6 +2,7 @@ package com.zoctan.api.mapper;
 
 import com.zoctan.api.core.mapper.MyMapper;
 import com.zoctan.api.entity.Executeplanbatch;
+import com.zoctan.api.entity.TestplanTestscene;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -22,5 +23,6 @@ public interface ExecuteplanbatchMapper extends MyMapper<Executeplanbatch> {
     List<Executeplanbatch> getbatchbyexectype(@Param("exectype") String exectype);
 
     List<Executeplanbatch> getrecentbatchbyid(@Param("executeplanid") Long executeplanid);
+    void saveplanbatchscenen(@Param("casedataList")final List<Executeplanbatch> testcase);
 
 }

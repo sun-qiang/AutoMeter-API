@@ -176,7 +176,7 @@ public class ApicasesReportController {
 
             Condition dispatchccon = new Condition(Dispatch.class);
             dispatchccon.createCriteria().andCondition("execplanid = " + executeplanid)
-                    .andCondition("batchid = " + batchid);
+                    .andCondition("batchname = '" + batchname+"'");
             List<Dispatch> dispatchList = dispatchService.listByCondition(dispatchccon);
             functionCaseStatis.setCaseNum(dispatchList.size());
 

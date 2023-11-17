@@ -42,6 +42,16 @@
             <stringProp name="Argument.value">${__P(Slaverid,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="planid" elementType="Argument">
+            <stringProp name="Argument.name">planid</stringProp>
+            <stringProp name="Argument.value">${__P(planid,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="batchname" elementType="Argument">
+            <stringProp name="Argument.name">batchname</stringProp>
+            <stringProp name="Argument.value">${__P(batchname,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -108,6 +118,16 @@
               <elementProp name="mysqlpassword" elementType="Argument">
                 <stringProp name="Argument.name">mysqlpassword</stringProp>
                 <stringProp name="Argument.value">${mysqlpassword}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchname" elementType="Argument">
+                <stringProp name="Argument.name">batchname</stringProp>
+                <stringProp name="Argument.value">${batchname}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="planid" elementType="Argument">
+                <stringProp name="Argument.name">planid</stringProp>
+                <stringProp name="Argument.value">${planid}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>

@@ -10,6 +10,8 @@
     <result column="execplanname" jdbcType="VARCHAR" property="execplanname" />
     <result column="batchid" jdbcType="BIGINT" property="batchid" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
     <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
     <result column="slavername" jdbcType="VARCHAR" property="slavername" />
     <result column="testcaseid" jdbcType="BIGINT" property="testcaseid" />
@@ -20,6 +22,7 @@
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="loops" jdbcType="BIGINT" property="loops" />
     <result column="threadnum" jdbcType="BIGINT" property="threadnum" />
+    <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="plantype" jdbcType="VARCHAR" property="plantype" />
@@ -59,12 +62,13 @@
 
   <insert id="insertBatchDispatch"  parameterType="com.zoctan.api.entity.Dispatch">
     insert into dispatch (execplanid, execplanname,batchid,batchname,slaverid,slavername,testcaseid,testcasename,casejmxname,
-    deployunitname,expect,status,create_time,lastmodify_time,plantype,threadnum,loops,creator)
+    deployunitname,expect,status,create_time,lastmodify_time,plantype,threadnum,loops,creator,sceneid,scenename,caseorder)
     values
     <foreach collection="dispatchList" item="dispatch" index="index" separator=",">
       (#{dispatch.execplanid}, #{dispatch.execplanname}, #{dispatch.batchid},#{dispatch.batchname},#{dispatch.slaverid},
       #{dispatch.slavername},#{dispatch.testcaseid},#{dispatch.testcasename},#{dispatch.casejmxname},#{dispatch.deployunitname},#{dispatch.expect},
-      #{dispatch.status},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),#{dispatch.plantype},#{dispatch.threadnum},#{dispatch.loops},#{dispatch.creator})
+      #{dispatch.status},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),#{dispatch.plantype},#{dispatch.threadnum},
+       #{dispatch.loops},#{dispatch.creator},#{dispatch.sceneid},#{dispatch.scenename},#{dispatch.caseorder})
     </foreach>
   </insert>
 

@@ -8,6 +8,7 @@ import com.zoctan.api.dto.Testplanandbatch;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.mapper.*;
 import com.zoctan.api.service.ExecuteplanService;
+import com.zoctan.api.service.ExecuteplanbatchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,13 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
     private SlaverMapper slaverMapper;
     @Resource
     private ExecuteplanbatchMapper executeplanbatchMapper;
+    @Resource
+    private TestplanTestsceneMapper testplanTestsceneMapper;
+
+    @Resource
+    private ExecuteplanbatchService executeplanbatchService;
+
+
 
 
     @Override
@@ -74,43 +83,109 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
 
     @Override
     @Transactional(noRollbackFor = Exception.class)
-    public void executeplancase(List<Testplanandbatch> testplanlist,String Exectype) {
-        for (Testplanandbatch plan : testplanlist) {
-            Long execplanid = plan.getPlanid();
-            Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
-            String BatchName=plan.getBatchname();
-            Executeplanbatch executeplanbatch= executeplanbatchMapper.getbatchidbyplanidandbatchname(execplanid,BatchName);
-            if(executeplanbatch.getExectype().equals(Exectype))
+    public void executeplancase(List<Executeplanbatch> testplanlist,String Exectype) {
+        for (Executeplanbatch plan : testplanlist) {
+//            Testplanandbatch testplanandbatch = new Testplanandbatch();
+//
+//            Long execplanid = plan.getExecuteplanid();
+//            String planname=plan.getExecuteplanname();
+//            String batchname=plan.getBatchname();
+//
+//            testplanandbatch.setBatchname(batchname);
+//            testplanandbatch.setPlanid(execplanid);
+//
+//            testplanandbatch.setExectype(Exectype);
+//
+//            //根据planid获取场景列表,保存executeplanbatch表
+//            HashMap<String,Object>tmpparams=new HashMap<>();
+//            tmpparams.put("testplanid",execplanid);
+//            List<TestplanTestscene> testplanTestsceneList= testplanTestsceneMapper.findscenebyexecplanid(tmpparams);
+//            for (TestplanTestscene testscene :testplanTestsceneList) {
+//                long testsceneid=testscene.getTestscenenid();
+//                String testscenename=testscene.getScenename();
+//                Executeplanbatch executeplanbatch=new Executeplanbatch();
+//                executeplanbatch.setStatus("待执行");
+//                executeplanbatch.setSource("平台");
+//                executeplanbatch.setSceneid(testsceneid);
+//                executeplanbatch.setScenename(testscenename);
+//                executeplanbatch.setBatchname(batchname);
+//                executeplanbatch.setExecuteplanid(execplanid);
+//                executeplanbatch.setExecuteplanname(planname);
+//                executeplanbatch.setExectype(Exectype);
+//                executeplanbatchService.save(executeplanbatch);
+//            }
+//            Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
+//            String BatchName=plan.getBatchname();
+//            Executeplanbatch executeplanbatch= executeplanbatchMapper.getbatchidbyplanidandbatchname(execplanid,BatchName);
+            if(Exectype.equals("立即执行"))
             {
-                HttpHeader header = new HttpHeader();
-                String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
-                String plantype = ep.getUsetype();
-                //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
-                List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype,"已下线");
-                //slaverlist = GetAliveSlaver(slaverlist);
-                if (slaverlist.size() == 0) {
-                    ExecuteplanServiceImpl.log.info("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
-                    throw new ServiceException("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
-                } else {
-                    String params = JSON.toJSONString(plan);
-                    ExecuteplanServiceImpl.log.info("计划请求调度参数：" + params);
-                    try {
-                        ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
-                        TestHttp testHttp=new TestHttp();
-                        header.addParam("Content-Type", "application/json;charset=utf-8");
-                        TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
-                        ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
-                    } catch (Exception e) {
-                        ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
-                        if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
-                        {
-                            throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
-                        }
-                        else
-                        {
-                            throw new ServiceException(e.getMessage());
-                        }
-                    }
+                execcase(plan);
+//                HttpHeader header = new HttpHeader();
+//                String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
+//                String plantype = ep.getUsetype();
+//                //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
+//                List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype,"已下线");
+//                //slaverlist = GetAliveSlaver(slaverlist);
+//                if (slaverlist.size() == 0) {
+//                    ExecuteplanServiceImpl.log.info("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
+//                    throw new ServiceException("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
+//                } else {
+//                    String params = JSON.toJSONString(testplanandbatch);
+//                    ExecuteplanServiceImpl.log.info("计划请求调度参数：" + params);
+//                    try {
+//                        ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
+//                        TestHttp testHttp=new TestHttp();
+//                        header.addParam("Content-Type", "application/json;charset=utf-8");
+//                        TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
+//                        ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
+//                    } catch (Exception e) {
+//                        ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
+//                        if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
+//                        {
+//                            throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
+//                        }
+//                        else
+//                        {
+//                            throw new ServiceException(e.getMessage());
+//                        }
+//                    }
+//                }
+            }
+        }
+    }
+
+
+    @Override
+    public void execcase(Executeplanbatch testplanandbatch)
+    {
+        Executeplan ep = executeplanMapper.findexplanWithid(testplanandbatch.getExecuteplanid());
+        HttpHeader header = new HttpHeader();
+        String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
+        String plantype = ep.getUsetype();
+        //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
+        List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype,"已下线");
+        //slaverlist = GetAliveSlaver(slaverlist);
+        if (slaverlist.size() == 0) {
+            ExecuteplanServiceImpl.log.info("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
+            throw new ServiceException("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
+        } else {
+            String params = JSON.toJSONString(testplanandbatch);
+            ExecuteplanServiceImpl.log.info("计划请求调度参数：" + params);
+            try {
+                ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
+                TestHttp testHttp=new TestHttp();
+                header.addParam("Content-Type", "application/json;charset=utf-8");
+                TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
+                ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
+            } catch (Exception e) {
+                ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
+                if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
+                {
+                    throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
+                }
+                else
+                {
+                    throw new ServiceException(e.getMessage());
                 }
             }
         }

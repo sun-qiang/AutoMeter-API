@@ -136,15 +136,8 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
         TestPlanCaseServiceImpl.log.info("性能JmeterCmd finish。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 :");
     }
 
-    public static void main(String[] args) {
-        String a = "jdbc:mysql://localhost:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
-            //截取_之前字符串
-            String str1 = a.substring(0, a.indexOf("?"));
-            System.out.println("截取_之前字符串:"+str1);
-    }
-
     @Override
-    public void ExecuteHttpPlanFunctionCase(Long Slaverid, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUserName, String MysqlPassword,int JmeterLogFileNum) throws IOException {
+    public void ExecuteHttpPlanFunctionCase(Long Slaverid, Long planid, String batchname, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUsername, String MysqlPassword, long JmeterLogFileNum) throws IOException {
         String JmeterCmd="";
         String os = System.getProperty("os.name");
         TestPlanCaseServiceImpl.log.info("功能测试当前系统版本是  is :" + os);
@@ -152,15 +145,42 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
         String JdbcMysqlUrl = MysqlUrl.substring(0, MysqlUrl.indexOf("?"));
         //Windows操作系统
         if (os != null && os.toLowerCase().startsWith("windows")) {
-            JmeterCmd = JmeterPath + "\\jmeter.bat -n -t " + JmxPath + "\\HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+ " -j jmeter-ft"+JmeterLogFileNum+".log ";
+            JmeterCmd = JmeterPath + "\\jmeter.bat -n -t " + JmxPath + "\\HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUsername + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+" -Jplanid="+planid+" -Jbatchname="+batchname+ " -j jmeter-ft"+System.currentTimeMillis()+".log ";
         } else
         {
-            JmeterCmd = JmeterPath + "/jmeter -n -t " + JmxPath + "/HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+ " -j jmeter-ft"+JmeterLogFileNum+".log ";
+            JmeterCmd = JmeterPath + "/jmeter -n -t " + JmxPath + "/HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUsername + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+" -Jplanid="+planid+" -Jbatchname="+batchname+ " -j jmeter-ft"+System.currentTimeMillis()+".log ";
         }
         TestPlanCaseServiceImpl.log.info("功能JmeterCmd  is :" + JmeterCmd);
         ExecShell(JmeterCmd);
         TestPlanCaseServiceImpl.log.info("功能JmeterCmd finish。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 :");
+
     }
+
+    public static void main(String[] args) {
+        String a = "jdbc:mysql://localhost:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+            //截取_之前字符串
+            String str1 = a.substring(0, a.indexOf("?"));
+            System.out.println("截取_之前字符串:"+str1);
+    }
+
+//    @Override
+//    public void ExecuteHttpPlanFunctionCase(Long Slaverid,Long planid,String batchname, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUserName, String MysqlPassword,long JmeterLogFileNum) throws IOException {
+//        String JmeterCmd="";
+//        String os = System.getProperty("os.name");
+//        TestPlanCaseServiceImpl.log.info("功能测试当前系统版本是  is :" + os);
+//        //截取_之前字符串
+//        String JdbcMysqlUrl = MysqlUrl.substring(0, MysqlUrl.indexOf("?"));
+//        //Windows操作系统
+//        if (os != null && os.toLowerCase().startsWith("windows")) {
+//            JmeterCmd = JmeterPath + "\\jmeter.bat -n -t " + JmxPath + "\\HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+" -Jplanid="+planid+" -Jbatchname="+batchname+ " -j jmeter-ft"+JmeterLogFileNum+".log ";
+//        } else
+//        {
+//            JmeterCmd = JmeterPath + "/jmeter -n -t " + JmxPath + "/HTTPFunction.jmx -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword=" + MysqlPassword + " -Jthread=1 -Jloops=1 -JDispatchIds=" + DispatchIds+" -JSlaverid="+Slaverid+" -Jplanid="+planid+" -Jbatchname="+batchname+ " -j jmeter-ft"+JmeterLogFileNum+".log ";
+//        }
+//        TestPlanCaseServiceImpl.log.info("功能JmeterCmd  is :" + JmeterCmd);
+//        ExecShell(JmeterCmd);
+//        TestPlanCaseServiceImpl.log.info("功能JmeterCmd finish。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 :");
+//    }
 
     public void ExecShell(String ShellCmd) throws IOException {
         Process pro = Runtime.getRuntime().exec(ShellCmd);

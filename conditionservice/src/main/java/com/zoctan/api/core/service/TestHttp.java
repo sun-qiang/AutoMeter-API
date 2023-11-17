@@ -11,7 +11,7 @@ public class TestHttp {
         TestResponeData responeData=new TestResponeData();
         String Protocal=requestObject.getProtocal();
         String ApiStyle=requestObject.getApistyle();
-        String Url=requestObject.getResource();
+        String Url=requestObject.getResource().trim();
         HttpHeader header=requestObject.getHeader();
         HttpParamers httpParamers=requestObject.getParamers();
         String PostData=requestObject.getPostData();

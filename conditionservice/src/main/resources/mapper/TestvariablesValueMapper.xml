@@ -18,6 +18,7 @@
     <result column="memo" jdbcType="VARCHAR" property="memo" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
   </resultMap>
 
   <select id="findtestvariablesvalueWithName" resultMap="BaseResultMap">

@@ -10,6 +10,8 @@
     <result column="execplanname" jdbcType="VARCHAR" property="execplanname" />
     <result column="batchid" jdbcType="BIGINT" property="batchid" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
     <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
     <result column="slavername" jdbcType="VARCHAR" property="slavername" />
     <result column="testcaseid" jdbcType="BIGINT" property="testcaseid" />
@@ -19,6 +21,7 @@
     <result column="expect" jdbcType="VARCHAR" property="expect" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="loops" jdbcType="BIGINT" property="loops" />
+    <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
     <result column="threadnum" jdbcType="BIGINT" property="threadnum" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />

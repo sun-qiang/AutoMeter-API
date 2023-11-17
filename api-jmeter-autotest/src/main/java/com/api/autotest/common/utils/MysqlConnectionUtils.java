@@ -17,7 +17,7 @@ public class MysqlConnectionUtils {
     private static String password;
     public static Connection conn;
     public static ResultSet rs;
-    public static Statement st;
+    public static PreparedStatement st;
 
     public static void initDbResource(String mysqluel,String mysqlusername,String mysqlpass ) {
         //PropertiesUtil pUtil = PropertiesUtil.getInstance("app.properties");
@@ -88,7 +88,7 @@ public class MysqlConnectionUtils {
         ArrayList<HashMap<String, String>> resultArrayList = new ArrayList<>();
         try {
             getConnection();
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
             rs = st.executeQuery(sql);
             ResultSetMetaData data = rs.getMetaData();
             while (rs.next()) {
@@ -116,7 +116,7 @@ public class MysqlConnectionUtils {
             {
                 getConnection();
             }
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
             st.execute(sql);
         }  catch (Exception e) {
             throw  new Exception(e.getMessage());
@@ -124,6 +124,28 @@ public class MysqlConnectionUtils {
             closeConnection();
         }
         return result;
+    }
+
+    public static int updatewithkey(String sql) throws Exception {
+        int key=0;
+        try {
+            getConnection();
+            if(conn.isClosed()||conn==null)
+            {
+                getConnection();
+            }
+            st = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+            st.execute();
+            rs = st.getGeneratedKeys();
+            if (rs.next()) {
+                 key = rs.getInt(1);
+            }
+        }  catch (Exception e) {
+            throw  new Exception(e.getMessage());
+        } finally {
+            closeConnection();
+        }
+        return key;
     }
 
 
@@ -158,7 +180,7 @@ public class MysqlConnectionUtils {
         getConnection();
         int total = 0;
         try {
-            st = conn.createStatement();
+            st = conn.prepareStatement(sql);
             st.execute(sql);
         }  catch (Exception e) {
             throw new Exception("mysql执行sql发生异常: "+e.getMessage()+" sql:"+sql);

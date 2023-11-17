@@ -53,6 +53,9 @@ public class FunctionDispatchScheduleTask {
     private ExecuteplanMapper executeplanMapper;
     @Autowired(required = false)
     private ExecuteplanbatchMapper executeplanbatchMapper;
+
+    @Autowired(required = false)
+    private ExecuteplanbatchService executeplanbatchService;
     @Autowired(required = false)
     private TestconditionReportMapper testconditionReportMapper;
     @Autowired(required = false)
@@ -83,55 +86,114 @@ public class FunctionDispatchScheduleTask {
             boolean lock = redisUtils.tryLock(redisKey, "FunctionDispatchScheduleTask", redis_default_expire_time);
             if (lock) {
                 try {
-                    Dispatch dispatch = dispatchMapper.getrecentdispatchbyusetype("待分配", "功能");
-                    if (dispatch != null) {
-                        Long PlanID = dispatch.getExecplanid();
-                        String BatchName = dispatch.getBatchname();
+                    Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始");
+                    if (executeplanbatch != null) {
+                        Long PlanID = executeplanbatch.getExecuteplanid();
+                        String BatchName = executeplanbatch.getBatchname();
                         //判断计划的所有前置条件是否已经完成，并且全部成功，否则更新Dispatch状态为前置条件失败
-                        boolean flag = ConditionRequest(PlanID, BatchName, dispatch);   //IsConditionFinish(PlanID,BatchName);
+                        Dispatch dispatch=new Dispatch();
+                        dispatch.setBatchname(BatchName);
+                        dispatch.setExecplanid(PlanID);
+                        dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
+                        dispatch.setSlaverid(executeplanbatch.getSlaverid());
+                        boolean flag = ConditionRequest(dispatch);   //IsConditionFinish(PlanID,BatchName);
                         if (flag) {
-                            List<Dispatch> SlaverIDList = dispatchMapper.getdistinctslaverid("待分配", "功能", PlanID, BatchName);
-                            if (SlaverIDList.size() > 0) {
-                                //try {
-                                for (Dispatch dispatch1 : SlaverIDList) {
-                                    Slaver slaver =new Slaver();
-                                    List<Dispatch> SlaverDispathcList=new ArrayList<>();
-                                    try {
-                                        Long Slaverid = dispatch1.getSlaverid();
-                                        FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + Slaverid);
-                                        slaver = slaverMapper.findslaverbyid(Slaverid);
-                                        if (slaver != null) {
-                                            FunctionDispatchScheduleTask.log.info("调度服务【功能】执行机 SlaverIP:" + slaver.getIp() + " 状态：" + slaver.getStatus());
-                                            //检测slaver是否运行，如果异常认为已经挂了，
-                                            CheckAliveSlaver(slaver);
-                                            if (slaver.getStatus().equals("空闲")) {
-                                                SlaverDispathcList = dispatchMapper.getfunctiondispatchsbyslaverid(Slaverid, "待分配", "功能", PlanID, BatchName);
-                                                FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器 slaver:" + slaver.getSlavername() + " 获取dispatch数-：" + SlaverDispathcList.size());
-                                                if (SlaverDispathcList.size() > 0) {
-                                                    String params = JSON.toJSONString(SlaverDispathcList);
-                                                    FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
-                                                    HttpHeader header = new HttpHeader();
-                                                    String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
-                                                    String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
-                                                    if (respon.contains("未找到IP为")) {
-                                                        throw new Exception(respon);
-                                                    }
-                                                    FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============请求slaver响应结果：" + respon);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                            CompensateAfterFail(dispatch,PlanID,SlaverDispathcList);
-                                        }
-                                    } catch (Exception ex) {
-                                        //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                        CompensateAfterFail(dispatch,PlanID,SlaverDispathcList);
-                                        FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器请求执行服务异常：" + ex.getMessage());
-                                    }
+                            List<Executeplanbatch> executeplanbatchList = executeplanbatchMapper.getbatchtestscene("初始", PlanID, BatchName);
+                            HashMap<Long,List<Executeplanbatch>> tmpmap=new HashMap<>();
+                            for (Executeplanbatch executeplanbatch1 : executeplanbatchList) {
+                                Long slaverid=executeplanbatch1.getSlaverid();
+                                if(!tmpmap.containsKey(slaverid))
+                                {
+                                    List<Executeplanbatch> tmpList=new ArrayList<>();
+                                    tmpList.add(executeplanbatch1);
+                                    tmpmap.put(slaverid,tmpList);
+                                } else
+                                {
+                                    tmpmap.get(slaverid).add(executeplanbatch1);
                                 }
                             }
+                            for (Long slaverid:tmpmap.keySet()) {
+                                Slaver slaver = new Slaver();
+                                try {
+                                    Long Slaverid = slaverid;
+                                    FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + Slaverid);
+                                    slaver = slaverMapper.findslaverbyid(Slaverid);
+                                    if (slaver != null) {
+                                        FunctionDispatchScheduleTask.log.info("调度服务【功能】执行机 SlaverIP:" + slaver.getIp() + " 状态：" + slaver.getStatus());
+                                        //检测slaver是否运行，如果异常认为已经挂了，
+                                        CheckAliveSlaver(slaver);
+                                        if (slaver.getStatus().equals("空闲")) {
+                                            //改为取测试场景请求到slaverservice  disdinct 场景id
+                                            //SlaverDispathcList = dispatchMapper.getfunctiondispatchsbyslaverid(Slaverid, "待分配", "功能", PlanID, BatchName);
+                                            FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器 slaver:" + slaver.getSlavername() + " 获取dispatch数-：" + executeplanbatchList.size());
+                                            String params = JSON.toJSONString(tmpmap.get(Slaverid));
+                                            FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
+                                            HttpHeader header = new HttpHeader();
+                                            String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
+                                            String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                            if (respon.contains("未找到IP为")) {
+                                                throw new Exception(respon);
+                                            }
+                                            //更新batch状态为待执行
+                                            for (Executeplanbatch exp :tmpmap.get(Slaverid)) {
+                                                exp.setStatus("待执行");
+                                                executeplanbatchService.update(exp);
+                                            }
+                                            FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============请求slaver响应结果：" + respon);
+                                        }
+                                    } else {
+                                        //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
+                                        //CompensateAfterFail(dispatch, PlanID, SlaverDispathcList);
+                                    }
+                                } catch (Exception ex) {
+                                    //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
+                                    //CompensateAfterFail(dispatch, PlanID, SlaverDispathcList);
+                                    FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器请求执行服务异常：" + ex.getMessage());
+                                }
+                            }
+                                //List<Dispatch> SlaverIDList = dispatchMapper.getdistinctslaverid("待分配", "功能", PlanID, BatchName);
+//                            if (executeplanbatchList.size() > 0) {
+//                                //try {
+//                                for (Executeplanbatch executeplanbatch1 : executeplanbatchList) {
+//                                    Slaver slaver = new Slaver();
+//                                    //List<Dispatch> SlaverDispathcList=new ArrayList<>();
+//                                    try {
+//                                        Long Slaverid = executeplanbatch1.getSlaverid();
+//                                        FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + Slaverid);
+//                                        slaver = slaverMapper.findslaverbyid(Slaverid);
+//                                        if (slaver != null) {
+//                                            FunctionDispatchScheduleTask.log.info("调度服务【功能】执行机 SlaverIP:" + slaver.getIp() + " 状态：" + slaver.getStatus());
+//                                            //检测slaver是否运行，如果异常认为已经挂了，
+//                                            CheckAliveSlaver(slaver);
+//                                            if (slaver.getStatus().equals("空闲")) {
+//                                                //改为取测试场景请求到slaverservice  disdinct 场景id
+//                                                //SlaverDispathcList = dispatchMapper.getfunctiondispatchsbyslaverid(Slaverid, "待分配", "功能", PlanID, BatchName);
+//                                                FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器 slaver:" + slaver.getSlavername() + " 获取dispatch数-：" + executeplanbatchList.size());
+//                                                String params = JSON.toJSONString(executeplanbatchList);
+//                                                FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
+//                                                HttpHeader header = new HttpHeader();
+//                                                String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
+//                                                String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+//                                                if (respon.contains("未找到IP为")) {
+//                                                    throw new Exception(respon);
+//                                                }
+//                                                //更新batch状态为待执行
+//                                                executeplanbatch1.setStatus("待执行");
+//                                                executeplanbatchService.update(executeplanbatch1);
+//                                                FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器-============请求slaver响应结果：" + respon);
+//
+//                                            }
+//                                        } else {
+//                                            //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
+//                                            //CompensateAfterFail(dispatch, PlanID, SlaverDispathcList);
+//                                        }
+//                                    } catch (Exception ex) {
+//                                        //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
+//                                        //CompensateAfterFail(dispatch, PlanID, SlaverDispathcList);
+//                                        FunctionDispatchScheduleTask.log.info("调度服务【功能】测试定时器请求执行服务异常：" + ex.getMessage());
+//                                    }
+//                                }
+//                            }
                         }
                     }
                 } catch (Exception ex) {
@@ -152,34 +214,30 @@ public class FunctionDispatchScheduleTask {
     }
 
 
-    private  void CompensateAfterFail(Dispatch dispatch,Long PlanID,List<Dispatch>SlaverDispathcList)
-    {
+    private void CompensateAfterFail(Dispatch dispatch, Long PlanID, List<Dispatch> SlaverDispathcList) {
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
             dispatchMapper.updatedispatchfail("调度失败", "未找到任何可以用的功能执行机，请检查slaverservice是否启动", dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid());
             FunctionDispatchScheduleTask.log.info("容错处理，未找到任何可以用的功能执行机，已将用例都更新为调度失败状态，请检查slaverservice是否启动。。。。。。。。。。。");
-        } else
-        {
+        } else {
             FunctionDispatchScheduleTask.log.info("调度服务容错，有空闲slaver，开始重新分配。。。。。。。。。。。");
             Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
-            if(ep.getRunmode().equalsIgnoreCase("单机运行"))
-            {
+            if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
 
-                for (Dispatch dis: SlaverDispathcList) {
+                for (Dispatch dis : SlaverDispathcList) {
                     dis.setSlaverid(allliveslaver.get(0).getId());
                     dis.setSlavername(allliveslaver.get(0).getSlavername());
                     dis.setLastmodifyTime(new Date());
                     dispatchMapper.updateByPrimaryKey(dis);
                 }
-                FunctionDispatchScheduleTask.log.info("调度服务容错，测试集合为单机模式，完成用例都分配到执行机。。。。。。。。。。。"+allliveslaver.get(0).getSlavername());
+                FunctionDispatchScheduleTask.log.info("调度服务容错，测试集合为单机模式，完成用例都分配到执行机。。。。。。。。。。。" + allliveslaver.get(0).getSlavername());
             }
             //平均分配
-            else
-            {
-                int slaversize=allliveslaver.size();
+            else {
+                int slaversize = allliveslaver.size();
                 List<List<Dispatch>> partitions = Lists.partition(SlaverDispathcList, slaversize);
-                for (int i=0;i<partitions.size();i++) {
-                    for (Dispatch dis:partitions.get(i)) {
+                for (int i = 0; i < partitions.size(); i++) {
+                    for (Dispatch dis : partitions.get(i)) {
                         dis.setSlaverid(allliveslaver.get(i).getId());
                         dis.setSlavername(allliveslaver.get(i).getSlavername());
                         dis.setLastmodifyTime(new Date());
@@ -192,20 +250,24 @@ public class FunctionDispatchScheduleTask {
     }
 
 
-    private boolean ConditionRequest(Long PlanID, String BatchName, Dispatch dispatch) throws Exception {
+    private boolean ConditionRequest(Dispatch dispatch) throws Exception {
         boolean flag = true;
-        List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(PlanID, "前置条件","测试集合");
-        if (testconditionList.size() > 0) {
-            Long ConditionID = testconditionList.get(0).getId();
-            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID);
+        Long PlanID=dispatch.getExecplanid();
+        String BatchName = dispatch.getBatchname();
+//        List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(PlanID, "前置条件", "测试集合");
+//        if (testconditionList.size() > 0) {
+           // Long ConditionID = testconditionList.get(0).getId();
+            List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(dispatch.getExecplanid(),"execplan");
             int ApiConditionNums = conditionApiList.size();
-            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
-            int DBConditionNUms = conditionDbList.size();
-            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
-            int ScriptConditionNUms = conditionScriptList.size();
-            List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(ConditionID);
-            int DelayConditionNUms = conditionDelayList.size();
-            int SubConditionNums = ApiConditionNums + DBConditionNUms + ScriptConditionNUms+DelayConditionNUms;
+//            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
+//            int DBConditionNUms = conditionDbList.size();
+//            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
+//            int ScriptConditionNUms = conditionScriptList.size();
+//            List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(ConditionID);
+//            int DelayConditionNUms = conditionDelayList.size();
+        int SubConditionNums = ApiConditionNums ;
+
+        //int SubConditionNums = ApiConditionNums + DBConditionNUms + ScriptConditionNUms + DelayConditionNUms;
             //表示有子条件需要处理
             if (SubConditionNums > 0) {
                 //获取此计划批次条件报告的结果
@@ -237,7 +299,7 @@ public class FunctionDispatchScheduleTask {
                     }
                 }
             }
-        }
+        //}
         return flag;
     }
 
@@ -357,15 +419,15 @@ public class FunctionDispatchScheduleTask {
             FunctionDispatchScheduleTask.log.info("检测CheckAliveSlaver：" + ServerUrl + "请求响应结果。。。。。。。。。。。。。。。。。。。。。。。。：" + respon);
         } catch (Exception e) {
             slaverMapper.updateSlaverStatus(slaver.getId(), "已下线");
-            FunctionDispatchScheduleTask.log.info("检测CheckAliveSlaver：" + ServerUrl + "请求响应结果异常。。。。。。。。。。。。。。。。。。。。。。。。：" + e.getMessage()+"更新slaver"+slaver.getSlavername()+"为已下线");
+            FunctionDispatchScheduleTask.log.info("检测CheckAliveSlaver：" + ServerUrl + "请求响应结果异常。。。。。。。。。。。。。。。。。。。。。。。。：" + e.getMessage() + "更新slaver" + slaver.getSlavername() + "为已下线");
             throw new Exception("Salver无法连接：" + slaver.getSlavername());
         }
     }
 
 
     public List<Slaver> GetAllAliveSlaver() {
-        List<Slaver> slaverlist = slaverMapper.findslaveralive("功能","已下线");
-        List<Slaver> slaverlistresult =new ArrayList<>();
+        List<Slaver> slaverlist = slaverMapper.findslaveralive("功能", "已下线");
+        List<Slaver> slaverlistresult = new ArrayList<>();
         for (Slaver slaver : slaverlist) {
             String IP = slaver.getIp();
             String Port = slaver.getPort();

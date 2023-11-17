@@ -166,7 +166,7 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="管理" align="center"
+      <el-table-column label="管理" align="center" width="500"
                        v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
         <template slot-scope="scope">
 <!--          <el-button-->
@@ -210,6 +210,13 @@
             v-if="hasPermission('apicases:params') && scope.row.id !== id"
             @click.native.prevent="showTestDialog(scope.$index)"
           >调试
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:params') && scope.row.id !== id"
+            @click.native.prevent="showCaseVariablesDialog(scope.$index)"
+          >变量提取
           </el-button>
 
         </template>
@@ -1211,7 +1218,6 @@
       </div>
     </el-dialog>
 
-
     <el-dialog title="批量断言" :visible.sync="BatchAssertdialogFormVisible">
       <el-form
         status-icon
@@ -1297,6 +1303,169 @@
       </div>
     </el-dialog>
 
+    <el-dialog width="1000px" title='变量列表' :visible.sync="caseVariablesDialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('ApicasesVariables:add')"
+              @click.native.prevent="showAddApicasesVariablesDialog"
+            >提取变量</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="ApicasesVariablesList"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="getIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="变量名" align="center" prop="testvariablesname" width="80"/>
+        <el-table-column label="变量来源" align="center" prop="testvariablestype" width="80"/>
+        <el-table-column label="变量值类型" align="center" prop="valuetype" width="90"/>
+        <el-table-column label="变量值提取表达" align="center" prop="variablesexpress" width="120"/>
+        <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="120"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="120">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="120">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center" width="180"
+                         v-if="hasPermission('ApicasesVariables:update')  || hasPermission('ApicasesVariables:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('ApicasesVariables:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatetestvariablesDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('ApicasesVariables:delete') && scope.row.id !== id"
+              @click.native.prevent="removetestvariables(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <el-dialog :title="caseaddvariablestextMap[caseaddvariablesdialogStatus]" :visible.sync="caseaddvariablesdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 500px; margin-left:50px;"
+        :model="tmptestvariables"
+        ref="tmptestvariables"
+      >
+        <el-form-item label="变量名" prop="testvariablesname" required>
+          <el-input
+            maxlength="50"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmptestvariables.testvariablesname"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量描述" prop="variablesdes" required>
+          <el-input
+            maxlength="20"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmptestvariables.variablesdes"
+          />
+        </el-form-item>
+
+
+        <el-form-item label="变量来源" prop="testvariablestype" required >
+          <el-select v-model="tmptestvariables.testvariablestype" placeholder="变量来源" style="width:100%" @change="testvariablestypeselectChanged($event)">
+            <el-option label="Header" value="Header"></el-option>
+            <el-option label="Cookies" value="Cookies"></el-option>
+            <el-option label="Body" value="Body"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="变量值类型" prop="valuetype" required >
+          <el-select v-model="tmptestvariables.valuetype" placeholder="变量值类型" style="width:100%">
+            <el-option label="Number" value="Number"></el-option>
+            <el-option label="String" value="String"></el-option>
+            <el-option label="Array" value="Array"></el-option>
+            <el-option label="Bool" value="Bool"></el-option>
+          </el-select>
+        </el-form-item>
+
+
+
+        <el-form-item :label="expressname" prop="variablesexpress" required>
+          <el-input
+            type="textarea"
+            rows="3"
+            cols="10"
+            maxlength="200"
+            placeholder="例如 $.store.book[0].title"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmptestvariables.variablesexpress"
+          />
+          <div class="right">
+            <el-tooltip placement="right-start">
+              <div slot="content">1.如果获取变量值的接口返回数据类型是Json则使用JsonPath表达式提取变量值，例如：$.store.book[0].title   在线解析网站：http://www.e123456.com/aaaphp/online/jsonpath/<br/>2.如果获取变量值接口返回是html，xml则使用XPath表达式提取变量值， 例如：//div/h3//text()   在线解析网站： http://www.ab173.com/other/xpath.php</div>
+              <el-button>变量值提取表达语法规则</el-button>
+            </el-tooltip>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="备注" prop="memo">
+          <el-input
+            type="text"
+            maxlength="60"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmptestvariables.memo"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="dialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="caseaddvariablesdialogStatus === 'add'"
+          @click.native.prevent="$refs['tmptestvariables'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="caseaddvariablesdialogStatus === 'add'"
+          :loading="btnLoading"
+          @click.native.prevent="addtestvariables"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="caseaddvariablesdialogStatus === 'update'"
+          :loading="btnLoading"
+          @click.native.prevent="updatetestvariables"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
+
+
   </div>
 </template>
 <script>
@@ -1311,6 +1480,7 @@
     getcasebydeployunitid,
     removebatchapicase
   } from '@/api/assets/apicases'
+  import { addtestvariables, updatetestvariables, removetestvariables, findtestvariablesbycaseid } from '@/api/testvariables/testvariables'
   import { getenviromentallList as getenviromentallList } from '@/api/enviroment/testenviroment'
   import { addapicasesdata as addapicasesdata, getparamvaluebycaseidandtype as getparamvaluebycaseidandtype, casevalueforbody as casevalueforbody, updatepropertydata, updateapicasesdata } from '@/api/assets/apicasesdata'
   import { getapiListbydeploy as getapiListbydeploy, getapi } from '@/api/deployunit/api'
@@ -1343,6 +1513,7 @@
         Headertabledatas: [],
         Paramstabledatas: [],
         Bodytabledatas: [],
+        ApicasesVariablesList: [],
         apicasesList: [],
         modelList: [],
         checked: 'false',
@@ -1413,6 +1584,8 @@
         BodyDataVisible: false,
         caseglobalheadernotexistdialogFormVisible: false,
         caseglobalheaderexistdialogFormVisible: false,
+        caseVariablesDialogFormVisible: false,
+        caseaddvariablesdialogFormVisible: false,
         caseindex: '',
         total: 0, // 数据总数
         asserttotal: 0, // 数据总数
@@ -1440,6 +1613,11 @@
         dialogFormVisible: false,
         CopydialogFormVisible: false,
         paramdialogFormVisible: false,
+        caseaddvariablesdialogStatus: 'add',
+        caseaddvariablestextMap: {
+          update: '修改变量',
+          add: '添加变量'
+        },
         textMap: {
           updateRole: '修改API用例',
           update: '修改API用例',
@@ -1634,6 +1812,19 @@
         tmpconditionquery: {
           objecttype: '',
           projectid: ''
+        },
+        tmptestvariables: {
+          id: '',
+          caseid: '',
+          casename: '',
+          testvariablesname: '',
+          variablesdes: '',
+          valuetype: '',
+          testvariablestype: '',
+          variablesexpress: '',
+          memo: '',
+          creator: '',
+          projectid: ''
         }
       }
     },
@@ -1662,6 +1853,99 @@
 
     methods: {
       unix2CurrentTime,
+
+      /**
+       * 删除变量
+       * @param index 变量下标
+       */
+      removetestvariables(index) {
+        this.$confirm('删除该变量？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.ApicasesVariablesList[index].id
+          removetestvariables(id).then(() => {
+            this.$message.success('删除成功')
+            this.findtestvariablesbycaseid()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
+
+      updatetestvariables() {
+        this.$refs.tmptestvariables.validate(valid => {
+          if (valid) {
+            updatetestvariables(this.tmptestvariables).then(() => {
+              this.$message.success('更新成功')
+              this.findtestvariablesbycaseid()
+              this.caseaddvariablesdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
+      /**
+       * 显示修改变量对话框
+       * @param index 变量下标
+       */
+      showUpdatetestvariablesDialog(index) {
+        this.caseaddvariablesdialogFormVisible = true
+        this.caseaddvariablesdialogStatus = 'update'
+        this.tmptestvariables.id = this.ApicasesVariablesList[index].id
+        this.tmptestvariables.testvariablesname = this.ApicasesVariablesList[index].testvariablesname
+        this.tmptestvariables.variablesdes = this.ApicasesVariablesList[index].variablesdes
+        this.tmptestvariables.testvariablestype = this.ApicasesVariablesList[index].testvariablestype
+        this.tmptestvariables.variablesexpress = this.ApicasesVariablesList[index].variablesexpress
+        this.tmptestvariables.tmptestvariables = this.ApicasesVariablesList[index].tmptestvariables
+        this.tmptestvariables.valuetype = this.ApicasesVariablesList[index].valuetype
+        this.tmptestvariables.memo = this.ApicasesVariablesList[index].memo
+        this.tmptestvariables.creator = this.name
+      },
+
+      showAddApicasesVariablesDialog(index) {
+        // 显示新增对话框
+        this.caseaddvariablesdialogFormVisible = true
+        this.caseaddvariablesdialogStatus = 'add'
+        this.tmptestvariables.id = ''
+        this.tmptestvariables.testvariablesname = ''
+        this.tmptestvariables.variablesdes = ''
+        this.tmptestvariables.testvariablestype = ''
+        this.tmptestvariables.variablesexpress = ''
+        this.tmptestvariables.memo = ''
+        this.tmptestvariables.valuetype = ''
+        this.tmptestvariables.tmptestvariables = ''
+        this.tmptestvariables.creator = this.name
+        this.tmptestvariables.projectid = window.localStorage.getItem('pid')
+      },
+
+      /**
+       * 添加变量
+       */
+      addtestvariables() {
+        this.$refs.tmptestvariables.validate(valid => {
+          if (valid) {
+            addtestvariables(this.tmptestvariables).then(() => {
+              this.$message.success('添加成功')
+              this.caseaddvariablesdialogFormVisible = false
+              this.findtestvariablesbycaseid()
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
+
+      findtestvariablesbycaseid() {
+        findtestvariablesbycaseid(this.tmptestvariables).then(response => {
+          this.ApicasesVariablesList = response.data
+        }).catch(res => {
+          this.$message.error('获取用例变量列表失败')
+        })
+      },
 
       handleClick(tab, event) {
       },
@@ -2611,6 +2895,15 @@
         this.tmptest.enviromentname = ''
         this.tmptest.respone = ''
         this.TestdialogFormVisible = true
+      },
+      /**
+       * 显示用例变量对话框
+       */
+      showCaseVariablesDialog(index) {
+        this.caseVariablesDialogFormVisible = true
+        this.tmptestvariables.caseid = this.apicasesList[index].id
+        this.tmptestvariables.casename = this.apicasesList[index].casename
+        this.findtestvariablesbycaseid()
       },
 
       /**

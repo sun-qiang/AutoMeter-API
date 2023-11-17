@@ -59,7 +59,7 @@ class CodeGenerator {
 //    }
     System.out.print("start!!!");
 
-    CodeGenerator.genCode("deployunit_model");
+    CodeGenerator.genCode("testplan_testscene");
     System.out.print("finish!!!");
 
     // genCodeByCustomModelName("输入表名","输入自定义Model名称");

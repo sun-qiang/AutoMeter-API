@@ -85,11 +85,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="290"
+      <el-table-column label="管理" align="center" width="450"
                        v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
         <template slot-scope="scope">
           <el-button
-            type="primary"
+            type="warning"
             size="mini"
             v-if="hasPermission('executeplan:update') && scope.row.id !== id"
             @click.native.prevent="showUpdateexecuteplanDialog(scope.$index)"
@@ -106,6 +106,20 @@
             v-if="hasPermission('executeplan:update') && scope.row.id !== id"
             @click.native.prevent="showplanparamsDialog(scope.$index)"
           >全局Header</el-button>
+
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showtestsceneDialog(scope.$index)"
+          >测试场景</el-button>
+
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showtestplanConditionDialog(scope.$index)"
+          >前置条件</el-button>
 
         </template>
       </el-table-column>
@@ -388,6 +402,162 @@
       </el-table>
     </el-dialog>
 
+    <el-dialog title="集合前置条件" :visible.sync="ConditionFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="ShowAddPlancaseconditionDialog"
+            >添加前置接口</el-button>
+            <!--            <el-button-->
+            <!--              type="primary"-->
+            <!--              size="mini"-->
+            <!--              icon="el-icon-plus"-->
+            <!--              v-if="hasPermission('testscene:scenecasecondition')"-->
+            <!--              @click.native.prevent="AddcasedbconditionDialog"-->
+            <!--            >添加前置数据库</el-button>-->
+            <!--            <el-button-->
+            <!--              type="primary"-->
+            <!--              size="mini"-->
+            <!--              icon="el-icon-plus"-->
+            <!--              v-if="hasPermission('testscene:scenecasecondition')"-->
+            <!--              @click.native.prevent="showAddapiparamsDialog"-->
+            <!--            >添加前置脚本</el-button>-->
+
+            <!--            <el-button-->
+            <!--              type="primary"-->
+            <!--              size="mini"-->
+            <!--              icon="el-icon-plus"-->
+            <!--              v-if="hasPermission('testscene:scenecasecondition')"-->
+            <!--              @click.native.prevent="showAddapiparamsDialog"-->
+            <!--            >添加前置延时</el-button>-->
+          </el-form-item>
+        </el-form>
+      </div>
+      <!--      1.接口前置条件：-->
+      <el-table
+        :data="apiconditioncaseList"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="45">
+          <template slot-scope="scope">
+            <span v-text="apiconditioncaseIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="前置条件名" align="center" prop="subconditionname" width="150"/>
+        <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
+        <el-table-column label="所属集合" align="center" prop="conditionname" width="150"/>
+
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('testscene:caseupdateapicondition')  || hasPermission('testscene:casedeleteapicondition')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('testscene:caseupdateapicondition') && scope.row.id !== id"
+              @click.native.prevent="showUpdateapiconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('testscene:casedeleteapicondition') && scope.row.id !== id"
+              @click.native.prevent="removecaseapicondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" :visible.sync="caseconditiondialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 450px; margin-left:50px;"
+        :model="tmpapicondition"
+        ref="tmpapicondition"
+      >
+
+        <el-form-item label="前置条件名" prop="subconditionname" required>
+          <el-input
+            type="text"
+            maxlength="30"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpapicondition.subconditionname"
+          />
+        </el-form-item>
+
+        <el-form-item label="微服务" prop="deployunitname" required >
+          <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务" style="width:100%" @change="apiconditiondeployunitselectChanged($event)">
+            <el-option label="请选择" value="''" style="display: none" />
+            <div v-for="(depunitname, index) in deployunitList" :key="index">
+              <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item  label="模块:" prop="modelname" >
+          <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块" style="width:100%" @change="apiconditionmodelselectChanged($event)">
+            <el-option label="请选择" value />
+            <div v-for="(model, index) in apiconditionmodelList" :key="index">
+              <el-option :label="model.modelname" :value="model.modelname" />
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="API" prop="apiname" required >
+          <el-select v-model="tmpapicondition.apiname" filterable placeholder="API" style="width:100%" @change="apiconditionapiselectChanged($event)">
+            <el-option label="请选择" value />
+            <div v-for="(api, index) in apiconditionapiList" :key="index">
+              <el-option :label="api.apiname" :value="api.apiname"/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="接口" prop="casename" required >
+          <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
+            <el-option label="请选择" value="''" style="display: none" />
+            <div v-for="(testcase, index) in apiconditioncaseList" :key="index">
+              <el-option :label="testcase.casename" :value="testcase.casename" required/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="caseconditiondialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="apiconditiondialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpapicondition'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="apiconditiondialogStatus === 'add'"
+          :loading="btnLoading"
+          @click.native.prevent="addapicondition"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="apiconditiondialogStatus === 'update'"
+          :loading="btnLoading"
+          @click.native.prevent="updateapicondition"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
+
     <el-dialog :title="paramstextMap[ParamsdialogStatus]" :visible.sync="modifyparamdialogFormVisible">
       <el-form
         status-icon
@@ -423,6 +593,143 @@
       </div>
     </el-dialog>
 
+    <el-dialog width="840px" title='测试场景' :visible.sync="testscenedialogFormVisible">
+      <div class="filter-container" >
+        <el-form :inline="true"  >
+          <el-form-item>
+            <el-button type="primary" @click="ShowAddScenceDialog" :loading="btnLoading">添加场景</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        ref="testplansceneTable"
+        :data="testplansceneList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="planscenegetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="场景名" align="center" prop="scenename" width="280"/>
+        <el-table-column width="120" align="center" label="场景顺序">
+          <template slot-scope="{row}">
+            <template v-if="row.edit">
+              <el-input v-model="row.ordernum" class="edit-input"
+                        oninput="value=value.replace(/[^\d]/g,'')"
+                        maxLength='10'
+                        size="small" />
+              <el-button
+                class="cancel-btn"
+                size="small"
+                icon="el-icon-refresh"
+                type="warning"
+                @click="cancelEdit(row)"
+              >
+                取消
+              </el-button>
+            </template>
+            <span v-else>{{ row.ordernum }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="操作" width="120">
+          <template slot-scope="{row}">
+            <el-button
+              v-if="row.edit"
+              type="success"
+              size="small"
+              icon="el-icon-circle-check-outline"
+              @click="confirmEdit(row)"
+            >
+              保存
+            </el-button>
+            <el-button
+              v-else
+              type="primary"
+              size="small"
+              @click="row.edit=!row.edit"
+            >
+              设置顺序
+            </el-button>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center" width="220"
+                         v-if="hasPermission('testscene:deletecase')  || hasPermission('testscene:scenecondition')">
+          <template slot-scope="scope">
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('testscene:deletecase') && scope.row.id !== id"
+              @click.native.prevent="removetestscenecase(scope.$index)"
+            >删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
+              @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"
+            >前置条件</el-button>
+          </template>
+        </el-table-column>
+
+
+      </el-table>
+      <el-pagination
+        @size-change="planscenehandleSizeChange"
+        @current-change="planscenehandleCurrentChange"
+        :current-page="searchscene.page"
+        :page-size="searchscene.size"
+        :total="testplanscenetotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+    </el-dialog>
+
+    <el-dialog width="800px" title='添加场景' :visible.sync="addtestscenedialogFormVisible">
+      <el-table
+        ref="addsceneTable"
+        :data="testsceneList"
+        :key="itemaddsceneKey"
+        @row-click="addscenehandleClickTableRow"
+        @selection-change="addscenehandleSelectionChange"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="addscenegetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+
+        <el-table-column type="selection" prop="status" width="50"/>
+        <el-table-column label="场景名" align="center" prop="scenename" width="370"/>
+        <el-table-column label="场景类型" align="center" prop="usetype" width="280"/>
+      </el-table>
+      <el-pagination
+        @size-change="addscenehandleSizeChange"
+        @current-change="addscenehandleCurrentChange"
+        :current-page="addsearchscene.page"
+        :page-size="addsearchscene.size"
+        :total="addscenetotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="addtestscenedialogFormVisible = false">取消</el-button>
+
+        <el-button
+          type="primary"
+          :loading="btnLoading"
+          @click.native.prevent="addplantestscene"
+        >添加</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -433,7 +740,7 @@
   } from '@/api/assets/apicases'
   import { search as getapiList } from '@/api/deployunit/api'
   import { getdepunitList as getdepunitList } from '@/api/deployunit/depunit'
-  import { addexecuteplanbatch as addexecuteplanbatch } from '@/api/executecenter/executeplanbatch'
+  // import { addexecuteplanbatch as addexecuteplanbatch } from '@/api/executecenter/executeplanbatch'
   import { searchcases as searchtestplancases, addexecuteplantestcase, removeexecuteplantestcase } from '@/api/executecenter/executeplantestcase'
   import { checkplancondition as checkplancondition, search, addexecuteplan, updateexecuteplan, removeexecuteplan, executeplan, updateexecuteplanstatus } from '@/api/executecenter/executeplan'
   import { unix2CurrentTime } from '@/utils'
@@ -441,7 +748,14 @@
   import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
   import { getglobalheaderallList } from '@/api/testvariables/globalheader'
   import { mapGetters } from 'vuex'
+  import { search as searchscence } from '@/api/executecenter/testscene'
   import { addapicasesdebug, removeapicasesdebug, updateapicasesdebug, searchheaderbyepid } from '@/api/assets/globalheaderuse'
+  import { addtestplantestscene, findscenebyexecplanid, updateplanscenenorder } from '@/api/executecenter/testplantestscene'
+  import { getapiListbydeploy as getapiListbydeploy } from '@/api/deployunit/api'
+  import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
+  import { search as searchapicondition, addapicondition, removeapicondition, updateapicondition } from '@/api/condition/apicondition'
+  import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
+
   export default {
     name: '测试集合',
     filters: {
@@ -485,6 +799,29 @@
         executeplanstopList: [], // 停止执行计划列表
         tmpplanbatchList: [], // 计划批次列表
         paramsList: [], // 参数列表
+        addtestscenelastList: [],
+        testplansceneList: [],
+        testsceneList: [], // 列表
+        addtestsceneList: [], // 列表
+        apiconditioncaseList: [], // 列表
+        apiconditionmodelList: [],
+        apiconditionapiList: [],
+        itemaddsceneKey: null,
+        scenemultipleSelection: [], // 查询用例表格被选中的内容
+        tmptestscenename: null,
+        scenetotal: 0,
+        addscenetotal: 0,
+        testplanscenetotal: 0,
+        addsearchscene: {
+          page: 1,
+          size: 10,
+          casetype: null
+        },
+        searchscene: {
+          page: 1,
+          size: 10,
+          projectid: ''
+        },
         listLoading: false, // 数据加载等待动画
         caselistLoading: false, // 用例列表页面数据加载等待动画
         total: 0, // 数据总数
@@ -516,12 +853,41 @@
         batchdialogFormVisible: false,
         CollectionParamsFormVisible: false,
         modifyparamdialogFormVisible: false,
+        ConditionFormVisible: false,
+        testscenedialogFormVisible: false,
+        addtestscenedialogFormVisible: false,
         loadcase: '装载用例',
         loadbatch: '执行计划',
         textMap: {
           updateRole: '修改测试集合',
           update: '修改测试集合',
           add: '添加测试集合'
+        },
+        apiconditiontextMap: {
+          update: '修改前置接口',
+          add: '添加前置接口'
+        },
+        apiconditiondialogStatus: 'add',
+        caseconditiondialogFormVisible: false,
+        tmpapicondition: {
+          page: 1,
+          size: 10,
+          id: '',
+          modelid: 0,
+          modelname: '',
+          conditionid: '',
+          subconditionname: '',
+          conditionname: '',
+          deployunitid: '',
+          deployunitname: '',
+          apiname: '',
+          apiid: '',
+          caseid: '',
+          casename: '',
+          memo: '',
+          conditiontype: '',
+          creator: '',
+          projectid: ''
         },
         paramstextMap: {
           updateRole: '修改参数',
@@ -554,6 +920,7 @@
         tmpplanbatch: {
           executeplanid: '',
           executeplanname: '',
+          batchid: '',
           batchname: '',
           creator: '',
           exectype: '',
@@ -610,6 +977,22 @@
         searchparam: {
           page: 1,
           size: 10
+        },
+        searchapicondition: {
+          page: 1,
+          size: 10,
+          conditionid: '',
+          conditiontype: '',
+          projectid: ''
+        },
+        tmpexecplan: {
+          execplanid: 0,
+          execplanname: null
+        },
+        tmpexecplanforscene: {
+          page: 1,
+          size: 10,
+          testplanid: 0
         }
       }
     },
@@ -638,6 +1021,231 @@
     },
 
     methods: {
+      showUpdateapiconditionDialog(index) {
+        this.caseconditiondialogFormVisible = true
+        this.apiconditiondialogStatus = 'update'
+        this.tmpapicondition.id = this.apiconditioncaseList[index].id
+        this.tmpapicondition.subconditionname = this.apiconditioncaseList[index].subconditionname
+        this.tmpapicondition.deployunitname = this.apiconditioncaseList[index].deployunitname
+        this.tmpapicondition.apiname = this.apiconditioncaseList[index].apiname
+        this.tmpapicondition.casename = this.apiconditioncaseList[index].casename
+        this.tmpapicondition.modelname = this.apiconditioncaseList[index].modelname
+        this.tmpapicondition.memo = this.apiconditioncaseList[index].memo
+        this.tmpapicondition.creator = this.name
+        this.tmpapicondition.projectid = window.localStorage.getItem('pid')
+      },
+
+      updateapicondition() {
+        this.$refs.tmpapicondition.validate(valid => {
+          if (valid) {
+            updateapicondition(this.tmpapicondition).then(() => {
+              this.$message.success('更新成功')
+              this.getapiconditionList()
+              this.caseconditiondialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
+      removecaseapicondition(index) {
+        this.$confirm('删除该前置条件？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.apiconditioncaseList[index].id
+          removeapicondition(id).then(() => {
+            this.$message.success('删除成功')
+            this.getapiconditionList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
+
+      apiconditiontestcaseselectChanged(e) {
+        for (let i = 0; i < this.apiconditioncaseList.length; i++) {
+          if (this.apiconditioncaseList[i].casename === e) {
+            this.tmpapicondition.caseid = this.apiconditioncaseList[i].id
+          }
+        }
+      },
+
+      apiconditionmodelselectChanged(e) {
+        this.tmpapicondition.apiname = null
+        this.tmpapicondition.casename = null
+        for (let i = 0; i < this.apiconditionmodelList.length; i++) {
+          if (this.apiconditionmodelList[i].modelname === e) {
+            this.tmpapicondition.modelid = this.apiconditionmodelList[i].id
+          }
+        }
+        if (e === '') {
+          this.tmpapicondition.modelid = 0
+          this.tmpapicondition.modelname = ''
+        }
+        getapiListbydeploy(this.tmpapicondition).then(response => {
+          this.apiconditionapiList = response.data
+        }).catch(res => {
+          this.$message.error('加载api列表失败')
+        })
+      },
+
+      apiconditionapiselectChanged(e) {
+        this.tmpapicondition.casename = null
+        for (let i = 0; i < this.apiconditionapiList.length; i++) {
+          if (this.apiconditionapiList[i].apiname === e) {
+            this.tmpapicondition.apiid = this.apiconditionapiList[i].id
+          }
+        }
+        findcasesbyname(this.tmpapicondition).then(response => {
+          this.apiconditioncaseList = response.data
+        }).catch(res => {
+          this.$message.error('加载apicase列表失败')
+        })
+      },
+
+      showtestplanConditionDialog(index) {
+        this.ConditionFormVisible = true
+        this.searchapicondition.conditiontype = 'execplan'
+        this.searchapicondition.conditionid = this.executeplanList[index].id
+        this.tmpapicondition.conditionid = this.executeplanList[index].id
+        this.tmpapicondition.conditionname = this.executeplanList[index].executeplanname
+        this.tmpapicondition.conditiontype = 'execplan'
+        this.getapiconditionList()
+      },
+
+      apiconditioncaseIndex(index) {
+        return (this.searchapicondition.page - 1) * this.searchapicondition.size + index + 1
+      },
+
+      getapiconditionList() {
+        searchapicondition(this.searchapicondition).then(response => {
+          this.apiconditioncaseList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载测试接口条件列表失败')
+        })
+      },
+
+      addapicondition() {
+        this.$refs.tmpapicondition.validate(valid => {
+          if (valid) {
+            addapicondition(this.tmpapicondition).then(() => {
+              this.$message.success('添加成功')
+              this.caseconditiondialogFormVisible = false
+              this.getapiconditionList()
+            }).catch(res => {
+              this.$message.error('添加失败')
+              this.btnLoading = false
+            })
+          }
+        })
+      },
+
+      apiconditiondeployunitselectChanged(e) {
+        this.tmpapicondition.casename = null
+        this.tmpapicondition.apiname = null
+        this.tmpapicondition.modelname = null
+        for (let i = 0; i < this.deployunitList.length; i++) {
+          if (this.deployunitList[i].deployunitname === e) {
+            this.tmpapicondition.deployunitid = this.deployunitList[i].id
+          }
+        }
+        searchdeployunitmodel(this.tmpapicondition).then(response => {
+          this.apiconditionmodelList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载服务模块列表失败')
+        })
+        this.apiconditionapiList = null
+        getapiListbydeploy(this.tmpapicondition).then(response => {
+          this.apiconditionapiList = response.data
+        }).catch(res => {
+          this.$message.error('加载api列表失败')
+        })
+      },
+
+      cancelEdit(row) {
+        row.ordernum = row.oldcaseorder
+        row.edit = false
+        // this.$message({
+        //   message: 'The title has been restored to the original value',
+        //   type: 'warning'
+        // })
+      },
+      confirmEdit(row) {
+        row.edit = false
+        updateplanscenenorder(row).then(response => {
+          row.oldcaseorder = row.ordernum
+          this.$message.success('修改顺序成功')
+        }).catch(res => {
+          row.ordernum = row.oldcaseorder
+          this.$message.error('修改顺序失败')
+        })
+        // console.log(22222222222222222)
+        // console.log(row)
+        // this.$message({
+        //   message: 'The title has been edited',
+        //   type: 'success'
+        // })
+      },
+
+      findscenebyexecplanid() {
+        findscenebyexecplanid(this.tmpexecplanforscene).then(response => {
+          this.testplansceneList = response.data.list
+          const items = response.data.list
+          this.testplansceneList = items.map(v => {
+            this.$set(v, 'edit', false) // https://vuejs.org/v2/guide/reactivity.html
+            v.oldcaseorder = v.ordernum //  will be used when user click the cancel botton
+            return v
+          })
+          this.testplanscenetotal = response.data.total
+        }).catch(res => {
+          this.$message.error('加载场景用例列表失败')
+        })
+      },
+
+      addscenehandleClickTableRow(row, event, column) {
+      },
+      addscenehandleSelectionChange(rows) {
+        this.scenemultipleSelection = rows
+      },
+
+      addscenehandleCurrentChange(page) {
+        this.addsearchscene.page = page
+        this.gettestsceneList()
+      },
+
+      planscenehandleCurrentChange(page) {
+        this.searchscene.page = page
+        this.findscenebyexecplanid()
+      },
+
+      addscenegetIndex(index) {
+        return (this.addsearchscene.page - 1) * this.addsearchscene.size + index + 1
+      },
+
+      gettestsceneList() {
+        this.addsearchscene.scenename = this.tmptestscenename
+        searchscence(this.addsearchscene).then(response => {
+          this.testsceneList = response.data.list
+          this.addscenetotal = response.data.total
+        }).catch(res => {
+          this.$message.error('加载场景列表失败')
+        })
+      },
+
+      addscenehandleSizeChange(size) {
+        this.addsearchscene.page = 1
+        this.addsearchscene.size = size
+        this.gettestsceneList()
+      },
+
+      planscenehandleSizeChange(size) {
+        this.searchscene.page = 1
+        this.searchscene.size = size
+        this.findscenebyexecplanid()
+      },
       /**
        * 获取组件名字典列表
        */
@@ -720,12 +1328,14 @@
             if (this.tmpplanbatch.exectmpdate === '') {
               this.tmpplanbatch.execdate = this.tmpplanbatch.exectime + ':00'
             }
-            addexecuteplanbatch(this.tmpplanbatch).then(() => {
-              this.executeplancase()
-              this.batchdialogFormVisible = false
-            }).catch(res => {
-              this.$message.error('计划执行失败')
-            })
+            this.executeplancase()
+            this.batchdialogFormVisible = false
+            // addexecuteplanbatch(this.tmpplanbatch).then(() => {
+            //   this.executeplancase()
+            //   this.batchdialogFormVisible = false
+            // }).catch(res => {
+            //   this.$message.error('计划执行失败')
+            // })
           }
         })
       },
@@ -757,8 +1367,18 @@
               } else {
                 for (let i = 0; i < this.multipleSelection.length; i++) {
                   this.tmpplanbatchList.push({
-                    'planid': this.multipleSelection[0].id,
-                    'batchname': this.tmpplanbatch.batchname
+                    // 'planid': this.multipleSelection[0].id,
+                    // 'planname': this.multipleSelection[0].execplanname,
+                    // 'batchname': this.tmpplanbatch.batchname
+                    'executeplanname': this.tmpplanbatch.executeplanname,
+                    'batchname': this.tmpplanbatch.batchname,
+                    'exectype': this.tmpplanbatch.exectype,
+                    'execdate': this.tmpplanbatch.execdate,
+                    'creator': this.name,
+                    'projectid': this.tmpplanbatch.projectid,
+                    'exectime': this.tmpplanbatch.exectime,
+                    'executeplanid': this.tmpplanbatch.executeplanid,
+                    'exectmpdate': this.tmpplanbatch.exectmpdate
                   })
                 }
                 executeplan(this.tmpplanbatchList).then(() => {
@@ -880,6 +1500,9 @@
         return (this.searchparam.page - 1) * this.searchparam.size + index + 1
       },
 
+      planscenegetIndex(index) {
+        return (this.searchscene.page - 1) * this.searchscene.size + index + 1
+      },
       /**
        * 环境下拉框活的环境id
        */
@@ -1104,6 +1727,35 @@
         this.searchheaderbyepid()
       },
 
+      showtestsceneDialog(index) {
+        // 显示新增对话框
+        this.testscenedialogFormVisible = true
+        this.tmpexecplan.execplanid = this.executeplanList[index].id
+        this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
+        this.tmpexecplanforscene.testplanid = this.executeplanList[index].id
+        this.findscenebyexecplanid()
+      },
+
+      ShowAddScenceDialog(index) {
+        // 显示新增对话框
+        this.addtestscenedialogFormVisible = true
+        this.gettestsceneList()
+      },
+
+      ShowAddPlancaseconditionDialog(index) {
+        this.caseconditiondialogFormVisible = true
+        this.apiconditiondialogStatus = 'add'
+        this.tmpapicondition.id = ''
+        this.tmpapicondition.subconditionname = ''
+        this.tmpapicondition.deployunitname = ''
+        this.tmpapicondition.apiname = ''
+        this.tmpapicondition.modelname = ''
+        this.tmpapicondition.casename = ''
+        this.tmpapicondition.memo = ''
+        this.tmpapicondition.creator = this.name
+        this.tmpapicondition.projectid = window.localStorage.getItem('pid')
+      },
+
       // 显示新增对话框
       showAddapiparamsDialog() {
         this.modifyparamdialogFormVisible = true
@@ -1251,6 +1903,35 @@
           if (this.enviromentnameList[i].enviromentname === this.tmpexecuteplan.enviromentname) {
             this.tmpexecuteplan.envid = this.enviromentnameList[i].id
           }
+        }
+      },
+
+      /**
+       * 装载执行计划的用例
+       */
+      addplantestscene() {
+        this.addtestsceneList = []
+        if (this.scenemultipleSelection.length === 0) {
+          this.$message.error('请选择添加的场景')
+        } else {
+          for (let i = 0; i < this.scenemultipleSelection.length; i++) {
+            this.addtestsceneList.push({
+              'testscenenid': this.scenemultipleSelection[i].id,
+              'scenename': this.scenemultipleSelection[i].scenename,
+              'testplanid': this.tmpexecplan.execplanid,
+              'planname': this.tmpexecplan.execplanname,
+              'ordernum': 0,
+              'creator': this.name,
+              'projectid': window.localStorage.getItem('pid')
+            })
+          }
+          addtestplantestscene(this.addtestsceneList).then(() => {
+            this.$message.success('装载成功')
+            this.addtestscenedialogFormVisible = false
+            this.findscenebyexecplanid()
+          }).catch(res => {
+            this.$message.error('装载失败')
+          })
         }
       },
 
