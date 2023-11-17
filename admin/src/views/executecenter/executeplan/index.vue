@@ -739,7 +739,7 @@
     search as getapicases
   } from '@/api/assets/apicases'
   import { search as getapiList } from '@/api/deployunit/api'
-  import { getdepunitList as getdepunitList } from '@/api/deployunit/depunit'
+  import { getdepunitLists } from '@/api/deployunit/depunit'
   // import { addexecuteplanbatch as addexecuteplanbatch } from '@/api/executecenter/executeplanbatch'
   import { searchcases as searchtestplancases, addexecuteplantestcase, removeexecuteplantestcase } from '@/api/executecenter/executeplantestcase'
   import { checkplancondition as checkplancondition, search, addexecuteplan, updateexecuteplan, removeexecuteplan, executeplan, updateexecuteplanstatus } from '@/api/executecenter/executeplan'
@@ -835,7 +835,8 @@
           page: 1, // 页码
           size: 10, // 每页数量
           listLoading: true,
-          executeplanname: ''
+          executeplanname: '',
+          projectid: ''
         },
         caselistQuery: {
           page: 1, // 页码
@@ -932,6 +933,7 @@
         tmpplanenv: {
           id: '',
           envid: '',
+          projectid: '',
           enviromentname: ''
         },
         tmpapicases: {
@@ -1004,6 +1006,8 @@
     created() {
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpplanbatch.projectid = window.localStorage.getItem('pid')
+      this.tmpplanenv.projectid = window.localStorage.getItem('pid')
+      this.listQuery.projectid = window.localStorage.getItem('pid')
       this.getexecuteplanList()
       this.getapiList()
       this.getdepunitList()
@@ -1558,8 +1562,8 @@
        */
       getdepunitList() {
         this.caselistLoading = true
-        getdepunitList(this.listQuery).then(response => {
-          this.deployunitList = response.data.list
+        getdepunitLists(this.listQuery).then(response => {
+          this.deployunitList = response.data
           // this.casetotal = response.data.total
           // this.caselistLoading = false
         }).catch(res => {

@@ -6,10 +6,7 @@ import com.zoctan.api.core.exception.ServiceException;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.dto.Testplanandbatch;
-import com.zoctan.api.entity.Executeplan;
-import com.zoctan.api.entity.ExecuteplanTestcase;
-import com.zoctan.api.entity.Executeplanbatch;
-import com.zoctan.api.entity.Routeperformancereport;
+import com.zoctan.api.entity.*;
 import com.zoctan.api.mapper.ExecuteplanParamsMapper;
 import com.zoctan.api.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +38,12 @@ public class ExecuteplanController {
     private MacdepunitService macdepunitService;
     @Autowired
     private RouteperformancereportService routeperformancereportService;
+
+    @Autowired
+    private TestplanTestsceneService testplanTestsceneService;
+
+    @Autowired
+    private TestsceneTestcaseService testsceneTestcaseService;
 
     @PostMapping
     public Result add(@RequestBody Executeplan executeplan) {
@@ -89,37 +92,49 @@ public class ExecuteplanController {
             Long planid= executeplan.getId();
             Long envid= executeplan.getEnvid();
             String enviromentname= executeplan.getEnviromentname();
-            Integer casenum=execplantestcaseService.findcasenumbyplanid(planid);
+
+            Condition con=new Condition(TestplanTestscene.class);
+            con.createCriteria().andCondition("projectid = "+executeplan.getProjectid())
+                    .andCondition("testplanid = " +planid );
+            List<TestplanTestscene> testplanTestsceneList=testplanTestsceneService.listByCondition(con);
+            Integer casenum=0;
+            for (TestplanTestscene tes:testplanTestsceneList) {
+                Condition scenecon=new Condition(TestsceneTestcase.class);
+                scenecon.createCriteria().andCondition("testscenenid = "+tes.getTestscenenid());
+                List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(scenecon);
+                casenum=casenum+testsceneTestcaseList.size();
+            }
             if(casenum.intValue()==0)
             {
                 return ResultGenerator.genFailedResult("该执行计划下还未装载测试用例！");
             }
-            else
-            {
-                List<ExecuteplanTestcase> deployidlist = execplantestcaseService.finddeployunitbyplanid(planid);
-                if(deployidlist.size()==0)
-                {
-                    return ResultGenerator.genFailedResult("该执行计划下用例所在的所有微服务不存在，请检查是否被删除！");
-                }
-                else
-                {
-                    for (ExecuteplanTestcase ect: deployidlist) {
-                        Long deployid=ect.getDeployunitid();
-                        String deployname=ect.getDeployunitname();
-                        Integer machinenum= macdepunitService.findmachinenumbyenvidanddeployid(envid,deployid);
-                        if(machinenum.intValue()==0)
-                        {
-                            return ResultGenerator.genFailedResult("该执行计划的用例所在的微服务: "+deployname+" 在环境: "+enviromentname+" 中未完成部署！");
-                        }
-                    }
-                    return ResultGenerator.genOkResult();
-                }
-            }
+//            else
+//            {
+//                List<ExecuteplanTestcase> deployidlist = execplantestcaseService.finddeployunitbyplanid(planid);
+//                if(deployidlist.size()==0)
+//                {
+//                    return ResultGenerator.genFailedResult("该执行计划下用例所在的所有微服务不存在，请检查是否被删除！");
+//                }
+//                else
+//                {
+//                    for (ExecuteplanTestcase ect: deployidlist) {
+//                        Long deployid=ect.getDeployunitid();
+//                        String deployname=ect.getDeployunitname();
+//                        Integer machinenum= macdepunitService.findmachinenumbyenvidanddeployid(envid,deployid);
+//                        if(machinenum.intValue()==0)
+//                        {
+//                            return ResultGenerator.genFailedResult("该执行计划的用例所在的微服务: "+deployname+" 在环境: "+enviromentname+" 中未完成部署！");
+//                        }
+//                    }
+//                    return ResultGenerator.genOkResult();
+//                }
+//            }
         }
         catch (ServiceException se)
         {
             return ResultGenerator.genFailedResult(se.getMessage());
         }
+        return ResultGenerator.genOkResult();
     }
 
     @DeleteMapping("/{id}")
