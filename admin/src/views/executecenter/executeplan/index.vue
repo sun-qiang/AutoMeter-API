@@ -731,6 +731,106 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog title="场景前置条件" :visible.sync="scenecaseConditionFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="ShowAddcasecaseconditionDialog"
+            >添加前置接口</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddapidelayDialog"
+            >添加前置延时</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <!--      1.接口前置条件：-->
+
+      <el-table
+        :data="apiconditioncaseList"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="45">
+          <template slot-scope="scope">
+            <span v-text="apiconditioncaseIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="前置条件名" align="center" prop="subconditionname" width="150"/>
+        <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
+        <el-table-column label="所属用例" align="center" prop="conditionname" width="150"/>
+
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('testscene:caseupdateapicondition')  || hasPermission('testscene:casedeleteapicondition')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('testscene:caseupdateapicondition') && scope.row.id !== id"
+              @click.native.prevent="showUpdateapiconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('testscene:casedeleteapicondition') && scope.row.id !== id"
+              @click.native.prevent="removecaseapicondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!--      2.数据库前置条件：-->
+
+      <!--      <el-table-->
+      <!--        :data="dbconditioncaseList"-->
+      <!--        v-loading.body="listLoading"-->
+      <!--        element-loading-text="loading"-->
+      <!--        border-->
+      <!--        fit-->
+      <!--        highlight-current-row-->
+      <!--      >-->
+      <!--        <el-table-column label="编号" align="center" width="45">-->
+      <!--          <template slot-scope="scope">-->
+      <!--            <span v-text="dbconditioncaseIndex(scope.$index)"></span>-->
+      <!--          </template>-->
+      <!--        </el-table-column>-->
+      <!--        <el-table-column label="接口条件" align="center" prop="subconditionname" width="150"/>-->
+      <!--        <el-table-column label="接口" align="center" prop="conditionname" width="150"/>-->
+
+      <!--        <el-table-column label="管理" align="center"-->
+      <!--                         v-if="hasPermission('testscene:caseupdatedbcondition')  || hasPermission('testscene:casedeletedbcondition')">-->
+      <!--          <template slot-scope="scope">-->
+      <!--            <el-button-->
+      <!--              type="warning"-->
+      <!--              size="mini"-->
+      <!--              v-if="hasPermission('testscene:caseupdatedbcondition') && scope.row.id !== id"-->
+      <!--              @click.native.prevent="showUpdateparamsDialog(scope.$index)"-->
+      <!--            >修改</el-button>-->
+      <!--            <el-button-->
+      <!--              type="danger"-->
+      <!--              size="mini"-->
+      <!--              v-if="hasPermission('testscene:casedeletedbcondition') && scope.row.id !== id"-->
+      <!--              @click.native.prevent="removeexecuteplanparam(scope.$index)"-->
+      <!--            >删除</el-button>-->
+      <!--          </template>-->
+      <!--        </el-table-column>-->
+      <!--      </el-table>-->
+
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -816,11 +916,13 @@
         addsearchscene: {
           page: 1,
           size: 10,
-          casetype: null
+          casetype: null,
+          projectid: ''
         },
         searchscene: {
           page: 1,
           size: 10,
+          testplanid: 0,
           projectid: ''
         },
         listLoading: false, // 数据加载等待动画
@@ -858,6 +960,7 @@
         ConditionFormVisible: false,
         testscenedialogFormVisible: false,
         addtestscenedialogFormVisible: false,
+        scenecaseConditionFormVisible: false,
         loadcase: '装载用例',
         loadbatch: '执行计划',
         textMap: {
@@ -991,17 +1094,6 @@
         tmpexecplan: {
           execplanid: 0,
           execplanname: null
-        },
-        tmpexecplanforscene: {
-          page: 1,
-          size: 10,
-          testplanid: 0
-        },
-        tmpdeleteexecplanscene: {
-          page: 1,
-          size: 10,
-          testplanid: 0,
-          testscenenid: 0
         }
       }
     },
@@ -1015,6 +1107,7 @@
       this.tmpplanbatch.projectid = window.localStorage.getItem('pid')
       this.tmpplanenv.projectid = window.localStorage.getItem('pid')
       this.listQuery.projectid = window.localStorage.getItem('pid')
+      this.addsearchscene.projectid = window.localStorage.getItem('pid')
       this.getexecuteplanList()
       this.getapiList()
       this.getdepunitList()
@@ -1032,6 +1125,21 @@
     },
 
     methods: {
+      showtestscenecaseConditionDialog(index) {
+        this.scenecaseConditionFormVisible = true
+        this.tmpapicondition.conditionid = this.testscenecaseList[index].id
+        this.tmpapicondition.conditionname = this.testscenecaseList[index].casename
+        this.tmpapicondition.conditiontype = 'scencecase'
+        this.searchapicondition.conditiontype = 'scencecase'
+        this.searchapicondition.conditionid = this.testscenecaseList[index].id
+        this.searchdbcondition.conditiontype = 'scencecase'
+        this.searchdbcondition.conditionid = this.testscenecaseList[index].id
+        this.tmpdbcondition.conditionid = this.testscenecaseList[index].id
+        this.tmpdbcondition.conditionname = this.testscenecaseList[index].casename
+        this.tmpdbcondition.conditiontype = 'scencecase'
+        this.getapiconditionList()
+        this.getdbconditionList()
+      },
       /**
        * 删除测试场景
        * @param index 测试场景下标
@@ -1221,7 +1329,7 @@
       },
 
       findscenebyexecplanid() {
-        findscenebyexecplanid(this.tmpexecplanforscene).then(response => {
+        findscenebyexecplanid(this.searchscene).then(response => {
           this.testplansceneList = response.data.list
           const items = response.data.list
           this.testplansceneList = items.map(v => {
@@ -1762,8 +1870,7 @@
         this.testscenedialogFormVisible = true
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
-        this.tmpexecplanforscene.testplanid = this.executeplanList[index].id
-        this.tmpdeleteexecplanscene.testplanid = this.executeplanList[index].id
+        this.searchscene.testplanid = this.executeplanList[index].id
         this.findscenebyexecplanid()
       },
 
