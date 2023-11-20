@@ -79,4 +79,13 @@ public class TestplanTestsceneController {
         this.testplanTestsceneService.updateplanscenenorder(id,caseorder);
         return ResultGenerator.genOkResult();
     }
+
+
+    @PostMapping("/deletescene")
+    public Result deletescene(@RequestBody final Map<String, Object> param) {
+        long planid= Long.parseLong(param.get("testplanid").toString());
+        long testscenenid= Long.parseLong(param.get("testscenenid").toString());
+        this.testplanTestsceneService.removeexecuteplantestscene(planid,testscenenid);
+        return ResultGenerator.genOkResult();
+    }
 }

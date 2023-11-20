@@ -47,45 +47,33 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
         Map<Long, List<RequestObject>> requestObjectList = Core.InitalTestData(ctx);
         // 发送用例请求，并返回结果
         for (Long Sceneid : requestObjectList.keySet()) {
-            //fixSceneCondition
-            getLogger().info(" requestObject Sceneid id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + Sceneid);
-            for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
-                for (int i = 0; i < requestObject.getLoop(); i++) {
-                    try {
-                        Core.FixCase(requestObject, ctx, results);
-                    } catch (Exception e) {
-                        getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
+            try {
+                ArrayList<HashMap<String, String>> result=Core.GetSceneByid(Sceneid.toString());
+                if(result.size()>0)
+                {
+                    String SceneName= result.get(0).get("scenename");
+                    RequestObject re=new RequestObject();
+                    re.setTestplanid(planid);
+                    re.setBatchname(BatchName);
+                    re.setSlaverid(SlaverId);
+                    re.setSceneid(Sceneid);
+                    re.setScenename(SceneName);
+                    Core.FixSceneCondition(re);
+
+                    getLogger().info(" requestObject Sceneid id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + Sceneid);
+                    for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
+                        for (int i = 0; i < requestObject.getLoop(); i++) {
+                            try {
+                                Core.FixCase(requestObject, ctx, results);
+                            } catch (Exception e) {
+                                getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
+                            }
+                        }
                     }
-//                    long Start = new Date().getTime();
-//                    //断言信息汇总
-//                    String AssertInfo = "";
-//                    String ErrorInfo = "";
-//                    String ActualResult = "";
-//                    TestResponeData responeData = new TestResponeData();
-//                    TestAssert TestAssert = new TestAssert(getLogger());
-//                    try {
-//                        //增加条件处理逻辑，bug用例前置api还未执行，变量未产生，用例的参数值是错的
-//                        Core.FixCaseCondition(requestObject);
-//                        requestObject = Core.GetFuntionHttpRequestData(requestObject);
-//                        responeData = Core.request(requestObject);// SendCaseRequest(requestObject, Core);
-//                        getLogger().info("用例：" + requestObject.getCasename() + " 请求完成 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:");
-//                        ActualResult = responeData.getResponeContent();
-//                        //断言
-//                        AssertInfo = Core.FixAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
-//                    } catch (Exception ex) {
-//                        getLogger().error("CaseException start。。。。。。。。。。。。。!" + ex.getMessage());
-//                        String ExceptionMess = ex.getMessage();
-//                        if (ExceptionMess.contains("Illegal character in path at")) {
-//                            ExceptionMess = "Url不合法，请检查是否有无法替换的变量，或者有相关非法字符：" + ex.getMessage();
-//                        }
-//                        ErrorInfo = CaseException(results, TestAssert, ExceptionMess);
-//                    } finally {
-//                        // 保存用例运行结果，Jmeter的sample运行结果
-//                        long End = new Date().getTime();
-//                        long CostTime = End - Start;
-//                        CaseFinish(Core, results, TestAssert, AssertInfo, CostTime, ErrorInfo, ActualResult, ctx, requestObject, responeData);
-//                    }
                 }
+            } catch (Exception e) {
+                getLogger().info(" 场景id" + Sceneid + "执行前置条件失败异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
+                //保存失败结果
             }
             //更新计划批次场景为运行完成状态
             Core.FinisBatchScene(planid, BatchName, Sceneid.toString());
@@ -93,77 +81,6 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
         //收集本次运行的功能用例统计结果
         //CollectionBatchDeployReportStatics(Core, apicasesReportstatics, BatchName, BatchDeployTotalCaseNums, BatchDeployTotalPassNums, BatchDeployTotalFailNUms, AllCostTime, SlaverId);
         Core.FinisBatchCase(planid, BatchName, SlaverId);
-//    Map<String, List<RequestObject>> BatchRequestObjectMap = InitalTestData(Core, ctx);
-//
-//
-//        for (String BatchName : BatchRequestObjectMap.keySet()) {
-//            getLogger().info("BatchName 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + BatchName + " size is" + BatchRequestObjectMap.get(BatchName).size());
-//            String TestPlanID = "";
-//            if (BatchRequestObjectMap.get(BatchName).size() > 0) {
-//                TestPlanID = BatchRequestObjectMap.get(BatchName).get(0).getTestplanid();
-//                getLogger().info("TestPlanID 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + TestPlanID);
-//                Core.UpdateReportStatics(TestPlanID, BatchName, "运行中");
-//            }
-//            Map<String, List<RequestObject>> DeployUnitrequestObjectMap = GetGroupMap(BatchRequestObjectMap.get(BatchName), "DeployID");
-//            for (String DeployUnitID : DeployUnitrequestObjectMap.keySet()) {
-//                ApicasesReportstatics apicasesReportstatics = new ApicasesReportstatics();
-//                getLogger().info("DeployUnitID 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + DeployUnitID + " size is:" + DeployUnitrequestObjectMap.get(DeployUnitID).size());
-//                apicasesReportstatics.setDeployunitid(DeployUnitID);
-//                int BatchDeployTotalCaseNums = DeployUnitrequestObjectMap.get(DeployUnitID).size();
-//                int BatchDeployTotalPassNums = 0;
-//                int BatchDeployTotalFailNUms = 0;
-//                long AllCostTime = 0;
-//                // 发送用例请求，并返回结果
-//                for (RequestObject requestObject : DeployUnitrequestObjectMap.get(DeployUnitID)) {
-//                    for (int i = 0; i < requestObject.getLoop(); i++) {
-//                        getLogger().info("Deployid:" + DeployUnitID + " requestObject case id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCaseid());
-//                        apicasesReportstatics.setTestplanid(requestObject.getTestplanid());
-//                        apicasesReportstatics.setTestplanname(requestObject.getTestplanname());
-//                        apicasesReportstatics.setSlaverid(requestObject.getSlaverid());
-//                        long Start = new Date().getTime();
-//                        //断言信息汇总
-//                        String AssertInfo = "";
-//                        String ErrorInfo = "";
-//                        String ActualResult = "";
-//                        TestResponeData responeData=new TestResponeData();
-//                        TestAssert TestAssert = new TestAssert(getLogger());
-//                        try {
-//                            //增加条件处理逻辑，bug用例前置api还未执行，变量未产生，用例的参数值是错的
-//                            Core.FixCondition(requestObject);
-//                            requestObject=Core.GetFuntionHttpRequestData(requestObject);
-//                            responeData = Core.request(requestObject);// SendCaseRequest(requestObject, Core);
-//                            getLogger().info("用例："+requestObject.getCasename()+" 请求完成 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" );
-//                            ActualResult = responeData.getResponeContent();
-//                            //断言
-//                            AssertInfo = Core.FixAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
-//                        } catch (Exception ex) {
-//                            getLogger().error("CaseException start。。。。。。。。。。。。。!" + ex.getMessage());
-//                            String ExceptionMess = ex.getMessage();
-//                            if (ExceptionMess.contains("Illegal character in path at")) {
-//                                ExceptionMess = "Url不合法，请检查是否有无法替换的变量，或者有相关非法字符：" + ex.getMessage();
-//                            }
-//                            ErrorInfo = CaseException(results, TestAssert, ExceptionMess);
-//                        } finally {
-//                            // 保存用例运行结果，Jmeter的sample运行结果
-//                            long End = new Date().getTime();
-//                            long CostTime = End - Start;
-//                            AllCostTime = AllCostTime + CostTime;
-//                            if (TestAssert.isCaseresult()) {
-//                                BatchDeployTotalPassNums = BatchDeployTotalPassNums + 1;
-//                            } else {
-//                                BatchDeployTotalFailNUms = BatchDeployTotalFailNUms + 1;
-//                            }
-//
-//                            CaseFinish(Core, results, TestAssert, AssertInfo, CostTime, ErrorInfo, ActualResult, ctx, requestObject,responeData);
-//                        }
-//                    }
-//                }
-//                //收集本次运行的功能用例统计结果
-//                CollectionBatchDeployReportStatics(Core, apicasesReportstatics, BatchName, BatchDeployTotalCaseNums, BatchDeployTotalPassNums, BatchDeployTotalFailNUms, AllCostTime, SlaverId);
-//            }
-//            FinisBatchCase(Core, TestPlanID, BatchName, SlaverId);
-//        }
-        //Jmeter事务，表示这是事务的结束点
         results.sampleEnd();
         return results;
     }

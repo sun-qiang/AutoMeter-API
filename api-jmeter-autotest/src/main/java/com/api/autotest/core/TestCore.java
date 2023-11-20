@@ -135,7 +135,7 @@ public class TestCore {
 
 
     public void FinisBatchScene(String planid, String BatchName, String Sceneid) {
-        UpdateBatchScene(planid, BatchName, Sceneid, "运行完成");
+        UpdateBatchScene(planid, BatchName, Sceneid, "已完成");
     }
 
     public void FinisBatchCase(String planid, String BatchName, String SlaverId) {
@@ -229,7 +229,7 @@ public class TestCore {
                             logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
                             //增加判断是否已经存在
                             testMysqlHelp.SubConditionReportSave(testconditionReport);
-                            testCondition.FixInterfaceVariables(requestObject, Long.parseLong(requestObject.getCaseid()), testResponeData, Respone,Long.parseLong(requestObject.getTestplanid()) , requestObject.getTestplanname(), requestObject.getBatchname());
+                            testCondition.FixInterfaceVariables(requestObject,ConditionTestScenecaseid, Long.parseLong(requestObject.getCaseid()), testResponeData, Respone,Long.parseLong(requestObject.getTestplanid()) , requestObject.getTestplanname(), requestObject.getBatchname());
                             flag=false;
                         }
                     }
@@ -283,7 +283,7 @@ public class TestCore {
     }
 
 
-    //处理条件入口
+    //处理用例条件入口
     public void FixCaseCondition(RequestObject requestObject) throws Exception {
         Long testcaseid = Long.parseLong(requestObject.getCaseid());
         Long secneid = requestObject.getSceneid();
@@ -366,6 +366,16 @@ public class TestCore {
 //                logger.info("TestCore 完成处理用例前置条件-延时子条件-============：");
 //            }
 //        }
+    }
+
+
+    //处理场景条件入口
+    public void FixSceneCondition(RequestObject requestObject) throws Exception {
+        ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(requestObject.getSceneid(), "scence");
+        for (int i = 0; i < ConditionApiList.size(); i++) {
+            HashMap<String, String> hs = ConditionApiList.get(i);
+            testCondition.conditionapi(hs, requestObject);
+        }
     }
 
     // 发送http请求
@@ -706,6 +716,12 @@ public class TestCore {
     public long PlanBatchAllDipatchCancel(String Testplanid, String batchname) {
         long DispatchCancel = testMysqlHelp.PlanBatchAllDipatchCancel(Testplanid, batchname);
         return DispatchCancel;
+    }
+
+    // 根据id获取场景
+    public ArrayList<HashMap<String, String>>  GetSceneByid(String Sceneid) {
+        ArrayList<HashMap<String, String>> result =testMysqlHelp.GetSceneByID(Sceneid);
+        return result;
     }
 
     // 更新计划批次场景状态

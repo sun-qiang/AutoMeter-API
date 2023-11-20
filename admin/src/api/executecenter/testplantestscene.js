@@ -112,9 +112,9 @@ export function updatetestplanstatus(testplanForm) {
   })
 }
 
-export function removetestplancase(testplanId) {
+export function removetestplanscene(executeplanSceneId) {
   return request({
-    url: '/testplan/testscene/' + testplanId,
+    url: '/testplan/testscene/' + executeplanSceneId,
     method: 'delete'
   })
 }

@@ -12,5 +12,5 @@ public interface TestplanTestsceneMapper extends MyMapper<TestplanTestscene> {
     void savetestplanscenen(@Param("casedataList")final List<TestplanTestscene> testcase);
     List<TestplanTestscene> findscenebyexecplanid(final Map<String, Object> params);
     void updateplanscenenorder(final long id,long ordernum);
-
+    void removeexecuteplantestscene(@Param("testplanid")final long planid,@Param("testscenenid")final long sceneid);
 }

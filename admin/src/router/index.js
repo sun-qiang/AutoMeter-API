@@ -159,7 +159,7 @@ export const asyncRouterMap = [
       { path: 'globalvariables/list', name: '全局变量', component: _import('testvariables/globalvariables/index'), meta: { title: '全局变量', permission: ['globalvariables:list'] }},
       { path: 'globalheader/list', name: '全局Header', component: _import('testvariables/globalheader/index'), meta: { title: '全局Header', permission: ['globalheader:list'] }},
       { path: 'variables/list', name: '随机变量', component: _import('testvariables/variables/index'), meta: { title: '随机变量', permission: ['variables:list'] }},
-      { path: 'testvariables/list', name: '接口变量', component: _import('testvariables/testvariables/index'), meta: { title: '接口变量', permission: ['testvariables:list'] }},
+      // { path: 'testvariables/list', name: '接口变量', component: _import('testvariables/testvariables/index'), meta: { title: '接口变量', permission: ['testvariables:list'] }},
       { path: 'dbvariables/list', name: '数据库变量', component: _import('testvariables/dbvariables/index'), meta: { title: '数据库变量', permission: ['dbvariables:list'] }},
       { path: 'scriptvariables/list', name: '脚本变量', component: _import('testvariables/scriptvariables/index'), meta: { title: '脚本变量', permission: ['scriptvariables:list'] }},
       { path: 'scriptvariables/list', name: '环境变量', component: _import('testvariables/scriptvariables/index'), meta: { title: '环境变量', permission: ['scriptvariables:list'] }}
@@ -167,19 +167,19 @@ export const asyncRouterMap = [
       // { path: 'testvariablesvalue/list', name: '变量结果', component: _import('testvariables/testvariablesvalue/index'), meta: { title: '变量结果', permission: ['testvariablesvalue:list'] }}
     ]
   },
-  // {
-  //   path: '/condition',
-  //   component: Layout,
-  //   name: '条件管理',
-  //   icon: 'condition',
-  //   children: [
-  //     { path: 'condition/list', name: '父条件管理', component: _import('condition/condition/index'), meta: { title: '父条件管理', permission: ['condition:list'] }},
-  //     { path: 'apicondition/list', name: '接口子条件', component: _import('condition/apicondition/index'), meta: { title: '接口子条件', permission: ['apicondition:list'] }},
-  //     { path: 'dbcondition/list', name: '数据库子条件', component: _import('condition/dbcondition/index'), meta: { title: 'DB子条件', permission: ['dbcondition:list'] }},
-  //     { path: 'scriptcondition/list', name: '脚本子条件', component: _import('condition/scriptcondition/index'), meta: { title: '脚本子条件', permission: ['scriptcondition:list'] }},
-  //     { path: 'delaycondition/list', name: '延时子条件', component: _import('condition/delaycondition/index'), meta: { title: '延时子条件', permission: ['delaycondition:list'] }}
-  //   ]
-  // },
+  {
+    path: '/condition',
+    component: Layout,
+    name: '条件管理',
+    icon: 'condition',
+    children: [
+      { path: 'condition/list', name: '父条件管理', component: _import('condition/condition/index'), meta: { title: '父条件管理', permission: ['condition:list'] }},
+      { path: 'apicondition/list', name: '接口子条件', component: _import('condition/apicondition/index'), meta: { title: '接口子条件', permission: ['apicondition:list'] }},
+      { path: 'dbcondition/list', name: '数据库子条件', component: _import('condition/dbcondition/index'), meta: { title: 'DB子条件', permission: ['dbcondition:list'] }},
+      { path: 'scriptcondition/list', name: '脚本子条件', component: _import('condition/scriptcondition/index'), meta: { title: '脚本子条件', permission: ['scriptcondition:list'] }},
+      { path: 'delaycondition/list', name: '延时子条件', component: _import('condition/delaycondition/index'), meta: { title: '延时子条件', permission: ['delaycondition:list'] }}
+    ]
+  },
   {
     path: '/assets',
     component: Layout,

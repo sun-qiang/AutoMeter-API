@@ -38,4 +38,9 @@
     update testplan_testscene set ordernum = #{ordernum},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
+
+
+  <delete id="removeexecuteplantestscene">
+    DELETE from testplan_testscene where testplanid = #{testplanid} and testscenenid=#{testscenenid}
+  </delete>
 </mapper>

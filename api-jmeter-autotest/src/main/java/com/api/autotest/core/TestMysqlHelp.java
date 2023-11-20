@@ -104,11 +104,11 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
             list = MysqlConnectionUtils.query(Sql);
-            for (HashMap<String, String> maplog : list) {
-                for (String Key : maplog.keySet()) {
-                    //logger.info("获取数据的字段名为:  " + Key + "  字段值为：" + maplog.get(Key));
-                }
-            }
+//            for (HashMap<String, String> maplog : list) {
+//                for (String Key : maplog.keySet()) {
+//                    //logger.info("获取数据的字段名为:  " + Key + "  字段值为：" + maplog.get(Key));
+//                }
+//            }
         } catch (Exception e) {
             logger.info(logplannameandcasename + "获取数据库 Sql is:  " + Sql + "  数据库异常：" + e.getMessage());
         }
@@ -569,6 +569,19 @@ public class TestMysqlHelp {
         return list;
     }
 
+
+    //查询场景
+    public ArrayList<HashMap<String, String>> GetSceneByID(String Sceneid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select *  from testscene where id=" + Sceneid;
+            logger.info(logplannameandcasename + "获取数据库 查询场景 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 查询场景异常...........: " + e.getMessage());
+        }
+        return result;
+    }
 
     //查询变量
     public ArrayList<HashMap<String, String>> GetVaribales(String VaribaleID) {

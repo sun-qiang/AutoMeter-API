@@ -35,4 +35,9 @@ private TestplanTestsceneMapper testplanTestsceneMapper;
     public void updateplanscenenorder(long id, long ordernum) {
         testplanTestsceneMapper.updateplanscenenorder(id, ordernum);
     }
+
+    @Override
+    public void removeexecuteplantestscene(long planid, long sceneid) {
+        testplanTestsceneMapper.removeexecuteplantestscene(planid,sceneid);
+    }
 }

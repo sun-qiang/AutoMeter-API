@@ -530,13 +530,13 @@
 <!--              @click.native.prevent="showAddapiparamsDialog"-->
 <!--            >添加前置脚本</el-button>-->
 
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              size="mini"-->
-<!--              icon="el-icon-plus"-->
-<!--              v-if="hasPermission('testscene:scenecasecondition')"-->
-<!--              @click.native.prevent="showAddapiparamsDialog"-->
-<!--            >添加前置延时</el-button>-->
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddapidelayDialog"
+            >添加前置延时</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -1317,9 +1317,9 @@ export default {
     },
 
     gettestscenecaseList() {
-      this.searchcase.executeplanid = this.tmpaddcaseexecuteplanid
-      this.searchcase.deployunitid = this.tmpaddcasedeployunitid
-      this.searchcase.apiid = this.tmpaddcaseapiid
+      this.searchcase.executeplanid = this.tmpcaseexecuteplanid
+      this.searchcase.deployunitid = this.tmpcasedeployunitid
+      this.searchcase.apiid = this.tmpcaseapiid
       findcasebyscenenid(this.searchcase).then(response => {
         this.testscenecaseList = response.data.list
         const items = response.data.list
@@ -1707,6 +1707,7 @@ export default {
     deployunitselectChanged(e) {
       this.searchcase.modelid = 0
       this.searchcase.apiid = 0
+      this.searchcase.deployunitid = 0
       for (let i = 0; i < this.deployunitList.length; i++) {
         if (this.deployunitList[i].deployunitname === e) {
           this.searchcase.deployunitid = this.deployunitList[i].id

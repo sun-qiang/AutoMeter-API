@@ -48,13 +48,14 @@ public class TestCondition {
     //接口子条件处理
     public void conditionapi(HashMap<String, String> conditionApi, RequestObject requestObject) throws Exception {
         long PlanID = Long.parseLong(requestObject.getTestplanid());
+        long ConidtionID =Long.parseLong(conditionApi.get("id"));
         String Batchname = requestObject.getBatchname();
         String CondionCaseID = conditionApi.get("caseid");
         requestObject.setCasename(conditionApi.get("casename"));
         String Respone = "";
         TestResponeData responeData = new TestResponeData();
         //查看条件是否已经保存过，有则返回，无则执行
-        ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID, Batchname, Long.parseLong(conditionApi.get("id")), "接口");
+        ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID, Batchname, ConidtionID, "接口");
         if (ApiConditionReportList.size() == 0)
 //        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetReportByPBST(PlanID, Batchname, Long.parseLong(CondionCaseID), Sceneid);
 //        if (result.size() > 0) {
@@ -136,7 +137,7 @@ public class TestCondition {
             }
         }
         //根据用例是否有中间变量(多个)，如果有变量，解析（header,cookies,json，xml，html）保存变量值表，没有变量直接保存条件结果表
-        FixInterfaceVariables(requestObject, Long.parseLong(CondionCaseID), responeData, Respone, PlanID, requestObject.getTestplanname(), Batchname);
+        FixInterfaceVariables(requestObject,ConidtionID, Long.parseLong(CondionCaseID), responeData, Respone, PlanID, requestObject.getTestplanname(), Batchname);
     }
 
 
@@ -255,7 +256,7 @@ public class TestCondition {
         }
     }
 
-    public void FixInterfaceVariables(RequestObject requestObject, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {
+    public void FixInterfaceVariables(RequestObject requestObject,Long ConditionID, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {
         ArrayList<HashMap<String, String>> apicasesVariablesList = testMysqlHelp.GetApiCaseVaribales(CaseID);
         if (apicasesVariablesList.size() > 0) {
             for (HashMap<String, String> map : apicasesVariablesList) {
@@ -289,6 +290,8 @@ public class TestCondition {
                 } else {
                     TestvariablesValue testvariablesValue = new TestvariablesValue();
                     testvariablesValue.setPlanid(PlanID);
+                    testvariablesValue.setConditionid(ConditionID);
+                    testvariablesValue.setConditiontype("portal");
                     testvariablesValue.setPlanname(PlanName);
                     testvariablesValue.setBatchname(BatchName);
                     testvariablesValue.setCaseid(CaseID);

@@ -664,7 +664,7 @@
               type="danger"
               size="mini"
               v-if="hasPermission('testscene:deletecase') && scope.row.id !== id"
-              @click.native.prevent="removetestscenecase(scope.$index)"
+              @click.native.prevent="removetestplanscene(scope.$index)"
             >删除</el-button>
             <el-button
               type="primary"
@@ -755,6 +755,7 @@
   import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
   import { search as searchapicondition, addapicondition, removeapicondition, updateapicondition } from '@/api/condition/apicondition'
   import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
+  import { removetestplanscene } from '@/api/executecenter/testplantestscene'
 
   export default {
     name: '测试集合',
@@ -995,6 +996,12 @@
           page: 1,
           size: 10,
           testplanid: 0
+        },
+        tmpdeleteexecplanscene: {
+          page: 1,
+          size: 10,
+          testplanid: 0,
+          testscenenid: 0
         }
       }
     },
@@ -1025,6 +1032,25 @@
     },
 
     methods: {
+      /**
+       * 删除测试场景
+       * @param index 测试场景下标
+       */
+      removetestplanscene(index) {
+        this.$confirm('删除该测试场景？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.testplansceneList[index].id
+          removetestplanscene(id).then(() => {
+            this.$message.success('删除成功')
+            this.findscenebyexecplanid()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
       showUpdateapiconditionDialog(index) {
         this.caseconditiondialogFormVisible = true
         this.apiconditiondialogStatus = 'update'
@@ -1737,6 +1763,7 @@
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
         this.tmpexecplanforscene.testplanid = this.executeplanList[index].id
+        this.tmpdeleteexecplanscene.testplanid = this.executeplanList[index].id
         this.findscenebyexecplanid()
       },
 

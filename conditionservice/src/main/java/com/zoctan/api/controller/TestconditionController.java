@@ -382,7 +382,7 @@ public class TestconditionController {
                 testvariablesValue.setPlanid(Planid);
                 testvariablesValue.setPlanname(requestObject.getTestplanname());
                 testvariablesValue.setBatchname(requestObject.getBatchname());
-                testvariablesValue.setSlaverid(Long.parseLong(requestObject.getSlaverid()));
+                testvariablesValue.setSlaverid(new Long(0));
                 testvariablesValue.setCaseid(CaseID);
                 testvariablesValue.setVariablestype("接口");
                 testvariablesValue.setCasename(apicases.getCasename());
