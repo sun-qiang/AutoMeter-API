@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface ConditionDelayMapper extends MyMapper<ConditionDelay> {
     List<ConditionDelay> findtestconditiondelayWithName(final Map<String, Object> params);
+    List<ConditionDelay> findtestconditiondelayWithType(final Map<String, Object> params);
 
     void updateTestconditiondelay(ConditionDelay params);
 }

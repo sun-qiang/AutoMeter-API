@@ -30,6 +30,14 @@ export function search(delayconditionForm) {
   })
 }
 
+export function searchbytype(delayconditionForm) {
+  return request({
+    url: '/condition/delay/searchbytype',
+    method: 'post',
+    data: delayconditionForm
+  })
+}
+
 export function adddelaycondition(delayconditionForm) {
   return request({
     url: '/condition/delay',

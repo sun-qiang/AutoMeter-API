@@ -28,6 +28,11 @@ private ConditionDelayMapper conditionDelayMapper;
     }
 
     @Override
+    public List<ConditionDelay> findtestconditiondelayWithType(Map<String, Object> params) {
+        return conditionDelayMapper.findtestconditiondelayWithType(params);
+    }
+
+    @Override
     public void updateTestconditiondelay(ConditionDelay params) {
         conditionDelayMapper.updateTestconditiondelay(params);
     }

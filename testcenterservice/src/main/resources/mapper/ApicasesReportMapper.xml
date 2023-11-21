@@ -40,7 +40,7 @@
   </select>
 
   <select id="findApicasereportWithNameandStatus" resultMap="BaseResultMap">
-    SELECT b.casename,b.apiname,a.status,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
+    SELECT b.casename,b.apiname,a.status,a.scenename,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
     FROM apicases_report a inner join apicases b on a.caseid=b.id
     where a.testplanid =#{testplanid} and a.batchname =#{batchname} and a.status =#{status}
     order by a.create_time desc

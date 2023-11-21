@@ -15,6 +15,8 @@ import java.util.Map;
 public interface ConditionDelayService extends Service<ConditionDelay> {
     List<ConditionDelay> findtestconditiondelayWithName(final Map<String, Object> params);
 
+    List<ConditionDelay> findtestconditiondelayWithType(final Map<String, Object> params);
+
     void updateTestconditiondelay(ConditionDelay params);
 
 

@@ -60,10 +60,11 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
                     re.setScenename(SceneName);
                     Core.FixSceneCondition(re);
 
-                    getLogger().info(" requestObject Sceneid id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + Sceneid);
+                    getLogger().info(" requestObject Sceneid id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + Sceneid+"用例个数："+requestObjectList.get(Sceneid).size());
                     for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
                         for (int i = 0; i < requestObject.getLoop(); i++) {
                             try {
+                                getLogger().info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename());
                                 Core.FixCase(requestObject, ctx, results);
                             } catch (Exception e) {
                                 getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());

@@ -416,7 +416,9 @@ public class TestCondition {
 
 
     //延时子条件处理
-    public void conditiondelay(HashMap<String, String> conditionDelay, long ConditionID, RequestObject requestObject, Long PlanID) throws Exception {
+    public void conditiondelay(HashMap<String, String> conditionDelay, RequestObject requestObject) throws Exception {
+        Long PlanID=Long.parseLong(requestObject.getTestplanid());
+        long ConidtionID =Long.parseLong(conditionDelay.get("id"));
         long Start = 0;
         long End = 0;
         long CostTime = 0;
@@ -431,13 +433,13 @@ public class TestCondition {
             logger.info("TestCondition条件报告延时子条件，延时时间为（毫秒）:-============：" + Respone);
             End = new Date().getTime();
             CostTime = End - Start;
-            SaveSubCondition("延时", requestObject, PlanID, ConditionID, conditionDelay, Respone, ConditionResultStatus, CostTime);
+            SaveSubCondition("延时", requestObject, PlanID, ConidtionID, conditionDelay, Respone, ConditionResultStatus, CostTime);
         } catch (Exception ex) {
             ConditionResultStatus = "失败";
             Respone = ex.getMessage();
             End = new Date().getTime();
             CostTime = End - Start;
-            SaveSubCondition("延时", requestObject, PlanID, ConditionID, conditionDelay, Respone, ConditionResultStatus, CostTime);
+            SaveSubCondition("延时", requestObject, PlanID, ConidtionID, conditionDelay, Respone, ConditionResultStatus, CostTime);
             throw new Exception("延时子条件执行异常：" + ex.getMessage());
         }
     }
@@ -447,7 +449,7 @@ public class TestCondition {
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         ArrayList<HashMap<String, String>> conditionDelayList = testMysqlHelp.GetDelayConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionDelay : conditionDelayList) {
-            conditiondelay(conditionDelay, ConditionID, requestObject, PlanID);
+//            conditiondelay(conditionDelay, ConditionID, requestObject, PlanID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;

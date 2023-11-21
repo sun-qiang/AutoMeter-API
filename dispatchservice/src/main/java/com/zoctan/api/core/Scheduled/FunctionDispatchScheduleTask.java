@@ -85,6 +85,7 @@ public class FunctionDispatchScheduleTask {
             long redis_default_expire_time = 2000;
             boolean lock = redisUtils.tryLock(redisKey, "FunctionDispatchScheduleTask", redis_default_expire_time);
             if (lock) {
+                FunctionDispatchScheduleTask.log.info("调度服务【功能】lock......................................................................" );
                 try {
                     Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始");
                     if (executeplanbatch != null) {

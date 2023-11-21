@@ -173,7 +173,7 @@ public class TestCore {
             //保存报告
             savetestcaseresult(testAssert.isCaseresult(), time, ActualResult, assertInfo, ErrorInfo, requestObject, ctx);
             //查询自己是不是条件，如果是并且条件报告中没有结果，则保存条件报告，解析变量保存
-            FixCaseFinishCondition(requestObject,testResponeData);
+            FixCaseFinishCondition(requestObject, testResponeData);
             //转换成json存数据库新报告扩展表
 //            String testResponeDatarResult = JSONObject.toJSONString(testResponeData);
 //            logger.error("用例testResponeDatarResult，请检查.....................................................!-- " + key + " ---" + testResponeDatarResult);
@@ -188,10 +188,9 @@ public class TestCore {
     }
 
     public void FixCaseFinishCondition(RequestObject requestObject, TestResponeData testResponeData) {
-        try
-        {
-            Long PlanID=Long.parseLong(requestObject.getTestplanid());
-            String BatchName=requestObject.getBatchname();
+        try {
+            Long PlanID = Long.parseLong(requestObject.getTestplanid());
+            String BatchName = requestObject.getBatchname();
             Long SceneID = requestObject.getSceneid();
             ArrayList<HashMap<String, String>> ScenceCaseList = GetSceneCaseByID(SceneID);
             Long ConditionCaseID = Long.parseLong(requestObject.getCaseid());
@@ -208,9 +207,8 @@ public class TestCore {
                     }
                     if (flag) {
                         //需要判断是否已经存条件报告，不存在则新增条件报告
-                        ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID,BatchName,Long.parseLong(hs.get("id")),"接口");
-                        if(ApiConditionReportList.size()==0)
-                        {
+                        ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID, BatchName, Long.parseLong(hs.get("id")), "接口");
+                        if (ApiConditionReportList.size() == 0) {
                             String Respone = testResponeData.getResponeContent();
                             String status = "成功";
                             Long runtime = testResponeData.getResponeTime();
@@ -229,22 +227,22 @@ public class TestCore {
                             logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
                             //增加判断是否已经存在
                             testMysqlHelp.SubConditionReportSave(testconditionReport);
-                            testCondition.FixInterfaceVariables(requestObject,ConditionTestScenecaseid, Long.parseLong(requestObject.getCaseid()), testResponeData, Respone,Long.parseLong(requestObject.getTestplanid()) , requestObject.getTestplanname(), requestObject.getBatchname());
-                            flag=false;
+                            testCondition.FixInterfaceVariables(requestObject, ConditionTestScenecaseid, Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
+                            flag = false;
                         }
                     }
                 }
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             logger.info("FixCaseFinishCondition用例是否为条件处理异常：" + requestObject.getCasename() + ex.getMessage());
         }
     }
 
     public void FixCase(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results) throws Exception {
         FixCaseCondition(requestObject);
+        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename()+"条件处理完成");
         FixCaseData(requestObject, ctx, results, true, null);
+        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename()+"数据处理完成");
     }
 
     public void FixCaseData(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results, boolean flag, TestResponeData responeData1) throws Exception {
@@ -290,10 +288,21 @@ public class TestCore {
         ArrayList<HashMap<String, String>> testscenecaseList = GetSceneID(testcaseid, secneid);
         if (testscenecaseList.size() > 0) {
             long SceneCaseID = Long.parseLong(testscenecaseList.get(0).get("id"));
+            //接口条件
             ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(SceneCaseID, "scencecase");
             for (int i = 0; i < ConditionApiList.size(); i++) {
                 HashMap<String, String> hs = ConditionApiList.get(i);
                 testCondition.conditionapi(hs, requestObject);
+            }
+            //延时条件
+            ArrayList<HashMap<String, String>> ConditionDelayList = GetConditionDelayByObjectIDAndType(SceneCaseID, "scencecase");
+            if (ConditionDelayList.size() > 0) {
+                for (int i = 0; i < ConditionDelayList.size(); i++) {
+                    HashMap<String, String> hs = ConditionApiList.get(i);
+                    logger.info("TestCore 开始处理用例前置条件-延时子条件-============：");
+                    testCondition.conditiondelay(hs, requestObject);
+                    logger.info("TestCore 完成处理用例前置条件-延时子条件-============：");
+                }
             }
         }
 //        Long ObjectID = Long.parseLong(requestObject.getCaseid());
@@ -620,6 +629,12 @@ public class TestCore {
 
 
     //根据目标id和类型获取接口条件
+    private ArrayList<HashMap<String, String>> GetConditionDelayByObjectIDAndType(Long Objectid, String Objecttype) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionDelayByObjectIDAndType(Objectid, Objecttype);
+        return result;
+    }
+
+    //根据目标id和类型获取接口条件
     private ArrayList<HashMap<String, String>> GetConditionApiByObjectIDAndType(Long Objectid, String Objecttype) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionApiByObjectIDAndType(Objectid, Objecttype);
         return result;
@@ -719,8 +734,8 @@ public class TestCore {
     }
 
     // 根据id获取场景
-    public ArrayList<HashMap<String, String>>  GetSceneByid(String Sceneid) {
-        ArrayList<HashMap<String, String>> result =testMysqlHelp.GetSceneByID(Sceneid);
+    public ArrayList<HashMap<String, String>> GetSceneByid(String Sceneid) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetSceneByID(Sceneid);
         return result;
     }
 

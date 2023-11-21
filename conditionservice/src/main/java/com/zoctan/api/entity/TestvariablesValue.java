@@ -17,6 +17,26 @@ public class TestvariablesValue {
      */
     private Long planid;
 
+    public Long getConditionid() {
+        return conditionid;
+    }
+
+    public void setConditionid(Long conditionid) {
+        this.conditionid = conditionid;
+    }
+
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private Long conditionid;
+    private String conditiontype;
+
+
     public Long getSlaverid() {
         return slaverid;
     }

@@ -209,6 +209,20 @@ public class TestMysqlHelp {
     }
 
 
+    //根据目标类型和id获取延时条件
+    public ArrayList<HashMap<String, String>> GetConditionDelayByObjectIDAndType(Long Objectid, String ObjectType) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from condition_delay where conditionid=" + Objectid + " and conditiontype='" + ObjectType + "'";
+            logger.info(logplannameandcasename + "获取数据库 根据目标类型和id获取延时条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 根据目标类型和id获取延时条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+
     //根据目标类型和id获取接口条件
     public ArrayList<HashMap<String, String>> GetConditionApiByObjectIDAndType(Long Objectid, String ObjectType) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();

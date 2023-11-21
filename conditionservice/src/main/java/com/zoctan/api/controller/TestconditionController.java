@@ -205,6 +205,18 @@ public class TestconditionController {
     private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname,Long Slaverid) {
         TestconditionController.log.info("接口子条件Subconditionname-============：" + conditionApi.getSubconditionname() + " caseid:" + conditionApi.getCasename());
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
+
+        Condition condition=new Condition(TestconditionReport.class);
+        condition.createCriteria().andCondition("testplanid = " + executeplan.getId())
+                .andCondition("subconditionid = " + conditionApi.getId())
+                .andCondition("batchname = '" + Batchname+"'");
+
+        List<TestconditionReport> testconditionReportList= testconditionReportService.listByCondition(condition);
+
+        if(testconditionReportList.size()>0)
+        {
+            return VariableNameValueMap;
+        }
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(executeplan.getId());
         testconditionReport.setPlanname(executeplan.getExecuteplanname());
@@ -321,7 +333,7 @@ public class TestconditionController {
             //ApicasesVariables apicasesVariables = apicasesVariablesService.getBy("caseid", apicases.getId());
             TestvariablesValue testvariablesValue = new TestvariablesValue();
             try {
-                testvariablesValue = FixApicasesVariables(apicasesVariables, testResponeData, requestObject, Respone, executeplan.getId(), CaseID, apicases);
+                testvariablesValue = FixApicasesVariables(conditionApi,apicasesVariables, testResponeData, requestObject, Respone, executeplan.getId(), CaseID, apicases);
             } catch (Exception exception) {
                 ConditionResultStatus = "失败";
             }
@@ -350,7 +362,7 @@ public class TestconditionController {
         return VariableNameValueMap;
     }
 
-    private TestvariablesValue FixApicasesVariables(Testvariables testvariables, TestResponeData testResponeData, RequestObject requestObject, String Respone, Long Planid, Long CaseID, Apicases apicases) throws Exception {
+    private TestvariablesValue FixApicasesVariables(ConditionApi conditionApi,Testvariables testvariables, TestResponeData testResponeData, RequestObject requestObject, String Respone, Long Planid, Long CaseID, Apicases apicases) throws Exception {
         TestvariablesValue testvariablesValue = new TestvariablesValue();
         TestconditionController.log.info("接口子条件条件报告子条件处理变量-============：" + testvariables.getTestvariablesname());
         if (testvariables != null) {
@@ -380,6 +392,8 @@ public class TestconditionController {
             } finally {
                 TestconditionController.log.info("接口子条件条件报告子条件处理变量取值-============：" + ParseValue);
                 testvariablesValue.setPlanid(Planid);
+                testvariablesValue.setConditionid(conditionApi.getConditionid());
+                testvariablesValue.setConditiontype(conditionApi.getConditiontype());
                 testvariablesValue.setPlanname(requestObject.getTestplanname());
                 testvariablesValue.setBatchname(requestObject.getBatchname());
                 testvariablesValue.setSlaverid(new Long(0));

@@ -360,7 +360,7 @@
               size="mini"
               icon="el-icon-plus"
               v-if="hasPermission('executeplan:add')"
-              @click.native.prevent="showAddapiparamsDialog"
+              @click.native.prevent="showAddSceneCasedelayconditionDialog"
             >添加前置延时</el-button>
           </el-form-item>
         </el-form>
@@ -535,14 +535,13 @@
               size="mini"
               icon="el-icon-plus"
               v-if="hasPermission('testscene:scenecasecondition')"
-              @click.native.prevent="showAddapidelayDialog"
+              @click.native.prevent="showAddSceneCasedelayconditionDialog"
             >添加前置延时</el-button>
           </el-form-item>
         </el-form>
       </div>
 
-<!--      1.接口前置条件：-->
-
+      1.接口前置条件：
       <el-table
         :data="apiconditioncaseList"
         v-loading.body="listLoading"
@@ -574,6 +573,43 @@
               size="mini"
               v-if="hasPermission('testscene:casedeleteapicondition') && scope.row.id !== id"
               @click.native.prevent="removecaseapicondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      2.延时前置条件：
+      <el-table
+        :data="delayconditionList"
+        :key="itemKey"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="getIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="前置条件名" align="center" prop="subconditionname" width="200"/>
+        <el-table-column label="等待时间(秒)" align="center" prop="delaytime" width="150">
+        </el-table-column>
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('delaycondition:update')  || hasPermission('delaycondition:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('delaycondition:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedelayconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('delaycondition:delete') && scope.row.id !== id"
+              @click.native.prevent="removedelaycondition(scope.$index)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -858,6 +894,58 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="DelaytextMap[DelaydialogStatus]" :visible.sync="DelaydialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 600px; margin-left:50px;"
+        :model="tmpdelaycondition"
+        ref="tmpdelaycondition"
+      >
+        <el-form-item label="条件名" prop="subconditionname" required>
+          <el-input
+            type="text"
+            maxlength="30"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpdelaycondition.subconditionname"
+          />
+        </el-form-item>
+
+        <el-form-item label="等待时间(秒)" prop="delaytime" required>
+          <el-input
+            placeholder="等待时间(秒)"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            maxLength='10'
+            type="number"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmpdelaycondition.delaytime"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="DelaydialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="DelaydialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpdelaycondition'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="DelaydialogStatus === 'add'"
+          @click.native.prevent="adddelaycondition"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="DelaydialogStatus === 'update'"
+          @click.native.prevent="updatedelaycondition"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -875,6 +963,7 @@ import { search as searchapicondition, addapicondition, removeapicondition, upda
 import { search as searchdbcondition, adddbcondition } from '@/api/condition/dbcondition'
 import { getenviromentallList as getenviromentallList } from '@/api/enviroment/testenviroment'
 import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
+import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -919,12 +1008,14 @@ export default {
       enviromentnameList: [],
       enviroment_assembleList: [],
       sourcetestsceneList: [],
+      delayconditionList: [],
       listLoading: false, // 数据加载等待动画
       addcaselistLoading: false, // 用例列表页面数据加载等待动画
       total: 0, // 数据总数
       casetotal: 0, // 用例数据总数
       addcasetotal: 0, // 用例数据总数
       dialogStatus: 'add',
+      DelaydialogStatus: 'add',
       apiconditiondialogStatus: 'add',
       dialogFormVisible: false,
       testscenecasedialogFormVisible: false,
@@ -934,6 +1025,7 @@ export default {
       caseconditiondialogFormVisible: false,
       dbconditiondialogFormVisible: false,
       CopysceneFormVisible: false,
+      DelaydialogFormVisible: false,
       tmpcopyscene: {
         sourcesceneid: '',
         sourcescenename: '',
@@ -947,6 +1039,10 @@ export default {
       apiconditiontextMap: {
         update: '修改前置接口',
         add: '添加前置接口'
+      },
+      DelaytextMap: {
+        update: '修改延时条件',
+        add: '添加延时条件'
       },
       btnLoading: false, // 按钮等待动画
       caseQuery: {
@@ -980,6 +1076,16 @@ export default {
         casename: '',
         memo: '',
         conditiontype: '',
+        creator: '',
+        projectid: ''
+      },
+      tmpdelaycondition: {
+        id: '',
+        subconditionname: '',
+        conditionid: '',
+        conditionname: '',
+        conditiontype: '',
+        delaytime: '',
         creator: '',
         projectid: ''
       },
@@ -1050,6 +1156,11 @@ export default {
         conditiontype: '',
         projectid: ''
       },
+      Scenedelaysearch: {
+        conditionid: null,
+        conditiontype: null,
+        projectid: null
+      },
       searchallscene: {
         projectid: ''
       },
@@ -1069,6 +1180,7 @@ export default {
     this.searchapicondition.projectid = window.localStorage.getItem('pid')
     this.searchdbcondition.projectid = window.localStorage.getItem('pid')
     this.searchallscene.projectid = window.localStorage.getItem('pid')
+    this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
     this.gettestsceneList()
     this.getassembleallnameList()
     this.getenviromentallList()
@@ -1086,6 +1198,94 @@ export default {
 
   methods: {
     unix2CurrentTime,
+
+    /**
+     * 显示添加延时条件对话框
+     */
+    showAddSceneCasedelayconditionDialog() {
+      // 显示新增对话框
+      this.DelaydialogFormVisible = true
+      this.DelaydialogStatus = 'add'
+      this.tmpdelaycondition.id = ''
+      this.tmpdelaycondition.subconditionname = ''
+      this.tmpdelaycondition.conditionid = this.tmpapicondition.conditionid
+      this.tmpdelaycondition.conditionname = this.tmpapicondition.conditionname
+      this.tmpdelaycondition.conditiontype = 'scencecase'
+      this.tmpdelaycondition.delaytime = ''
+      this.tmpdelaycondition.creator = this.name
+      this.tmpdelaycondition.projectid = window.localStorage.getItem('pid')
+    },
+    /**
+     * 获取延时条件列表
+     */
+    getdelayconditionList() {
+      this.Scenedelaysearch.conditiontype = 'scencecase'
+      searchbytype(this.Scenedelaysearch).then(response => {
+        this.delayconditionList = response.data
+      }).catch(res => {
+        this.$message.error('加载测试延时条件列表失败')
+      })
+    },
+    /**
+     * 显示修改延时条件对话框
+     * @param index 延时条件下标
+     */
+    showUpdatedelayconditionDialog(index) {
+      this.DelaydialogFormVisible = true
+      this.DelaydialogStatus = 'update'
+      this.tmpdelaycondition.id = this.delayconditionList[index].id
+      this.tmpdelaycondition.subconditionname = this.delayconditionList[index].subconditionname
+      this.tmpdelaycondition.delaytime = this.delayconditionList[index].delaytime
+      this.tmpdelaycondition.creator = this.name
+    },
+    /**
+     * 删除延时条件
+     * @param index 延时条件下标
+     */
+    removedelaycondition(index) {
+      this.$confirm('删除该延时条件？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.delayconditionList[index].id
+        removedelaycondition(id).then(() => {
+          this.$message.success('删除成功')
+          this.getdelayconditionList()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+    updatedelaycondition() {
+      this.$refs.tmpdelaycondition.validate(valid => {
+        if (valid) {
+          updatedelaycondition(this.tmpdelaycondition).then(() => {
+            this.$message.success('更新成功')
+            this.getdelayconditionList()
+            this.DelaydialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+    /**
+     * 添加延时条件
+     */
+    adddelaycondition() {
+      this.$refs.tmpdelaycondition.validate(valid => {
+        if (valid) {
+          adddelaycondition(this.tmpdelaycondition).then(() => {
+            this.$message.success('添加成功')
+            this.getdelayconditionList()
+            this.DelaydialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加失败')
+          })
+        }
+      })
+    },
 
     copyscene() {
       this.$refs.tmpcopyscene.validate(valid => {
@@ -1415,8 +1615,9 @@ export default {
       this.tmpdbcondition.conditionid = this.testscenecaseList[index].id
       this.tmpdbcondition.conditionname = this.testscenecaseList[index].casename
       this.tmpdbcondition.conditiontype = 'scencecase'
+      this.Scenedelaysearch.conditionid = this.testscenecaseList[index].id
       this.getapiconditionList()
-      this.getdbconditionList()
+      this.getdelayconditionList()
     },
 
     ShowAddcasecaseconditionDialog(index) {
