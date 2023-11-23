@@ -201,7 +201,7 @@ public class TestCore {
                 Long ConditionTestScenecaseid = Long.parseLong(hs.get("conditionid"));
                 for (int ii = 0; ii < ScenceCaseList.size(); ii++) {
                     HashMap<String, String> hscase = ScenceCaseList.get(ii);
-                    Long TestScenecaseid = Long.parseLong(hscase.get("conditionid"));
+                    Long TestScenecaseid = Long.parseLong(hscase.get("id"));
                     if (ConditionTestScenecaseid.equals(TestScenecaseid)) {
                         flag = true;
                     }
@@ -227,7 +227,7 @@ public class TestCore {
                             logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
                             //增加判断是否已经存在
                             testMysqlHelp.SubConditionReportSave(testconditionReport);
-                            testCondition.FixInterfaceVariables(requestObject, ConditionTestScenecaseid, Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
+                            testCondition.FixInterfaceVariables(requestObject, ConditionTestScenecaseid,hs.get("conditiontype"), Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
                             flag = false;
                         }
                     }
@@ -290,20 +290,22 @@ public class TestCore {
             long SceneCaseID = Long.parseLong(testscenecaseList.get(0).get("id"));
             //接口条件
             ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(SceneCaseID, "scencecase");
+            logger.info("TestCore 开始处理用例前置条件-接口子条件-============："+ConditionApiList.size());
             for (int i = 0; i < ConditionApiList.size(); i++) {
                 HashMap<String, String> hs = ConditionApiList.get(i);
                 testCondition.conditionapi(hs, requestObject);
             }
+            logger.info("TestCore 结束处理用例前置条件-接口子条件-============："+ConditionApiList.size());
             //延时条件
             ArrayList<HashMap<String, String>> ConditionDelayList = GetConditionDelayByObjectIDAndType(SceneCaseID, "scencecase");
+            logger.info("TestCore 开始处理用例前置条件-延时子条件-============："+ConditionDelayList.size());
             if (ConditionDelayList.size() > 0) {
                 for (int i = 0; i < ConditionDelayList.size(); i++) {
-                    HashMap<String, String> hs = ConditionApiList.get(i);
-                    logger.info("TestCore 开始处理用例前置条件-延时子条件-============：");
+                    HashMap<String, String> hs = ConditionDelayList.get(i);
                     testCondition.conditiondelay(hs, requestObject);
-                    logger.info("TestCore 完成处理用例前置条件-延时子条件-============：");
                 }
             }
+            logger.info("TestCore 完成处理用例前置条件-延时子条件-============：");
         }
 //        Long ObjectID = Long.parseLong(requestObject.getCaseid());
 //        ArrayList<HashMap<String, String>> testconditionList = GetConditionByPlanIDAndConditionType(ObjectID, "前置条件", "测试用例");
@@ -391,14 +393,14 @@ public class TestCore {
     public TestResponeData request(RequestObject requestObject) throws Exception {
         TestResponeData result = testHttp.doService(requestObject, 30000);
         logger.info("用例:" + requestObject.getCasename() + " doService完成-============================================================：");
-//        String ResponeContentType = "application/json;charset=utf-8";
-//        List<Header> responeheaderlist = result.getHeaderList();
-//        for (Header head : responeheaderlist) {
-//            if (head.getName().equalsIgnoreCase("Content-Type")) {
-//                ResponeContentType = head.getValue();
-//            }
-//        }
-//        requestObject.setResponecontenttype(ResponeContentType);
+        String ResponeContentType = "application/json;charset=utf-8";
+        List<Header> responeheaderlist = Arrays.asList(result.getHeaderarray());
+        for (Header head : responeheaderlist) {
+            if (head.getName().equalsIgnoreCase("Content-Type")) {
+                ResponeContentType = head.getValue();
+            }
+        }
+        requestObject.setResponecontenttype(ResponeContentType);
 //        testCondition.FixInterfaceVariables(requestObject,Long.parseLong(requestObject.getCaseid()),result,result.getResponeContent(),Long.parseLong(requestObject.getTestplanid()),requestObject.getTestplanname(),requestObject.getBatchname());
 //        logger.info("用例:"+requestObject.getCasename()+" 处理变量完成-============================================================：");
         return result;

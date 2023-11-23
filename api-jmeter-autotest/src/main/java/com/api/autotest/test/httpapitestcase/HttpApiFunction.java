@@ -45,6 +45,7 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
         Core = new TestCore(ctx, getLogger(),results);
         // 初始化用例数据
         Map<Long, List<RequestObject>> requestObjectList = Core.InitalTestData(ctx);
+        getLogger().info(" requestObject 初始化数据完成  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
         // 发送用例请求，并返回结果
         for (Long Sceneid : requestObjectList.keySet()) {
             try {
@@ -185,7 +186,7 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
     public static void main(String[] args) {
         Arguments params = new Arguments();
         params.addArgument("planid", "1");
-        params.addArgument("batchname", "zxzxzxzxzxzx1111");
+        params.addArgument("batchname", "llllllllllll0001");
         params.addArgument("DispatchIds", "3");
         params.addArgument("SlaverId", "2");
         params.addArgument("mysqlurl", "jdbc:mysql://127.0.0.1:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC");

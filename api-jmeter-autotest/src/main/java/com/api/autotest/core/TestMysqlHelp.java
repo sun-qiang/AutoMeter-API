@@ -465,7 +465,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> Gettestconditionreport(Long Planid, String Batchname, Long ConditionID,String subconditiontype) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
-            String sql = "select *  from testcondition_report where planid=" + Planid + " and batchname='" + Batchname + "' and subconditionid=" + ConditionID+" and subconditiontype='" + subconditiontype+"'" ;
+            String sql = "select *  from testcondition_report where testplanid=" + Planid + " and batchname='" + Batchname + "' and subconditionid=" + ConditionID+" and subconditiontype='" + subconditiontype+"'" ;
             logger.info(logplannameandcasename + "获取数据库 获取条件报告结果 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -490,10 +490,10 @@ public class TestMysqlHelp {
     }
 
     //获取变量结果
-    public ArrayList<HashMap<String, String>> GetTestVariablesValue(Long Planid, String Batchname, Long VariablesID) {
+    public ArrayList<HashMap<String, String>> GetTestVariablesValue(Long Planid, String Batchname, Long VariablesID,Long conditionid) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
-            String sql = "select *  from testvariables_value where planid=" + Planid + " and batchname='" + Batchname + "' and variablesid=" + VariablesID;
+            String sql = "select *  from testvariables_value where planid=" + Planid + " and batchname='" + Batchname + "' and variablesid=" + VariablesID+ " and conditionid=" + conditionid+ " and conditiontype='scencecase'" ;
             logger.info(logplannameandcasename + "获取数据库 获取变量结果 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -507,8 +507,8 @@ public class TestMysqlHelp {
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
-        String sql = "insert testvariables_value (planid,planname,caseid,casename,variablesid,variablesname,variablesvalue,memo,create_time,lastmodify_time,batchname,variablestype,slaverid)" +
-                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'", "''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'", "''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'", "''") + "', '" + testvariablesValue.getVariablesvalue().replace("'", "''") + "', '" + testvariablesValue.getMemo().replace("'", "''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'", "''") + "', '" + testvariablesValue.getVariablestype().replace("'", "''") + "',"+ testvariablesValue.getSlaverid()+")";
+        String sql = "insert testvariables_value (planid,planname,caseid,casename,variablesid,variablesname,variablesvalue,memo,create_time,lastmodify_time,batchname,variablestype,slaverid,conditionid,conditiontype)" +
+                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'", "''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'", "''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'", "''") + "', '" + testvariablesValue.getVariablesvalue().replace("'", "''") + "', '" + testvariablesValue.getMemo().replace("'", "''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'", "''") + "', '" + testvariablesValue.getVariablestype().replace("'", "''") + "',"+ testvariablesValue.getSlaverid()+","+ testvariablesValue.getConditionid()+",'scencecase')";
         logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + sql);
         try {
             logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + MysqlConnectionUtils.update(sql));

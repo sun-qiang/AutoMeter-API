@@ -49,6 +49,8 @@ public class TestCondition {
     public void conditionapi(HashMap<String, String> conditionApi, RequestObject requestObject) throws Exception {
         long PlanID = Long.parseLong(requestObject.getTestplanid());
         long ConidtionID =Long.parseLong(conditionApi.get("id"));
+        String ConidtionType =conditionApi.get("conditiontype");
+
         String Batchname = requestObject.getBatchname();
         String CondionCaseID = conditionApi.get("caseid");
         requestObject.setCasename(conditionApi.get("casename"));
@@ -135,11 +137,10 @@ public class TestCondition {
                 SaveApiSubCondition(re, responeData, conditionApi, Respone, ConditionResultStatus, CostTime);
                 throw new Exception("接口子条件执行异常：" + ex.getMessage());
             }
+            //根据用例是否有中间变量(多个)，如果有变量，解析（header,cookies,json，xml，html）保存变量值表，没有变量直接保存条件结果表
+            FixInterfaceVariables(requestObject,ConidtionID,ConidtionType, Long.parseLong(CondionCaseID), responeData, Respone, PlanID, requestObject.getTestplanname(), Batchname);
         }
-        //根据用例是否有中间变量(多个)，如果有变量，解析（header,cookies,json，xml，html）保存变量值表，没有变量直接保存条件结果表
-        FixInterfaceVariables(requestObject,ConidtionID, Long.parseLong(CondionCaseID), responeData, Respone, PlanID, requestObject.getTestplanname(), Batchname);
     }
-
 
     //接口条件入口
     public void APICondition(long ConditionID, RequestObject requestObject) throws Exception {
@@ -256,7 +257,7 @@ public class TestCondition {
         }
     }
 
-    public void FixInterfaceVariables(RequestObject requestObject,Long ConditionID, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {
+    public void FixInterfaceVariables(RequestObject requestObject,Long ConditionID,String ConditionType, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {
         ArrayList<HashMap<String, String>> apicasesVariablesList = testMysqlHelp.GetApiCaseVaribales(CaseID);
         if (apicasesVariablesList.size() > 0) {
             for (HashMap<String, String> map : apicasesVariablesList) {
@@ -283,7 +284,7 @@ public class TestCondition {
                         ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
                 }
                 //String ParseValue = testAssert.ParseRespone(requestObject.getResponecontenttype(), VariablesPath, Respone);
-                ArrayList<HashMap<String, String>> testVariablesValueList = testMysqlHelp.GetTestVariablesValue(PlanID, BatchName, Long.parseLong(Variablesid));
+                ArrayList<HashMap<String, String>> testVariablesValueList = testMysqlHelp.GetTestVariablesValue(PlanID, BatchName, Long.parseLong(Variablesid),ConditionID);
                 if (testVariablesValueList.size() > 0) {
                     testMysqlHelp.testVariablesValueUpdate(PlanID, BatchName, Long.parseLong(Variablesid), ParseValue);
                     logger.info("TestCondition条件报告子条件变量值已存在则更新：-============：" + ParseValue);
@@ -291,7 +292,7 @@ public class TestCondition {
                     TestvariablesValue testvariablesValue = new TestvariablesValue();
                     testvariablesValue.setPlanid(PlanID);
                     testvariablesValue.setConditionid(ConditionID);
-                    testvariablesValue.setConditiontype("portal");
+                    testvariablesValue.setConditiontype(ConditionType);
                     testvariablesValue.setPlanname(PlanName);
                     testvariablesValue.setBatchname(BatchName);
                     testvariablesValue.setCaseid(CaseID);

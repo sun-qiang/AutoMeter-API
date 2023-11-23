@@ -291,8 +291,11 @@ public class TestconditionController {
         try {
             requestObject = testCaseHelp.GetCaseRequestData(executeplan.getId(), Batchname, apiCasedataList, api, apicases, deployunit, macdepunit, machine);
             requestObject.setSlaverid(Slaverid.toString());
+            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常11111111111111111111111111" );
             requestObject.setTestplanname(executeplan.getExecuteplanname());
+            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常111111111111112222222222222" );
             requestObject.setBatchname(Batchname);
+            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常1111111111111133333333333333" );
         } catch (Exception ex) {
             Respone = ex.getMessage();
             ConditionResultStatus = "失败";
@@ -316,6 +319,7 @@ public class TestconditionController {
         } catch (Exception ex) {
             ConditionResultStatus = "失败";
             String ExceptionMess = ex.getMessage();
+            TestconditionController.log.info("接口子条件条件请求数据异常-============：" + ExceptionMess);
             if (ExceptionMess.contains("Illegal character in path at")) {
                 ExceptionMess = "Url不合法，请检查是否有无法替换的变量，或者有相关非法字符：" + ex.getMessage();
             }
@@ -335,6 +339,7 @@ public class TestconditionController {
             try {
                 testvariablesValue = FixApicasesVariables(conditionApi,apicasesVariables, testResponeData, requestObject, Respone, executeplan.getId(), CaseID, apicases);
             } catch (Exception exception) {
+                TestconditionController.log.info("接口子条件条件FixApicasesVariables异常-============：" + exception.getMessage());
                 ConditionResultStatus = "失败";
             }
             VariableNameValueMap.put(testvariablesValue.getVariablesname(), testvariablesValue.getVariablesvalue());
