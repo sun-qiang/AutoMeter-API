@@ -345,6 +345,7 @@
           size: 10,
           deployunitname: null,
           protocal: null,
+          creator: '',
           projectid: ''
         },
         createRules: {
@@ -376,6 +377,7 @@
       getdepunitList() {
         this.search.deployunitname = this.tmpdeployunitname
         this.search.protocal = this.tmpprotocal
+        this.search.creator = this.name
         this.listLoading = true
         search(this.search).then(response => {
           this.depunitList = response.data.list

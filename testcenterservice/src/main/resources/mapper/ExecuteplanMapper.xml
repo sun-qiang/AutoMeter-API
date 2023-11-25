@@ -30,6 +30,7 @@
       <if test="businesstype != null and businesstype != ''">a.businesstype = #{businesstype} </if>
       <if test="executeplanname != null and executeplanname != ''">and a.executeplanname like CONCAT('%',#{executeplanname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
     </where>
     order by lastmodify_time  DESC
   </select>

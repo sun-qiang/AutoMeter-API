@@ -25,6 +25,7 @@
       <if test="machinename != null and machinename != ''">a.machinename like CONCAT('%',#{machinename},'%')</if>
       <if test="ip != null  and ip != ''">and a.ip like CONCAT('%',#{ip},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
     </where>
     order by lastmodify_time  DESC
   </select>

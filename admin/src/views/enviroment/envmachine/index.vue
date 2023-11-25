@@ -186,7 +186,8 @@
         search: {
           page: 1,
           size: 10,
-          enviromentname: null
+          enviromentname: null,
+          creator: ''
         }
       }
     },
@@ -234,6 +235,7 @@
       getenvmachineList() {
         this.listLoading = true
         this.search.enviromentname = this.tmpenviromentname
+        this.search.creator = this.name
         search(this.search).then(response => {
           this.envmachineList = response.data.list
           this.total = response.data.total

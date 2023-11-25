@@ -644,6 +644,11 @@ public class ApicasesController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
+        String creator = param.get("creator").toString();
+        if(creator.equalsIgnoreCase("admin"))
+        {
+            param.put("creator",null);
+        }
         PageHelper.startPage(page, size);
         final List<Apicases> list = this.apicasesService.findApiCaseWithName(param);
         final PageInfo<Apicases> pageInfo = new PageInfo<>(list);

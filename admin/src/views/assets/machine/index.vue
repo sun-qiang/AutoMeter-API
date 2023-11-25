@@ -227,7 +227,8 @@
           size: 10,
           machinename: null,
           ip: null,
-          projectid: ''
+          projectid: '',
+          creator: ''
         }
       }
     },
@@ -251,6 +252,7 @@
         this.listLoading = true
         this.search.machinename = this.tmpmachinename
         this.search.ip = this.tmpip
+        this.search.creator = this.name
         search(this.search).then(response => {
           this.machineList = response.data.list
           this.total = response.data.total

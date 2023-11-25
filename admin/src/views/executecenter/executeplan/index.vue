@@ -1122,7 +1122,8 @@
           size: 10, // 每页数量
           listLoading: true,
           executeplanname: '',
-          projectid: ''
+          projectid: '',
+          creator: ''
         },
         caselistQuery: {
           page: 1, // 页码
@@ -1286,6 +1287,7 @@
           size: 10,
           executeplanname: null,
           businesstype: '',
+          creator: '',
           projectid: ''
         },
         Scenedelaysearch: {
@@ -1333,7 +1335,7 @@
       this.searchapicondition.projectid = window.localStorage.getItem('pid')
       this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
       this.getexecuteplanList()
-      this.getapiList()
+      // this.getapiList()
       this.getdepunitList()
       this.getenviromentallList()
       this.getdatabydiccodeList()
@@ -1341,7 +1343,7 @@
     },
 
     activated() {
-      this.getapiList()
+      // this.getapiList()
       this.getdepunitList()
       this.getenviromentallList()
       this.getdatabydiccodeList()
@@ -2006,6 +2008,7 @@
       getexecuteplanList() {
         this.search.execplanname = this.tmpexecplanname
         this.search.batchname = this.tmpbatchname
+        this.search.creator = this.name
         this.listLoading = true
         search(this.search).then(response => {
           this.executeplanList = response.data.list
@@ -2096,6 +2099,7 @@
        */
       getapiList() {
         this.caselistLoading = true
+        this.listQuery.creator = this.name
         getapiList(this.listQuery).then(response => {
           this.apiList = response.data.list
           // this.casetotal = response.data.total

@@ -228,6 +228,11 @@ public class ExecuteplanController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page= Integer.parseInt(param.get("page").toString());
         Integer size= Integer.parseInt(param.get("size").toString());
+        String creator = param.get("creator").toString();
+        if(creator.equalsIgnoreCase("admin"))
+        {
+            param.put("creator",null);
+        }
         PageHelper.startPage(page, size);
         final List<Executeplan> list = this.executeplanService.findexplanWithName(param);
         final PageInfo<Executeplan> pageInfo = new PageInfo<>(list);
