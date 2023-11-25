@@ -199,6 +199,7 @@
           page: 1,
           size: 10,
           enviromentname: null,
+          creator: '',
           projectid: ''
         }
       }
@@ -222,6 +223,7 @@
       getenviromentList() {
         this.listLoading = true
         this.search.enviromentname = this.tmpenviromentname
+        this.search.creator = this.name
         search(this.search).then(response => {
           this.enviromentList = response.data.list
           this.total = response.data.total
