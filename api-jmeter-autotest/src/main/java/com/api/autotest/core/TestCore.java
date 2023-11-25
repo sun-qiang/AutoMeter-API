@@ -198,6 +198,7 @@ public class TestCore {
             boolean flag = false;
             for (int i = 0; i < ApiConditionList.size(); i++) {
                 HashMap<String, String> hs = ApiConditionList.get(i);
+                Long Conditionid = Long.parseLong(hs.get("id"));
                 Long ConditionTestScenecaseid = Long.parseLong(hs.get("conditionid"));
                 for (int ii = 0; ii < ScenceCaseList.size(); ii++) {
                     HashMap<String, String> hscase = ScenceCaseList.get(ii);
@@ -227,7 +228,7 @@ public class TestCore {
                             logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
                             //增加判断是否已经存在
                             testMysqlHelp.SubConditionReportSave(testconditionReport);
-                            testCondition.FixInterfaceVariables(requestObject, ConditionTestScenecaseid,hs.get("conditiontype"), Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
+                            testCondition.FixInterfaceVariables(requestObject, Conditionid,hs.get("conditiontype"), Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
                             flag = false;
                         }
                     }

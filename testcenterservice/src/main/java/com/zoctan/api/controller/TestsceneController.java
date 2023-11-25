@@ -163,7 +163,8 @@ public class TestsceneController {
                     for (ConditionApi condiapi:conditionApiList) {
                         condiapi.setId(null);
                         condiapi.setConditionid(newtestscenecaseid);
-                        condiapi.setConditionname("复制"+condiapi.getConditionname());
+                        condiapi.setConditionname(condiapi.getConditionname());
+                        condiapi.setSubconditionname("复制"+condiapi.getSubconditionname());
                         conditionApiService.save(condiapi);
                     }
                 }

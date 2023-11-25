@@ -110,6 +110,59 @@
     </div>
 
     <el-tabs v-model="activeName" type="card" ref="tabs">
+      <el-tab-pane label="前置条件执行结果" name="first">
+        <template>
+          <el-table
+            :data="caseconditionreport"
+            :key="itemKey"
+            v-loading.body="listLoading"
+            element-loading-text="loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="编号" align="center" width="60">
+              <template slot-scope="scope">
+                <span v-text="conditiongetIndex(scope.$index)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column label="集合/用例名" align="center" prop="planname" width="180"/>
+            <el-table-column label="执行计划名" align="center" prop="batchname" width="180"/>
+            <el-table-column label="条件名" align="center" prop="subconditionname" width="180"/>
+            <el-table-column label="条件类型" align="center" prop="subconditiontype" width="100"/>
+            <el-table-column label="条件结果" align="center" prop="conditionresult" width="100">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.conditionresult }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+            <el-table-column label="条件状态" align="center" prop="conditionstatus" width="100">
+              <template slot-scope="scope">
+                <span v-if="scope.row.conditionstatus === '失败'" style="color:red">{{ scope.row.conditionstatus }}</span>
+                <span v-else style="color: #37B328">{{ scope.row.conditionstatus }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="消耗时长(ms)" align="center" prop="runtime" width="100"/>
+            <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+            </el-table-column>
+
+          </el-table>
+          <el-pagination
+            @size-change="conditionhandleSizeChange"
+            @current-change="conditionhandleCurrentChange"
+            :current-page="tmpconditionquery.page"
+            :page-size="tmpconditionquery.size"
+            :total="conditiontotal"
+            :page-sizes="[10, 20, 30, 40]"
+            layout="total, sizes, prev, pager, next, jumper"
+          ></el-pagination>
+        </template>
+      </el-tab-pane>
       <el-tab-pane label="用例执行报告" name="zero">
         <div class="filter-container">
           <el-form :inline="true">
@@ -246,59 +299,6 @@
             :current-page="search.page"
             :page-size="search.size"
             :total="total"
-            :page-sizes="[10, 20, 30, 40]"
-            layout="total, sizes, prev, pager, next, jumper"
-          ></el-pagination>
-        </template>
-      </el-tab-pane>
-      <el-tab-pane label="前置条件执行结果" name="first">
-        <template>
-          <el-table
-            :data="caseconditionreport"
-            :key="itemKey"
-            v-loading.body="listLoading"
-            element-loading-text="loading"
-            border
-            fit
-            highlight-current-row
-          >
-            <el-table-column label="编号" align="center" width="60">
-              <template slot-scope="scope">
-                <span v-text="conditiongetIndex(scope.$index)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column label="集合/用例名" align="center" prop="planname" width="180"/>
-            <el-table-column label="执行计划名" align="center" prop="batchname" width="180"/>
-            <el-table-column label="条件名" align="center" prop="subconditionname" width="180"/>
-            <el-table-column label="条件类型" align="center" prop="subconditiontype" width="100"/>
-            <el-table-column label="条件结果" align="center" prop="conditionresult" width="100">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>{{ scope.row.conditionresult }}</p>
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">...</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
-            <el-table-column label="条件状态" align="center" prop="conditionstatus" width="100">
-              <template slot-scope="scope">
-                <span v-if="scope.row.conditionstatus === '失败'" style="color:red">{{ scope.row.conditionstatus }}</span>
-                <span v-else style="color: #37B328">{{ scope.row.conditionstatus }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="消耗时长(ms)" align="center" prop="runtime" width="100"/>
-            <el-table-column label="创建时间" align="center" prop="createTime" width="160">
-              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
-            </el-table-column>
-
-          </el-table>
-          <el-pagination
-            @size-change="conditionhandleSizeChange"
-            @current-change="conditionhandleCurrentChange"
-            :current-page="tmpconditionquery.page"
-            :page-size="tmpconditionquery.size"
-            :total="conditiontotal"
             :page-sizes="[10, 20, 30, 40]"
             layout="total, sizes, prev, pager, next, jumper"
           ></el-pagination>
