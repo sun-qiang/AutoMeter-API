@@ -2,11 +2,15 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
+import com.zoctan.api.entity.Executeplan;
 import com.zoctan.api.entity.TestplanTestscene;
+import com.zoctan.api.entity.Testscene;
 import com.zoctan.api.entity.TestsceneTestcase;
+import com.zoctan.api.service.ExecuteplanService;
 import com.zoctan.api.service.TestplanTestsceneService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zoctan.api.service.TestsceneService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +27,12 @@ public class TestplanTestsceneController {
     @Resource
     private TestplanTestsceneService testplanTestsceneService;
 
+    @Resource
+    private ExecuteplanService executeplanService;
+
+    @Resource
+    private TestsceneService testsceneService;
+
     @PostMapping
     public Result add(@RequestBody TestplanTestscene testplanTestscene) {
         testplanTestsceneService.save(testplanTestscene);
@@ -31,7 +41,18 @@ public class TestplanTestsceneController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        testplanTestsceneService.deleteById(id);
+        TestplanTestscene testplanTestscene= testplanTestsceneService.getById(id);
+        if(testplanTestscene!=null)
+        {
+            long planid=testplanTestscene.getTestplanid();
+            Executeplan executeplan= executeplanService.getById(planid);
+            long sceneid=testplanTestscene.getTestscenenid();
+            Testscene testscene= testsceneService.getById(sceneid);
+            testplanTestsceneService.deleteById(id);
+            executeplan.setScenenums(executeplan.getScenenums()-1);
+            executeplan.setCasecounts(executeplan.getCasecounts()-testscene.getCasenums());
+            executeplanService.update(executeplan);
+        }
         return ResultGenerator.genOkResult();
     }
 
@@ -68,6 +89,21 @@ public class TestplanTestsceneController {
 
     @PostMapping("/addplanscene")
     public Result addcase(@RequestBody final List<TestplanTestscene> testsceneTestcaseList) {
+        if(testsceneTestcaseList.size()>0)
+        {
+            long planid=testsceneTestcaseList.get(0).getTestplanid();
+            Executeplan executeplan =  executeplanService.getById(planid);
+            executeplan.setScenenums(executeplan.getScenenums()+testsceneTestcaseList.size());
+            long casetotal=executeplan.getCasecounts();
+            for (TestplanTestscene tesp:testsceneTestcaseList) {
+
+                long sceneid=tesp.getTestscenenid();
+                Testscene testscene= testsceneService.getById(sceneid);
+                casetotal=casetotal+testscene.getCasenums();
+            }
+            executeplan.setCasecounts(casetotal);
+            executeplanService.update(executeplan);
+        }
         testplanTestsceneService.savetestplanscenen(testsceneTestcaseList);
         return ResultGenerator.genOkResult();
     }

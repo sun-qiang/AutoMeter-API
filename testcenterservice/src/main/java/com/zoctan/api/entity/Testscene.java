@@ -11,6 +11,16 @@ public class Testscene {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getCasenums() {
+        return casenums;
+    }
+
+    public void setCasenums(Long casenums) {
+        this.casenums = casenums;
+    }
+
+    private Long casenums;
+
     /**
      * 场景名
      */

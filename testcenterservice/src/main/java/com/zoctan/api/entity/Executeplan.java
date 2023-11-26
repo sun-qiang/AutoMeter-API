@@ -14,6 +14,18 @@ public class Executeplan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getScenenums() {
+        return scenenums;
+    }
+
+    public void setScenenums(Long scenenums) {
+        this.scenenums = scenenums;
+    }
+
+    private Long scenenums;
+
+
+
     public Long getProjectid() {
         return projectid;
     }

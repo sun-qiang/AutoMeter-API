@@ -132,6 +132,7 @@ public class TestsceneController {
                 newtestscene.setScenename(newscenename);
                 newtestscene.setProjectid(testscene.getProjectid());
                 newtestscene.setCreator(testscene.getCreator());
+                newtestscene.setCasenums(testscene.getCasenums());
                 newtestscene.setUsetype(SceneType);
                 testsceneService.save(newtestscene);
                 Long newtestsceneid = newtestscene.getId();

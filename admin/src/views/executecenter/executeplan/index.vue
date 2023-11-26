@@ -73,6 +73,7 @@
       <el-table-column :show-overflow-tooltip="true" label="执行环境" align="center" prop="enviromentname" width="80"/>
       <el-table-column label="类型" align="center" prop="usetype" width="50"/>
       <el-table-column label="运行模式" align="center" prop="runmode" width="70"/>
+      <el-table-column label="场景数" align="center" prop="scenenums" width="60"/>
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="通知钉钉token" align="center" prop="dingdingtoken" width="110"/>
       <el-table-column label="操作人" align="center" prop="creator" width="60"/>

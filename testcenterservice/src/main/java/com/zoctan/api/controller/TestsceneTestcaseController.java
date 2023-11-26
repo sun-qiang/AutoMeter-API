@@ -2,13 +2,15 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
-import com.zoctan.api.entity.ApicasesAssert;
-import com.zoctan.api.entity.ExecuteplanTestcase;
-import com.zoctan.api.entity.TestsceneTestcase;
+import com.zoctan.api.entity.*;
+import com.zoctan.api.service.ExecuteplanService;
+import com.zoctan.api.service.TestplanTestsceneService;
+import com.zoctan.api.service.TestsceneService;
 import com.zoctan.api.service.TestsceneTestcaseService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -24,6 +26,16 @@ public class TestsceneTestcaseController {
     @Resource
     private TestsceneTestcaseService testsceneTestcaseService;
 
+    @Resource
+    private TestsceneService testsceneService;
+
+    @Resource
+    private ExecuteplanService executeplanService;
+
+    @Resource
+    private TestplanTestsceneService testplanTestsceneService;
+
+
     @PostMapping
     public Result add(@RequestBody TestsceneTestcase testsceneTestcase) {
         testsceneTestcaseService.save(testsceneTestcase);
@@ -32,7 +44,26 @@ public class TestsceneTestcaseController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        testsceneTestcaseService.deleteById(id);
+        TestsceneTestcase testcase= testsceneTestcaseService.getById(id);
+        if(testcase!=null)
+        {
+            long sceneid=testcase.getTestscenenid();
+            Testscene testscene= testsceneService.getById(sceneid);
+            testscene.setCasenums(testscene.getCasenums()-1);
+
+            Condition plansencecon =new Condition(TestplanTestscene.class);
+            plansencecon.createCriteria().andCondition("testscenenid = " + sceneid);
+            List<TestplanTestscene> testplanTestsceneList= testplanTestsceneService.listByCondition(plansencecon);
+
+            for (TestplanTestscene te:testplanTestsceneList) {
+                long planid=te.getTestplanid();
+                Executeplan executeplan= executeplanService.getById(planid);
+                executeplan.setCasecounts(executeplan.getCasecounts()-1);
+                executeplanService.update(executeplan);
+            }
+            testsceneService.update(testscene);
+            testsceneTestcaseService.deleteById(id);
+        }
         return ResultGenerator.genOkResult();
     }
 
@@ -70,6 +101,24 @@ public class TestsceneTestcaseController {
     @PostMapping("/addcases")
     public Result addcase(@RequestBody final List<TestsceneTestcase> testsceneTestcaseList) {
         testsceneTestcaseService.savetestscenencase(testsceneTestcaseList);
+        if(testsceneTestcaseList.size()>0)
+        {
+            Long sceneid=testsceneTestcaseList.get(0).getTestscenenid();
+            Testscene testscene= testsceneService.getById(sceneid);
+            testscene.setCasenums(testscene.getCasenums()+testsceneTestcaseList.size());
+
+            Condition plansencecon =new Condition(TestplanTestscene.class);
+            plansencecon.createCriteria().andCondition("testscenenid = " + sceneid);
+            List<TestplanTestscene> testplanTestsceneList= testplanTestsceneService.listByCondition(plansencecon);
+
+            for (TestplanTestscene te:testplanTestsceneList) {
+                long planid=te.getTestplanid();
+                Executeplan executeplan= executeplanService.getById(planid);
+                executeplan.setCasecounts(executeplan.getCasecounts()+testsceneTestcaseList.size());
+                executeplanService.update(executeplan);
+            }
+            testsceneService.update(testscene);
+        }
         return ResultGenerator.genOkResult();
     }
 

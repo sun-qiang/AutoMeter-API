@@ -21,6 +21,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="casecounts" jdbcType="BIGINT" property="casecounts" />
+    <result column="scenenums" jdbcType="BIGINT" property="scenenums" />
   </resultMap>
 
   <select id="findexplanWithName" resultMap="BaseResultMap">
