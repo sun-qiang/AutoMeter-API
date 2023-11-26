@@ -4,6 +4,7 @@ import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.service.ConditionApiService;
+import com.zoctan.api.service.ConditionDelayService;
 import com.zoctan.api.service.TestsceneService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -31,6 +32,9 @@ public class TestsceneController {
 
     @Resource
     private ConditionApiService conditionApiService;
+
+    @Resource
+    private ConditionDelayService conditionDelayService;
 
 
     @PostMapping
@@ -166,6 +170,17 @@ public class TestsceneController {
                         condiapi.setConditionname(condiapi.getConditionname());
                         condiapi.setSubconditionname("复制"+condiapi.getSubconditionname());
                         conditionApiService.save(condiapi);
+                    }
+
+                    Condition delaycon = new Condition(ConditionDelay.class);
+                    delaycon.createCriteria().andCondition("conditionid = " + ttid).andCondition("conditiontype = 'scencecase'" );
+                    List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(delaycon);
+                    for (ConditionDelay conditionDelay:conditionDelayList) {
+                        conditionDelay.setId(null);
+                        conditionDelay.setConditionid(newtestscenecaseid);
+                        conditionDelay.setConditionname(conditionDelay.getConditionname());
+                        conditionDelay.setSubconditionname("复制"+conditionDelay.getSubconditionname());
+                        conditionDelayService.save(conditionDelay);
                     }
                 }
             }

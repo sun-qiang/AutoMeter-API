@@ -819,7 +819,7 @@
       <div class="filter-container" >
         <el-form :inline="true"  >
           <el-form-item  label="微服务:" prop="deployunitname" >
-            <el-select style="width: 120px" v-model="addsearchcase.deployunitname" filterable placeholder="微服务" @change="addcasedeployunitselectChanged($event)">
+            <el-select style="width: 120px" v-model="addsearchcase.deployunitname" required filterable placeholder="微服务" @change="addcasedeployunitselectChanged($event)">
               <el-option label="请选择" value />
               <div v-for="(depname, index) in deployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname" />
@@ -1141,6 +1141,7 @@ export default {
         modelname: null,
         apiid: null,
         apiname: null,
+        creator: '',
         casetype: null
       },
       search: {
@@ -1548,11 +1549,11 @@ export default {
     },
 
     getaddcasesList() {
-      this.addcaselistLoading = true
       this.addsearchcase.executeplanid = this.tmpaddcaseexecuteplanid
       this.addsearchcase.deployunitid = this.tmpaddcasedeployunitid
       this.addsearchcase.apiid = this.tmpaddcaseapiid
       this.addsearchcase.casetype = this.searchcase.casetype
+      this.addsearchcase.creator = this.name
       searchcase(this.addsearchcase).then(response => {
         this.addtestcaselastList = response.data.list
         this.addcasetotal = response.data.total
