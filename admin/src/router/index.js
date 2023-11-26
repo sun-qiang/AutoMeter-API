@@ -143,11 +143,11 @@ export const asyncRouterMap = [
     icon: 'enviroment',
     children: [
       { path: 'machine/list', name: '测试服务器', component: _import('assets/machine/index'), meta: { title: '测试服务器', permission: ['machine:list'] }},
-      { path: 'testenviroment/list', name: '测试环境', component: _import('enviroment/testenviroment/index'), meta: { title: '测试环境', permission: ['enviroment:list'] }}
+      { path: 'testenviroment/list', name: '测试环境', component: _import('enviroment/testenviroment/index'), meta: { title: '测试环境', permission: ['enviroment:list'] }},
       // { path: 'envmachine/list', name: '环境服务器', component: _import('enviroment/envmachine/index'), meta: { title: '环境服务器', permission: ['envmachine:list'] }},
-      // { path: 'enviromentassemble/list', name: '环境中间件', component: _import('enviroment/enviromentassemble/index'), meta: { title: '环境组件', permission: ['enviroment_assemble:list'] }},
-      // { path: 'macdepunit/list', name: '环境部署', component: _import('enviroment/macdepunit/index'), meta: { title: '环境部署', permission: ['macdepunit:list'] }
-      // }
+      { path: 'enviromentassemble/list', name: '环境中间件', component: _import('enviroment/enviromentassemble/index'), meta: { title: '环境组件', permission: ['enviroment_assemble:list'] }},
+      { path: 'macdepunit/list', name: '环境部署', component: _import('enviroment/macdepunit/index'), meta: { title: '环境部署', permission: ['macdepunit:list'] }
+      }
     ]
   },
   {

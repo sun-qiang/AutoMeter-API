@@ -1460,8 +1460,8 @@ export default {
     },
 
     addcasehandleSizeChange(size) {
-      this.searchcase.page = 1
-      this.searchcase.size = size
+      this.addsearchcase.page = 1
+      this.addsearchcase.size = size
       this.getaddcasesList()
     },
     /**
