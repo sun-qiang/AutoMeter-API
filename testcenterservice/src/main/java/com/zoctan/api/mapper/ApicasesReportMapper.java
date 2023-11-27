@@ -10,7 +10,7 @@ import java.util.Map;
 public interface ApicasesReportMapper extends MyMapper<ApicasesReport> {
     List<ApicasesReport> findApicasereportWithName(final Map<String, Object> params);
 
-    List<ApicasesReport> findApicasereportWithNameandStatus(@Param("testplanid") long planid, @Param("status") String status, @Param("batchname") String batchname,@Param("projectid")long projectid);
+    List<ApicasesReport> findApicasereportWithNameandStatus(@Param("testplanid") long planid, @Param("status") String status, @Param("batchname") String batchname,@Param("projectid")long projectid, @Param("scenename") String scenename, @Param("casename") String casename);
 
 
     List<ApicasesReport> listallresult(@Param("projectid")long projectid);

@@ -19,7 +19,7 @@ public interface ApicasesReportService extends Service<ApicasesReport> {
      */
     List<ApicasesReport> findApicasereportWithName(final Map<String, Object> params);
 
-    List<ApicasesReport> findApicasereportWithNameandStatus(long planid,String status,String batchname,long projectid);
+    List<ApicasesReport> findApicasereportWithNameandStatus(long planid,String status,String batchname,long projectid,String scenename,String casename);
 
 
     Long getApicasetotalsWithName(final Map<String, Object> params);

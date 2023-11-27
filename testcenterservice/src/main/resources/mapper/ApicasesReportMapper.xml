@@ -42,8 +42,14 @@
   <select id="findApicasereportWithNameandStatus" resultMap="BaseResultMap">
     SELECT b.casename,b.apiname,a.status,a.scenename,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
     FROM apicases_report a inner join apicases b on a.caseid=b.id
-    where a.testplanid =#{testplanid} and a.batchname =#{batchname} and a.status =#{status}
-    order by a.create_time desc
+    <where>
+      <if test="testplanid != null and testplanid != ''">a.testplanid =#{testplanid}</if>
+      <if test="batchname != null  and batchname != ''">and a.batchname =#{batchname}</if>
+      <if test="status != null  and status != ''">and a.status =#{status}</if>
+      <if test="casename != null  and casename != ''">and b.casename =#{casename}</if>
+      <if test="scenename != null  and scenename != ''">and a.scenename =#{scenename}</if>
+      and a.projectid =#{projectid}
+    </where>
   </select>
 
 

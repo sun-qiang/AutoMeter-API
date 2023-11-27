@@ -52,6 +52,16 @@ public class FunctionCaseStatis {
 
     private float CaseNum;
     private int ExecCaseNums;
+
+    public int getSceneNums() {
+        return SceneNums;
+    }
+
+    public void setSceneNums(int sceneNums) {
+        SceneNums = sceneNums;
+    }
+
+    private int SceneNums;
     private float SuccessCaseNums;
     private float FailCaseNums;
     private int NotExecCaseNums;

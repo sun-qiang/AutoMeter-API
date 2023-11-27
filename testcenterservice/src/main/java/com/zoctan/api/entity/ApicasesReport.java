@@ -38,6 +38,19 @@ public class ApicasesReport extends Apicases {
 
     private String batchname;
 
+    @Override
+    public String getCasename() {
+        return casename;
+    }
+
+    @Override
+    public void setCasename(String casename) {
+        this.casename = casename;
+    }
+
+    private String casename;
+
+
     /**
      * 执行计划id
      */

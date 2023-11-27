@@ -60,12 +60,13 @@
               fit
               highlight-current-row
             >
-              <el-table-column label="用例总数" align="center" prop="caseNum" width="110">
+              <el-table-column label="用例总数" align="center" prop="caseNum" width="90">
               </el-table-column>
-              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="110"/>
-              <el-table-column label="成功数" align="center" prop="successCaseNums" width="110"/>
-              <el-table-column label="失败数" align="center" prop="failCaseNums" width="120"/>
-              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="120"/>
+              <el-table-column label="场景数" align="center" prop="sceneNums" width="90"/>
+              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="90"/>
+              <el-table-column label="成功数" align="center" prop="successCaseNums" width="90"/>
+              <el-table-column label="失败数" align="center" prop="failCaseNums" width="90"/>
+              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="90"/>
               <el-table-column label="总耗时(秒)" align="center" prop="costtime" width="120"/>
             </el-table>
           </div>
@@ -100,9 +101,11 @@
               border
               highlight-current-row
             >
-              <el-table-column label="测试集合前置条件数" align="center" prop="testCollectionConditionsNUms" width="350">
+              <el-table-column label="测试集合前置条件数" align="center" prop="testCollectionConditionsNUms" width="220">
               </el-table-column>
-              <el-table-column label="测试用例前置条件数" align="center" prop="caseConditionNums" width="340"/>
+              <el-table-column label="测试场景前置条件数" align="center" prop="sceneConditionNums" width="220"/>
+
+              <el-table-column label="测试用例前置条件数" align="center" prop="caseConditionNums" width="220"/>
             </el-table>
           </div>
         </el-col>
@@ -172,6 +175,13 @@
                 <el-option label="失败" value="失败"></el-option>
               </el-select>
           </el-form-item>
+            <el-form-item>
+              <el-input clearable maxlength="40" v-model="tmpquery.scenename" @keyup.enter.native="searchcaseReportBy" placeholder="场景名"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-input clearable maxlength="40" v-model="tmpquery.casename" @keyup.enter.native="searchcaseReportBy" placeholder="用例名"></el-input>
+            </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="searchcaseReportBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
@@ -445,6 +455,8 @@
           batchid: '',
           batchname: '',
           caseststus: '',
+          scenename: '',
+          casename: '',
           projectid: ''
         },
         tmpconditionquery: {

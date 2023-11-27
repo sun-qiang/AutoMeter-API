@@ -56,6 +56,11 @@ public class ApicasesReportController {
     @Resource
     private ApicasesReportstaticsService apicasesReportstaticsService;
 
+    @Resource
+    private TestplanTestsceneService testplanTestsceneService;
+
+    @Resource
+    private TestsceneTestcaseService testsceneTestcaseService;
 
 
     @PostMapping
@@ -84,7 +89,7 @@ public class ApicasesReportController {
 
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page,
-                       @RequestParam(defaultValue = "0") Integer size,@RequestParam long projectid) {
+                       @RequestParam(defaultValue = "0") Integer size, @RequestParam long projectid) {
         PageHelper.startPage(page, size);
         List<ApicasesReport> list = apicasesReportService.listallresult(projectid);
         PageInfo<ApicasesReport> pageInfo = PageInfo.of(list);
@@ -111,9 +116,11 @@ public class ApicasesReportController {
         Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
         String status = param.get("caseststus").toString();
         String batchname = param.get("batchname").toString();
+        String scenename = param.get("scenename").toString();
+        String casename = param.get("casename").toString();
         Long projectid = Long.parseLong(param.get("projectid").toString());
         PageHelper.startPage(page, size);
-        final List<ApicasesReport> list = this.apicasesReportService.findApicasereportWithNameandStatus(executeplanid,status,batchname,projectid);
+        final List<ApicasesReport> list = this.apicasesReportService.findApicasereportWithNameandStatus(executeplanid, status, batchname, projectid,scenename,casename);
         final PageInfo<ApicasesReport> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
     }
@@ -129,8 +136,6 @@ public class ApicasesReportController {
 //        final PageInfo<TestconditionReport> pageInfo = new PageInfo<>(list);
 //        return ResultGenerator.genOkResult(pageInfo);
 //    }
-
-
 
 
     /**
@@ -176,24 +181,28 @@ public class ApicasesReportController {
 
             Condition dispatchccon = new Condition(Dispatch.class);
             dispatchccon.createCriteria().andCondition("execplanid = " + executeplanid)
-                    .andCondition("batchname = '" + batchname+"'");
+                    .andCondition("batchname = '" + batchname + "'");
             List<Dispatch> dispatchList = dispatchService.listByCondition(dispatchccon);
             functionCaseStatis.setCaseNum(dispatchList.size());
 
-            int ExecCaseNums=0;
-            for (Dispatch dis:dispatchList) {
-                if(dis.getStatus().equalsIgnoreCase("已分配"))
-                {
-                    ExecCaseNums=ExecCaseNums+1;
+
+            Condition planscenecon = new Condition(TestplanTestscene.class);
+            dispatchccon.createCriteria().andCondition("testplanid = " + executeplanid);
+            List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(planscenecon);
+            functionCaseStatis.setSceneNums(testplanTestsceneList.size());
+
+            int ExecCaseNums = 0;
+            for (Dispatch dis : dispatchList) {
+                if (dis.getStatus().equalsIgnoreCase("已分配")) {
+                    ExecCaseNums = ExecCaseNums + 1;
                 }
             }
             functionCaseStatis.setExecCaseNums(ExecCaseNums);
 
-            int NotExecCaseNums=0;
-            for (Dispatch dis:dispatchList) {
-                if(dis.getStatus().equalsIgnoreCase("待分配"))
-                {
-                    NotExecCaseNums=NotExecCaseNums+1;
+            int NotExecCaseNums = 0;
+            for (Dispatch dis : dispatchList) {
+                if (dis.getStatus().equalsIgnoreCase("待分配")) {
+                    NotExecCaseNums = NotExecCaseNums + 1;
                 }
             }
             functionCaseStatis.setNotExecCaseNums(NotExecCaseNums);
@@ -204,40 +213,43 @@ public class ApicasesReportController {
             List<ApicasesReport> apicasesReportFailList = apicasesReportService.getreportbyplanandbatchstatus(executeplanid, "失败", batchname);
             functionCaseStatis.setFailCaseNums(apicasesReportFailList.size());
 
-            int totalrunnums=apicasesReportSuccessList.size()+apicasesReportFailList.size();
+            int totalrunnums = apicasesReportSuccessList.size() + apicasesReportFailList.size();
 
             float successrate = Float.valueOf(apicasesReportSuccessList.size()) / Float.valueOf(totalrunnums);
             float failrate = Float.valueOf(apicasesReportFailList.size()) / Float.valueOf(totalrunnums);
-            String sresultrate="";
+            String sresultrate = "";
             String fresultrate = "";
-            DecimalFormat decimalFormat=new DecimalFormat(".00");
+            DecimalFormat decimalFormat = new DecimalFormat(".00");
 
-            if(successrate==0.0)
-            {
-                sresultrate="0%";
+            if (successrate == 0.0) {
+                sresultrate = "0%";
+            } else {
+                sresultrate = decimalFormat.format(successrate * 100) + "%";
             }
-            else
-            {
-                 sresultrate=decimalFormat.format(successrate* 100)+ "%";
-            }
-            if(failrate==0.0)
-            {
-                fresultrate="0%";
-            }
-            else
-            {
-                 fresultrate=decimalFormat.format(failrate* 100)+ "%";
+            if (failrate == 0.0) {
+                fresultrate = "0%";
+            } else {
+                fresultrate = decimalFormat.format(failrate * 100) + "%";
             }
 
             functionCaseStatis.setFailrate(fresultrate);
             functionCaseStatis.setSuccessrate(sresultrate);
-            List<ApicasesReportstatics> apicasesReportstaticsList= apicasesReportstaticsService.getapicasesreportstaticsbypandb(executeplanid,batchname);
 
-            float costtime=0;
-            for (ApicasesReportstatics apicasesReportstatics :apicasesReportstaticsList) {
-                costtime=costtime+apicasesReportstatics.getRuntime();
+            float costalltime=0;
+            for (ApicasesReport ap:apicasesReportSuccessList) {
+                costalltime=costalltime+ap.getRuntime();
             }
-            functionCaseStatis.setCosttime(costtime/1000);
+            for (ApicasesReport ap:apicasesReportFailList) {
+                costalltime=costalltime+ap.getRuntime();
+            }
+
+//            List<ApicasesReportstatics> apicasesReportstaticsList = apicasesReportstaticsService.getapicasesreportstaticsbypandb(executeplanid, batchname);
+//
+//            float costtime = 0;
+//            for (ApicasesReportstatics apicasesReportstatics : apicasesReportstaticsList) {
+//                costtime = costtime + apicasesReportstatics.getRuntime();
+//            }
+            functionCaseStatis.setCosttime(costalltime / 1000);
 
             List<FunctionCaseStatis> functionCaseStatisList = new ArrayList<>();
             functionCaseStatisList.add(functionCaseStatis);
@@ -256,74 +268,122 @@ public class ApicasesReportController {
             Long batchid = Long.parseLong(param.get("batchid").toString());
             String batchname = param.get("batchname").toString();
 
-            Condition testconditioncon = new Condition(Testcondition.class);
-            testconditioncon.createCriteria().andCondition("objecttype = '" + "测试集合" + "'")
-                    .andCondition("objectid = " + executeplanid);
-            List<Testcondition> testconditionList = testconditionService.listByCondition(testconditioncon);
-
             long totalconditionnums = 0;
-            if (testconditionList.size() > 0) {
-                long conditionid = testconditionList.get(0).getId();
-                Condition apiconditioncon = new Condition(ConditionApi.class);
-                apiconditioncon.createCriteria().andCondition("conditionid = " + conditionid);
-                List<ConditionApi> conditionApiList = conditionApiService.listByCondition(apiconditioncon);
-                if (conditionApiList.size() > 0) {
-                    totalconditionnums = totalconditionnums + conditionApiList.size();
-                }
 
-                Condition dbconditioncon = new Condition(ConditionDb.class);
-                dbconditioncon.createCriteria().andCondition("conditionid = " + conditionid);
-                List<ConditionDb> conditionDBList = conditionDbService.listByCondition(dbconditioncon);
-                if (conditionDBList.size() > 0) {
-                    totalconditionnums = totalconditionnums + conditionDBList.size();
-                }
-
-                Condition scriptconditioncon = new Condition(ConditionScript.class);
-                scriptconditioncon.createCriteria().andCondition("conditionid = " + conditionid);
-                List<ConditionScript> conditionScriptList = conditionScriptService.listByCondition(scriptconditioncon);
-                if (conditionScriptList.size() >0) {
-                    totalconditionnums = totalconditionnums + conditionScriptList.size();
-                }
-
+            Condition apiconditioncon = new Condition(ConditionApi.class);
+            apiconditioncon.createCriteria().andCondition("conditionid = " + executeplanid).andCondition("conditiontype = 'execplan'");
+            List<ConditionApi> conditionApiList = conditionApiService.listByCondition(apiconditioncon);
+            if (conditionApiList.size() > 0) {
+                totalconditionnums = totalconditionnums + conditionApiList.size();
             }
+
+            Condition delayconditioncon = new Condition(ConditionDelay.class);
+            delayconditioncon.createCriteria().andCondition("conditionid = " + executeplanid).andCondition("conditiontype = 'execplan'");
+            List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(delayconditioncon);
+            if (conditionApiList.size() > 0) {
+                totalconditionnums = totalconditionnums + conditionDelayList.size();
+            }
+//                Condition dbconditioncon = new Condition(ConditionDb.class);
+//                dbconditioncon.createCriteria().andCondition("conditionid = " + executeplanid).andCondition("conditiontype = 'execplan'" );
+//                List<ConditionDb> conditionDBList = conditionDbService.listByCondition(dbconditioncon);
+//                if (conditionDBList.size() > 0) {
+//                    totalconditionnums = totalconditionnums + conditionDBList.size();
+//                }
+//
+//                Condition scriptconditioncon = new Condition(ConditionScript.class);
+//                scriptconditioncon.createCriteria().andCondition("conditionid = " + executeplanid).andCondition("conditiontype = 'execplan'" );
+//                List<ConditionScript> conditionScriptList = conditionScriptService.listByCondition(scriptconditioncon);
+//                if (conditionScriptList.size() >0) {
+//                    totalconditionnums = totalconditionnums + conditionScriptList.size();
+//                }
+
+            //}
             functionConditionStatis.setTestCollectionConditionsNUms(totalconditionnums);
 
+
+            //
+
+            long Sceneconditionnums = 0;
             long caseconditionnums = 0;
-            List<ExecuteplanTestcase> executeplanTestcaseList = executeplanTestcaseService.getplancasesbyplanid(executeplanid);
 
-            for (ExecuteplanTestcase ec : executeplanTestcaseList) {
-                long caseid = ec.getTestcaseid();
+            List<ConditionApi> conditionApiList1= conditionApiService.listAll();
+            List<ConditionDelay> conditionDelayList1= conditionDelayService.listAll();
 
-                Condition testcaseconditioncon = new Condition(Testcondition.class);
-                testcaseconditioncon.createCriteria().andCondition("objecttype = '" + "测试用例" + "'")
-                        .andCondition("objectid = " + caseid);
-                List<Testcondition> testcaseconditionList = testconditionService.listByCondition(testcaseconditioncon);
+            Condition planscenecon = new Condition(TestplanTestscene.class);
+            planscenecon.createCriteria().andCondition("testplanid = " + executeplanid);
+            List<TestplanTestscene> testplanTestsceneList= testplanTestsceneService.listByCondition(planscenecon);
 
-                if (testcaseconditionList.size() > 0) {
-                    long conditionid = testcaseconditionList.get(0).getId();
+            for (TestplanTestscene tpts:testplanTestsceneList) {
+                long sceneid=tpts.getTestscenenid();
+                Condition sceneapiconditioncon = new Condition(ConditionApi.class);
+                sceneapiconditioncon.createCriteria().andCondition("conditionid = " + sceneid).andCondition("conditiontype = 'scene'");
+                List<ConditionApi> sceneconditionApiList = conditionApiService.listByCondition(sceneapiconditioncon);
+                if (sceneconditionApiList.size() > 0) {
+                    Sceneconditionnums = Sceneconditionnums + sceneconditionApiList.size();
+                }
+                Condition scenedelayconditioncon = new Condition(ConditionDelay.class);
+                scenedelayconditioncon.createCriteria().andCondition("conditionid = " + sceneid).andCondition("conditiontype = 'scene'");
+                List<ConditionDelay> sceneconditionDelayList = conditionDelayService.listByCondition(scenedelayconditioncon);
+                if (sceneconditionDelayList.size() > 0) {
+                    Sceneconditionnums = Sceneconditionnums + sceneconditionDelayList.size();
+                }
 
-                    Condition conditionApi = new Condition(ConditionApi.class);
-                    conditionApi.createCriteria().andCondition("conditionid = " + conditionid);
-                    List<ConditionApi>conditionApiList = conditionApiService.listByCondition(conditionApi);
-                    caseconditionnums = caseconditionnums+conditionApiList.size();
+                Condition scenecasecon = new Condition(TestsceneTestcase.class);
+                scenecasecon.createCriteria().andCondition("testscenenid = " + sceneid);
+                List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(scenecasecon);
 
-                    Condition conditionDB = new Condition(ConditionDb.class);
-                    conditionDB.createCriteria().andCondition("conditionid = " + conditionid);
-                    List<ConditionDb>conditionDbList = conditionDbService.listByCondition(conditionDB);
-                    caseconditionnums = caseconditionnums+conditionDbList.size();
-
-                    Condition conditionScript = new Condition(ConditionScript.class);
-                    conditionScript.createCriteria().andCondition("conditionid = " + conditionid);
-                    List<ConditionScript>conditionScriptList = conditionScriptService.listByCondition(conditionDB);
-                    caseconditionnums = caseconditionnums+conditionScriptList.size();
-
-
-                    Condition delayconditioncon = new Condition(ConditionDelay.class);
-                    delayconditioncon.createCriteria().andCondition("conditionid = " + conditionid);
-                    List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(delayconditioncon);
-                    caseconditionnums = caseconditionnums+conditionDelayList.size();
+                for (TestsceneTestcase tstc:testsceneTestcaseList) {
+                    Long sccencaseid=tstc.getId();
+                    for (ConditionApi ca:conditionApiList1) {
+                        if(sccencaseid.equals(ca.getConditionid())&&ca.getConditiontype().equalsIgnoreCase("scencecase"))
+                        {
+                            caseconditionnums=caseconditionnums+1;
+                        }
+                    }
+                    for (ConditionDelay cd:conditionDelayList1) {
+                        if(sccencaseid.equals(cd.getConditionid())&&cd.getConditiontype().equalsIgnoreCase("scencecase"))
+                        {
+                            caseconditionnums=caseconditionnums+1;
+                        }
+                    }
                 }
             }
+//            List<ExecuteplanTestcase> executeplanTestcaseList = executeplanTestcaseService.getplancasesbyplanid(executeplanid);
+//
+//            for (ExecuteplanTestcase ec : executeplanTestcaseList) {
+//                long caseid = ec.getTestcaseid();
+//
+//                Condition testcaseconditioncon = new Condition(Testcondition.class);
+//                testcaseconditioncon.createCriteria().andCondition("objecttype = '" + "测试用例" + "'")
+//                        .andCondition("objectid = " + caseid);
+//                List<Testcondition> testcaseconditionList = testconditionService.listByCondition(testcaseconditioncon);
+//
+//                if (testcaseconditionList.size() > 0) {
+//                    long conditionid = testcaseconditionList.get(0).getId();
+//
+//                    Condition conditionApi = new Condition(ConditionApi.class);
+//                    conditionApi.createCriteria().andCondition("conditionid = " + conditionid);
+//                    List<ConditionApi> conditionApiList = conditionApiService.listByCondition(conditionApi);
+//                    caseconditionnums = caseconditionnums + conditionApiList.size();
+//
+//                    Condition conditionDB = new Condition(ConditionDb.class);
+//                    conditionDB.createCriteria().andCondition("conditionid = " + conditionid);
+//                    List<ConditionDb> conditionDbList = conditionDbService.listByCondition(conditionDB);
+//                    caseconditionnums = caseconditionnums + conditionDbList.size();
+//
+//                    Condition conditionScript = new Condition(ConditionScript.class);
+//                    conditionScript.createCriteria().andCondition("conditionid = " + conditionid);
+//                    List<ConditionScript> conditionScriptList = conditionScriptService.listByCondition(conditionDB);
+//                    caseconditionnums = caseconditionnums + conditionScriptList.size();
+//
+//
+//                    Condition delayconditioncon = new Condition(ConditionDelay.class);
+//                    delayconditioncon.createCriteria().andCondition("conditionid = " + conditionid);
+//                    List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(delayconditioncon);
+//                    caseconditionnums = caseconditionnums + conditionDelayList.size();
+//                }
+//            }
+            functionConditionStatis.setSceneConditionNums(Sceneconditionnums);
             functionConditionStatis.setCaseConditionNums(caseconditionnums);
         }
         List<FunctionConditionStatis> functionConditionStatisList = new ArrayList<>();
@@ -335,13 +395,11 @@ public class ApicasesReportController {
     public Result getfunctionCaseSandF(@RequestBody final Map<String, Object> param) {
         if (param.get("batchid").toString().isEmpty() || param.get("executeplanid").toString().isEmpty()) {
             return ResultGenerator.genFailedResult("请选择测试集合，执行计划");
-        }
-        else
-        {
+        } else {
             Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
             String batchname = param.get("batchname").toString();
 
-            List<FunctionCaseSandF>functionCaseSandFList=new ArrayList<>();
+            List<FunctionCaseSandF> functionCaseSandFList = new ArrayList<>();
             List<ApicasesReport> apicasesReportSuccessList = apicasesReportService.getreportbyplanandbatchstatus(executeplanid, "成功", batchname);
             FunctionCaseSandF functionCaseSandF = new FunctionCaseSandF();
             functionCaseSandF.setName("成功");

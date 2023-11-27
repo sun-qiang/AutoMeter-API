@@ -456,13 +456,18 @@ public class TestCore {
                             String mailto = listaccount.get(0).get("email");
                             String Subject = PlanName + "|" + BatchName + " 执行完成！";
                             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
+                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName);
+
                             long tc = 0;
                             long tpc = 0;
                             long tfc = 0;
                             if (liststatics.size() > 0) {
                                 tc = Long.parseLong(liststatics.get(0).get("tc"));
-                                tpc = Long.parseLong(liststatics.get(0).get("tpc"));
-                                tfc = Long.parseLong(liststatics.get(0).get("tfc"));
+                                if(liststaticssuccess.size()>0)
+                                {
+                                    tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
+                                }
+                                tfc = tc-tpc;
                             }
                             String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc;
                             MailUtil.send(account, CollUtil.newArrayList(mailto), Subject, Content, false);
@@ -485,13 +490,18 @@ public class TestCore {
             String PlanName = list.get(0).get("executeplanname");
             String Subject = "测试集合：" + PlanName + " |  执行计划：" + BatchName + " 完成！";
             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
+            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName);
+
             long tc = 0;
             long tpc = 0;
             long tfc = 0;
             if (liststatics.size() > 0) {
                 tc = Long.parseLong(liststatics.get(0).get("tc"));
-                tpc = Long.parseLong(liststatics.get(0).get("tpc"));
-                tfc = Long.parseLong(liststatics.get(0).get("tfc"));
+                if(liststaticssuccess.size()>0)
+                {
+                    tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
+                }
+                tfc = tc-tpc;
             }
             Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + " ，请登陆AutoMeter-报告中心查看详情";
         }
@@ -550,6 +560,12 @@ public class TestCore {
     //获取计划批次的数据统计
     public ArrayList<HashMap<String, String>> GetStatic(String planid, String Batchname) {
         ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStatic(planid, Batchname);
+        return list;
+    }
+
+    //获取计划批次的数据统计
+    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticSuccess(planid, Batchname);
         return list;
     }
 

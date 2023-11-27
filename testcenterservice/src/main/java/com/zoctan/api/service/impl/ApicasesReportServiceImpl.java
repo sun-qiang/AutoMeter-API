@@ -27,8 +27,8 @@ private ApicasesReportMapper apicasesReportMapper;
     }
 
     @Override
-    public List<ApicasesReport> findApicasereportWithNameandStatus(long planid, String status, String batchname,long projectid) {
-        return apicasesReportMapper.findApicasereportWithNameandStatus(planid, status, batchname,projectid);
+    public List<ApicasesReport> findApicasereportWithNameandStatus(long planid, String status, String batchname,long projectid,String scenename,String casename) {
+        return apicasesReportMapper.findApicasereportWithNameandStatus(planid, status, batchname,projectid,scenename,casename);
     }
 
 

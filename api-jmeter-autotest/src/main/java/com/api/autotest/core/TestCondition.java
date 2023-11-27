@@ -248,13 +248,13 @@ public class TestCondition {
         //增加判断是否已经存在
         testMysqlHelp.SubConditionReportSave(testconditionReport);
         //判断此前置用例在测试场景中是否存在，如果存在则保存报告表，如果不存在则不保存报告表
-        Long Sceneid = requestObject.getSceneid();
-        ArrayList<HashMap<String, String>> sceneCaseList = testMysqlHelp.GetSceneID(CaseID, Sceneid);
-        if (sceneCaseList.size() > 0) {
-            //保存报告表
-            TestCore core = new TestCore(ctx, logger, results);
-            core.FixCaseData(requestObject, ctx, results, false, testResponeData);
-        }
+//        Long Sceneid = requestObject.getSceneid();
+//        ArrayList<HashMap<String, String>> sceneCaseList = testMysqlHelp.GetSceneID(CaseID, Sceneid);
+//        if (sceneCaseList.size() > 0) {
+//            //保存报告表
+//            TestCore core = new TestCore(ctx, logger, results);
+//            core.FixCaseData(requestObject, ctx, results, false, testResponeData);
+//        }
     }
 
     public void FixInterfaceVariables(RequestObject requestObject,Long ConditionID,String ConditionType, Long CaseID, TestResponeData testResponeData, String Respone, Long PlanID, String PlanName, String BatchName) {

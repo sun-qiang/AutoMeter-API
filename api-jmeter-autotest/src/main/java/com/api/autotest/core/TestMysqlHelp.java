@@ -35,7 +35,21 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> GetStatic(String planid, String Batchname) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "select sum(totalcases) as tc,sum(totalpasscases) as tpc ,sum(totalfailcases) as tfc from apicases_reportstatics where testplanid=" + planid + " and batchname='" + Batchname + "'";
+//            String sql = "select sum(totalcases) as tc,sum(totalpasscases) as tpc ,sum(totalfailcases) as tfc from apicases_reportstatics where testplanid=" + planid + " and batchname='" + Batchname + "'";
+            String sql = "select count(*) as tc from apicases_report where testplanid=" + planid + " and batchname='" + Batchname + "'";
+
+            logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
+            list = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取统计异常...........: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+        try {
+            String sql = "select count(*) as tcp from apicases_report where testplanid=" + planid + " and batchname='" + Batchname + "' and status='成功'";
             logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {

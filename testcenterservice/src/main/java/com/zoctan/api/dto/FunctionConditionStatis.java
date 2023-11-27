@@ -30,6 +30,17 @@ public class FunctionConditionStatis {
     private Long TestCollectionConditionsNUms;
     private Long CaseConditionNums;
 
+    public Long getSceneConditionNums() {
+        return SceneConditionNums;
+    }
+
+    public void setSceneConditionNums(Long sceneConditionNums) {
+        SceneConditionNums = sceneConditionNums;
+    }
+
+    private Long SceneConditionNums;
+
+
 
 
 }
