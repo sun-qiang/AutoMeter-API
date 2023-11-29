@@ -1,6 +1,7 @@
 package com.zoctan.api.service;
 
 import com.zoctan.api.core.service.Service;
+import com.zoctan.api.dto.AssembleDeploy;
 import com.zoctan.api.entity.Envmachine;
 import com.zoctan.api.entity.Macdepunit;
 import tk.mybatis.mapper.entity.Condition;
@@ -20,6 +21,12 @@ public interface MacdepunitService extends Service<Macdepunit> {
      * @return 环境服务器列表
      */
     List<Macdepunit> findMacAndDepWithName(final Map<String, Object> params);
+
+    List<Macdepunit> findMacAndDepWithEnv(final Map<String, Object> params);
+    List<AssembleDeploy> findMacAndAssembleWithEnv(final Map<String, Object> params);
+
+
+
 
     List<Macdepunit> findMacAndDepWithid(final Map<String, Object> params);
 

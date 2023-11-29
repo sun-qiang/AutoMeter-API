@@ -187,7 +187,7 @@ public class ApicasesReportController {
 
 
             Condition planscenecon = new Condition(TestplanTestscene.class);
-            dispatchccon.createCriteria().andCondition("testplanid = " + executeplanid);
+            planscenecon.createCriteria().andCondition("testplanid = " + executeplanid);
             List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(planscenecon);
             functionCaseStatis.setSceneNums(testplanTestsceneList.size());
 

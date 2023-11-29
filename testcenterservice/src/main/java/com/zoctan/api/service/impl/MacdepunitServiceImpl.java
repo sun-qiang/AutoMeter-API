@@ -1,5 +1,6 @@
 package com.zoctan.api.service.impl;
 
+import com.zoctan.api.dto.AssembleDeploy;
 import com.zoctan.api.entity.Envmachine;
 import com.zoctan.api.mapper.MacdepunitMapper;
 import com.zoctan.api.entity.Macdepunit;
@@ -26,6 +27,16 @@ private MacdepunitMapper macdepunitMapper;
     @Override
     public List<Macdepunit> findMacAndDepWithName(Map<String, Object> params) {
         return this.macdepunitMapper.findMacAndDepWithName(params);
+    }
+
+    @Override
+    public List<Macdepunit> findMacAndDepWithEnv(Map<String, Object> params) {
+        return macdepunitMapper.findMacAndDepWithEnv(params);
+    }
+
+    @Override
+    public List<AssembleDeploy> findMacAndAssembleWithEnv(Map<String, Object> params) {
+        return macdepunitMapper.findMacAndAssembleWithEnv(params);
     }
 
     @Override

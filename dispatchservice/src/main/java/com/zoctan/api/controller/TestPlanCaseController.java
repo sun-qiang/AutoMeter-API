@@ -101,6 +101,7 @@ public class TestPlanCaseController {
         executeplanbatchService.save(executeplanbatchList);
         //如果有空闲更佳，可以优化
         List<Slaver> slaverlist = slaverMapper.findslaveralive(ep.getUsetype(), "已下线");
+
         //增加检测slaver是否正常，在salver的control做个检测的请求返回
         //slaverlist=GetAliveSlaver(slaverlist);
         if (slaverlist.size() == 0) {
@@ -150,6 +151,7 @@ public class TestPlanCaseController {
         }
         for (Long slaverid : longListHashMap.keySet()) {
             String slavername = slavermap.get(slaverid);
+            TestPlanCaseController.log.info("开始分配调度slavername。。。。。。。。。。。。。。。。：" +slavername);
             List<TestplanTestscene> testplanTestsceneList1 = longListHashMap.get(slaverid);
             for (TestplanTestscene testscene : testplanTestsceneList1) {
                 long testsceneid = testscene.getTestscenenid();
@@ -158,6 +160,7 @@ public class TestPlanCaseController {
                 List<Dispatch> dispatchList = new ArrayList<>();
                 for (TestsceneTestcase testcase : testsceneTestcaseList) {
                     Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, testcase.getThreadnum(), testcase.getLoops());
+                    TestPlanCaseController.log.info("getdispatch获取调度slaverid。。。。。。。。。。。。。。。。：" +slaverid);
                     dispatchList.add(dis);
                 }
                 dispatchMapper.insertBatchDispatch(dispatchList);
@@ -273,6 +276,7 @@ public class TestPlanCaseController {
                 TestplanTestscene testplanTestscene = testplanTestsceneList.get(j);
                 splitdispatchList.add(testplanTestscene);
                 LastDispatchList.put(slaverid, splitdispatchList);
+                TestPlanCaseController.log.info("分配slaverid："+slaverid+" slavername:" + slaverlist.get(i).getSlavername());
             }
             x = j;
         }
@@ -283,6 +287,8 @@ public class TestPlanCaseController {
                 LastDispatchList.get(slaverid).add(testplanTestscene);
             }
         }
+        TestPlanCaseController.log.info("分配slaver个数。。。。。。。。。。。。。。。：" + LastDispatchList.size());
+
         return LastDispatchList;
     }
 

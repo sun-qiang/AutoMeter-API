@@ -1,6 +1,7 @@
 package com.zoctan.api.mapper;
 
 import com.zoctan.api.core.mapper.MyMapper;
+import com.zoctan.api.dto.AssembleDeploy;
 import com.zoctan.api.entity.Envmachine;
 import com.zoctan.api.entity.Macdepunit;
 import org.apache.ibatis.annotations.Param;
@@ -17,6 +18,8 @@ public interface MacdepunitMapper extends MyMapper<Macdepunit> {
      * @return 环境服务器列表
      */
     List<Macdepunit> findMacAndDepWithName(final Map<String, Object> params);
+    List<Macdepunit> findMacAndDepWithEnv(final Map<String, Object> params);
+    List<AssembleDeploy> findMacAndAssembleWithEnv(final Map<String, Object> params);
 
     List<Macdepunit> findMacAndDepWithid(final Map<String, Object> params);
 

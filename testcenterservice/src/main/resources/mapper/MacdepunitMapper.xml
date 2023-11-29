@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoctan.api.mapper.MacdepunitMapper">
-  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Macdepunit">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.dto.AssembleDeploy">
     <!--
       WARNING - @mbg.generated
     -->
@@ -17,6 +17,7 @@
     <result column="domain" jdbcType="VARCHAR" property="domain" />
     <result column="visittype" jdbcType="VARCHAR" property="visittype" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="connectstr" jdbcType="VARCHAR" property="connectstr" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
@@ -45,6 +46,35 @@
       <if test="deployunitname != null and deployunitname != ''">and c.deployunitname like CONCAT('%',#{deployunitname},'%')</if>
       <if test="machinename != null  and machinename != ''">and c.machinename like CONCAT('%',#{machinename},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+  <select id="findMacAndDepWithEnv" resultMap="BaseResultMap">
+    select a.enviromentname,b.machinename,c.* from
+    macdepunit c inner join enviroment a inner join machine b
+    on a.id=c.envid and b.id=c.machineid
+    <where>
+      <if test="envid != null and envid != ''"> c.envid=#{envid}</if>
+      <if test="deployunitname != null and deployunitname != ''">and c.deployunitname like CONCAT('%',#{deployunitname},'%')</if>
+      <if test="machinename != null  and machinename != ''">and c.machinename like CONCAT('%',#{machinename},'%')</if>
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="assembletype != null  and assembletype != ''">and c.assembletype =#{assembletype}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+  <select id="findMacAndAssembleWithEnv" resultMap="BaseResultMap">
+    select a.enviromentname,b.machinename,d.connectstr,d.assemblename, d.assembletype , c.* from
+    macdepunit c inner join enviroment a inner join machine b inner join enviroment_assemble d
+    on a.id=c.envid and b.id=c.machineid and c.assembleid=d.id
+    <where>
+      <if test="envid != null and envid != ''"> c.envid=#{envid}</if>
+      <if test="deployunitname != null and deployunitname != ''">and c.deployunitname like CONCAT('%',#{deployunitname},'%')</if>
+      <if test="machinename != null  and machinename != ''">and c.machinename like CONCAT('%',#{machinename},'%')</if>
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="assembletype != null  and assembletype != ''">and c.assembletype =#{assembletype}</if>
     </where>
     order by lastmodify_time  DESC
   </select>
