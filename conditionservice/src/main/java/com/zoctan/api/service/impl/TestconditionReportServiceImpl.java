@@ -30,4 +30,9 @@ private TestconditionReportMapper testconditionReportMapper;
         return countByCondition(con);
     }
 
+    @Override
+    public List<TestconditionReport> getsubconditionnumswithstatus(Long testplanid, String batchname, String status, String conditionstatus) {
+        return testconditionReportMapper.getsubconditionnumswithstatus(testplanid, batchname, status, conditionstatus);
+    }
+
 }

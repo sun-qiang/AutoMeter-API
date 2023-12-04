@@ -1,6 +1,7 @@
 package com.zoctan.api.service.impl;
 
 import com.zoctan.api.core.service.AbstractService;
+import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDelay;
 import com.zoctan.api.mapper.ConditionDelayMapper;
 import com.zoctan.api.service.ConditionDelayService;
@@ -40,6 +41,11 @@ private ConditionDelayMapper conditionDelayMapper;
     @Override
     public List<ConditionDelay> GetDelayConditionByConditionID(long conditionid) {
         return conditionDelayMapper.GetDelayConditionByConditionID(conditionid);
+    }
+
+    @Override
+    public List<ConditionDelay> GetCaseListByConditionID(Long conditionid, String conditiontype) {
+        return conditionDelayMapper.GetCaseListByConditionID(conditionid,conditiontype);
     }
 
 }

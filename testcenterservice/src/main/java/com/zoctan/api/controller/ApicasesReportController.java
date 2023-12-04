@@ -147,17 +147,28 @@ public class ApicasesReportController {
         if (param.get("batchname") == null || param.get("testplanname") == null) {
             return ResultGenerator.genOkResult("请选中测试计划和批次");
         }
+
+        Long planid= Long.parseLong(param.get("executeplanid").toString());
+        String batchname= param.get("batchname").toString();
+
         CaseReportStatics caseReportStatics = new CaseReportStatics();
-        Long casetotals = this.apicasesReportService.getApicasetotalsWithName(param);
+
+         Long casetotals= dispatchService.getdispatchnum(planid,batchname);
+//        Long casetotals = this.apicasesReportService.getApicasetotalsWithName(param);
         Map<String, Object> statusparams = param;
         statusparams.put("status", "成功");
         Long passcasetotals = this.apicasesReportService.getApicasenumbystatus(statusparams);
+
+        statusparams.put("status", "失败");
+        Long failcasetotals = this.apicasesReportService.getApicasenumbystatus(statusparams);
+
+
         Long costtimes = this.apicasesReportService.getApicasecosttimes(param);
         caseReportStatics.setBatchname(param.get("batchname").toString());
         caseReportStatics.setPlanname(param.get("testplanname").toString());
         caseReportStatics.setTestcasenums(casetotals);
         caseReportStatics.setPassnums(passcasetotals);
-        caseReportStatics.setFailnums(casetotals - passcasetotals);
+        caseReportStatics.setFailnums(failcasetotals);
         caseReportStatics.setCosttimes(costtimes);
 
         final List<CaseReportStatics> list = new ArrayList<>();
@@ -185,6 +196,10 @@ public class ApicasesReportController {
             List<Dispatch> dispatchList = dispatchService.listByCondition(dispatchccon);
             functionCaseStatis.setCaseNum(dispatchList.size());
 
+//            Long casetotals= dispatchService.getdispatchnum(executeplanid,batchname);
+//            functionCaseStatis.setCaseNum(casetotals);
+
+
 
             Condition planscenecon = new Condition(TestplanTestscene.class);
             planscenecon.createCriteria().andCondition("testplanid = " + executeplanid);
@@ -206,6 +221,15 @@ public class ApicasesReportController {
                 }
             }
             functionCaseStatis.setNotExecCaseNums(NotExecCaseNums);
+
+
+            int StopCaseNums = 0;
+            for (Dispatch dis : dispatchList) {
+                if (dis.getStatus().equalsIgnoreCase("已停止")) {
+                    StopCaseNums = StopCaseNums + 1;
+                }
+            }
+            functionCaseStatis.setStopExecCaseNums(StopCaseNums);
 
             List<ApicasesReport> apicasesReportSuccessList = apicasesReportService.getreportbyplanandbatchstatus(executeplanid, "成功", batchname);
             functionCaseStatis.setSuccessCaseNums(apicasesReportSuccessList.size());

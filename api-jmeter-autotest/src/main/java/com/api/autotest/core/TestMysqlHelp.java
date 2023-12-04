@@ -36,7 +36,7 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
 //            String sql = "select sum(totalcases) as tc,sum(totalpasscases) as tpc ,sum(totalfailcases) as tfc from apicases_reportstatics where testplanid=" + planid + " and batchname='" + Batchname + "'";
-            String sql = "select count(*) as tc from apicases_report where testplanid=" + planid + " and batchname='" + Batchname + "'";
+            String sql = "select count(*) as tc from dispatch where execplanid=" + planid + " and batchname='" + Batchname + "'";
 
             logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
@@ -46,10 +46,10 @@ public class TestMysqlHelp {
         return list;
     }
 
-    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname) {
+    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname,String status) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "select count(*) as tcp from apicases_report where testplanid=" + planid + " and batchname='" + Batchname + "' and status='成功'";
+            String sql = "select count(*) as tcp from apicases_report where testplanid=" + planid + " and batchname='" + Batchname + "' and status='"+status+"'";
             logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -598,6 +598,19 @@ public class TestMysqlHelp {
     }
 
 
+    //根据planid，batchname，sceneid获取planbatch
+    public ArrayList<HashMap<String, String>> GetBatchByPBS(String planid,String batchname,String Sceneid) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select *  from executeplanbatch where executeplanid=" + planid+" and sceneid="+Sceneid+" and batchname='"+batchname+"'";
+            logger.info(logplannameandcasename + "获取数据库 根据planid，batchname，sceneid获取planbatch result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 根据planid，batchname，sceneid获取planbatch...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //查询场景
     public ArrayList<HashMap<String, String>> GetSceneByID(String Sceneid) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
@@ -840,13 +853,13 @@ public class TestMysqlHelp {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname) {
+    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname,String status) {
         try {
             Date d = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateNowStr = sdf.format(d);
             String sql = "";
-            sql = "update dispatch set status='已完成',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname + "' and testcaseid=" + caseid;
+            sql = "update dispatch set status='"+status+"',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname + "' and testcaseid=" + caseid;
             logger.info(logplannameandcasename + "获取数据库 更新调度用例状态 result sql is...........: " + sql);
             logger.info(logplannameandcasename + "获取数据库 更新用例调度结果 is...........: " + MysqlConnectionUtils.update(sql));
         } catch (Exception ex) {

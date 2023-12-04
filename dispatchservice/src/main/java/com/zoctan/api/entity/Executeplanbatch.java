@@ -44,6 +44,19 @@ public class Executeplanbatch {
     private Long sceneid;
     private String scenename;
 
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    private String memo;
+
+
+
+
     /**
      * 执行计划id
      */

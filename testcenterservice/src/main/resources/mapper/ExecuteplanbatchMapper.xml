@@ -58,14 +58,16 @@
     order by lastmodify_time  DESC
   </select>
 
+  <select id="getstopplanbatchList" resultMap="BaseResultMap">
+    SELECT  distinct(batchname)
+    FROM executeplanbatch a where a.executeplanid =#{executeplanid} and status !='已完成'
+  </select>
 
   <select id="getrecentbatchbyid" resultMap="BaseResultMap">
     SELECT a.*
     FROM executeplanbatch a
     where a.executeplanid=#{executeplanid} order by a.create_time desc limit 2
   </select>
-
-
 
   <insert id="saveplanbatchscenen">
     INSERT INTO executeplanbatch (sceneid,scenename,executeplanid,projectid,status,source,executeplanname,batchname,
@@ -77,4 +79,11 @@
       DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
     </foreach>
   </insert>
+
+  <update id="updatebatchstatus">
+    update executeplanbatch set status = '停止中', lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where
+          executeplanid = #{executeplanid} and batchname=#{batchname} and status!='已完成';
+  </update>
+
 </mapper>

@@ -14,6 +14,8 @@ public interface ExecuteplanbatchMapper extends MyMapper<Executeplanbatch> {
 
     List<Executeplanbatch> getbatchbyplan(@Param("executeplanid") Long executeplanid);
 
+    List<Executeplanbatch> getstopplanbatchList(@Param("executeplanid") Long executeplanid);
+
     Executeplanbatch getbatchidbyplanidandbatchname(@Param("executeplanid") Long executeplanid,@Param("batchname") String batchname);
 
     List<Executeplanbatch> getallexplanbatch();
@@ -24,5 +26,6 @@ public interface ExecuteplanbatchMapper extends MyMapper<Executeplanbatch> {
 
     List<Executeplanbatch> getrecentbatchbyid(@Param("executeplanid") Long executeplanid);
     void saveplanbatchscenen(@Param("casedataList")final List<Executeplanbatch> testcase);
+    void updatebatchstatus(@Param("executeplanid") Long executeplanid,@Param("batchname") String batchname);
 
 }

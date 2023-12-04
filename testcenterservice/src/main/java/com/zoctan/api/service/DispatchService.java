@@ -17,5 +17,6 @@ public interface DispatchService extends Service<Dispatch> {
     List<Dispatch> getDispatchWithstatus(long testplanid,String batchname,String status);
 
     int ifexist(Condition condition);
+    Long getdispatchnum(long testplanid,String batchname);
 
 }

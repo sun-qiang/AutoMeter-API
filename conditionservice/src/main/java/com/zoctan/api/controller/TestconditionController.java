@@ -21,6 +21,7 @@ import com.zoctan.api.dto.RequestObject;
 import com.zoctan.api.dto.TestResponeData;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.entity.Dictionary;
+import com.zoctan.api.mapper.TestconditionReportMapper;
 import com.zoctan.api.service.*;
 import com.zoctan.api.util.DnamicCompilerHelp;
 import com.zoctan.api.util.PgsqlConnectionUtils;
@@ -125,15 +126,59 @@ public class TestconditionController {
         }
     }
 
+
+    @PostMapping("/planconditionreday")
+    public Result planconditionreday(@RequestBody Dispatch dispatch) {
+        Long Planid = dispatch.getExecplanid();
+        String Batchname = dispatch.getBatchname();
+        int conditionsum = 0;
+        TestconditionController.log.info("开始处理计划前置条件-开始统计接口子条件报告是否存在-============：");
+        Condition condition = new Condition(TestconditionReport.class);
+        condition.createCriteria().andCondition("testplanid = " + Planid)
+                .andCondition("batchname = '" + Batchname + "'");
+        List<TestconditionReport> conditiontestconditionReportList = testconditionReportService.listByCondition(condition);
+        conditionsum = conditiontestconditionReportList.size();
+        TestconditionController.log.info("完成处理计划前置条件-完成统计接口子条件报告是否存在-============：" + conditiontestconditionReportList.size());
+        if (conditionsum > 0) {
+            return ResultGenerator.genOkResult();
+        } else {
+            return ResultGenerator.genFailedResult(505, "条件报告未产生");
+        }
+    }
+
+    @PostMapping("/planconditionfinish")
+    public Result planconditionfinish(@RequestBody Dispatch dispatch) {
+        Long Planid = dispatch.getExecplanid();
+        String Batchname = dispatch.getBatchname();
+        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
+        int ApiConditionNums = conditionApiList.size();
+//            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
+//            int DBConditionNUms = conditionDbList.size();
+//            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
+//            int ScriptConditionNUms = conditionScriptList.size();
+        List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(Planid, "execplan");
+        int DelayConditionNUms = conditionDelayList.size();
+        int SubConditionNums = ApiConditionNums + DelayConditionNUms;
+
+        List<TestconditionReport> successtestconditionReportList = testconditionReportService.getsubconditionnumswithstatus(Planid, Batchname, "已完成", "成功");
+        if (successtestconditionReportList.size() == SubConditionNums) {
+            TestconditionController.log.info("调度服务【功能】条件报告已成功完成成功的数量: " + successtestconditionReportList.size() + "  条件总条数：" + SubConditionNums);
+            return ResultGenerator.genOkResult();
+            //条件报告中已完成，成功的条数等于子条件总条数表示子条件都已成功完成，可以开始执行用例
+        } else {
+            return ResultGenerator.genFailedResult(505, "条件报告未完成");
+        }
+    }
+
+
     @PostMapping("/execplancondition")
     @Async
     public Result exec(@RequestBody Dispatch dispatch) {
         Long Planid = dispatch.getExecplanid();
-        //Long Caseid = dispatch.getTestcaseid();
         Executeplan executeplan = executeplanService.getBy("id", Planid);
-        TestconditionController.log.info("开始处理计划前置条件-接口子条件-============：");
-        APICondition(Planid, dispatch.getBatchname(), executeplan,dispatch.getSlaverid());
-        TestconditionController.log.info("完成处理计划前置条件-接口子条件-============：");
+        TestconditionController.log.info("开始处理计划前置条件-接口条件-=====================================：");
+        APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
+        TestconditionController.log.info("完成处理计划前置条件-接口条件-========================================：");
 //        List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Planid, "前置条件", "测试集合");
 //        if (testconditionList.size() > 0) {
 //            long ConditionID = testconditionList.get(0).getId();
@@ -188,7 +233,7 @@ public class TestconditionController {
             long ConditionID = testconditionList.get(0).getId();
             //处理接口条件
             TestconditionController.log.info("开始处理用例前置条件-API子条件-============：");
-            VariablesNameVlaueMap = APICondition(ConditionID, dispatch.getBatchname(), executeplan,dispatch.getSlaverid());
+            VariablesNameVlaueMap = APICondition(ConditionID, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
             TestconditionController.log.info("完成处理用例前置条件-API子条件-============：");
             //处理数据库条件
             DBCondition(ConditionID, dispatch);
@@ -202,21 +247,20 @@ public class TestconditionController {
     }
 
     //接口子条件
-    private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname,Long Slaverid) {
-        TestconditionController.log.info("接口子条件Subconditionname-============：" + conditionApi.getSubconditionname() + " caseid:" + conditionApi.getCasename());
+    private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname, Long Slaverid) {
+        TestconditionController.log.info("接口条件名Subconditionname-============：" + conditionApi.getSubconditionname() + " 执行用例名:" + conditionApi.getCasename());
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
 
-        Condition condition=new Condition(TestconditionReport.class);
-        condition.createCriteria().andCondition("testplanid = " + executeplan.getId())
-                .andCondition("subconditionid = " + conditionApi.getId())
-                .andCondition("batchname = '" + Batchname+"'");
-
-        List<TestconditionReport> testconditionReportList= testconditionReportService.listByCondition(condition);
-
-        if(testconditionReportList.size()>0)
-        {
-            return VariableNameValueMap;
-        }
+//        Condition condition = new Condition(TestconditionReport.class);
+//        condition.createCriteria().andCondition("testplanid = " + executeplan.getId())
+//                .andCondition("subconditionid = " + conditionApi.getId())
+//                .andCondition("batchname = '" + Batchname + "'");
+//
+//        List<TestconditionReport> testconditionReportList = testconditionReportService.listByCondition(condition);
+//
+//        if (testconditionReportList.size() > 0) {
+//            return VariableNameValueMap;
+//        }
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(executeplan.getId());
         testconditionReport.setPlanname(executeplan.getExecuteplanname());
@@ -291,11 +335,8 @@ public class TestconditionController {
         try {
             requestObject = testCaseHelp.GetCaseRequestData(executeplan.getId(), Batchname, apiCasedataList, api, apicases, deployunit, macdepunit, machine);
             requestObject.setSlaverid(Slaverid.toString());
-            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常11111111111111111111111111" );
             requestObject.setTestplanname(executeplan.getExecuteplanname());
-            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常111111111111112222222222222" );
             requestObject.setBatchname(Batchname);
-            TestconditionController.log.info("接口子条件条件获取请求数据GetCaseRequestData异常1111111111111133333333333333" );
         } catch (Exception ex) {
             Respone = ex.getMessage();
             ConditionResultStatus = "失败";
@@ -334,10 +375,9 @@ public class TestconditionController {
         con.createCriteria().andCondition("caseid = " + apicases.getId());
         List<Testvariables> testvariablesList = testvariablesService.listByCondition(con);
         for (Testvariables apicasesVariables : testvariablesList) {
-            //ApicasesVariables apicasesVariables = apicasesVariablesService.getBy("caseid", apicases.getId());
             TestvariablesValue testvariablesValue = new TestvariablesValue();
             try {
-                testvariablesValue = FixApicasesVariables(conditionApi,apicasesVariables, testResponeData, requestObject, Respone, executeplan.getId(), CaseID, apicases);
+                testvariablesValue = FixApicasesVariables(conditionApi, apicasesVariables, testResponeData, requestObject, Respone, executeplan.getId(), CaseID, apicases);
             } catch (Exception exception) {
                 TestconditionController.log.info("接口子条件条件FixApicasesVariables异常-============：" + exception.getMessage());
                 ConditionResultStatus = "失败";
@@ -348,18 +388,17 @@ public class TestconditionController {
         CostTime = End - Start;
         //更新条件结果表
         UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, CostTime, conditionApi.getCreator());
-
         return VariableNameValueMap;
     }
 
     //接口子条件入口
-    public HashMap<String, String> APICondition(long ConditionID, String Batchname, Executeplan executeplan,Long Slaverid) {
+    public HashMap<String, String> APICondition(long ConditionID, String Batchname, Executeplan executeplan, Long Slaverid) {
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
         List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID, "execplan");
         TestconditionController.log.info("接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
         for (ConditionApi conditionApi : conditionApiList) {
             HashMap<String, String> apiVariableNameValueMap = new HashMap<>();
-            apiVariableNameValueMap = conditionApi(conditionApi, executeplan, Batchname,Slaverid);
+            apiVariableNameValueMap = conditionApi(conditionApi, executeplan, Batchname, Slaverid);
             for (String keyname : apiVariableNameValueMap.keySet()) {
                 VariableNameValueMap.put(keyname, apiVariableNameValueMap.get(keyname));
             }
@@ -367,7 +406,7 @@ public class TestconditionController {
         return VariableNameValueMap;
     }
 
-    private TestvariablesValue FixApicasesVariables(ConditionApi conditionApi,Testvariables testvariables, TestResponeData testResponeData, RequestObject requestObject, String Respone, Long Planid, Long CaseID, Apicases apicases) throws Exception {
+    private TestvariablesValue FixApicasesVariables(ConditionApi conditionApi, Testvariables testvariables, TestResponeData testResponeData, RequestObject requestObject, String Respone, Long Planid, Long CaseID, Apicases apicases) throws Exception {
         TestvariablesValue testvariablesValue = new TestvariablesValue();
         TestconditionController.log.info("接口子条件条件报告子条件处理变量-============：" + testvariables.getTestvariablesname());
         if (testvariables != null) {
@@ -1031,7 +1070,7 @@ public class TestconditionController {
         //当结果为失败的情况发邮件通知用户
         if (ConditionResultStatus.equals("失败")) {
             String Subject = testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "前置子条件：" + testconditionReport.getSubconditionname() + "执行失败";
-            String Content = "-------------【失败原因：" + Respone + " ,前置子条件执行失败会导致测试集合所有用例停止运行，请及时AutoMeter处理！】";
+            String Content = "-------------【失败原因：" + Respone + " ,前置条件名：" + testconditionReport.getSubconditionname() + " 执行失败会导致测试集合所有用例停止运行，请及时AutoMeter处理！】";
 
             String DingdingToken = "";
             Executeplan executeplan = executeplanService.getBy("id", testconditionReport.getTestplanid());

@@ -204,7 +204,23 @@ public class ExecuteplanbatchController {
         final List<Executeplanbatch> list = this.executeplanbatchService.findexplanbatchWithName(param);
         final PageInfo<Executeplanbatch> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
+
     }
+
+    @PostMapping("/getstopplanbatchList")
+    public Result getstopplanbatchList(@RequestParam Long executeplanid) {
+        final List<Executeplanbatch> list = this.executeplanbatchService.getstopplanbatchList(executeplanid);
+        return ResultGenerator.genOkResult(list);
+    }
+
+    @PostMapping("/updatebatchstatus")
+    public Result updatebatchstatus(@RequestBody final Map<String, Object> param) {
+        Long planid= Long.parseLong(param.get("executeplanid").toString());
+        String batchname= param.get("batchname").toString();
+        this.executeplanbatchService.updatebatchstatus(planid,batchname);
+        return ResultGenerator.genOkResult();
+    }
+
 
 
 }

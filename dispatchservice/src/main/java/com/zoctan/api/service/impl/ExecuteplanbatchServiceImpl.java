@@ -37,5 +37,10 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
         executeplanbatchMapper.saveplanbatchscenen(testcase);
     }
 
+    @Override
+    public void updateconditionfail(Long executeplanid, String batchname, String memo) {
+        executeplanbatchMapper.updateconditionfail(executeplanid, batchname, memo);
+    }
+
 
 }

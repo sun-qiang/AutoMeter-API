@@ -60,13 +60,13 @@
               fit
               highlight-current-row
             >
-              <el-table-column label="用例总数" align="center" prop="caseNum" width="90">
-              </el-table-column>
-              <el-table-column label="场景数" align="center" prop="sceneNums" width="90"/>
-              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="90"/>
-              <el-table-column label="成功数" align="center" prop="successCaseNums" width="90"/>
-              <el-table-column label="失败数" align="center" prop="failCaseNums" width="90"/>
-              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="90"/>
+              <el-table-column label="场景数" align="center" prop="sceneNums" width="80"/>
+              <el-table-column label="用例总数" align="center" prop="caseNum" width="80"/>
+              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="80"/>
+              <el-table-column label="成功数" align="center" prop="successCaseNums" width="80"/>
+              <el-table-column label="失败数" align="center" prop="failCaseNums" width="80"/>
+              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="80"/>
+              <el-table-column label="停止执行数" align="center" prop="stopExecCaseNums" width="85"/>
               <el-table-column label="总耗时(秒)" align="center" prop="costtime" width="120"/>
             </el-table>
           </div>

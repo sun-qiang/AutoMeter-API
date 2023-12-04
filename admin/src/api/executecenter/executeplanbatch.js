@@ -16,6 +16,22 @@ export function getbatchbyplan(params) {
   })
 }
 
+export function updatebatchstatus(params) {
+  return request({
+    url: '/executeplanbatch/updatebatchstatus',
+    method: 'post',
+    data: params
+  })
+}
+
+export function getstopplanbatchList(params) {
+  return request({
+    url: '/executeplanbatch/getstopplanbatchList',
+    method: 'post',
+    params
+  })
+}
+
 export function search(executeplanbatchForm) {
   return request({
     url: '/executeplanbatch/search',

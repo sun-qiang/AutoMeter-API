@@ -36,4 +36,9 @@ private DispatchMapper dispatchMapper;
     public int ifexist(Condition con) {
         return countByCondition(con);
     }
+
+    @Override
+    public Long getdispatchnum(long testplanid, String batchname) {
+        return dispatchMapper.getdispatchnum(testplanid,batchname);
+    }
 }

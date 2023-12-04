@@ -14,7 +14,7 @@ public class FunctionCaseStatis {
         return CaseNum;
     }
 
-    public void setCaseNum(int caseNum) {
+    public void setCaseNum(long caseNum) {
         CaseNum = caseNum;
     }
 
@@ -65,6 +65,17 @@ public class FunctionCaseStatis {
     private float SuccessCaseNums;
     private float FailCaseNums;
     private int NotExecCaseNums;
+
+    public long getStopExecCaseNums() {
+        return StopExecCaseNums;
+    }
+
+    public void setStopExecCaseNums(long stopExecCaseNums) {
+        StopExecCaseNums = stopExecCaseNums;
+    }
+
+    private long StopExecCaseNums;
+
 
     public String getSuccessrate() {
         return successrate;

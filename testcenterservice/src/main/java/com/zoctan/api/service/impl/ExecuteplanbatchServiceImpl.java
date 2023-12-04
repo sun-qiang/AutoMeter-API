@@ -43,6 +43,11 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
     }
 
     @Override
+    public List<Executeplanbatch> getstopplanbatchList(Long executeplanid) {
+        return executeplanbatchMapper.getstopplanbatchList(executeplanid);
+    }
+
+    @Override
     public List<Executeplanbatch> getrecentbatchbyid(Long executeplanid) {
         return executeplanbatchMapper.getrecentbatchbyid(executeplanid);
     }
@@ -50,6 +55,11 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
     @Override
     public void saveplanbatchscenen(List<Executeplanbatch> testcase) {
         executeplanbatchMapper.saveplanbatchscenen(testcase);
+    }
+
+    @Override
+    public void updatebatchstatus(Long id,String batchname) {
+        executeplanbatchMapper.updatebatchstatus(id,batchname);
     }
 
 }

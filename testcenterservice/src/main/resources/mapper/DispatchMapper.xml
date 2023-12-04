@@ -44,4 +44,10 @@
     FROM dispatch a inner join executeplan b inner join apicases c on a.execplanid=b.id and a.testcaseid=c.id
     where a.execplanid =#{execplanid} and a.batchname = #{batchname} and a.status != #{status}
   </select>
+
+
+  <select id="getdispatchnum" resultType="java.lang.Long">
+    SELECT count(*)
+    FROM dispatch a where a.execplanid =#{execplanid} and a.batchname = #{batchname}
+  </select>
 </mapper>

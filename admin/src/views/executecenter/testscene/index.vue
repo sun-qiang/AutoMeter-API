@@ -52,8 +52,8 @@
         </template>
       </el-table-column>
       <el-table-column label="测试场景名" align="center" prop="scenename" width="150"/>
-      <el-table-column label="类型" align="center" prop="usetype" width="150"/>
-      <el-table-column label="用例数" align="center" prop="casenums" width="150"/>
+      <el-table-column label="类型" align="center" prop="usetype" width="100"/>
+      <el-table-column label="用例数" align="center" prop="casenums" width="100"/>
       <el-table-column label="操作人" align="center" prop="creator" width="100"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
@@ -516,13 +516,13 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="ShowAddcasecaseconditionDialog"
             >添加前置接口</el-button>
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              size="mini"-->
-<!--              icon="el-icon-plus"-->
-<!--              v-if="hasPermission('testscene:scenecasecondition')"-->
-<!--              @click.native.prevent="AddcasedbconditionDialog"-->
-<!--            >添加前置数据库</el-button>-->
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="AddcasedbconditionDialog"
+            >添加前置数据库</el-button>
 <!--            <el-button-->
 <!--              type="primary"-->
 <!--              size="mini"-->

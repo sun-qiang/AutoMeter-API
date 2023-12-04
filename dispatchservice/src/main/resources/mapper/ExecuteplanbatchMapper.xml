@@ -20,7 +20,15 @@
     <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
   </resultMap>
+
+  <select id="getbatchbyexectype" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM executeplanbatch a
+    where a.exectype=#{exectype} and a.status='初始' and a.execdate between DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+      and  DATE_FORMAT(date_sub(curdate(),interval -1 day),'%Y-%m-%d %H:%i:%s')
+  </select>
 
   <select id="getbatchbyplan" resultMap="BaseResultMap">
     SELECT a.*
@@ -41,14 +49,18 @@
 
 
   <select id="getrecentbatch" resultMap="BaseResultMap">
-    select * from executeplanbatch a where a.status =#{status}  order by a.id ASC limit 1
+    select * from executeplanbatch a where a.status =#{status} and exectype=#{exectype} order by a.id ASC limit 1
   </select>
 
 
 
   <select id="getbatchtestscene" resultMap="BaseResultMap">
-    select * from executeplanbatch a where a.status =#{status} and executeplanid = #{executeplanid}  and batchname = #{batchname}  order by a.id ASC limit 10
+    select * from executeplanbatch a where a.status =#{status} and executeplanid = #{executeplanid}  and batchname = #{batchname}
   </select>
+
+  <update id="updateconditionfail" >
+    update  executeplanbatch set status='已停止', memo=#{memo}  where executeplanid = #{executeplanid}  and batchname = #{batchname}
+  </update>
 
   <insert id="saveplanbatchscenen">
     INSERT INTO executeplanbatch (sceneid,scenename,executeplanid,projectid,status,source,executeplanname,batchname,

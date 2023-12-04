@@ -134,11 +134,11 @@ public class TestCore {
     }
 
 
-    public void FinisBatchScene(String planid, String BatchName, String Sceneid) {
-        UpdateBatchScene(planid, BatchName, Sceneid, "已完成");
+    public void FinisBatchScene(String planid, String BatchName, String Sceneid,String Status) {
+        UpdateBatchScene(planid, BatchName, Sceneid, Status);
     }
 
-    public void FinisBatchCase(String planid, String BatchName, String SlaverId) {
+    public void FinisPlanBatchAllCase(String planid, String BatchName, String SlaverId) {
         logger.info("SlaverId 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + SlaverId);
         logger.info("功能用例统计收集信息 完成。。。。。。。。。。。。。。。。");
         //查询此计划下的批次调度是否已经全部完成，如果完成，刷新计划批次状态为finish
@@ -147,7 +147,7 @@ public class TestCore {
         if (DispatchNotFinishNums > 0) {
             logger.info("查询计划下的批次调度未完成数量：" + DispatchNotFinishNums);
         } else {
-            UpdateReportStatics(planid, BatchName, "已完成");
+            //UpdateReportStatics(planid, BatchName, "已完成");
             SendMessageDingDing(planid, BatchName);
             SendMailByFinishPlanCase(planid, BatchName);
         }
@@ -181,7 +181,7 @@ public class TestCore {
 //            String projectid = ctx.getParameter("projectid");
 //            savetestcaseextresult(String.valueOf(key), testResponeDatarResult, projectid);
             //更新调度状态
-            updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname());
+            updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(),"已完成");
         } catch (Exception ex) {
             logger.error("用例运行结束保存记录CaseFinish发生异常，请检查!" + ex.getMessage());
         }
@@ -456,20 +456,27 @@ public class TestCore {
                             String mailto = listaccount.get(0).get("email");
                             String Subject = PlanName + "|" + BatchName + " 执行完成！";
                             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
-                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName);
+                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName,"成功");
+                            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName,"失败");
+
 
                             long tc = 0;
                             long tpc = 0;
                             long tfc = 0;
+                            long tuc = 0;
                             if (liststatics.size() > 0) {
                                 tc = Long.parseLong(liststatics.get(0).get("tc"));
                                 if(liststaticssuccess.size()>0)
                                 {
                                     tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
                                 }
-                                tfc = tc-tpc;
+                                if(liststaticsfail.size()>0)
+                                {
+                                    tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
+                                }
+                                tuc = tc-tpc-tfc;
                             }
-                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc;
+                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tuc;
                             MailUtil.send(account, CollUtil.newArrayList(mailto), Subject, Content, false);
                             logger.info("TestCore 发送邮件成功-============：" + mailto);
                         }
@@ -490,20 +497,27 @@ public class TestCore {
             String PlanName = list.get(0).get("executeplanname");
             String Subject = "测试集合：" + PlanName + " |  执行计划：" + BatchName + " 完成！";
             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
-            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName);
+            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName,"成功");
+            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName,"失败");
 
             long tc = 0;
             long tpc = 0;
             long tfc = 0;
+            long tuc = 0;
             if (liststatics.size() > 0) {
                 tc = Long.parseLong(liststatics.get(0).get("tc"));
                 if(liststaticssuccess.size()>0)
                 {
                     tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
                 }
-                tfc = tc-tpc;
+                if(liststaticsfail.size()>0)
+                {
+                    tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
+                }
+                tuc = tc-tpc-tfc;
             }
-            Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + " ，请登陆AutoMeter-报告中心查看详情";
+//            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tuc;
+             Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tuc + " ，请登陆AutoMeter-报告中心查看详情";
         }
         return Content;
     }
@@ -564,8 +578,8 @@ public class TestCore {
     }
 
     //获取计划批次的数据统计
-    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname) {
-        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticSuccess(planid, Batchname);
+    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname,String status) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticSuccess(planid, Batchname,status);
         return list;
     }
 
@@ -758,6 +772,13 @@ public class TestCore {
         return result;
     }
 
+    public ArrayList<HashMap<String, String>> GetBatchByPBS(String planid,String batchname,String Sceneid) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetBatchByPBS(planid,batchname,Sceneid);
+        return result;
+    }
+
+
+
     // 更新计划批次场景状态
     public void UpdateBatchScene(String planid, String batchname, String sceneid, String status) {
         testMysqlHelp.UpdateBatchScene(planid, batchname, sceneid, status);
@@ -774,8 +795,8 @@ public class TestCore {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname) {
-        testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname);
+    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname,String status) {
+        testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname,status);
     }
 
     // 更新用例调度结果

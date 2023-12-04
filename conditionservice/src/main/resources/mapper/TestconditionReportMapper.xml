@@ -6,7 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="testplanid" jdbcType="BIGINT" property="planid" />
+    <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
     <result column="planname" jdbcType="VARCHAR" property="planname" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
     <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
@@ -30,6 +30,11 @@
       <if test="planname != null and planname != ''">a.planname like CONCAT('%',#{planname},'%')</if>
       <if test="batchname != null  and batchname != ''">and a.batchname =#{batchname}</if>
     </where>
+  </select>
+
+  <select id="getsubconditionnumswithstatus" resultMap="BaseResultMap">
+    SELECT * FROM testcondition_report where  testplanid=#{testplanid}
+                                         and batchname=#{batchname} and conditionstatus=#{conditionstatus} and status =#{status}
   </select>
 
 </mapper>

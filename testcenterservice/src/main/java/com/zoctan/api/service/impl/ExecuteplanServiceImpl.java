@@ -44,8 +44,6 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
     private ExecuteplanbatchService executeplanbatchService;
 
 
-
-
     @Override
     public List<Executeplan> findexplanWithName(Map<String, Object> params) {
         return this.executeplanMapper.findexplanWithName(params);
@@ -62,8 +60,8 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
     }
 
     @Override
-    public List<Executeplan> getallexplanbytype(String usetype,long projectid) {
-        return executeplanMapper.getallexplanbytype(usetype,projectid);
+    public List<Executeplan> getallexplanbytype(String usetype, long projectid) {
+        return executeplanMapper.getallexplanbytype(usetype, projectid);
     }
 
     @Override
@@ -83,87 +81,21 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
 
     @Override
     @Transactional(noRollbackFor = Exception.class)
-    public void executeplancase(List<Executeplanbatch> testplanlist,String Exectype) {
+    public void executeplancase(List<Executeplanbatch> testplanlist, String Exectype) {
         for (Executeplanbatch plan : testplanlist) {
-//            Testplanandbatch testplanandbatch = new Testplanandbatch();
-//
-//            Long execplanid = plan.getExecuteplanid();
-//            String planname=plan.getExecuteplanname();
-//            String batchname=plan.getBatchname();
-//
-//            testplanandbatch.setBatchname(batchname);
-//            testplanandbatch.setPlanid(execplanid);
-//
-//            testplanandbatch.setExectype(Exectype);
-//
-//            //根据planid获取场景列表,保存executeplanbatch表
-//            HashMap<String,Object>tmpparams=new HashMap<>();
-//            tmpparams.put("testplanid",execplanid);
-//            List<TestplanTestscene> testplanTestsceneList= testplanTestsceneMapper.findscenebyexecplanid(tmpparams);
-//            for (TestplanTestscene testscene :testplanTestsceneList) {
-//                long testsceneid=testscene.getTestscenenid();
-//                String testscenename=testscene.getScenename();
-//                Executeplanbatch executeplanbatch=new Executeplanbatch();
-//                executeplanbatch.setStatus("待执行");
-//                executeplanbatch.setSource("平台");
-//                executeplanbatch.setSceneid(testsceneid);
-//                executeplanbatch.setScenename(testscenename);
-//                executeplanbatch.setBatchname(batchname);
-//                executeplanbatch.setExecuteplanid(execplanid);
-//                executeplanbatch.setExecuteplanname(planname);
-//                executeplanbatch.setExectype(Exectype);
-//                executeplanbatchService.save(executeplanbatch);
-//            }
-//            Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
-//            String BatchName=plan.getBatchname();
-//            Executeplanbatch executeplanbatch= executeplanbatchMapper.getbatchidbyplanidandbatchname(execplanid,BatchName);
-            if(Exectype.equals("立即执行"))
-            {
-                execcase(plan);
-//                HttpHeader header = new HttpHeader();
-//                String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
-//                String plantype = ep.getUsetype();
-//                //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
-//                List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype,"已下线");
-//                //slaverlist = GetAliveSlaver(slaverlist);
-//                if (slaverlist.size() == 0) {
-//                    ExecuteplanServiceImpl.log.info("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
-//                    throw new ServiceException("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
-//                } else {
-//                    String params = JSON.toJSONString(testplanandbatch);
-//                    ExecuteplanServiceImpl.log.info("计划请求调度参数：" + params);
-//                    try {
-//                        ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
-//                        TestHttp testHttp=new TestHttp();
-//                        header.addParam("Content-Type", "application/json;charset=utf-8");
-//                        TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
-//                        ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
-//                    } catch (Exception e) {
-//                        ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
-//                        if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
-//                        {
-//                            throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
-//                        }
-//                        else
-//                        {
-//                            throw new ServiceException(e.getMessage());
-//                        }
-//                    }
-//                }
-            }
+            execcase(plan);
         }
     }
 
 
     @Override
-    public void execcase(Executeplanbatch testplanandbatch)
-    {
+    public void execcase(Executeplanbatch testplanandbatch) {
         Executeplan ep = executeplanMapper.findexplanWithid(testplanandbatch.getExecuteplanid());
         HttpHeader header = new HttpHeader();
         String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
         String plantype = ep.getUsetype();
         //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
-        List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype,"已下线");
+        List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype, "已下线");
         //slaverlist = GetAliveSlaver(slaverlist);
         if (slaverlist.size() == 0) {
             ExecuteplanServiceImpl.log.info("未找到可用的：" + plantype + "的测试执行机，或者执行机已下线，请检查部署");
@@ -173,18 +105,15 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
             ExecuteplanServiceImpl.log.info("计划请求调度参数：" + params);
             try {
                 ExecuteplanServiceImpl.log.info("计划开始请求调度。。。。。。。。。。。。。。。。。。。。。。。。");
-                TestHttp testHttp=new TestHttp();
+                TestHttp testHttp = new TestHttp();
                 header.addParam("Content-Type", "application/json;charset=utf-8");
-                TestResponeData testResponeData =testHttp.doService("http","",DispatchServerurl,header,new HttpParamers(),params,"POST","",3000);
+                TestResponeData testResponeData = testHttp.doService("http", "", DispatchServerurl, header, new HttpParamers(), params, "POST", "", 3000);
                 ExecuteplanServiceImpl.log.info("计划发送调度请求响应。。。。。。。。。。。。。。。。。。。。。。。。：" + testResponeData.getResponeContent());
             } catch (Exception e) {
                 ExecuteplanServiceImpl.log.info("计划发送调度请求异常：" + e.getMessage());
-                if(e.getMessage().contains("Connection refused")||e.getMessage().contains("connect timed out"))
-                {
+                if (e.getMessage().contains("Connection refused") || e.getMessage().contains("connect timed out")) {
                     throw new ServiceException("未能连接到调度服务DispatchService，请检查是否已正常启动，或者检查到调度服务的网络是否通！");
-                }
-                else
-                {
+                } else {
                     throw new ServiceException(e.getMessage());
                 }
             }
@@ -203,10 +132,10 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
             HttpHeader header = new HttpHeader();
             String respon = "";
             try {
-                TestHttp testHttp=new TestHttp();
+                TestHttp testHttp = new TestHttp();
                 header.addParam("Content-Type", "application/json;charset=utf-8");
-                TestResponeData testResponeData=testHttp.doService("http","",ServerUrl,header,new HttpParamers(),params,"POST","",30000);
-                respon=testResponeData.getResponeContent() ;
+                TestResponeData testResponeData = testHttp.doService("http", "", ServerUrl, header, new HttpParamers(), params, "POST", "", 30000);
+                respon = testResponeData.getResponeContent();
                 //respon = HttphelpB1.doPost(ServerUrl, params, header, 5000, 5000);
             } catch (Exception e) {
                 ExecuteplanServiceImpl.log.info("检测：" + ServerUrl + "请求响应结果。。。。。。。。。。。。。。。。。。。。。。。。：" + e.getMessage());

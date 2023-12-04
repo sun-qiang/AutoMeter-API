@@ -1,6 +1,7 @@
 package com.zoctan.api.service;
 
 import com.zoctan.api.core.service.Service;
+import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDb;
 import com.zoctan.api.entity.ConditionDelay;
 import tk.mybatis.mapper.entity.Condition;
@@ -21,5 +22,6 @@ public interface ConditionDelayService extends Service<ConditionDelay> {
 
     List<ConditionDelay> GetDelayConditionByConditionID(long conditionid);
 
+    List<ConditionDelay> GetCaseListByConditionID(Long conditionid, String conditiontype);
 
 }

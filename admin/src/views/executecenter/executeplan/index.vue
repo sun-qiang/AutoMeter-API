@@ -77,7 +77,7 @@
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="通知钉钉token" align="center" prop="dingdingtoken" width="110"/>
       <el-table-column label="操作人" align="center" prop="creator" width="60"/>
-      <el-table-column :show-overflow-tooltip="true" label="描述" align="center" prop="memo" width="80"/>
+<!--      <el-table-column :show-overflow-tooltip="true" label="描述" align="center" prop="memo" width="80"/>-->
       <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="110">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -86,7 +86,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="450"
+      <el-table-column label="管理" align="center" width="550"
                        v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
         <template slot-scope="scope">
           <el-button
@@ -101,6 +101,12 @@
             v-if="hasPermission('executeplan:delete') && scope.row.id !== id"
             @click.native.prevent="removeexecuteplan(scope.$index)"
           >删除</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showstopbatchDialog(scope.$index)"
+          >停止运行</el-button>
           <el-button
             type="primary"
             size="mini"
@@ -350,6 +356,28 @@
           :loading="execbtnLoading"
           @click.native.prevent="savebatchandexecuteplancase"
         >执行</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title='停止运行计划' :visible.sync="stopbatchdialogFormVisible">
+      <div class="filter-container" >
+        <el-form  :model="tmpstopplanbatch" ref="tmpstopplanbatch" >
+          <el-form-item label="执行计划：" prop="batchname" required >
+            <el-select v-model="tmpstopplanbatch.batchname" clearable style="width:70%" placeholder="执行计划" @change="stopplanbatchselectChanged($event)">
+              <el-option label="请选择" value="''" style="display: none" />
+              <div v-for="(tmpstopplanbatch, index) in stopplanbatchList" :key="index">
+                <el-option :label="tmpstopplanbatch.batchname" :value="tmpstopplanbatch.batchname" required/>
+              </div>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="stopbatchdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          @click.native.prevent="updatebatchstatus"
+        >停止</el-button>
       </div>
     </el-dialog>
 
@@ -1012,7 +1040,7 @@
   } from '@/api/assets/apicases'
   import { search as getapiList } from '@/api/deployunit/api'
   import { getdepunitLists } from '@/api/deployunit/depunit'
-  // import { addexecuteplanbatch as addexecuteplanbatch } from '@/api/executecenter/executeplanbatch'
+  import { getstopplanbatchList as getstopplanbatchList, updatebatchstatus } from '@/api/executecenter/executeplanbatch'
   import { searchcases as searchtestplancases, addexecuteplantestcase, removeexecuteplantestcase } from '@/api/executecenter/executeplantestcase'
   import { checkplancondition as checkplancondition, search, addexecuteplan, updateexecuteplan, removeexecuteplan, executeplan, updateexecuteplanstatus } from '@/api/executecenter/executeplan'
   import { unix2CurrentTime } from '@/utils'
@@ -1085,6 +1113,7 @@
         itemaddsceneKey: null,
         scenemultipleSelection: [], // 查询用例表格被选中的内容
         delayconditionList: [],
+        stopplanbatchList: [], // 期望停止的计划
         tmptestscenename: null,
         scenetotal: 0,
         addscenetotal: 0,
@@ -1150,6 +1179,7 @@
         scenecaseConditionFormVisible: false,
         SceneconditiondialogFormVisible: false,
         DelaydialogFormVisible: false,
+        stopbatchdialogFormVisible: false, // 停止运行
         loadcase: '装载用例',
         loadbatch: '执行计划',
         textMap: {
@@ -1253,6 +1283,12 @@
           exectime: '',
           projectid: ''
         },
+        tmpstopplanbatch: {
+          executeplanid: '',
+          batchid: '',
+          batchname: '',
+          projectid: ''
+        },
         tmpplanenv: {
           id: '',
           envid: '',
@@ -1335,6 +1371,7 @@
       this.addsearchscene.projectid = window.localStorage.getItem('pid')
       this.searchapicondition.projectid = window.localStorage.getItem('pid')
       this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
+      this.tmpstopplanbatch.projectid = window.localStorage.getItem('pid')
       this.getexecuteplanList()
       // this.getapiList()
       this.getdepunitList()
@@ -1352,6 +1389,13 @@
     },
 
     methods: {
+      getstopplanbatchList() {
+        getstopplanbatchList(this.tmpstopplanbatch).then(response => {
+          this.stopplanbatchList = response.data
+        }).catch(res => {
+          this.$message.error('加载停止计划列表失败')
+        })
+      },
       /**
        * 获取延时条件列表
        */
@@ -1392,6 +1436,22 @@
           })
         }).catch(() => {
           this.$message.info('已取消删除')
+        })
+      },
+
+      updatebatchstatus(index) {
+        this.$confirm('确认停止该执行计划？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          updatebatchstatus(this.tmpstopplanbatch).then(() => {
+            this.$message.success('停止成功')
+            this.stopbatchdialogFormVisible = false
+            this.getdelayconditionList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消停止')
         })
       },
       updatedelaycondition() {
@@ -2295,6 +2355,13 @@
         this.searchheaderbyepid()
       },
 
+      showstopbatchDialog(index) {
+        // 显示新增对话框
+        this.stopbatchdialogFormVisible = true
+        this.tmpstopplanbatch.batchname = ''
+        this.tmpstopplanbatch.executeplanid = this.executeplanList[index].id
+        this.getstopplanbatchList()
+      },
       showtestsceneDialog(index) {
         // 显示新增对话框
         this.testscenedialogFormVisible = true

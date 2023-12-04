@@ -36,4 +36,11 @@
     FROM condition_delay
     where conditionid =#{conditionid}
   </select>
+
+  <select id="GetCaseListByConditionID" resultMap="BaseResultMap">
+    SELECT *
+    FROM condition_delay where conditionid = #{conditionid} and conditiontype= #{conditiontype}
+  </select>
+
+
 </mapper>

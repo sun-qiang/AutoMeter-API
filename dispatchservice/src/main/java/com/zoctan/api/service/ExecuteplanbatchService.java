@@ -19,4 +19,7 @@ public interface ExecuteplanbatchService extends Service<Executeplanbatch> {
 
     void saveplanbatchscenen(final List<Executeplanbatch> testcase);
 
+
+    void updateconditionfail( Long executeplanid, String batchname, String memo);
+
 }
