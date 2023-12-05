@@ -133,16 +133,32 @@ public class TestconditionController {
         String Batchname = dispatch.getBatchname();
         int conditionsum = 0;
         TestconditionController.log.info("开始处理计划前置条件-开始统计接口子条件报告是否存在-============：");
-        Condition condition = new Condition(TestconditionReport.class);
-        condition.createCriteria().andCondition("testplanid = " + Planid)
-                .andCondition("batchname = '" + Batchname + "'");
-        List<TestconditionReport> conditiontestconditionReportList = testconditionReportService.listByCondition(condition);
-        conditionsum = conditiontestconditionReportList.size();
-        TestconditionController.log.info("完成处理计划前置条件-完成统计接口子条件报告是否存在-============：" + conditiontestconditionReportList.size());
-        if (conditionsum > 0) {
+
+        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
+        int ApiConditionNums = conditionApiList.size();
+//            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
+//            int DBConditionNUms = conditionDbList.size();
+//            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
+//            int ScriptConditionNUms = conditionScriptList.size();
+        List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(Planid, "execplan");
+        int DelayConditionNUms = conditionDelayList.size();
+        int SubConditionNums = ApiConditionNums + DelayConditionNUms;
+        if(SubConditionNums>0)
+        {
+            Condition condition = new Condition(TestconditionReport.class);
+            condition.createCriteria().andCondition("testplanid = " + Planid)
+                    .andCondition("batchname = '" + Batchname + "'");
+            List<TestconditionReport> conditiontestconditionReportList = testconditionReportService.listByCondition(condition);
+            conditionsum = conditiontestconditionReportList.size();
+            TestconditionController.log.info("完成处理计划前置条件-完成统计接口子条件报告是否存在-============：" + conditiontestconditionReportList.size());
+            if (conditionsum > 0) {
+                return ResultGenerator.genOkResult();
+            } else {
+                return ResultGenerator.genFailedResult(505, "条件报告未产生");
+            }
+        }else
+        {
             return ResultGenerator.genOkResult();
-        } else {
-            return ResultGenerator.genFailedResult(505, "条件报告未产生");
         }
     }
 
