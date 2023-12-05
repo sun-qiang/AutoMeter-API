@@ -47,23 +47,20 @@ public class ExecuteplanController {
 
     @PostMapping
     public Result add(@RequestBody Executeplan executeplan) {
-        Condition con=new Condition(Executeplan.class);
-        con.createCriteria().andCondition("projectid = "+executeplan.getProjectid())
-                .andCondition("executeplanname = '" + executeplan.getExecuteplanname().replace("'","''") + "'")
+        Condition con = new Condition(Executeplan.class);
+        con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
+                .andCondition("executeplanname = '" + executeplan.getExecuteplanname().replace("'", "''") + "'")
                 .andCondition("enviromentname = '" + executeplan.getEnviromentname() + "'");
-        if(executeplanService.ifexist(con)>0)
-        {
+        if (executeplanService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("此环境下执行计划已经存在");
-        }
-        else {
+        } else {
             executeplanService.save(executeplan);
-            if(executeplan.getUsetype().equalsIgnoreCase("性能"))
-            {
+            if (executeplan.getUsetype().equalsIgnoreCase("性能")) {
                 //增加动态表
-                String TableName="apicases_report_performance"+executeplan.getId();
+                String TableName = "apicases_report_performance" + executeplan.getId();
                 executeplanService.createNewTable(TableName);
                 //如果是性能测试集合，新增路由表
-                Routeperformancereport routeperformancereport=new Routeperformancereport();
+                Routeperformancereport routeperformancereport = new Routeperformancereport();
                 routeperformancereport.setExecuteplanid(executeplan.getId());
                 routeperformancereport.setTablename(TableName);
                 routeperformancereportService.save(routeperformancereport);
@@ -76,11 +73,9 @@ public class ExecuteplanController {
     public Result execcases(@RequestBody final List<Executeplanbatch> planbatchList) {
         //暂时支持单计划执行
         try {
-            executeplanService.executeplancase(planbatchList,"立即执行");
+            executeplanService.executeplancase(planbatchList, "立即执行");
             return ResultGenerator.genOkResult();
-        }
-        catch (ServiceException se)
-        {
+        } catch (ServiceException se) {
             return ResultGenerator.genFailedResult(se.getMessage());
         }
     }
@@ -89,27 +84,34 @@ public class ExecuteplanController {
     public Result checkcondition(@RequestBody Executeplan executeplan) {
         try {
             // 检查此计划下是否有装载用例
-            Long planid= executeplan.getId();
-            Long envid= executeplan.getEnvid();
-            String enviromentname= executeplan.getEnviromentname();
+            Long planid = executeplan.getId();
+            Long envid = executeplan.getEnvid();
+            String enviromentname = executeplan.getEnviromentname();
+            Condition con = new Condition(TestplanTestscene.class);
+            con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
+                    .andCondition("testplanid = " + planid);
+            List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
+            Integer casenum = 0;
+            for (TestplanTestscene tes : testplanTestsceneList) {
+                Condition scenecon = new Condition(TestsceneTestcase.class);
+                scenecon.createCriteria().andCondition("testscenenid = " + tes.getTestscenenid());
+                List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
+                casenum = casenum + testsceneTestcaseList.size();
+            }
+            if (casenum.intValue() == 0) {
+                return ResultGenerator.genFailedResult("该测试集合下还未装载测试用例，请先装载需要运行的测试场景和用例");
+            } else {
+                for (TestplanTestscene tets : testplanTestsceneList) {
+                    Long Sceneid = tets.getTestscenenid();
+                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.finddeployunitbyscenenid(Sceneid);
+                    for (TestsceneTestcase tt : testsceneTestcaseList) {
 
-            Condition con=new Condition(TestplanTestscene.class);
-            con.createCriteria().andCondition("projectid = "+executeplan.getProjectid())
-                    .andCondition("testplanid = " +planid );
-            List<TestplanTestscene> testplanTestsceneList=testplanTestsceneService.listByCondition(con);
-            Integer casenum=0;
-            for (TestplanTestscene tes:testplanTestsceneList) {
-                Condition scenecon=new Condition(TestsceneTestcase.class);
-                scenecon.createCriteria().andCondition("testscenenid = "+tes.getTestscenenid());
-                List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(scenecon);
-                casenum=casenum+testsceneTestcaseList.size();
-            }
-            if(casenum.intValue()==0)
-            {
-                return ResultGenerator.genFailedResult("该执行计划下还未装载测试用例！");
-            }
-//            else
-//            {
+                        Integer machinenum = macdepunitService.findmachinenumbyenvidanddeployid(envid, tt.getDeployunitid());
+                        if (machinenum.intValue() == 0) {
+                            return ResultGenerator.genFailedResult("该测试集合的用例所在的微服务: " + tt.getDeployunitname() + " 在环境: " + enviromentname + " 中未完成配置,请先完成集合所运行的环境微服务配置");
+                        }
+                    }
+                }
 //                List<ExecuteplanTestcase> deployidlist = execplantestcaseService.finddeployunitbyplanid(planid);
 //                if(deployidlist.size()==0)
 //                {
@@ -128,10 +130,8 @@ public class ExecuteplanController {
 //                    }
 //                    return ResultGenerator.genOkResult();
 //                }
-//            }
-        }
-        catch (ServiceException se)
-        {
+            }
+        } catch (ServiceException se) {
             return ResultGenerator.genFailedResult(se.getMessage());
         }
         return ResultGenerator.genOkResult();
@@ -155,8 +155,8 @@ public class ExecuteplanController {
 
     @PostMapping("/updatestatus")
     public Result updatestatus(@PathVariable final List<Executeplan> executeplanList) {
-        for (Executeplan ep:executeplanList) {
-            executeplanService.updatetestplanstatus(ep.getId(),ep.getStatus());
+        for (Executeplan ep : executeplanList) {
+            executeplanService.updatetestplanstatus(ep.getId(), ep.getStatus());
         }
         return ResultGenerator.genOkResult();
     }
@@ -196,8 +196,8 @@ public class ExecuteplanController {
     }
 
     @GetMapping("/getallexplanbytype")
-    public Result getallexplanbytype(@RequestParam String usetype,@RequestParam long projectid) {
-        List<Executeplan> list = executeplanService.getallexplanbytype(usetype,projectid);
+    public Result getallexplanbytype(@RequestParam String usetype, @RequestParam long projectid) {
+        List<Executeplan> list = executeplanService.getallexplanbytype(usetype, projectid);
         return ResultGenerator.genOkResult(list);
     }
 
@@ -206,16 +206,14 @@ public class ExecuteplanController {
      */
     @PutMapping("/detail")
     public Result updateExecuteplan(@RequestBody final Executeplan executeplan) {
-        Condition con=new Condition(Executeplan.class);
-        con.createCriteria().andCondition("projectid = "+executeplan.getProjectid())
-                .andCondition("executeplanname = '" + executeplan.getExecuteplanname().replace("'","''") + "'")
+        Condition con = new Condition(Executeplan.class);
+        con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
+                .andCondition("executeplanname = '" + executeplan.getExecuteplanname().replace("'", "''") + "'")
                 .andCondition("id <> " + executeplan.getId())
                 .andCondition("enviromentname = '" + executeplan.getEnviromentname() + "'");
-        if(executeplanService.ifexist(con)>0)
-        {
+        if (executeplanService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("此环境下执行计划已经存在");
-        }
-        else {
+        } else {
             this.executeplanService.updateexecuteplanname(executeplan);
             return ResultGenerator.genOkResult();
         }
@@ -226,12 +224,11 @@ public class ExecuteplanController {
      */
     @PostMapping("/search")
     public Result search(@RequestBody final Map<String, Object> param) {
-        Integer page= Integer.parseInt(param.get("page").toString());
-        Integer size= Integer.parseInt(param.get("size").toString());
+        Integer page = Integer.parseInt(param.get("page").toString());
+        Integer size = Integer.parseInt(param.get("size").toString());
         String creator = param.get("creator").toString();
-        if(creator.equalsIgnoreCase("admin"))
-        {
-            param.put("creator",null);
+        if (creator.equalsIgnoreCase("admin")) {
+            param.put("creator", null);
         }
         PageHelper.startPage(page, size);
         final List<Executeplan> list = this.executeplanService.findexplanWithName(param);

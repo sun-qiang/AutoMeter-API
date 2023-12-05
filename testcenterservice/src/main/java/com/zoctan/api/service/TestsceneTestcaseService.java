@@ -16,5 +16,5 @@ public interface TestsceneTestcaseService extends Service<TestsceneTestcase> {
     List<TestsceneTestcase> findCasebyscenenid(final Map<String, Object> params);
     void savetestscenencase(final List<TestsceneTestcase> testcase);
     void updatescenenCaseorder(final long id,long caseorder);
-
+    List<TestsceneTestcase> finddeployunitbyscenenid(long sceneid);
 }

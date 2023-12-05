@@ -36,6 +36,12 @@
   </select>
 
 
+  <select id="finddeployunitbyscenenid" resultMap="BaseResultMap">
+    SELECT distinct (deployunitid),deployunitname
+    FROM testscene_testcase a where a.testscenenid=#{testscenenid}
+  </select>
+
+
 
   <insert id="savetestscenencase">
     INSERT INTO testscene_testcase (testscenenid,scenename,apiid,deployunitid,deployunitname,modelid,modelname,apiname,

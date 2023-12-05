@@ -35,4 +35,9 @@ private TestsceneTestcaseMapper testsceneTestcaseMapper;
     public void updatescenenCaseorder(long id, long caseorder) {
         testsceneTestcaseMapper.updatescenenCaseorder(id, caseorder);
     }
+
+    @Override
+    public List<TestsceneTestcase> finddeployunitbyscenenid(long sceneid) {
+        return testsceneTestcaseMapper.finddeployunitbyscenenid(sceneid);
+    }
 }
