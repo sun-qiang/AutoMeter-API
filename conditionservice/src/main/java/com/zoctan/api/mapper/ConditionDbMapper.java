@@ -1,6 +1,7 @@
 package com.zoctan.api.mapper;
 
 import com.zoctan.api.core.mapper.MyMapper;
+import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDb;
 import org.apache.ibatis.annotations.Param;
 
@@ -13,4 +14,7 @@ public interface ConditionDbMapper extends MyMapper<ConditionDb> {
     void updateTestconditiondb(ConditionDb params);
 
     List<ConditionDb> GetDBConditionByConditionID(@Param("conditionid") long conditionid);
+
+    List<ConditionDb> GetCaseListByConditionID(@Param("conditionid")Long conditionid, @Param("conditiontype")String conditiontype);
+
 }

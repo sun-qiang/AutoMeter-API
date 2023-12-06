@@ -38,6 +38,11 @@ private ConditionDbMapper conditionDbMapper;
     }
 
     @Override
+    public List<ConditionDb> GetCaseListByConditionID(Long conditionid, String conditiontype) {
+        return conditionDbMapper.GetCaseListByConditionID(conditionid, conditiontype);
+    }
+
+    @Override
     public int ifexist(Condition condition) {
         return countByCondition(condition);
     }

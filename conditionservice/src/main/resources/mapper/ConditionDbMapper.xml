@@ -20,6 +20,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="conditiontype" jdbcType="VARCHAR" property="conditiontype" />
   </resultMap>
 
 
@@ -45,5 +46,11 @@
     SELECT *
     FROM condition_db
     where conditionid =#{conditionid}
+  </select>
+
+
+  <select id="GetCaseListByConditionID" resultMap="BaseResultMap">
+    SELECT *
+    FROM condition_db where conditionid = #{conditionid} and conditiontype= #{conditiontype}
   </select>
 </mapper>

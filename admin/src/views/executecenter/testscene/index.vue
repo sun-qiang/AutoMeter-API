@@ -795,7 +795,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native.prevent="dialogFormVisible = false">取消</el-button>
+        <el-button @click.native.prevent="dbconditiondialogFormVisible = false">取消</el-button>
         <el-button
           type="danger"
           v-if="dialogStatus === 'add'"

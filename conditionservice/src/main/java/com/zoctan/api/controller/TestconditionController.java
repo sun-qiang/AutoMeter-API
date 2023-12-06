@@ -136,15 +136,14 @@ public class TestconditionController {
 
         List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
         int ApiConditionNums = conditionApiList.size();
-//            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
-//            int DBConditionNUms = conditionDbList.size();
+        List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
+        int DBConditionNUms = conditionDbList.size();
 //            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
 //            int ScriptConditionNUms = conditionScriptList.size();
         List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(Planid, "execplan");
         int DelayConditionNUms = conditionDelayList.size();
-        int SubConditionNums = ApiConditionNums + DelayConditionNUms;
-        if(SubConditionNums>0)
-        {
+        int SubConditionNums = ApiConditionNums + DelayConditionNUms + DBConditionNUms;
+        if (SubConditionNums > 0) {
             Condition condition = new Condition(TestconditionReport.class);
             condition.createCriteria().andCondition("testplanid = " + Planid)
                     .andCondition("batchname = '" + Batchname + "'");
@@ -156,8 +155,7 @@ public class TestconditionController {
             } else {
                 return ResultGenerator.genFailedResult(505, "条件报告未产生");
             }
-        }else
-        {
+        } else {
             return ResultGenerator.genOkResult();
         }
     }
@@ -168,13 +166,13 @@ public class TestconditionController {
         String Batchname = dispatch.getBatchname();
         List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
         int ApiConditionNums = conditionApiList.size();
-//            List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID);
-//            int DBConditionNUms = conditionDbList.size();
+        List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(dispatch.getExecplanid(), "execplan");
+        int DBConditionNUms = conditionDbList.size();
 //            List<ConditionScript> conditionScriptList = conditionScriptService.getconditionscriptbyid(ConditionID);
 //            int ScriptConditionNUms = conditionScriptList.size();
         List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(Planid, "execplan");
         int DelayConditionNUms = conditionDelayList.size();
-        int SubConditionNums = ApiConditionNums + DelayConditionNUms;
+        int SubConditionNums = ApiConditionNums + DelayConditionNUms + DBConditionNUms;
 
         List<TestconditionReport> successtestconditionReportList = testconditionReportService.getsubconditionnumswithstatus(Planid, Batchname, "已完成", "成功");
         if (successtestconditionReportList.size() == SubConditionNums) {
@@ -195,6 +193,11 @@ public class TestconditionController {
         TestconditionController.log.info("开始处理计划前置条件-接口条件-=====================================：");
         APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
         TestconditionController.log.info("完成处理计划前置条件-接口条件-========================================：");
+        TestconditionController.log.info("开始处理计划前置条件-数据库条件-=====================================：");
+        DBCondition(Planid, dispatch);
+        TestconditionController.log.info("开始处理计划前置条件-数据库条件-=====================================：");
+
+
 //        List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Planid, "前置条件", "测试集合");
 //        if (testconditionList.size() > 0) {
 //            long ConditionID = testconditionList.get(0).getId();
@@ -672,7 +675,8 @@ public class TestconditionController {
 
 
     //数据库条件
-    private String conditionDb(ConditionDb conditionDb, long ConditionID, Dispatch dispatch) {
+    private String conditionDb(ConditionDb conditionDb, Dispatch dispatch) {
+        String Respone = "";
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(dispatch.getExecplanid());
         testconditionReport.setPlanname(dispatch.getExecplanname());
@@ -688,7 +692,6 @@ public class TestconditionController {
         TestconditionController.log.info("数据库子条件条件报告保存子条件进行中状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + conditionDb.getSubconditionname());
         testconditionReportService.save(testconditionReport);
 
-        String Respone = "";
         long Start = 0;
         long End = 0;
         long CostTime = 0;
@@ -743,81 +746,11 @@ public class TestconditionController {
 
     //数据库条件入口
     public void DBCondition(long ConditionID, Dispatch dispatch) {
-        List<ConditionDb> conditionDbListList = conditionDbService.GetDBConditionByConditionID(ConditionID);
-        TestconditionController.log.info("数据库子条件条件报告数据库子条件数量-============：" + conditionDbListList.size());
-        for (ConditionDb conditionDb : conditionDbListList) {
-            conditionDb(conditionDb, ConditionID, dispatch);
-//            TestconditionReport testconditionReport = new TestconditionReport();
-//            testconditionReport.setTestplanid(dispatch.getExecplanid());
-//            testconditionReport.setPlanname(dispatch.getExecplanname());
-//            testconditionReport.setBatchname(dispatch.getBatchname());
-//            testconditionReport.setConditionid(new Long(ConditionID));
-//            testconditionReport.setConditiontype("前置条件");
-//            testconditionReport.setConditionresult("");
-//            testconditionReport.setConditionstatus("");
-//            testconditionReport.setRuntime(new Long(0));
-//            testconditionReport.setSubconditionid(conditionDb.getId());
-//            testconditionReport.setSubconditionname(conditionDb.getSubconditionname());
-//            testconditionReport.setSubconditiontype("数据库");
-//            testconditionReport.setStatus("进行中");
-//            TestconditionController.log.info("数据库子条件条件报告保存子条件进行中状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + conditionDb.getSubconditionname());
-//            testconditionReportService.save(testconditionReport);
-//
-//            String Respone = "";
-//            long Start = 0;
-//            long End = 0;
-//            long CostTime = 0;
-//            String ConditionResultStatus = "成功";
-//            Long Assembleid = conditionDb.getAssembleid();
-//            String SqlType = conditionDb.getDbtype();
-//            EnviromentAssemble enviromentAssemble = enviromentAssembleService.getBy("id", Assembleid);
-//            if (enviromentAssemble == null) {
-//                Respone = "未找到环境组件："+conditionDb.getAssemblename()+"，请检查是否存在或已被删除";
-//                ConditionResultStatus = "失败";
-//                UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, new Long(0), conditionDb.getCreator());
-//                break;
-//            }
-//            String AssembleType = enviromentAssemble.getAssembletype();
-//            Long Envid = conditionDb.getEnviromentid();
-//            String Dbtype = conditionDb.getDbtype();
-//            String Sql = conditionDb.getDbcontent();
-//            String ConnnectStr = enviromentAssemble.getConnectstr();
-//            Macdepunit macdepunit = macdepunitService.getmacdepbyenvidandassmbleid(Envid, Assembleid);
-//            if (macdepunit == null) {
-//                Respone = "未找到环境部署组件："+conditionDb.getAssemblename()+"，请检查是否部署存在或已被删除";
-//                ConditionResultStatus = "失败";
-//                UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, new Long(0), conditionDb.getCreator());
-//                break;
-//            }
-//            Machine machine = machineService.getBy("id", macdepunit.getMachineid());
-//            if (machine == null) {
-//                Respone = "未找到环境组件部署的服务器："+macdepunit.getMachinename()+" ，请检查是否存在或已被删除";
-//                ConditionResultStatus = "失败";
-//                UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, new Long(0), conditionDb.getCreator());
-//                break;
-//            }
-//            String deployunitvisittype = macdepunit.getVisittype();
-//            String[] ConnetcArray = ConnnectStr.split(",");
-//            if (ConnetcArray.length < 4) {
-//                Respone = "数据库连接字填写不规范，请按规则填写 "+ConnnectStr;
-//                ConditionResultStatus = "失败";
-//                UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, new Long(0), conditionDb.getCreator());
-//                break;
-//            }
-//            try {
-//                Start = new Date().getTime();
-//                Respone = Rundb(dispatch, conditionDb, ConnetcArray, AssembleType, deployunitvisittype, machine, macdepunit, Sql, SqlType);
-//            } catch (Exception ex) {
-//                ConditionResultStatus = "失败";
-//                Respone = ex.getMessage();
-//            } finally {
-//                End = new Date().getTime();
-//                CostTime = End - Start;
-//                //更新条件结果表
-//                UpdatetestconditionReport(testconditionReport, Respone, ConditionResultStatus, CostTime, conditionDb.getCreator());
-//                TestconditionController.log.info("数据库子条件条件报告子条件完成-============：");
-//            }
+        List<ConditionDb> conditionDbList = conditionDbService.GetCaseListByConditionID(ConditionID, "execplan");
+        for (ConditionDb conditionDb : conditionDbList) {
+            conditionDb(conditionDb, dispatch);
         }
+        TestconditionController.log.info("数据库子条件条件报告数据库子条件数量-============：" + conditionDbList.size());
     }
 
     private String GetDbUrl(String AssembleType, Macdepunit macdepunit, String deployunitvisittype, Machine machine, String dbname, String port) {

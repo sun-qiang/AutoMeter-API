@@ -58,6 +58,18 @@ public class TestMysqlHelp {
         return list;
     }
 
+    public ArrayList<HashMap<String, String>> GetStaticStop(String planid, String Batchname,String status) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+        try {
+            String sql = "select count(*) as tsp from dispatch where execplanid=" + planid + " and batchname='" + Batchname + "' and status='"+status+"'";
+            logger.info(logplannameandcasename + "获取数据库 获取统计 result sql is...........: " + sql);
+            list = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取统计异常...........: " + e.getMessage());
+        }
+        return list;
+    }
+
 
     //获取账号数据
     public ArrayList<HashMap<String, String>> findWithUsername(String username) {
