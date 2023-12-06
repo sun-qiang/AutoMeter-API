@@ -152,7 +152,7 @@ public class EnviromentAssembleController {
         }
 
         String Url="";
-        if(visittype.equals("IP"))
+        if(visittype.equalsIgnoreCase("IP"))
         {
             Machine machine = machineService.getBy("id",machineid);
             if(machine==null)

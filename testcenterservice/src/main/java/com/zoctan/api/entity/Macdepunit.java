@@ -44,6 +44,18 @@ public class Macdepunit {
      */
     private String deployunitname;
 
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    private String ip;
+
+
+
     public String getAssembletype() {
         return assembletype;
     }

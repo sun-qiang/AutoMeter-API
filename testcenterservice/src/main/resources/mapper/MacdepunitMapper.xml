@@ -6,6 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
     <result column="depunitid" jdbcType="BIGINT" property="depunitid" />
     <result column="assembleid" jdbcType="BIGINT" property="assembleid" />
     <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
@@ -52,7 +53,7 @@
 
 
   <select id="findMacAndDepWithEnv" resultMap="BaseResultMap">
-    select a.enviromentname,b.machinename,c.* from
+    select a.enviromentname,b.ip,b.machinename,c.* from
     macdepunit c inner join enviroment a inner join machine b
     on a.id=c.envid and b.id=c.machineid
     <where>
@@ -66,7 +67,7 @@
   </select>
 
   <select id="findMacAndAssembleWithEnv" resultMap="BaseResultMap">
-    select a.enviromentname,b.machinename,d.connectstr,d.assemblename, d.assembletype , c.* from
+    select a.enviromentname,b.ip,b.machinename,d.connectstr,d.assemblename, d.assembletype , c.* from
     macdepunit c inner join enviroment a inner join machine b inner join enviroment_assemble d
     on a.id=c.envid and b.id=c.machineid and c.assembleid=d.id
     <where>

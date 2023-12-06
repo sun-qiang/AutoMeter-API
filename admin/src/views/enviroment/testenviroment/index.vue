@@ -305,11 +305,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="环境" align="center" prop="enviromentname" width="120"/>
-        <el-table-column label="服务器" align="center" prop="machinename" width="130"/>
-        <el-table-column label="微服务" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="120"/>
+        <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
+        <el-table-column label="服务器" align="center" prop="machinename" width="100"/>
+        <el-table-column label="IP" :show-overflow-tooltip="true" align="center" prop="ip" width="100"/>
+        <el-table-column label="微服务" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="100"/>
         <el-table-column label="访问方式" align="center" prop="visittype" width="70"/>
-        <el-table-column label="访问域名" :show-overflow-tooltip="true" align="center" prop="domain" width="130"/>
+        <el-table-column label="访问域名" :show-overflow-tooltip="true" align="center" prop="domain" width="100"/>
         <el-table-column label="操作人" align="center" prop="creator" width="60"/>
         <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="140">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
@@ -394,24 +395,30 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="环境" align="center" prop="enviromentname" width="110"/>
-        <el-table-column label="服务器" align="center" prop="machinename" width="110"/>
+        <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
+        <el-table-column label="服务器" align="center" prop="machinename" width="90"/>
+        <el-table-column label="IP" :show-overflow-tooltip="true" align="center" prop="ip" width="90"/>
         <el-table-column label="组件" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="70"/>
         <el-table-column label="组件类型" align="center" prop="assembletype" width="70"/>
         <el-table-column label="连接字" :show-overflow-tooltip="true" align="center" prop="connectstr" width="120"/>
         <el-table-column label="访问方式" align="center" prop="visittype" width="70"/>
-        <el-table-column label="域名" :show-overflow-tooltip="true" align="center" prop="domain" width="120"/>
-        <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="140">
+        <el-table-column label="域名" :show-overflow-tooltip="true" align="center" prop="domain" width="80"/>
+        <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="140">
+        <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center" width="190"
+        <el-table-column label="管理" align="center" width="230"
                          v-if="hasPermission('macdepunit:update')  || hasPermission('macdepunit:delete')">
           <template slot-scope="scope">
+            <el-button
+              type="primary"
+              :loading="btnLoading"
+              @click.native.prevent="runtest(scope.$index)"
+            >测试</el-button>
             <el-button
               type="warning"
               size="mini"
@@ -550,6 +557,7 @@ import {
 } from '@/api/enviroment/macdepunit'
 import { getmachineLists as getmachineLists } from '@/api/assets/machine'
 import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
+import { runtest } from '@/api/enviroment/enviromentassemble'
 
 export default {
   name: '测试环境',
@@ -685,6 +693,14 @@ export default {
         assembletype: '组件',
         projectid: ''
       },
+      tmptest: {
+        machineid: '',
+        machinename: '',
+        visittype: '',
+        assembletype: '',
+        domain: '',
+        constr: ''
+      },
       searchproject: {
         projectid: ''
       }
@@ -709,6 +725,20 @@ export default {
 
   methods: {
     unix2CurrentTime,
+
+    runtest(index) {
+      this.tmptest.machinename = this.macassembleList[index].machinename
+      this.tmptest.visittype = this.macassembleList[index].visittype
+      this.tmptest.domain = this.macassembleList[index].domain
+      this.tmptest.assembletype = this.macassembleList[index].assembletype
+      this.tmptest.constr = this.macassembleList[index].connectstr
+      this.tmptest.machineid = this.macassembleList[index].machineid
+      runtest(this.tmptest).then(() => {
+        this.$message.success('连接成功！')
+      }).catch(res => {
+        this.$message.error('添加失败')
+      })
+    },
 
     getdatabydiccodeList() {
       getdatabydiccodeList(this.diclevelQuery).then(response => {
