@@ -4,6 +4,7 @@ import com.zoctan.api.core.service.Service;
 import com.zoctan.api.dto.AssembleDeploy;
 import com.zoctan.api.entity.Envmachine;
 import com.zoctan.api.entity.Macdepunit;
+import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -42,6 +43,11 @@ public interface MacdepunitService extends Service<Macdepunit> {
     int ifexist(Condition condition);
 
     Integer findmachinenumbyenvidanddeployid(long envid,long depunitid);
+
+    List<Macdepunit> getmacdepbyenvidandassid(long envid,long depunitid);
+    void deletemacdepbyenvidandassid(long envid,long depunitid);
+
+
 
     Macdepunit getmacdepbyenvidanddepid(long envid,long depunitid);
 

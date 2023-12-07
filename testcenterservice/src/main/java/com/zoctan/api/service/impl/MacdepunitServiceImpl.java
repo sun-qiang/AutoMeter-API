@@ -60,6 +60,16 @@ private MacdepunitMapper macdepunitMapper;
     }
 
     @Override
+    public List<Macdepunit> getmacdepbyenvidandassid(long envid, long depunitid) {
+        return macdepunitMapper.getmacdepbyenvidandassid(envid,depunitid);
+    }
+
+    @Override
+    public void deletemacdepbyenvidandassid(long envid, long depunitid) {
+        macdepunitMapper.deletemacdepbyenvidandassid(envid, depunitid);
+    }
+
+    @Override
     public Macdepunit getmacdepbyenvidanddepid(long envid, long depunitid) {
         return macdepunitMapper.getmacdepbyenvidanddepid(envid,depunitid);
     }

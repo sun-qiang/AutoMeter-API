@@ -428,7 +428,7 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-    <el-dialog title="集合前置条件" :visible.sync="ConditionFormVisible">
+    <el-dialog title="集合前置条件" width="1000px" :visible.sync="ConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -438,29 +438,29 @@
               icon="el-icon-plus"
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="ShowAddPlancaseconditionDialog"
-            >添加前置接口</el-button>
+            >添加接口前置条件</el-button>
                         <el-button
                           type="primary"
                           size="mini"
                           icon="el-icon-plus"
                           v-if="hasPermission('testscene:scenecasecondition')"
                           @click.native.prevent="AddcasedbconditionDialog"
-                        >添加前置数据库</el-button>
-                        <el-button
-                          type="primary"
-                          size="mini"
-                          icon="el-icon-plus"
-                          v-if="hasPermission('testscene:scenecasecondition')"
-                          @click.native.prevent="showAddapiparamsDialog"
-                        >添加前置脚本</el-button>
+                        >添加数据库前置条件</el-button>
+<!--                        <el-button-->
+<!--                          type="primary"-->
+<!--                          size="mini"-->
+<!--                          icon="el-icon-plus"-->
+<!--                          v-if="hasPermission('testscene:scenecasecondition')"-->
+<!--                          @click.native.prevent="showAddapiparamsDialog"-->
+<!--                        >添加前置脚本</el-button>-->
 
-                        <el-button
-                          type="primary"
-                          size="mini"
-                          icon="el-icon-plus"
-                          v-if="hasPermission('testscene:scenecasecondition')"
-                          @click.native.prevent="showAddapiparamsDialog"
-                        >添加前置延时</el-button>
+<!--                        <el-button-->
+<!--                          type="primary"-->
+<!--                          size="mini"-->
+<!--                          icon="el-icon-plus"-->
+<!--                          v-if="hasPermission('testscene:scenecasecondition')"-->
+<!--                          @click.native.prevent="showAddapiparamsDialog"-->
+<!--                        >添加前置延时</el-button>-->
           </el-form-item>
         </el-form>
       </div>
@@ -478,10 +478,9 @@
             <span v-text="apiconditioncaseIndex(scope.$index)"></span>
           </template>
         </el-table-column>
+        <el-table-column label="所属集合" align="center" prop="conditionname" width="150"/>
         <el-table-column label="前置条件名" align="center" prop="subconditionname" width="150"/>
         <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
-        <el-table-column label="所属集合" align="center" prop="conditionname" width="150"/>
-
         <el-table-column label="管理" align="center"
                          v-if="hasPermission('testscene:caseupdateapicondition')  || hasPermission('testscene:casedeleteapicondition')">
           <template slot-scope="scope">
@@ -510,16 +509,16 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="编号" align="center" width="60">
+        <el-table-column label="编号" align="center" width="50">
           <template slot-scope="scope">
             <span v-text="getIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="集合名" align="center" prop="conditionname" width="120"/>
-        <el-table-column label="数据库条件名" align="center" prop="subconditionname" width="130"/>
-        <el-table-column label="环境" align="center" prop="enviromentname" width="120"/>
+        <el-table-column label="所属集合" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+        <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
+        <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
         <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
-        <el-table-column label="Sql类型" align="center" prop="dbtype" width="80"/>
+        <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
         <el-table-column label="Sql内容" align="center" prop="dbcontent" width="80">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
@@ -530,16 +529,15 @@
             </el-popover>
           </template>
         </el-table-column>>
-        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
-        <el-table-column label="创建时间" align="center" prop="createTime" width="140">
+        <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="140">
+        <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center" width="150"
+        <el-table-column label="管理" align="center"  width="150"
                          v-if="hasPermission('dbcondition:update')  || hasPermission('dbcondition:delete')">
           <template slot-scope="scope">
             <el-button
@@ -850,7 +848,6 @@
 
         <el-form-item label="API" prop="apiname" required >
           <el-select v-model="tmpapicondition.apiname" filterable placeholder="API" style="width:100%" @change="apiconditionapiselectChanged($event)">
-            <el-option label="请选择" value />
             <div v-for="(api, index) in apiconditionapiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
             </div>
@@ -860,7 +857,7 @@
         <el-form-item label="接口" prop="casename" required >
           <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
-            <div v-for="(testcase, index) in apiconditioncaseList" :key="index">
+            <div v-for="(testcase, index) in conditioncaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
           </el-select>
@@ -1075,7 +1072,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="前置数据库" :visible.sync="dbconditiondialogFormVisible">
+    <el-dialog :title="plandbtextMap[plandbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -1137,18 +1134,18 @@
         <el-button @click.native.prevent="dbconditiondialogFormVisible = false">取消</el-button>
         <el-button
           type="danger"
-          v-if="dialogStatus === 'add'"
+          v-if="plandbdialogStatus === 'add'"
           @click.native.prevent="$refs['tmpdbcondition'].resetFields()"
         >重置</el-button>
         <el-button
           type="success"
-          v-if="dialogStatus === 'add'"
+          v-if="plandbdialogStatus === 'add'"
           :loading="btnLoading"
           @click.native.prevent="adddbcondition"
         >添加</el-button>
         <el-button
           type="success"
-          v-if="dialogStatus === 'update'"
+          v-if="plandbdialogStatus === 'update'"
           :loading="btnLoading"
           @click.native.prevent="updatedbcondition"
         >修改</el-button>
@@ -1178,7 +1175,7 @@
   import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
   import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
   import { search as searchapicondition, addapicondition, removeapicondition, updateapicondition } from '@/api/condition/apicondition'
-  import { search as searchdbcondition, adddbcondition } from '@/api/condition/dbcondition'
+  import { search as searchdbcondition, adddbcondition, updatedbcondition, removedbcondition } from '@/api/condition/dbcondition'
   import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
   import { removetestplanscene } from '@/api/executecenter/testplantestscene'
   import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
@@ -1230,6 +1227,7 @@
         testsceneList: [], // 列表
         addtestsceneList: [], // 列表
         apiconditioncaseList: [], // 列表
+        conditioncaseList: [], // 列表
         sceneconditioncaseList: [], // 列表
         apiconditionmodelList: [],
         sceneconditionmodelList: [],
@@ -1246,8 +1244,8 @@
         addscenetotal: 0,
         testplanscenetotal: 0,
         SceneapiconditiontextMap: {
-          update: '修改前置接口',
-          add: '添加前置接口'
+          update: '修改前置接口条件',
+          add: '添加前置接口条件'
         },
         DelaytextMap: {
           update: '修改延时条件',
@@ -1295,6 +1293,7 @@
         DelaydialogStatus: 'add',
         dialogStatus: 'add',
         SceneconditiondialogStatus: 'add',
+        plandbdialogStatus: 'add',
         dialogFormVisible: false,
         casedialogFormVisible: false,
         batchdialogFormVisible: false,
@@ -1315,9 +1314,14 @@
           update: '修改测试集合',
           add: '添加测试集合'
         },
+        plandbtextMap: {
+          updateRole: '修改测试集合',
+          update: '修改数据库前置条件',
+          add: '添加数据库前置条件'
+        },
         apiconditiontextMap: {
-          update: '修改前置接口',
-          add: '添加前置接口'
+          update: '修改前置接口条件',
+          add: '添加前置接口条件'
         },
         apiconditiondialogStatus: 'add',
         caseconditiondialogFormVisible: false,
@@ -1541,6 +1545,53 @@
     },
 
     methods: {
+
+      removedbcondition(index) {
+        this.$confirm('删除该数据库条件？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.plandbconditioncaseList[index].id
+          removedbcondition(id).then(() => {
+            this.$message.success('删除成功')
+            this.getdbconditionList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
+
+      showUpdatedbconditionDialog(index) {
+        this.dbconditiondialogFormVisible = true
+        this.plandbdialogStatus = 'update'
+        this.tmpdbcondition.id = this.plandbconditioncaseList[index].id
+        this.tmpdbcondition.conditionid = this.plandbconditioncaseList[index].conditionid
+        this.tmpdbcondition.assembleid = this.plandbconditioncaseList[index].assembleid
+        this.tmpdbcondition.enviromentid = this.plandbconditioncaseList[index].enviromentid
+        this.tmpdbcondition.enviromentname = this.plandbconditioncaseList[index].enviromentname
+        this.tmpdbcondition.assemblename = this.plandbconditioncaseList[index].assemblename
+        this.tmpdbcondition.conditionname = this.plandbconditioncaseList[index].conditionname
+        this.tmpdbcondition.subconditionname = this.plandbconditioncaseList[index].subconditionname
+        this.tmpdbcondition.dbtype = this.plandbconditioncaseList[index].dbtype
+        this.tmpdbcondition.dbcontent = this.plandbconditioncaseList[index].dbcontent
+        this.tmpdbcondition.creator = this.name
+      },
+
+      updatedbcondition() {
+        this.$refs.tmpdbcondition.validate(valid => {
+          if (valid) {
+            updatedbcondition(this.tmpdbcondition).then(() => {
+              this.$message.success('更新成功')
+              this.getdbconditionList()
+              this.dbconditiondialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
       getplandbconditionList() {
         searchdbcondition(this.searchdbcondition).then(response => {
           this.plandbconditioncaseList = response.data.list
@@ -1579,7 +1630,7 @@
 
       getdbconditionList() {
         searchdbcondition(this.searchdbcondition).then(response => {
-          this.dbconditioncaseList = response.data.list
+          this.plandbconditioncaseList = response.data.list
         }).catch(res => {
           this.$message.error('加载测试数据库条件列表失败')
         })
@@ -1587,6 +1638,16 @@
 
       AddcasedbconditionDialog(index) {
         this.dbconditiondialogFormVisible = true
+        this.plandbdialogStatus = 'add'
+        this.tmpdbcondition.id = ''
+        this.tmpdbcondition.assembleid = ''
+        this.tmpdbcondition.enviromentid = ''
+        this.tmpdbcondition.enviromentname = ''
+        this.tmpdbcondition.assemblename = ''
+        this.tmpdbcondition.subconditionname = ''
+        this.tmpdbcondition.dbtype = ''
+        this.tmpdbcondition.dbcontent = ''
+        this.tmpdbcondition.creator = this.name
         this.getassembleallnameList()
         this.getenviromentallList()
       },
@@ -1833,9 +1894,9 @@
       },
 
       apiconditiontestcaseselectChanged(e) {
-        for (let i = 0; i < this.apiconditioncaseList.length; i++) {
-          if (this.apiconditioncaseList[i].casename === e) {
-            this.tmpapicondition.caseid = this.apiconditioncaseList[i].id
+        for (let i = 0; i < this.conditioncaseList.length; i++) {
+          if (this.conditioncaseList[i].casename === e) {
+            this.tmpapicondition.caseid = this.conditioncaseList[i].id
           }
         }
       },
@@ -1893,7 +1954,7 @@
           }
         }
         findcasesbyname(this.tmpapicondition).then(response => {
-          this.apiconditioncaseList = response.data
+          this.conditioncaseList = response.data
         }).catch(res => {
           this.$message.error('加载apicase列表失败')
         })

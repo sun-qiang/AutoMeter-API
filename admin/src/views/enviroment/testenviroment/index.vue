@@ -307,7 +307,6 @@
 
         <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
         <el-table-column label="服务器" align="center" prop="machinename" width="100"/>
-        <el-table-column label="IP" :show-overflow-tooltip="true" align="center" prop="ip" width="100"/>
         <el-table-column label="微服务" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="100"/>
         <el-table-column label="访问方式" align="center" prop="visittype" width="70"/>
         <el-table-column label="访问域名" :show-overflow-tooltip="true" align="center" prop="domain" width="100"/>
@@ -397,7 +396,6 @@
 
         <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
         <el-table-column label="服务器" align="center" prop="machinename" width="90"/>
-        <el-table-column label="IP" :show-overflow-tooltip="true" align="center" prop="ip" width="90"/>
         <el-table-column label="组件" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="70"/>
         <el-table-column label="组件类型" align="center" prop="assembletype" width="70"/>
         <el-table-column label="连接字" :show-overflow-tooltip="true" align="center" prop="connectstr" width="120"/>

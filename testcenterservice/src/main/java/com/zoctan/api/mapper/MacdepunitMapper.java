@@ -35,6 +35,10 @@ public interface MacdepunitMapper extends MyMapper<Macdepunit> {
 
     Integer findmachinenumbyenvidanddeployid(@Param("envid") long envid, @Param("depunitid") long depunitid);
 
+    List<Macdepunit> getmacdepbyenvidandassid(@Param("envid") long envid, @Param("assembleid") long assembleid);
+    void deletemacdepbyenvidandassid(@Param("envid") long envid, @Param("assembleid") long assembleid);
+
+
     Macdepunit getmacdepbyenvidanddepid(@Param("envid")long envid, @Param("depunitid")long depunitid);
 
     List<Macdepunit> getenvassemblelistbyenvidandtype(@Param("envid") long envid, @Param("assembletype") String assembletype);

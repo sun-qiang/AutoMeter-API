@@ -67,9 +67,10 @@ public class MacdepunitController {
             enviromentAssembleService.save(enviromentAssemble);
 
             Long AssembleID = enviromentAssemble.getId();
-            Condition depcon = new Condition(Macdepunit.class);
-            depcon.createCriteria().andCondition("envid = " + assembleDeploy.getEnvid()).andCondition("assembleid = " + AssembleID);
-            if (macdepunitService.ifexist(depcon) > 0) {
+            List<Macdepunit> macdepunits= macdepunitService.getmacdepbyenvidandassid(assembleDeploy.getEnvid(),AssembleID);
+//            Condition depcon = new Condition(Macdepunit.class);
+//            depcon.createCriteria().andCondition("envid = " + assembleDeploy.getEnvid()).andCondition("assembleid = " + AssembleID);
+            if (macdepunits.size() > 0) {
                 enviromentAssembleService.deleteById(AssembleID);
                 return ResultGenerator.genFailedResult("当前环境已经存在此组件");
             } else {
@@ -192,10 +193,12 @@ public class MacdepunitController {
             enviromentAssembleService.deleteById(assembleid);
         }
         Long macassenbleid=assembleDeploy.getId();
-        Macdepunit macdepunit=macdepunitService.getById(macassenbleid);
-        if(macdepunit!=null)
+
+        List<Macdepunit> macdepunits= macdepunitService.getmacdepbyenvidandassid(assembleDeploy.getEnvid(),macassenbleid);
+        //Macdepunit macdepunit=macdepunitService.getById(macassenbleid);
+        if(macdepunits.size()>0)
         {
-            macdepunitService.deleteById(macassenbleid);
+            macdepunitService.deletemacdepbyenvidandassid(assembleDeploy.getEnvid(), macassenbleid);
         }
         return ResultGenerator.genOkResult();
     }

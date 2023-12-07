@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zoctan.api.mapper.MacdepunitMapper">
-  <resultMap id="BaseResultMap" type="com.zoctan.api.dto.AssembleDeploy">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Macdepunit">
     <!--
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="ip" jdbcType="VARCHAR" property="ip" />
     <result column="depunitid" jdbcType="BIGINT" property="depunitid" />
     <result column="assembleid" jdbcType="BIGINT" property="assembleid" />
     <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
@@ -95,6 +94,14 @@
   <select id="getmacdepbyenvidanddepid" resultMap="BaseResultMap">
     select * from macdepunit a where a.envid = #{envid} and depunitid =#{depunitid}
   </select>
+
+  <select id="getmacdepbyenvidandassid" resultMap="BaseResultMap">
+    select * from macdepunit a where a.envid = #{envid} and assembleid =#{assembleid}
+  </select>
+
+  <delete id="deletemacdepbyenvidandassid" >
+    delete macdepunit a where a.envid = #{envid} and assembleid =#{assembleid}
+  </delete>
 
   <select id="getenvassemblelistbyenvidandtype" resultMap="BaseResultMap">
     select a.* as assemblename from macdepunit a  where a.envid =#{envid} and assembletype=#{assembletype}

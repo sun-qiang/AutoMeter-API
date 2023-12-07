@@ -65,6 +65,19 @@ public class ConditionDb {
     private String assemblename;
     private String enviromentname;
 
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
+
+
+
     /**
      * 环境id
      */
