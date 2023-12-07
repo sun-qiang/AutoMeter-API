@@ -59,6 +59,12 @@
           <el-form-item>
             <el-input style="width: 130px" v-model="search.modelname" clearable @keyup.enter.native="searchBy" placeholder="模块名"></el-input>
           </el-form-item>
+          <el-form-item  label="范围:">
+            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
+              <el-option label="我的" value="我的" />
+              <el-option label="全部" value="全部" />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
@@ -847,6 +853,7 @@ export default {
         deployunitname: null,
         modelname: null,
         projectid: '',
+        nickname: '',
         creator: ''
       },
       tmpmodelquery: {
@@ -862,7 +869,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+    ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
   },
   created() {
     this.search.projectid = window.localStorage.getItem('pid')
@@ -893,6 +900,13 @@ export default {
     this.getdepunitLists()
   },
   methods: {
+    creatorselectChanged(e) {
+      if (e === '全部') {
+        this.search.creator = 'admin'
+      } else {
+        this.search.creator = this.name
+      }
+    },
     tabclick(tab, event) {
       console.log(tab, event)
     },

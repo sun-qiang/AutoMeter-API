@@ -39,6 +39,13 @@
             </el-select>
           </el-form-item>
 
+          <el-form-item  label="范围:">
+            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
+              <el-option label="我的" value="我的" />
+              <el-option label="全部" value="全部" />
+            </el-select>
+          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
@@ -503,7 +510,6 @@
       2.数据库前置条件：
       <el-table
         :data="plandbconditioncaseList"
-        :key="plandbitemKey"
         element-loading-text="loading"
         border
         fit
@@ -600,7 +606,6 @@
 
         <el-form-item label="API" prop="apiname" required >
           <el-select v-model="tmpsceneapicondition.apiname" filterable placeholder="API" style="width:100%" @change="sceneconditionapiselectChanged($event)">
-            <el-option label="请选择" value />
             <div v-for="(api, index) in sceneconditionapiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
             </div>
@@ -609,7 +614,6 @@
 
         <el-form-item label="接口" prop="casename" required >
           <el-select v-model="tmpsceneapicondition.casename" filterable placeholder="接口" style="width:100%" @change="sceneconditiontestcaseselectChanged($event)">
-            <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(testcase, index) in sceneconditioncaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
@@ -886,7 +890,7 @@
         >修改</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="场景前置条件" :visible.sync="scenecaseConditionFormVisible">
+    <el-dialog title="场景前置条件" width="1100px" :visible.sync="scenecaseConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -896,7 +900,7 @@
               icon="el-icon-plus"
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="ShowAddPlanSceneconditionDialog"
-            >添加前置接口</el-button>
+            >添加接口前置条件</el-button>
             <el-button
               type="primary"
               size="mini"
@@ -904,6 +908,13 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showAddScenedelayconditionDialog"
             >添加前置延时</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddScenedbconditionDialog"
+            >添加数据库前置条件</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -923,9 +934,9 @@
           </template>
         </el-table-column>
         <el-table-column label="前置条件名" align="center" prop="subconditionname" width="150"/>
-        <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
         <el-table-column label="所属场景" align="center" prop="conditionname" width="150"/>
-
+        <el-table-column label="微服务" align="center" prop="deployunitname" width="150"/>
+        <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
         <el-table-column label="管理" align="center"
                          v-if="hasPermission('testscene:caseupdateapicondition')  || hasPermission('testscene:casedeleteapicondition')">
           <template slot-scope="scope">
@@ -948,7 +959,6 @@
             2.延时前置条件：
       <el-table
         :data="scenedelayconditionList"
-        :key="itemKey"
         v-loading.body="listLoading"
         element-loading-text="loading"
         border
@@ -962,6 +972,7 @@
         </el-table-column>
 
         <el-table-column label="前置条件名" align="center" prop="subconditionname" width="200"/>
+        <el-table-column label="所属场景" align="center" prop="conditionname" width="150"/>
         <el-table-column label="等待时间(秒)" align="center" prop="delaytime" width="150">
         </el-table-column>
         <el-table-column label="管理" align="center"
@@ -977,7 +988,7 @@
               type="danger"
               size="mini"
               v-if="hasPermission('delaycondition:delete') && scope.row.id !== id"
-              @click.native.prevent="removedelaycondition(scope.$index)"
+              @click.native.prevent="removescenedelaycondition(scope.$index)"
             >删除</el-button>
           </template>
         </el-table-column>
@@ -992,28 +1003,48 @@
               fit
               highlight-current-row
             >
-              <el-table-column label="编号" align="center" width="45">
+              <el-table-column label="编号" align="center" width="50">
                 <template slot-scope="scope">
-                  <span v-text="dbconditioncaseIndex(scope.$index)"></span>
+                  <span v-text="getIndex(scope.$index)"></span>
                 </template>
               </el-table-column>
-              <el-table-column label="接口条件" align="center" prop="subconditionname" width="150"/>
-              <el-table-column label="接口" align="center" prop="conditionname" width="150"/>
+              <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
+              <el-table-column label="所属场景" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+              <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
+              <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
+              <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
+              <el-table-column label="Sql内容" align="center" prop="dbcontent" width="80">
+                <template slot-scope="scope">
+                  <el-popover trigger="hover" placement="top">
+                    <p>{{ scope.row.dbcontent }}</p>
+                    <div slot="reference" class="name-wrapper">
+                      <el-tag size="medium">...</el-tag>
+                    </div>
+                  </el-popover>
+                </template>
+              </el-table-column>>
+              <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
+                <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+              </el-table-column>
+              <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
+                <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+                </template>
+              </el-table-column>
 
-              <el-table-column label="管理" align="center"
+              <el-table-column label="管理" align="center" width="250"
                                v-if="hasPermission('testscene:caseupdatedbcondition')  || hasPermission('testscene:casedeletedbcondition')">
                 <template slot-scope="scope">
                   <el-button
                     type="warning"
                     size="mini"
                     v-if="hasPermission('testscene:caseupdatedbcondition') && scope.row.id !== id"
-                    @click.native.prevent="showUpdateparamsDialog(scope.$index)"
+                    @click.native.prevent="showUpdatescenedbconditionDialog(scope.$index)"
                   >修改</el-button>
                   <el-button
                     type="danger"
                     size="mini"
                     v-if="hasPermission('testscene:casedeletedbcondition') && scope.row.id !== id"
-                    @click.native.prevent="removeexecuteplanparam(scope.$index)"
+                    @click.native.prevent="removescenedbcondition(scope.$index)"
                   >删除</el-button>
                 </template>
               </el-table-column>
@@ -1030,7 +1061,7 @@
         :model="tmpdelaycondition"
         ref="tmpdelaycondition"
       >
-        <el-form-item label="条件名" prop="subconditionname" required>
+        <el-form-item label="延时条件名" prop="subconditionname" required>
           <el-input
             type="text"
             maxlength="30"
@@ -1071,7 +1102,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog :title="plandbtextMap[plandbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
@@ -1151,6 +1181,87 @@
         >修改</el-button>
       </div>
     </el-dialog>
+    <el-dialog :title="scenedbtextMap[scenedbdialogStatus]" :visible.sync="scenedbconditiondialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 600px; margin-left:30px;"
+        :model="tmpscenedbcondition"
+        ref="tmpscenedbcondition"
+      >
+        <el-form-item label="数据库条件名：" prop="subconditionname" required>
+          <el-input
+            type="text"
+            maxlength="30"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpscenedbcondition.subconditionname"
+          />
+        </el-form-item>
+
+        <el-form-item label="环境：" prop="enviromentname" required >
+          <el-select v-model="tmpscenedbcondition.enviromentname" filterable  placeholder="环境" style="width:100%" @change="sceneselectChangedEN($event)">
+            <el-option label="请选择" value="''" style="display: none" />
+            <div v-for="(envname, index) in enviromentnameList" :key="index">
+              <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="组件：" prop="assemblename" required >
+          <el-select v-model="tmpscenedbcondition.assemblename" filterable placeholder="组件" style="width:100%" @change="SceneConditionselectChangedAS($event)">
+            <el-option label="请选择" value="''" style="display: none" />
+            <div v-for="(macname, index) in enviroment_assembleList" :key="index">
+              <el-option :label="macname.assemblename" :value="macname.assemblename" required/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="操作类型：" prop="dbtype" required >
+          <el-select v-model="tmpscenedbcondition.dbtype" placeholder="操作类型" style="width:100%" @change="selectChangedDBType($event)">
+            <el-option label="新增" value="Insert"  />
+            <el-option label="删除" value="Delete"  />
+            <el-option label="修改" value="Update"  />
+            <el-option label="查询" value="Select"  />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Sql语句：" prop="dbcontent" required>
+          <el-input
+            type="textarea"
+            rows="10" cols="50"
+            maxlength="2000"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpscenedbcondition.dbcontent"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="scenedbconditiondialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="scenedbdialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpscenedbcondition'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="scenedbdialogStatus === 'add'"
+          :loading="btnLoading"
+          @click.native.prevent="addscenedbcondition"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="scenedbdialogStatus === 'update'"
+          :loading="btnLoading"
+          @click.native.prevent="updatescenedbcondition"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 <script>
@@ -1227,17 +1338,20 @@
         testsceneList: [], // 列表
         addtestsceneList: [], // 列表
         apiconditioncaseList: [], // 列表
+        sceneapiconditioncaseList: [], // 列表
         conditioncaseList: [], // 列表
         sceneconditioncaseList: [], // 列表
         apiconditionmodelList: [],
         sceneconditionmodelList: [],
         apiconditionapiList: [],
         sceneconditionapiList: [],
+        scenedelayconditionList: [],
         itemaddsceneKey: null,
         scenemultipleSelection: [], // 查询用例表格被选中的内容
         delayconditionList: [],
         stopplanbatchList: [], // 期望停止的计划
         plandbconditioncaseList: [], // 集合数据库前置
+        scenedbconditioncaseList: [],
         enviroment_assembleList: [],
         tmptestscenename: null,
         scenetotal: 0,
@@ -1294,6 +1408,7 @@
         dialogStatus: 'add',
         SceneconditiondialogStatus: 'add',
         plandbdialogStatus: 'add',
+        scenedbdialogStatus: 'add',
         dialogFormVisible: false,
         casedialogFormVisible: false,
         batchdialogFormVisible: false,
@@ -1307,6 +1422,7 @@
         DelaydialogFormVisible: false,
         stopbatchdialogFormVisible: false, // 停止运行
         dbconditiondialogFormVisible: false,
+        scenedbconditiondialogFormVisible: false,
         loadcase: '装载用例',
         loadbatch: '执行计划',
         textMap: {
@@ -1315,6 +1431,11 @@
           add: '添加测试集合'
         },
         plandbtextMap: {
+          updateRole: '修改测试集合',
+          update: '修改数据库前置条件',
+          add: '添加数据库前置条件'
+        },
+        scenedbtextMap: {
           updateRole: '修改测试集合',
           update: '修改数据库前置条件',
           add: '添加数据库前置条件'
@@ -1389,6 +1510,23 @@
           connectstr: '',
           memo: '',
           conditiontype: 'execplan',
+          creator: '',
+          projectid: ''
+        },
+        tmpscenedbcondition: {
+          id: '',
+          conditionid: '',
+          conditionname: '',
+          assembleid: '',
+          assemblename: '',
+          subconditionname: '',
+          enviromentid: '',
+          enviromentname: '',
+          dbtype: '',
+          dbcontent: '',
+          connectstr: '',
+          memo: '',
+          conditiontype: 'scene',
           creator: '',
           projectid: ''
         },
@@ -1474,6 +1612,7 @@
           executeplanname: null,
           businesstype: '',
           creator: '',
+          nickname: '',
           projectid: ''
         },
         Scenedelaysearch: {
@@ -1516,7 +1655,7 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
     },
 
     created() {
@@ -1545,6 +1684,22 @@
     },
 
     methods: {
+
+      removescenedbcondition(index) {
+        this.$confirm('删除该数据库条件？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.scenedbconditioncaseList[index].id
+          removedbcondition(id).then(() => {
+            this.$message.success('删除成功')
+            this.getscenedbconditionList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
 
       removedbcondition(index) {
         this.$confirm('删除该数据库条件？', '警告', {
@@ -1578,6 +1733,22 @@
         this.tmpdbcondition.creator = this.name
       },
 
+      showUpdatescenedbconditionDialog(index) {
+        this.scenedbconditiondialogFormVisible = true
+        this.scenedbdialogStatus = 'update'
+        this.tmpscenedbcondition.id = this.scenedbconditioncaseList[index].id
+        this.tmpscenedbcondition.conditionid = this.scenedbconditioncaseList[index].conditionid
+        this.tmpscenedbcondition.assembleid = this.scenedbconditioncaseList[index].assembleid
+        this.tmpscenedbcondition.enviromentid = this.scenedbconditioncaseList[index].enviromentid
+        this.tmpscenedbcondition.enviromentname = this.scenedbconditioncaseList[index].enviromentname
+        this.tmpscenedbcondition.assemblename = this.scenedbconditioncaseList[index].assemblename
+        this.tmpscenedbcondition.conditionname = this.scenedbconditioncaseList[index].conditionname
+        this.tmpscenedbcondition.subconditionname = this.scenedbconditioncaseList[index].subconditionname
+        this.tmpscenedbcondition.dbtype = this.scenedbconditioncaseList[index].dbtype
+        this.tmpscenedbcondition.dbcontent = this.scenedbconditioncaseList[index].dbcontent
+        this.tmpscenedbcondition.creator = this.name
+      },
+
       updatedbcondition() {
         this.$refs.tmpdbcondition.validate(valid => {
           if (valid) {
@@ -1585,6 +1756,20 @@
               this.$message.success('更新成功')
               this.getdbconditionList()
               this.dbconditiondialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
+      updatescenedbcondition() {
+        this.$refs.tmpscenedbcondition.validate(valid => {
+          if (valid) {
+            updatedbcondition(this.tmpscenedbcondition).then(() => {
+              this.$message.success('更新成功')
+              this.getscenedbconditionList()
+              this.scenedbconditiondialogFormVisible = false
             }).catch(res => {
               this.$message.error('更新失败')
             })
@@ -1600,10 +1785,33 @@
         })
       },
 
+      getscenedbconditionList() {
+        searchdbcondition(this.searchdbcondition).then(response => {
+          this.scenedbconditioncaseList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载数据库条件列表失败')
+        })
+      },
+      creatorselectChanged(e) {
+        if (e === '全部') {
+          this.search.creator = 'admin'
+        } else {
+          this.search.creator = this.name
+        }
+      },
+
       ConditionselectChangedAS(e) {
         for (let i = 0; i < this.enviroment_assembleList.length; i++) {
           if (this.enviroment_assembleList[i].assemblename === e) {
             this.tmpdbcondition.assembleid = this.enviroment_assembleList[i].id
+          }
+        }
+      },
+
+      SceneConditionselectChangedAS(e) {
+        for (let i = 0; i < this.enviroment_assembleList.length; i++) {
+          if (this.enviroment_assembleList[i].assemblename === e) {
+            this.tmpscenedbcondition.assembleid = this.enviroment_assembleList[i].id
           }
         }
       },
@@ -1624,6 +1832,14 @@
         }
       },
 
+      sceneselectChangedEN(e) {
+        for (let i = 0; i < this.enviromentnameList.length; i++) {
+          if (this.enviromentnameList[i].enviromentname === e) {
+            this.tmpscenedbcondition.enviromentid = this.enviromentnameList[i].id
+          }
+        }
+      },
+
       dbconditioncaseIndex(index) {
         return (this.searchdbcondition.page - 1) * this.searchdbcondition.size + index + 1
       },
@@ -1636,6 +1852,21 @@
         })
       },
 
+      showAddScenedbconditionDialog(index) {
+        this.scenedbconditiondialogFormVisible = true
+        this.scenedbdialogStatus = 'add'
+        this.tmpscenedbcondition.id = ''
+        this.tmpscenedbcondition.assembleid = ''
+        this.tmpscenedbcondition.enviromentid = ''
+        this.tmpscenedbcondition.enviromentname = ''
+        this.tmpscenedbcondition.assemblename = ''
+        this.tmpscenedbcondition.subconditionname = ''
+        this.tmpscenedbcondition.dbtype = ''
+        this.tmpscenedbcondition.dbcontent = ''
+        this.tmpscenedbcondition.creator = this.name
+        this.getassembleallnameList()
+        this.getenviromentallList()
+      },
       AddcasedbconditionDialog(index) {
         this.dbconditiondialogFormVisible = true
         this.plandbdialogStatus = 'add'
@@ -1666,6 +1897,20 @@
         })
       },
 
+      addscenedbcondition() {
+        this.$refs.tmpscenedbcondition.validate(valid => {
+          if (valid) {
+            adddbcondition(this.tmpscenedbcondition).then(() => {
+              this.$message.success('添加成功')
+              this.scenedbconditiondialogFormVisible = false
+              this.getscenedbconditionList()
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
+
       getstopplanbatchList() {
         getstopplanbatchList(this.tmpstopplanbatch).then(response => {
           this.stopplanbatchList = response.data
@@ -1679,7 +1924,7 @@
       getdelayconditionList() {
         this.Scenedelaysearch.conditiontype = 'scene'
         searchbytype(this.Scenedelaysearch).then(response => {
-          this.delayconditionList = response.data
+          this.scenedelayconditionList = response.data
         }).catch(res => {
           this.$message.error('加载测试延时条件列表失败')
         })
@@ -1691,22 +1936,22 @@
       showUpdatedelayconditionDialog(index) {
         this.DelaydialogFormVisible = true
         this.DelaydialogStatus = 'update'
-        this.tmpdelaycondition.id = this.delayconditionList[index].id
-        this.tmpdelaycondition.subconditionname = this.delayconditionList[index].subconditionname
-        this.tmpdelaycondition.delaytime = this.delayconditionList[index].delaytime
+        this.tmpdelaycondition.id = this.scenedelayconditionList[index].id
+        this.tmpdelaycondition.subconditionname = this.scenedelayconditionList[index].subconditionname
+        this.tmpdelaycondition.delaytime = this.scenedelayconditionList[index].delaytime
         this.tmpdelaycondition.creator = this.name
       },
       /**
        * 删除延时条件
        * @param index 延时条件下标
        */
-      removedelaycondition(index) {
+      removescenedelaycondition(index) {
         this.$confirm('删除该延时条件？', '警告', {
           confirmButtonText: '是',
           cancelButtonText: '否',
           type: 'warning'
         }).then(() => {
-          const id = this.delayconditionList[index].id
+          const id = this.scenedelayconditionList[index].id
           removedelaycondition(id).then(() => {
             this.$message.success('删除成功')
             this.getdelayconditionList()
@@ -1784,8 +2029,9 @@
         this.searchapicondition.conditiontype = 'scence'
         this.searchapicondition.conditionid = this.testplansceneList[index].id
         this.Scenedelaysearch.conditionid = this.testplansceneList[index].id
-        this.getapiconditionList()
+        this.getsceneapiconditionList()
         this.getdelayconditionList()
+        this.getscenedbconditionList()
       },
       /**
        * 删除测试场景
@@ -1823,13 +2069,13 @@
       showUpdatesceneconditionDialog(index) {
         this.SceneconditiondialogFormVisible = true
         this.SceneconditiondialogStatus = 'update'
-        this.tmpsceneapicondition.id = this.apiconditioncaseList[index].id
-        this.tmpsceneapicondition.subconditionname = this.apiconditioncaseList[index].subconditionname
-        this.tmpsceneapicondition.deployunitname = this.apiconditioncaseList[index].deployunitname
-        this.tmpsceneapicondition.apiname = this.apiconditioncaseList[index].apiname
-        this.tmpsceneapicondition.casename = this.apiconditioncaseList[index].casename
-        this.tmpsceneapicondition.modelname = this.apiconditioncaseList[index].modelname
-        this.tmpsceneapicondition.memo = this.apiconditioncaseList[index].memo
+        this.tmpsceneapicondition.id = this.sceneapiconditioncaseList[index].id
+        this.tmpsceneapicondition.subconditionname = this.sceneapiconditioncaseList[index].subconditionname
+        this.tmpsceneapicondition.deployunitname = this.sceneapiconditioncaseList[index].deployunitname
+        this.tmpsceneapicondition.apiname = this.sceneapiconditioncaseList[index].apiname
+        this.tmpsceneapicondition.casename = this.sceneapiconditioncaseList[index].casename
+        this.tmpsceneapicondition.modelname = this.sceneapiconditioncaseList[index].modelname
+        this.tmpsceneapicondition.memo = this.sceneapiconditioncaseList[index].memo
         this.tmpsceneapicondition.creator = this.name
         this.tmpsceneapicondition.projectid = window.localStorage.getItem('pid')
       },
@@ -1853,7 +2099,7 @@
           if (valid) {
             updateapicondition(this.tmpsceneapicondition).then(() => {
               this.$message.success('更新成功')
-              this.getapiconditionList()
+              this.getsceneapiconditionList()
               this.SceneconditiondialogFormVisible = false
             }).catch(res => {
               this.$message.error('更新失败')
@@ -1867,10 +2113,10 @@
           cancelButtonText: '否',
           type: 'warning'
         }).then(() => {
-          const id = this.apiconditioncaseList[index].id
+          const id = this.sceneapiconditioncaseList[index].id
           removeapicondition(id).then(() => {
             this.$message.success('删除成功')
-            this.getapiconditionList()
+            this.getsceneapiconditionList()
           })
         }).catch(() => {
           this.$message.info('已取消删除')
@@ -2001,13 +2247,21 @@
         })
       },
 
+      getsceneapiconditionList() {
+        searchapicondition(this.searchapicondition).then(response => {
+          this.sceneapiconditioncaseList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载测试接口条件列表失败')
+        })
+      },
+
       addscenecondition() {
         this.$refs.tmpsceneapicondition.validate(valid => {
           if (valid) {
             addapicondition(this.tmpsceneapicondition).then(() => {
               this.$message.success('添加成功')
               this.SceneconditiondialogFormVisible = false
-              this.getapiconditionList()
+              this.getsceneapiconditionList()
             }).catch(res => {
               this.$message.error('添加失败')
               this.btnLoading = false
@@ -2651,6 +2905,12 @@
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
         this.searchscene.testplanid = this.executeplanList[index].id
+        this.tmpscenedbcondition.conditionid = this.executeplanList[index].id
+        this.tmpscenedbcondition.conditionname = this.executeplanList[index].executeplanname
+        this.tmpscenedbcondition.enviromentid = this.executeplanList[index].envid
+        this.searchdbcondition.conditionid = this.executeplanList[index].id
+        this.searchdbcondition.conditionname = this.executeplanList[index].executeplanname
+        this.searchdbcondition.conditiontype = 'scene'
         this.findscenebyexecplanid()
       },
 

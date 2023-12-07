@@ -123,6 +123,13 @@
             </el-input>
           </el-form-item>
 
+          <el-form-item  label="范围:">
+            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
+              <el-option label="我的" value="我的" />
+              <el-option label="全部" value="全部" />
+            </el-select>
+          </el-form-item>
+
           <el-form-item >
             <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
@@ -1769,6 +1776,7 @@
           casetype: null,
           casename: null,
           projectid: '',
+          nickname: '',
           creator: this.name
         },
         searchassert: {
@@ -1848,12 +1856,19 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
     },
 
     methods: {
       unix2CurrentTime,
 
+      creatorselectChanged(e) {
+        if (e === '全部') {
+          this.search.creator = 'admin'
+        } else {
+          this.search.creator = this.name
+        }
+      },
       /**
        * 删除变量
        * @param index 变量下标
