@@ -307,6 +307,16 @@ public class TestCore {
                 }
             }
             logger.info("TestCore 完成处理用例前置条件-延时子条件-============：");
+
+            ArrayList<HashMap<String, String>> ConditionDbList = GetConditionDBByObjectIDAndType(SceneCaseID, "scencecase");
+            logger.info("TestCore 开始处理用例前置条件-数据库子条件-============：" + ConditionDbList.size());
+            if (ConditionDbList.size() > 0) {
+                for (int i = 0; i < ConditionDbList.size(); i++) {
+                    HashMap<String, String> hs = ConditionDbList.get(i);
+                    testCondition.conditiondb(hs, requestObject);
+                }
+            }
+            logger.info("TestCore 完成处理用例前置条件-数据库子条件-============：");
         }
 //        Long ObjectID = Long.parseLong(requestObject.getCaseid());
 //        ArrayList<HashMap<String, String>> testconditionList = GetConditionByPlanIDAndConditionType(ObjectID, "前置条件", "测试用例");

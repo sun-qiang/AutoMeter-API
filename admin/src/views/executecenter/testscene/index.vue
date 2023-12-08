@@ -505,7 +505,7 @@
       </el-table>
     </el-dialog>
 
-    <el-dialog title="用例前置条件" :visible.sync="scenecaseConditionFormVisible">
+    <el-dialog title="用例前置条件" width="1100px" :visible.sync="scenecaseConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -557,6 +557,7 @@
           </template>
         </el-table-column>
         <el-table-column label="前置条件名" align="center" prop="subconditionname" width="150"/>
+        <el-table-column label="所属用例" align="center" prop="conditionname" width="150"/>
         <el-table-column label="前置接口" align="center" prop="casename" width="150"/>
         <el-table-column label="所属用例" align="center" prop="conditionname" width="150"/>
 
@@ -595,6 +596,7 @@
         </el-table-column>
 
         <el-table-column label="前置条件名" align="center" prop="subconditionname" width="200"/>
+        <el-table-column label="所属用例" align="center" prop="conditionname" width="150"/>
         <el-table-column label="等待时间(秒)" align="center" prop="delaytime" width="150">
         </el-table-column>
         <el-table-column label="管理" align="center"
@@ -615,43 +617,61 @@
           </template>
         </el-table-column>
       </el-table>
+      3.数据库前置条件：
+      <el-table
+        :data="dbconditioncaseList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="50">
+          <template slot-scope="scope">
+            <span v-text="getIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+        <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
+        <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
+        <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
+        <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
+        <el-table-column label="Sql内容" align="center" prop="dbcontent" width="80">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>{{ scope.row.dbcontent }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">...</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>>
+        <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
 
-<!--      2.数据库前置条件：-->
+        <el-table-column label="管理" align="center"  width="150"
+                         v-if="hasPermission('dbcondition:update')  || hasPermission('dbcondition:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('dbcondition:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedbconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
+              @click.native.prevent="removedbcondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-<!--      <el-table-->
-<!--        :data="dbconditioncaseList"-->
-<!--        v-loading.body="listLoading"-->
-<!--        element-loading-text="loading"-->
-<!--        border-->
-<!--        fit-->
-<!--        highlight-current-row-->
-<!--      >-->
-<!--        <el-table-column label="编号" align="center" width="45">-->
-<!--          <template slot-scope="scope">-->
-<!--            <span v-text="dbconditioncaseIndex(scope.$index)"></span>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="接口条件" align="center" prop="subconditionname" width="150"/>-->
-<!--        <el-table-column label="接口" align="center" prop="conditionname" width="150"/>-->
-
-<!--        <el-table-column label="管理" align="center"-->
-<!--                         v-if="hasPermission('testscene:caseupdatedbcondition')  || hasPermission('testscene:casedeletedbcondition')">-->
-<!--          <template slot-scope="scope">-->
-<!--            <el-button-->
-<!--              type="warning"-->
-<!--              size="mini"-->
-<!--              v-if="hasPermission('testscene:caseupdatedbcondition') && scope.row.id !== id"-->
-<!--              @click.native.prevent="showUpdateparamsDialog(scope.$index)"-->
-<!--            >修改</el-button>-->
-<!--            <el-button-->
-<!--              type="danger"-->
-<!--              size="mini"-->
-<!--              v-if="hasPermission('testscene:casedeletedbcondition') && scope.row.id !== id"-->
-<!--              @click.native.prevent="removeexecuteplanparam(scope.$index)"-->
-<!--            >删除</el-button>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
 
     </el-dialog>
 
@@ -1620,6 +1640,7 @@ export default {
       this.Scenedelaysearch.conditionid = this.testscenecaseList[index].id
       this.getapiconditionList()
       this.getdelayconditionList()
+      this.getdbconditionList()
     },
 
     ShowAddcasecaseconditionDialog(index) {
