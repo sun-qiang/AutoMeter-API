@@ -561,9 +561,6 @@
           </template>
         </el-table-column>
       </el-table>
-
-
-
     </el-dialog>
     <el-dialog :title="SceneapiconditiontextMap[SceneconditiondialogStatus]" :visible.sync="SceneconditiondialogFormVisible">
       <el-form
@@ -2023,12 +2020,16 @@
       },
       showtestscenecaseConditionDialog(index) {
         this.scenecaseConditionFormVisible = true
-        this.tmpsceneapicondition.conditionid = this.testplansceneList[index].id
+        this.tmpsceneapicondition.conditionid = this.testplansceneList[index].testscenenid
         this.tmpsceneapicondition.conditionname = this.testplansceneList[index].scenename
-        this.tmpsceneapicondition.conditiontype = 'scence'
-        this.searchapicondition.conditiontype = 'scence'
-        this.searchapicondition.conditionid = this.testplansceneList[index].id
-        this.Scenedelaysearch.conditionid = this.testplansceneList[index].id
+        this.tmpsceneapicondition.conditiontype = 'scene'
+        this.searchapicondition.conditiontype = 'scene'
+        this.searchapicondition.conditionid = this.testplansceneList[index].testscenenid
+        this.Scenedelaysearch.conditionid = this.testplansceneList[index].testscenenid
+        this.searchdbcondition.conditiontype = 'scene'
+        this.searchdbcondition.conditionid = this.testplansceneList[index].testscenenid
+        this.tmpscenedbcondition.conditionid = this.testplansceneList[index].testscenenid
+        this.tmpscenedbcondition.conditionname = this.testplansceneList[index].scenename
         this.getsceneapiconditionList()
         this.getdelayconditionList()
         this.getscenedbconditionList()
@@ -2905,12 +2906,6 @@
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
         this.searchscene.testplanid = this.executeplanList[index].id
-        this.tmpscenedbcondition.conditionid = this.executeplanList[index].id
-        this.tmpscenedbcondition.conditionname = this.executeplanList[index].executeplanname
-        this.tmpscenedbcondition.enviromentid = this.executeplanList[index].envid
-        this.searchdbcondition.conditionid = this.executeplanList[index].id
-        this.searchdbcondition.conditionname = this.executeplanList[index].executeplanname
-        this.searchdbcondition.conditiontype = 'scene'
         this.findscenebyexecplanid()
       },
 

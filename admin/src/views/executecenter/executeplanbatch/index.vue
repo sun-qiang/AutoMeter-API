@@ -44,7 +44,7 @@
         </template>
       </el-table-column>
       <el-table-column label="测试集合名" align="center" prop="executeplanname" width="150"/>
-      <el-table-column label="执行计划" align="center" prop="batchname" width="150"/>
+      <el-table-column label="执行计划" :show-overflow-tooltip="true" align="center" prop="batchname" width="150"/>
       <el-table-column label="测试场景" :show-overflow-tooltip="true" align="center" prop="scenename" width="150"/>
       <el-table-column label="状态" align="center" prop="status" width="70"/>
       <el-table-column label="来源" align="center" prop="source" width="60"/>

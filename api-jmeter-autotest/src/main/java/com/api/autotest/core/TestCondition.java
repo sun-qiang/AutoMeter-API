@@ -234,7 +234,7 @@ public class TestCondition {
         String BatchName = requestObject.getBatchname();
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(PlanID);
-        testconditionReport.setPlanname(requestObject.getTestplanname());
+        testconditionReport.setPlanname(conditionApi.get("conditionname"));
         testconditionReport.setBatchname(BatchName);
         testconditionReport.setConditiontype("前置条件");
         testconditionReport.setConditionresult(Respone);
@@ -482,7 +482,7 @@ public class TestCondition {
         //更新条件结果表
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(PlanID);
-        testconditionReport.setPlanname(requestObject.getCasename());
+        testconditionReport.setPlanname(conditionScript.get("conditionname"));
         testconditionReport.setBatchname(requestObject.getBatchname());
         testconditionReport.setConditionid(new Long(ConditionID));
         testconditionReport.setConditiontype("前置条件");
@@ -502,12 +502,14 @@ public class TestCondition {
 
 
     //处理数据库子条件
-    public void conditiondb(HashMap<String, String> conditionDb, long ConditionID, RequestObject requestObject, Long PlanID) throws Exception {
+    public void conditiondb(HashMap<String, String> conditionDb, RequestObject requestObject) throws Exception {
         long Start = 0;
         long End = 0;
         long CostTime = 0;
         String Respone = "";
         String ConditionResultStatus = "成功";
+        Long PlanID = Long.parseLong(requestObject.getTestplanid());
+        Long ConditionID = Long.parseLong(conditionDb.get("conditionid"));
         Long Assembleid = Long.parseLong(conditionDb.get("assembleid"));
         Long DBConditionid = Long.parseLong(conditionDb.get("id"));
         String SqlType = conditionDb.get("dbtype");
@@ -547,7 +549,7 @@ public class TestCondition {
             }
             Long planid = Long.parseLong(requestObject.getTestplanid());
             Start = new Date().getTime();
-            Rundb(planid, requestObject.getTestplanname(), requestObject.getBatchname(), DBConditionid, DBConditionName, macdepunitlist, machinelist, ConnetcArray, AssembleType, deployunitvisittype, Sql, SqlType);
+            Respone=Rundb(planid, requestObject.getTestplanname(), requestObject.getBatchname(), DBConditionid, DBConditionName, macdepunitlist, machinelist, ConnetcArray, AssembleType, deployunitvisittype, Sql, SqlType);
         } catch (Exception ex) {
             ConditionResultStatus = "失败";
             Respone = ex.getMessage();
@@ -565,7 +567,7 @@ public class TestCondition {
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         ArrayList<HashMap<String, String>> conditionDbListList = testMysqlHelp.GetDBConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionDb : conditionDbListList) {
-            conditiondb(conditionDb, ConditionID, requestObject, PlanID);
+//            conditiondb(conditionDb, ConditionID, requestObject, PlanID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;

@@ -262,6 +262,18 @@ public class TestMysqlHelp {
         return result;
     }
 
+    public ArrayList<HashMap<String, String>> GetConditionDBByObjectIDAndType(Long Objectid, String ObjectType) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from condition_db where conditionid=" + Objectid + " and conditiontype='" + ObjectType + "'";
+            logger.info(logplannameandcasename + "获取数据库 获取场景数据库条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取场景数据库条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
     //根据目标类型和用例id获取接口条件
     public ArrayList<HashMap<String, String>> GetConditionApiByCaseIDAndType(Long caseid, String ObjectType) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();

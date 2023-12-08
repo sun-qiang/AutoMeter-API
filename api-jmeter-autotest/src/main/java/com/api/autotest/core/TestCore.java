@@ -134,7 +134,7 @@ public class TestCore {
     }
 
 
-    public void FinisBatchScene(String planid, String BatchName, String Sceneid,String Status) {
+    public void FinisBatchScene(String planid, String BatchName, String Sceneid, String Status) {
         UpdateBatchScene(planid, BatchName, Sceneid, Status);
     }
 
@@ -181,7 +181,7 @@ public class TestCore {
 //            String projectid = ctx.getParameter("projectid");
 //            savetestcaseextresult(String.valueOf(key), testResponeDatarResult, projectid);
             //更新调度状态
-            updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(),"已完成");
+            updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(), "已完成");
         } catch (Exception ex) {
             logger.error("用例运行结束保存记录CaseFinish发生异常，请检查!" + ex.getMessage());
         }
@@ -228,7 +228,7 @@ public class TestCore {
                             logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
                             //增加判断是否已经存在
                             testMysqlHelp.SubConditionReportSave(testconditionReport);
-                            testCondition.FixInterfaceVariables(requestObject, Conditionid,hs.get("conditiontype"), Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
+                            testCondition.FixInterfaceVariables(requestObject, Conditionid, hs.get("conditiontype"), Long.parseLong(requestObject.getCaseid()), testResponeData, Respone, Long.parseLong(requestObject.getTestplanid()), requestObject.getTestplanname(), requestObject.getBatchname());
                             flag = false;
                         }
                     }
@@ -241,9 +241,9 @@ public class TestCore {
 
     public void FixCase(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results) throws Exception {
         FixCaseCondition(requestObject);
-        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename()+"条件处理完成");
+        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + "条件处理完成");
         FixCaseData(requestObject, ctx, results, true, null);
-        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename()+"数据处理完成");
+        logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + "数据处理完成");
     }
 
     public void FixCaseData(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results, boolean flag, TestResponeData responeData1) throws Exception {
@@ -291,15 +291,15 @@ public class TestCore {
             long SceneCaseID = Long.parseLong(testscenecaseList.get(0).get("id"));
             //接口条件
             ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(SceneCaseID, "scencecase");
-            logger.info("TestCore 开始处理用例前置条件-接口子条件-============："+ConditionApiList.size());
+            logger.info("TestCore 开始处理用例前置条件-接口子条件-============：" + ConditionApiList.size());
             for (int i = 0; i < ConditionApiList.size(); i++) {
                 HashMap<String, String> hs = ConditionApiList.get(i);
                 testCondition.conditionapi(hs, requestObject);
             }
-            logger.info("TestCore 结束处理用例前置条件-接口子条件-============："+ConditionApiList.size());
+            logger.info("TestCore 结束处理用例前置条件-接口子条件-============：" + ConditionApiList.size());
             //延时条件
             ArrayList<HashMap<String, String>> ConditionDelayList = GetConditionDelayByObjectIDAndType(SceneCaseID, "scencecase");
-            logger.info("TestCore 开始处理用例前置条件-延时子条件-============："+ConditionDelayList.size());
+            logger.info("TestCore 开始处理用例前置条件-延时子条件-============：" + ConditionDelayList.size());
             if (ConditionDelayList.size() > 0) {
                 for (int i = 0; i < ConditionDelayList.size(); i++) {
                     HashMap<String, String> hs = ConditionDelayList.get(i);
@@ -383,11 +383,30 @@ public class TestCore {
 
     //处理场景条件入口
     public void FixSceneCondition(RequestObject requestObject) throws Exception {
-        ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(requestObject.getSceneid(), "scence");
+        // 处理接口条件
+        logger.info("开始处理场景接口前置条件-============================================================：");
+        ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(requestObject.getSceneid(), "scene");
         for (int i = 0; i < ConditionApiList.size(); i++) {
             HashMap<String, String> hs = ConditionApiList.get(i);
             testCondition.conditionapi(hs, requestObject);
         }
+        logger.info("完成处理场景接口前置条件-============================================================：");
+        // 处理数据库条件
+        logger.info("开始处理场景数据库前置条件-============================================================：");
+        ArrayList<HashMap<String, String>> ConditionDBList = GetConditionDBByObjectIDAndType(requestObject.getSceneid(), "scene");
+        for (int i = 0; i < ConditionDBList.size(); i++) {
+            HashMap<String, String> hs = ConditionDBList.get(i);
+            testCondition.conditiondb(hs, requestObject);
+        }
+        logger.info("完成处理场景数据库前置条件-============================================================：");
+        // 处理延时条件
+        logger.info("开始处理场景延时前置条件-============================================================：");
+        ArrayList<HashMap<String, String>> ConditionDelayList = GetConditionDelayByObjectIDAndType(requestObject.getSceneid(), "scene");
+        for (int i = 0; i < ConditionDelayList.size(); i++) {
+            HashMap<String, String> hs = ConditionDelayList.get(i);
+            testCondition.conditiondelay(hs, requestObject);
+        }
+        logger.info("完成处理场景延时前置条件-============================================================：");
     }
 
     // 发送http请求
@@ -456,9 +475,9 @@ public class TestCore {
                             String mailto = listaccount.get(0).get("email");
                             String Subject = PlanName + "|" + BatchName + " 执行完成！";
                             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
-                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName,"成功");
-                            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName,"失败");
-                            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName,"已停止");
+                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
+                            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
+                            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName, "已停止");
 
 
                             long tc = 0;
@@ -467,20 +486,17 @@ public class TestCore {
                             long tsp = 0;
                             if (liststatics.size() > 0) {
                                 tc = Long.parseLong(liststatics.get(0).get("tc"));
-                                if(liststaticssuccess.size()>0)
-                                {
+                                if (liststaticssuccess.size() > 0) {
                                     tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
                                 }
-                                if(liststaticsfail.size()>0)
-                                {
+                                if (liststaticsfail.size() > 0) {
                                     tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
                                 }
-                                if(liststaticstop.size()>0)
-                                {
+                                if (liststaticstop.size() > 0) {
                                     tsp = Long.parseLong(liststaticstop.get(0).get("tsp"));
                                 }
                             }
-                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tsp;
+                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp;
                             MailUtil.send(account, CollUtil.newArrayList(mailto), Subject, Content, false);
                             logger.info("TestCore 发送邮件成功-============：" + mailto);
                         }
@@ -501,9 +517,9 @@ public class TestCore {
             String PlanName = list.get(0).get("executeplanname");
             String Subject = "测试集合：" + PlanName + " |  执行计划：" + BatchName + " 完成！";
             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
-            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName,"成功");
-            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName,"失败");
-            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName,"已停止");
+            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
+            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
+            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName, "已停止");
 
             long tc = 0;
             long tpc = 0;
@@ -511,21 +527,18 @@ public class TestCore {
             long tsp = 0;
             if (liststatics.size() > 0) {
                 tc = Long.parseLong(liststatics.get(0).get("tc"));
-                if(liststaticssuccess.size()>0)
-                {
+                if (liststaticssuccess.size() > 0) {
                     tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
                 }
-                if(liststaticsfail.size()>0)
-                {
+                if (liststaticsfail.size() > 0) {
                     tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
                 }
-                if(liststaticstop.size()>0)
-                {
+                if (liststaticstop.size() > 0) {
                     tsp = Long.parseLong(liststaticstop.get(0).get("tsp"));
                 }
             }
 //            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tuc;
-             Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tsp + " ，请登陆AutoMeter-报告中心查看详情";
+            Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp + " ，请登陆AutoMeter-报告中心查看详情";
         }
         return Content;
     }
@@ -586,18 +599,16 @@ public class TestCore {
     }
 
     //获取计划批次的数据统计
-    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname,String status) {
-        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticSuccess(planid, Batchname,status);
+    public ArrayList<HashMap<String, String>> GetStaticSuccess(String planid, String Batchname, String status) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticSuccess(planid, Batchname, status);
         return list;
     }
 
     //获取计划批次的数据统计
-    public ArrayList<HashMap<String, String>> GetStaticStop(String planid, String Batchname,String status) {
-        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticStop(planid, Batchname,status);
+    public ArrayList<HashMap<String, String>> GetStaticStop(String planid, String Batchname, String status) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.GetStaticStop(planid, Batchname, status);
         return list;
     }
-
-
 
 
     //获取账号数据
@@ -686,6 +697,12 @@ public class TestCore {
     //根据目标id和类型获取接口条件
     private ArrayList<HashMap<String, String>> GetConditionApiByObjectIDAndType(Long Objectid, String Objecttype) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionApiByObjectIDAndType(Objectid, Objecttype);
+        return result;
+    }
+
+    //根据目标id和类型获取接口条件
+    private ArrayList<HashMap<String, String>> GetConditionDBByObjectIDAndType(Long Objectid, String Objecttype) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionDBByObjectIDAndType(Objectid, Objecttype);
         return result;
     }
 
@@ -788,11 +805,10 @@ public class TestCore {
         return result;
     }
 
-    public ArrayList<HashMap<String, String>> GetBatchByPBS(String planid,String batchname,String Sceneid) {
-        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetBatchByPBS(planid,batchname,Sceneid);
+    public ArrayList<HashMap<String, String>> GetBatchByPBS(String planid, String batchname, String Sceneid) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetBatchByPBS(planid, batchname, Sceneid);
         return result;
     }
-
 
 
     // 更新计划批次场景状态
@@ -811,8 +827,8 @@ public class TestCore {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname,String status) {
-        testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname,status);
+    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname, String status) {
+        testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname, status);
     }
 
     // 更新用例调度结果
