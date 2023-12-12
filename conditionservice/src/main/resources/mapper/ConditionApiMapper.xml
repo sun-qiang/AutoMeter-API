@@ -34,7 +34,7 @@
 
   <select id="GetCaseListByConditionID" resultMap="BaseResultMap">
     SELECT *
-    FROM condition_api where conditionid = #{conditionid} and conditiontype= #{conditiontype}
+    FROM condition_api where conditionid = #{conditionid} and conditiontype= #{conditiontype} order by id asc
   </select>
 
   <update id="updateTestconditionapi" parameterType="com.zoctan.api.entity.Testcondition">

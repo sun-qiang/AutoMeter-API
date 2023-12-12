@@ -1,6 +1,7 @@
 package com.zoctan.api.service;
 
 import com.zoctan.api.core.service.Service;
+import com.zoctan.api.entity.ConditionDb;
 import com.zoctan.api.entity.ConditionScript;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -15,6 +16,8 @@ public interface ConditionScriptService extends Service<ConditionScript> {
     List<ConditionScript> findtestconditionapiWithName(final Map<String, Object> params);
 
     ConditionScript findtestconditionscriptwithid(Long conditionid);
+    List<ConditionScript> GetCaseListByConditionID(Long conditionid, String conditiontype);
+
 
     void updateTestconditionapi(ConditionScript params);
 

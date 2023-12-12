@@ -523,14 +523,6 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="AddcasedbconditionDialog"
             >添加前置数据库</el-button>
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              size="mini"-->
-<!--              icon="el-icon-plus"-->
-<!--              v-if="hasPermission('testscene:scenecasecondition')"-->
-<!--              @click.native.prevent="showAddapiparamsDialog"-->
-<!--            >添加前置脚本</el-button>-->
-
             <el-button
               type="primary"
               size="mini"
@@ -538,6 +530,13 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showAddSceneCasedelayconditionDialog"
             >添加前置延时</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddscriptDialog"
+            >添加前置脚本</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -627,11 +626,11 @@
       >
         <el-table-column label="编号" align="center" width="50">
           <template slot-scope="scope">
-            <span v-text="getIndex(scope.$index)"></span>
+            <span v-text="dbconditioncaseIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
         <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
+        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
         <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
         <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
         <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
@@ -671,8 +670,109 @@
           </template>
         </el-table-column>
       </el-table>
+      4.脚本前置条件
+      <el-table
+        :data="scriptconditionList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="getIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
 
+        <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="150"/>
+        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="150"/>
+        <el-table-column label="脚本" align="center" prop="script" width="150">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>{{ scope.row.script }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">...</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="160">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
 
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('scriptcondition:update')  || hasPermission('scriptcondition:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('scriptcondition:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatescriptconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('scriptcondition:delete') && scope.row.id !== id"
+              @click.native.prevent="removescriptcondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+    <el-dialog :title="scripttextMap[scriptdialogStatus]" :visible.sync="scriptdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 600px; margin-left:50px;"
+        :model="tmpscriptcondition"
+        ref="tmpscriptcondition"
+      >
+        <el-form-item label="脚本条件名" prop="subconditionname" required>
+          <el-input
+            type="text"
+            maxlength="30"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpscriptcondition.subconditionname"
+          />
+        </el-form-item>
+
+        <el-form-item label="Java代码" prop="script" required >
+          <el-input
+            type="textarea"
+            rows="10" cols="50"
+            maxlength="4000"
+            v-model="tmpscriptcondition.script"
+            placeholder="Java 代码"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="scriptdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="scriptdialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpscriptcondition'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="scriptdialogStatus === 'add'"
+          @click.native.prevent="addscriptcondition"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="scriptdialogStatus === 'update'"
+          @click.native.prevent="updatescriptcondition"
+        >修改</el-button>
+      </div>
     </el-dialog>
 
     <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" :visible.sync="caseconditiondialogFormVisible">
@@ -726,7 +826,7 @@
         <el-form-item label="接口" prop="casename" required >
           <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
-            <div v-for="(testcase, index) in apiconditioncaseList" :key="index">
+            <div v-for="(testcase, index) in conditionapicaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
           </el-select>
@@ -756,7 +856,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="前置数据库" :visible.sync="dbconditiondialogFormVisible">
+    <el-dialog :title="dbtextMap[dbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -818,18 +918,18 @@
         <el-button @click.native.prevent="dbconditiondialogFormVisible = false">取消</el-button>
         <el-button
           type="danger"
-          v-if="dialogStatus === 'add'"
+          v-if="dbdialogStatus === 'add'"
           @click.native.prevent="$refs['tmpdbcondition'].resetFields()"
         >重置</el-button>
         <el-button
           type="success"
-          v-if="dialogStatus === 'add'"
+          v-if="dbdialogStatus === 'add'"
           :loading="btnLoading"
           @click.native.prevent="adddbcondition"
         >添加</el-button>
         <el-button
           type="success"
-          v-if="dialogStatus === 'update'"
+          v-if="dbdialogStatus === 'update'"
           :loading="btnLoading"
           @click.native.prevent="updatedbcondition"
         >修改</el-button>
@@ -973,6 +1073,7 @@
 import {
   search as searchcase
 } from '@/api/assets/apicases'
+import { getscriptconditionList as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
 import { getapiListbydeploy as getapiListbydeploy } from '@/api/deployunit/api'
 import { getdepunitLists as getdepunitLists } from '@/api/deployunit/depunit'
 import { search, addtestscene, updatetestscene, removetestscene, getsceneallList, copyscene } from '@/api/executecenter/testscene'
@@ -981,7 +1082,7 @@ import { unix2CurrentTime } from '@/utils'
 import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
 import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
 import { search as searchapicondition, addapicondition, removeapicondition, updateapicondition } from '@/api/condition/apicondition'
-import { search as searchdbcondition, adddbcondition } from '@/api/condition/dbcondition'
+import { search as searchdbcondition, adddbcondition, updatedbcondition, removedbcondition } from '@/api/condition/dbcondition'
 import { getenviromentallList as getenviromentallList } from '@/api/enviroment/testenviroment'
 import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
 import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
@@ -1025,11 +1126,13 @@ export default {
       addcasedeployunitList: [], // 微服务列表
       deployunitList: [], // 微服务列表
       apiconditioncaseList: [],
+      conditionapicaseList: [],
       dbconditioncaseList: [],
       enviromentnameList: [],
       enviroment_assembleList: [],
       sourcetestsceneList: [],
       delayconditionList: [],
+      scriptconditionList: [],
       listLoading: false, // 数据加载等待动画
       addcaselistLoading: false, // 用例列表页面数据加载等待动画
       total: 0, // 数据总数
@@ -1038,6 +1141,8 @@ export default {
       dialogStatus: 'add',
       DelaydialogStatus: 'add',
       apiconditiondialogStatus: 'add',
+      scriptdialogStatus: 'add',
+      dbdialogStatus: 'add',
       dialogFormVisible: false,
       testscenecasedialogFormVisible: false,
       addtestscenecasedialogFormVisible: false,
@@ -1047,6 +1152,7 @@ export default {
       dbconditiondialogFormVisible: false,
       CopysceneFormVisible: false,
       DelaydialogFormVisible: false,
+      scriptdialogFormVisible: false,
       tmpcopyscene: {
         sourcesceneid: '',
         sourcescenename: '',
@@ -1057,6 +1163,17 @@ export default {
         update: '修改环境',
         add: '添加环境'
       },
+      scripttextMap: {
+        updateRole: '修改环境',
+        update: '修改脚本前置条件',
+        add: '添加脚本前置条件'
+      },
+      dbtextMap: {
+        updateRole: '修改环境',
+        update: '修改数据库前置条件',
+        add: '添加数据库前置条件'
+      },
+
       apiconditiontextMap: {
         update: '修改前置接口',
         add: '添加前置接口'
@@ -1079,6 +1196,15 @@ export default {
         deployunitid: 0,
         modelid: 0,
         deployunitname: ''
+      },
+      tmpscriptcondition: {
+        id: '',
+        subconditionname: '',
+        conditionid: '',
+        conditionname: '',
+        script: '',
+        creator: '',
+        projectid: ''
       },
       tmpapicondition: {
         page: 1,
@@ -1186,6 +1312,13 @@ export default {
       searchallscene: {
         projectid: ''
       },
+      searchscriptcondition: {
+        page: 1,
+        size: 10,
+        conditionid: '',
+        conditiontype: '',
+        projectid: ''
+      },
       searchdbcondition: {
         page: 1,
         size: 10,
@@ -1201,6 +1334,7 @@ export default {
     this.getdepunitLists()
     this.searchapicondition.projectid = window.localStorage.getItem('pid')
     this.searchdbcondition.projectid = window.localStorage.getItem('pid')
+    this.searchscriptcondition.projectid = window.localStorage.getItem('pid')
     this.searchallscene.projectid = window.localStorage.getItem('pid')
     this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
     this.gettestsceneList()
@@ -1221,6 +1355,141 @@ export default {
   methods: {
     unix2CurrentTime,
 
+    removedbcondition(index) {
+      this.$confirm('删除该数据库条件？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.dbconditioncaseList[index].id
+        removedbcondition(id).then(() => {
+          this.$message.success('删除成功')
+          this.getdbconditionList()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+
+    updatedbcondition() {
+      this.$refs.tmpdbcondition.validate(valid => {
+        if (valid) {
+          updatedbcondition(this.tmpdbcondition).then(() => {
+            this.$message.success('更新成功')
+            this.getdbconditionList()
+            this.dbconditiondialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+
+    showUpdatedbconditionDialog(index) {
+      this.dbconditiondialogFormVisible = true
+      this.dbdialogStatus = 'update'
+      this.tmpdbcondition.id = this.dbconditioncaseList[index].id
+      this.tmpdbcondition.conditionid = this.dbconditioncaseList[index].conditionid
+      this.tmpdbcondition.assembleid = this.dbconditioncaseList[index].assembleid
+      this.tmpdbcondition.enviromentid = this.dbconditioncaseList[index].enviromentid
+      this.tmpdbcondition.enviromentname = this.dbconditioncaseList[index].enviromentname
+      this.tmpdbcondition.assemblename = this.dbconditioncaseList[index].assemblename
+      this.tmpdbcondition.conditionname = this.dbconditioncaseList[index].conditionname
+      this.tmpdbcondition.subconditionname = this.dbconditioncaseList[index].subconditionname
+      this.tmpdbcondition.dbtype = this.dbconditioncaseList[index].dbtype
+      this.tmpdbcondition.dbcontent = this.dbconditioncaseList[index].dbcontent
+      this.tmpdbcondition.creator = this.name
+    },
+
+    showAddscriptDialog() {
+      // 显示新增对话框
+      this.scriptdialogFormVisible = true
+      this.scriptdialogStatus = 'add'
+      this.tmpscriptcondition.id = ''
+      this.tmpscriptcondition.subconditionname = ''
+      this.tmpscriptcondition.script = ''
+      this.tmpscriptcondition.creator = this.name
+      this.tmpscriptcondition.projectid = window.localStorage.getItem('pid')
+    },
+    /**
+     * 更新脚本条件
+     */
+    updatescriptcondition() {
+      this.$refs.tmpscriptcondition.validate(valid => {
+        if (valid) {
+          updatescriptcondition(this.tmpscriptcondition).then(() => {
+            this.$message.success('更新成功')
+            this.getscriptconditionList()
+            this.scriptdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+
+    showAddscriptconditionDialog() {
+      // 显示新增对话框
+      this.scriptdialogFormVisible = true
+      this.scriptdialogStatus = 'add'
+      this.tmpscriptcondition.id = ''
+      this.tmpscriptcondition.subconditionname = ''
+      this.tmpscriptcondition.conditionname = ''
+      this.tmpscriptcondition.script = ''
+      this.tmpscriptcondition.creator = this.name
+      this.tmpscriptcondition.projectid = window.localStorage.getItem('pid')
+    },
+    /**
+     * 添加脚本条件
+     */
+    addscriptcondition() {
+      this.$refs.tmpscriptcondition.validate(valid => {
+        if (valid) {
+          addscriptcondition(this.tmpscriptcondition).then(() => {
+            this.$message.success('添加成功')
+            this.getscriptconditionList()
+            this.scriptdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加失败')
+            this.btnLoading = false
+          })
+        }
+      })
+    },
+
+    getscriptconditionList() {
+      getscriptconditionList(this.searchscriptcondition).then(response => {
+        this.scriptconditionList = response.data.list
+      }).catch(res => {
+        this.$message.error('加载测试脚本条件列表失败')
+      })
+    },
+
+    removescriptcondition(index) {
+      this.$confirm('删除该脚本条件？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.scriptconditionList[index].id
+        removescriptcondition(id).then(() => {
+          this.$message.success('删除成功')
+          this.getscriptconditionList()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+
+    showUpdatescriptconditionDialog(index) {
+      this.scriptdialogFormVisible = true
+      this.scriptdialogStatus = 'update'
+      this.tmpscriptcondition.id = this.scriptconditionList[index].id
+      this.tmpscriptcondition.subconditionname = this.scriptconditionList[index].subconditionname
+      this.tmpscriptcondition.conditionname = this.scriptconditionList[index].conditionname
+      this.tmpscriptcondition.script = this.scriptconditionList[index].script
+      this.tmpscriptcondition.creator = this.name
+    },
     /**
      * 显示添加延时条件对话框
      */
@@ -1534,6 +1803,10 @@ export default {
       return (this.searchdbcondition.page - 1) * this.searchdbcondition.size + index + 1
     },
 
+    scriptconditioncaseIndex(index) {
+      return (this.searchscriptcondition.page - 1) * this.searchscriptcondition.size + index + 1
+    },
+
     sceneaddcasegetIndex(index) {
       return (this.addsearchcase.page - 1) * this.addsearchcase.size + index + 1
     },
@@ -1638,9 +1911,15 @@ export default {
       this.tmpdbcondition.conditionname = this.testscenecaseList[index].casename
       this.tmpdbcondition.conditiontype = 'scencecase'
       this.Scenedelaysearch.conditionid = this.testscenecaseList[index].id
+      this.tmpscriptcondition.conditionid = this.testscenecaseList[index].id
+      this.tmpscriptcondition.conditionname = this.testscenecaseList[index].casename
+      this.tmpscriptcondition.conditiontype = 'scencecase'
+      this.searchscriptcondition.conditiontype = 'scencecase'
+      this.searchscriptcondition.conditionid = this.testscenecaseList[index].id
       this.getapiconditionList()
       this.getdelayconditionList()
       this.getdbconditionList()
+      this.getscriptconditionList()
     },
 
     ShowAddcasecaseconditionDialog(index) {
@@ -1659,6 +1938,17 @@ export default {
 
     AddcasedbconditionDialog(index) {
       this.dbconditiondialogFormVisible = true
+      this.dbdialogStatus = 'add'
+      this.tmpdbcondition.id = ''
+      this.tmpdbcondition.enviromentid = ''
+      this.tmpdbcondition.enviromentname = ''
+      this.tmpdbcondition.assembleid = ''
+      this.tmpdbcondition.assemblename = ''
+      this.tmpdbcondition.subconditionname = ''
+      this.tmpdbcondition.dbtype = ''
+      this.tmpdbcondition.dbcontent = ''
+      this.tmpdbcondition.creator = this.name
+      this.tmpdbcondition.projectid = window.localStorage.getItem('pid')
     },
     /**
      * 显示用例对话框
@@ -2019,16 +2309,16 @@ export default {
         }
       }
       findcasesbyname(this.tmpapicondition).then(response => {
-        this.apiconditioncaseList = response.data
+        this.conditionapicaseList = response.data
       }).catch(res => {
         this.$message.error('加载apicase列表失败')
       })
     },
 
     apiconditiontestcaseselectChanged(e) {
-      for (let i = 0; i < this.apiconditioncaseList.length; i++) {
-        if (this.apiconditioncaseList[i].casename === e) {
-          this.tmpapicondition.caseid = this.apiconditioncaseList[i].id
+      for (let i = 0; i < this.conditionapicaseList.length; i++) {
+        if (this.conditionapicaseList[i].casename === e) {
+          this.tmpapicondition.caseid = this.conditionapicaseList[i].id
         }
       }
     },

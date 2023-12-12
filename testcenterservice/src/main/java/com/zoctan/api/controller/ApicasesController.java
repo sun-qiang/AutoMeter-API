@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.gson.JsonObject;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.core.service.*;
@@ -645,9 +646,8 @@ public class ApicasesController {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
         String creator = param.get("creator").toString();
-        if(creator.equalsIgnoreCase("admin"))
-        {
-            param.put("creator",null);
+        if (creator.equalsIgnoreCase("admin")) {
+            param.put("creator", null);
         }
         PageHelper.startPage(page, size);
         final List<Apicases> list = this.apicasesService.findApiCaseWithName(param);
@@ -797,14 +797,21 @@ public class ApicasesController {
         return conditionResult;
     }
 
-    private HashMap<String, String> GetResponeMap(String Respone, HashMap<String, String> ResponeMap) throws Exception {
+    private HashMap<String, String> GetResponeMap(String Respone, HashMap<String, String> ResponeMap, String KeyName) throws Exception {
         if (!Respone.isEmpty()) {
             try {
                 JSONObject jsonObject = JSON.parseObject(Respone);
                 for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
                     String key = objectEntry.getKey();
-                    String value = objectEntry.getValue().toString();
-                    ResponeMap.put(key, value);
+                    if (KeyName.equalsIgnoreCase(key)) {
+                        String value = objectEntry.getValue().toString();
+                        JSONObject jsonObject1 = JSON.parseObject(value);
+                        for (Map.Entry<String, Object> apiobjectEntry : jsonObject1.entrySet()) {
+                            String keyapi = apiobjectEntry.getKey();
+                            String apivalue = apiobjectEntry.getValue().toString();
+                            ResponeMap.put(keyapi, apivalue);
+                        }
+                    }
                 }
             } catch (Exception ex) {
                 throw new Exception("执行前置条件结果异常：" + Respone);
@@ -817,68 +824,76 @@ public class ApicasesController {
      * 运行测试
      */
     @PostMapping("/runtest")
-    public Result runtest(@RequestBody final Map<String, Object> param) {
+    public Result runtest(@RequestBody final Map<String, Object> param) throws Exception {
         String enviromentid = param.get("enviromentid").toString();
         Long Caseid = Long.parseLong(param.get("caseid").toString());
-        Long conditionid = Long.parseLong(param.get("conditionid").toString());
+        //Long conditionid = Long.parseLong(param.get("conditionid").toString());
         Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
         Long projectid = Long.parseLong(param.get("projectid").toString());
         boolean prixflag = Boolean.parseBoolean(param.get("prixflag").toString());
         HashMap<String, String> ParamsValuesMap = new HashMap<>();
         HashMap<String, String> DBParamsValuesMap = new HashMap<>();
+        String Respone = "";
+        HashMap<String, Long> debugmap = new HashMap<>();
+        debugmap.put("apicaseid", Caseid);
+        debugmap.put("enviromentid", Long.parseLong(enviromentid));
 
-        String APIRespone = "";
-        String DBRespone = "";
-
-        Condition parecon = new Condition(Testcondition.class);
-        parecon.createCriteria().andCondition("id = " + conditionid);
-        List<Testcondition> testconditionList = testconditionService.listByCondition(parecon);
-//        if (conditionid != 0) {
-        if (testconditionList.size() > 0) {
-            Testcondition testcondition = testconditionList.get(0);
-            if (testcondition.getObjecttype().equalsIgnoreCase("测试集合")) {
-                //处理测试集合前置父条件
-                ConditionResult conditionResult = new ConditionResult();
-                try {
-//                Condition con = new Condition(Testcondition.class);
-//                con.createCriteria().andCondition("id = " + conditionid);
-//                List<Testcondition> testconditionList = testconditionService.listByCondition(con);
-                    param.put("apivariablesvalues", APIRespone);
-                    conditionResult = FixCondition(testconditionList, param, Caseid, "调试用例");
-                    APIRespone = conditionResult.getAPIRespone();
-                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + APIRespone);
-                    ParamsValuesMap = GetResponeMap(APIRespone, ParamsValuesMap);
-                    DBRespone = conditionResult.getDBRespone();
-                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + DBRespone);
-                    DBParamsValuesMap = GetResponeMap(DBRespone, DBParamsValuesMap);
-                } catch (Exception exception) {
-                    return ResultGenerator.genFailedResult(exception.getMessage());
-                }
-            } else {
-                //用例前置条件
-                long conditioncaseid = testcondition.getObjectid();
-                if (conditioncaseid != Caseid) {
-                    return ResultGenerator.genFailedResult("当前用例选择的前置条件是用例父条件，但是用例父条件绑定的用例不是当前用例，调试取消");
-                } else {
-                    ConditionResult CaseconditionResult = new ConditionResult();
-                    String CaseAPIRespone = "";
-                    String CaseDBRespone = "";
-                    try {
-                        //List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Caseid, "前置条件", "测试用例");
-                        param.put("apivariablesvalues", APIRespone);
-                        CaseconditionResult = FixCondition(testconditionList, param, Caseid, "测试用例");
-                        CaseAPIRespone = CaseconditionResult.getAPIRespone();
-                        ApicasesController.log.info("。。。。。。。。接口前置用例子条件响应数据：" + CaseAPIRespone);
-                        ParamsValuesMap = GetResponeMap(CaseAPIRespone, ParamsValuesMap);
-                        CaseDBRespone = CaseconditionResult.getDBRespone();
-                        ApicasesController.log.info("。。。。。。。。数据库前置用例子条件响应数据：" + CaseDBRespone);
-                        DBParamsValuesMap = GetResponeMap(CaseDBRespone, DBParamsValuesMap);
-                    } catch (Exception exception) {
-                        return ResultGenerator.genFailedResult(exception.getMessage());
-                    }
-                }
-            }
+        String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+        HttpHeader header1 = new HttpHeader();
+        String debugparams = JSON.toJSONString(debugmap);
+        try {
+            Respone = getSubConditionRespone(ConditionServerurl, debugparams, header1);
+        } catch (Exception ex) {
+            return ResultGenerator.genFailedResult("前置条件处理异常：！" + ex.getMessage());
         }
+        ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
+        DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
+
+//        Condition parecon = new Condition(Testcondition.class);
+//        parecon.createCriteria().andCondition("id = " + conditionid);
+//        List<Testcondition> testconditionList = testconditionService.listByCondition(parecon);
+//        if (testconditionList.size() > 0) {
+//            Testcondition testcondition = testconditionList.get(0);
+//            if (testcondition.getObjecttype().equalsIgnoreCase("测试集合")) {
+//                //处理测试集合前置父条件
+//                ConditionResult conditionResult = new ConditionResult();
+//                try {
+//                    param.put("apivariablesvalues", APIRespone);
+//                    conditionResult = FixCondition(testconditionList, param, Caseid, "调试用例");
+//                    APIRespone = conditionResult.getAPIRespone();
+//                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + APIRespone);
+//                    ParamsValuesMap = GetResponeMap(APIRespone, ParamsValuesMap);
+//                    DBRespone = conditionResult.getDBRespone();
+//                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + DBRespone);
+//                    DBParamsValuesMap = GetResponeMap(DBRespone, DBParamsValuesMap);
+//                } catch (Exception exception) {
+//                    return ResultGenerator.genFailedResult(exception.getMessage());
+//                }
+//            } else {
+//                //用例前置条件
+//                long conditioncaseid = testcondition.getObjectid();
+//                if (conditioncaseid != Caseid) {
+//                    return ResultGenerator.genFailedResult("当前用例选择的前置条件是用例父条件，但是用例父条件绑定的用例不是当前用例，调试取消");
+//                } else {
+//                    ConditionResult CaseconditionResult = new ConditionResult();
+//                    String CaseAPIRespone = "";
+//                    String CaseDBRespone = "";
+//                    try {
+//                        //List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Caseid, "前置条件", "测试用例");
+//                        param.put("apivariablesvalues", APIRespone);
+//                        CaseconditionResult = FixCondition(testconditionList, param, Caseid, "测试用例");
+//                        CaseAPIRespone = CaseconditionResult.getAPIRespone();
+//                        ApicasesController.log.info("。。。。。。。。接口前置用例子条件响应数据：" + CaseAPIRespone);
+//                        ParamsValuesMap = GetResponeMap(CaseAPIRespone, ParamsValuesMap);
+//                        CaseDBRespone = CaseconditionResult.getDBRespone();
+//                        ApicasesController.log.info("。。。。。。。。数据库前置用例子条件响应数据：" + CaseDBRespone);
+//                        DBParamsValuesMap = GetResponeMap(CaseDBRespone, DBParamsValuesMap);
+//                    } catch (Exception exception) {
+//                        return ResultGenerator.genFailedResult(exception.getMessage());
+//                    }
+//                }
+//            }
+//        }
 
         Apicases apicases = apicasesService.getBy("id", Caseid);
         if (apicases == null) {
@@ -901,10 +916,9 @@ public class ApicasesController {
         if (macdepunit != null) {
             String testserver = "";
             String resource = "";
-            String ApiUrl=api.getPath();
-            if(!ApiUrl.startsWith("/"))
-            {
-                ApiUrl="/"+ApiUrl;
+            String ApiUrl = api.getPath();
+            if (!ApiUrl.startsWith("/")) {
+                ApiUrl = "/" + ApiUrl;
             }
             if (macdepunit.getVisittype().equals("ip")) {
                 Long MachineID = macdepunit.getMachineid();

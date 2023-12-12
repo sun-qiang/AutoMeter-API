@@ -33,6 +33,11 @@ private ConditionScriptMapper conditionScriptMapper;
     }
 
     @Override
+    public List<ConditionScript> GetCaseListByConditionID(Long conditionid, String conditiontype) {
+        return conditionScriptMapper.GetCaseListByConditionID(conditionid,conditiontype);
+    }
+
+    @Override
     public void updateTestconditionapi(ConditionScript params) {
         conditionScriptMapper.updateTestconditionScript(params);
     }

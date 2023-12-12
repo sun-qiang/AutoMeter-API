@@ -1,6 +1,7 @@
 package com.zoctan.api.mapper;
 
 import com.zoctan.api.core.mapper.MyMapper;
+import com.zoctan.api.entity.ConditionDb;
 import com.zoctan.api.entity.ConditionScript;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.entity.Condition;
@@ -14,6 +15,7 @@ public interface ConditionScriptMapper extends MyMapper<ConditionScript> {
     ConditionScript findtestconditionscriptwithid(@Param("conditionid")Long conditionid);
 
     void updateTestconditionScript(ConditionScript params);
+    List<ConditionScript> GetCaseListByConditionID(@Param("conditionid")Long conditionid, @Param("conditiontype")String conditiontype);
 
     int ifexist(Condition condition);
 }

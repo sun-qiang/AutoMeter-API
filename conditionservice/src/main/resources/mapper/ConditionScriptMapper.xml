@@ -33,4 +33,9 @@
     update condition_script set conditionid = #{conditionid}, script = #{script},creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
+
+  <select id="GetCaseListByConditionID" resultMap="BaseResultMap">
+    SELECT *
+    FROM condition_script where conditionid = #{conditionid} and conditiontype= #{conditiontype}
+  </select>
 </mapper>
