@@ -8,6 +8,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
     <result column="subconditionname" jdbcType="VARCHAR" property="subconditionname" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
     <result column="script" jdbcType="VARCHAR" property="script" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
@@ -17,11 +18,13 @@
   </resultMap>
 
   <select id="findtestconditionscriptWithName" resultMap="BaseResultMap">
-    SELECT b.conditionname,a.*
-    FROM condition_script a inner join testcondition b on a.conditionid=b.id
+    SELECT a.*
+    FROM condition_script a
     <where>
       <if test="conditionname != null and conditionname != ''">a.conditionname like CONCAT('%',#{conditionname},'%')</if>
+      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="conditiontype != null  and conditiontype != ''">and a.conditiontype =#{conditiontype}</if>
     </where>
     order by lastmodify_time  DESC
   </select>

@@ -156,7 +156,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="用例名" align="center" prop="casename" width="100"/>
+      <el-table-column label="用例名" :show-overflow-tooltip="true" align="center" prop="casename" width="100"/>
       <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="120"/>
       <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="100"/>
@@ -173,16 +173,9 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="管理" align="center" width="500"
+      <el-table-column label="管理" align="center" width="150"
                        v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
         <template slot-scope="scope">
-<!--          <el-button-->
-<!--            type="primary"-->
-<!--            size="mini"-->
-<!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
-<!--            @click.native.prevent="showUpdateapicasesparamsDialog(scope.$index)"-->
-<!--          >用例值-->
-<!--          </el-button>-->
           <el-button
             type="warning"
             size="mini"
@@ -197,19 +190,24 @@
             @click.native.prevent="removeapicases(scope.$index)"
           >删除
           </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:params') && scope.row.id !== id"
-            @click.native.prevent="showAssertDialog(scope.$index)"
-          >断言
-          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="用例操作" align="center" width="350"
+                       v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
+        <template slot-scope="scope">
           <el-button
             type="primary"
             size="mini"
             v-if="hasPermission('apicases:params') && scope.row.id !== id"
             @click.native.prevent="showcasedataDialog(scope.$index)"
           >用例值
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:params') && scope.row.id !== id"
+            @click.native.prevent="showAssertDialog(scope.$index)"
+          >断言
           </el-button>
           <el-button
             type="primary"
@@ -223,9 +221,8 @@
             size="mini"
             v-if="hasPermission('apicases:params') && scope.row.id !== id"
             @click.native.prevent="showCaseVariablesDialog(scope.$index)"
-          >变量提取
+          >提取变量
           </el-button>
-
         </template>
       </el-table-column>
     </el-table>
@@ -629,9 +626,9 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="loadassert" :visible.sync="AssertdialogFormVisible">
+    <el-dialog :title="loadassert" width="800px" :visible.sync="AssertdialogFormVisible">
       <div class="filter-container" >
-        <el-form :inline="true" :model="searchassert" ref="searchcase" >
+        <el-form :inline="true"  :model="searchassert" ref="searchcase" >
 
           <el-form-item>
           <el-button
@@ -674,10 +671,10 @@
         <el-table-column label="断言类型"  align="center" prop="asserttype" width="80"/>
         <el-table-column label="断言子类型"  align="center" prop="assertsubtype" width="90"/>
         <el-table-column label="表达式"  align="center" prop="expression" width="100"/>
-        <el-table-column label="条件" align="center" prop="assertcondition" width="60"/>
+        <el-table-column label="条件" align="center" prop="assertcondition" width="90"/>
         <el-table-column label="断言值"  align="center" prop="assertvalues" width="80"/>
         <el-table-column label="断言值类型"  align="center" prop="assertvaluetype" width="100"/>
-        <el-table-column label="管理" align="center">
+        <el-table-column label="管理" align="center"  width="180">
           <template slot-scope="scope">
             <el-button
               type="warning"
@@ -757,6 +754,7 @@
             <el-option label="大于" value=">"></el-option>
             <el-option label="小于" value="<"></el-option>
             <el-option label="包含" value="Contain"></el-option>
+            <el-option label="不包含" value="NoContain"></el-option>
           </el-select>
         </el-form-item>
 
@@ -1335,7 +1333,7 @@
       >
         <el-table-column label="编号" align="center" width="60">
           <template slot-scope="scope">
-            <span v-text="getIndex(scope.$index)"></span>
+            <span v-text="ApicasesVariablesgetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
         <el-table-column label="变量名" align="center" prop="testvariablesname" width="80"/>
@@ -1369,6 +1367,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @size-change="apicasevariableshandleSizeChange"
+        @current-change="apicasevariableshandleCurrentChange"
+        :current-page="searchapicasevariables.page"
+        :page-size="searchapicasevariables.size"
+        :total="apicasevariablestotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
     </el-dialog>
 
     <el-dialog :title="caseaddvariablestextMap[caseaddvariablesdialogStatus]" :visible.sync="caseaddvariablesdialogFormVisible">
@@ -1498,13 +1505,13 @@
 <!--              v-if="hasPermission('testscene:scenecasecondition')"-->
 <!--              @click.native.prevent="showAddSceneCasedelayconditionDialog"-->
 <!--            >添加前置延时</el-button>-->
-<!--            <el-button-->
-<!--              type="primary"-->
-<!--              size="mini"-->
-<!--              icon="el-icon-plus"-->
-<!--              v-if="hasPermission('testscene:scenecasecondition')"-->
-<!--              @click.native.prevent="showAddscriptDialog"-->
-<!--            >添加前置脚本</el-button>-->
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddscriptDialog"
+            >添加前置脚本</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -1560,7 +1567,7 @@
         fit
         highlight-current-row
       >
-        <el-table-column label="编号" align="center" width="50">
+        <el-table-column label="编号" align="center" width="45">
           <template slot-scope="scope">
             <span v-text="dbconditioncaseIndex(scope.$index)"></span>
           </template>
@@ -1569,7 +1576,7 @@
         <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
         <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
         <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
-        <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
+        <el-table-column label="Sql类型" align="center" prop="dbtype" width="65"/>
         <el-table-column label="Sql内容" align="center" prop="dbcontent" width="80">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="top">
@@ -1588,7 +1595,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center"  width="210"
+        <el-table-column label="管理" align="center"  width="240"
                          v-if="hasPermission('dbcondition:update')  || hasPermission('dbcondition:delete')">
           <template slot-scope="scope">
             <el-button
@@ -1603,62 +1610,68 @@
               v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
               @click.native.prevent="removedbcondition(scope.$index)"
             >删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
+              @click.native.prevent="showdbvariablesDialog(scope.$index)"
+            >提取变量</el-button>
           </template>
         </el-table-column>
       </el-table>
-<!--      3 .脚本前置条件-->
-<!--      <el-table-->
-<!--        :data="scriptconditionList"-->
-<!--        element-loading-text="loading"-->
-<!--        border-->
-<!--        fit-->
-<!--        highlight-current-row-->
-<!--      >-->
-<!--        <el-table-column label="编号" align="center" width="60">-->
-<!--          <template slot-scope="scope">-->
-<!--            <span v-text="scriptconditioncaseIndex(scope.$index)"></span>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+      3 .脚本前置条件
+      <el-table
+        :data="scriptconditionList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="45">
+          <template slot-scope="scope">
+            <span v-text="scriptconditioncaseIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
 
-<!--        <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="150"/>-->
-<!--        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="150"/>-->
-<!--        <el-table-column label="脚本" align="center" prop="script" width="150">-->
-<!--          <template slot-scope="scope">-->
-<!--            <el-popover trigger="hover" placement="top">-->
-<!--              <p>{{ scope.row.script }}</p>-->
-<!--              <div slot="reference" class="name-wrapper">-->
-<!--                <el-tag size="medium">...</el-tag>-->
-<!--              </div>-->
-<!--            </el-popover>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="操作人" align="center" prop="creator" width="70"/>-->
-<!--        <el-table-column label="创建时间" align="center" prop="createTime" width="160">-->
-<!--          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>-->
-<!--        </el-table-column>-->
-<!--        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="160">-->
-<!--          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="150"/>
+        <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="150"/>
+        <el-table-column label="脚本" align="center" prop="script" width="150">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>{{ scope.row.script }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium">...</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="160">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
 
-<!--        <el-table-column label="管理" align="center"-->
-<!--                         v-if="hasPermission('scriptcondition:update')  || hasPermission('scriptcondition:delete')">-->
-<!--          <template slot-scope="scope">-->
-<!--            <el-button-->
-<!--              type="warning"-->
-<!--              size="mini"-->
-<!--              v-if="hasPermission('scriptcondition:update') && scope.row.id !== id"-->
-<!--              @click.native.prevent="showUpdatescriptconditionDialog(scope.$index)"-->
-<!--            >修改</el-button>-->
-<!--            <el-button-->
-<!--              type="danger"-->
-<!--              size="mini"-->
-<!--              v-if="hasPermission('scriptcondition:delete') && scope.row.id !== id"-->
-<!--              @click.native.prevent="removescriptcondition(scope.$index)"-->
-<!--            >删除</el-button>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
-<!--      </el-table>-->
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('scriptcondition:update')  || hasPermission('scriptcondition:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('scriptcondition:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatescriptconditionDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('scriptcondition:delete') && scope.row.id !== id"
+              @click.native.prevent="removescriptcondition(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
 
     <el-dialog :title="scripttextMap[scriptdialogStatus]" :visible.sync="scriptdialogFormVisible">
@@ -1870,6 +1883,161 @@
       </div>
     </el-dialog>
 
+    <el-dialog width="1000px" title='数据库变量列表' :visible.sync="dbVariablesDialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('ApicasesVariables:add')"
+              @click.native.prevent="showAdddbvariablesDialog"
+            >提取变量</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="dbvariablesList"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="dbVariablesgetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="数据库变量名" align="center" prop="dbvariablesname" width="180"/>
+        <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="100"/>
+        <el-table-column label="变量值类型" align="center" prop="valuetype" width="85"/>
+        <el-table-column :show-overflow-tooltip="true" label="备注" align="center" prop="memo" width="100"/>
+        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="150">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="150">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('dbvariables:update')  || hasPermission('dbvariables:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('dbvariables:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedbvariablesDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('dbvariables:delete') && scope.row.id !== id"
+              @click.native.prevent="removedbvariables(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
+
+    <el-dialog :title="dbvariablestextMap[dbvariablesdialogStatus]" :visible.sync="adddbvariablesdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 500px; margin-left:50px;"
+        :model="tmpdbvariables"
+        ref="tmpdbvariables"
+      >
+        <el-form-item label="变量名" prop="dbvariablesname" required>
+          <el-input
+            maxlength="50"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpdbvariables.dbvariablesname"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量描述" prop="variablesdes" required>
+          <el-input
+            maxlength="20"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpdbvariables.variablesdes"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量值类型" prop="valuetype" required >
+          <el-select v-model="tmpdbvariables.valuetype" placeholder="变量值类型" style="width:100%">
+            <el-option label="Number" value="Number"></el-option>
+            <el-option label="String" value="String"></el-option>
+            <el-option label="Array" value="Array"></el-option>
+            <el-option label="Bool" value="Bool"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="表列名" prop="fieldname" required>
+          <el-input
+            placeholder="数据库查询结果集表列名"
+            maxLength='50'
+            type="text"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmpdbvariables.fieldname"
+          />
+        </el-form-item>
+
+        <el-form-item label="表行号" prop="roworder" required>
+          <el-input
+            placeholder="数据库查询结果集行号"
+            oninput="value=value.replace(/[^\d]/g,'')"
+            maxLength='10'
+            type="number"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmpdbvariables.roworder"
+          />
+        </el-form-item>
+
+        <el-form-item label="备注" prop="memo">
+          <el-input
+            maxlength="60"
+            type="text"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmpdbvariables.memo"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="adddbvariablesdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="dbvariablesdialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpdbvariables'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="dbvariablesdialogStatus === 'add'"
+          :loading="btnLoading"
+          @click.native.prevent="adddbvariables"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="dbvariablesdialogStatus === 'update'"
+          :loading="btnLoading"
+          @click.native.prevent="updatedbvariables"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
     <el-dialog :title="DelaytextMap[DelaydialogStatus]" :visible.sync="DelaydialogFormVisible">
       <el-form
         status-icon
@@ -1954,9 +2122,10 @@
   import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
   import { search as searchdbcondition, adddbcondition, updatedbcondition, removedbcondition } from '@/api/condition/dbcondition'
   import { search as searchapicondition, addapicondition, removeapicondition, updateapicondition } from '@/api/condition/apicondition'
-  import { getscriptconditionList as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
+  import { search as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
   import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
   import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
+  import { search as searchdbvariables, adddbvariables, updatedbvariables } from '@/api/testvariables/dbvariables'
 
   export default {
     name: '用例库',
@@ -2036,6 +2205,7 @@
         apiconditionapiList: [],
         dbconditioncaseList: [],
         scriptconditionList: [],
+        dbvariablesList: [],
         listLoading: false, // 数据加载等待动画
         threadloopvisible: false, // 线程，循环显示
         JmeterClassVisible: false, // JmeterClassVisible显示
@@ -2058,6 +2228,8 @@
         caseVariablesDialogFormVisible: false,
         caseaddvariablesdialogFormVisible: false,
         scenecaseConditionFormVisible: false,
+        adddbvariablesdialogFormVisible: false,
+        dbVariablesDialogFormVisible: false,
         caseindex: '',
         total: 0, // 数据总数
         asserttotal: 0, // 数据总数
@@ -2066,6 +2238,7 @@
         headercaseexisttotal: 0, // 已添加条件用例总数
         globalheaderctotal: 0,
         caseexisttotal: 0, // 已添加条件用例总数
+        apicasevariablestotal: 0,
         apiSearchQuery: {
           deployunitname: '', // 微服务名
           apiname: '' // api名
@@ -2081,6 +2254,7 @@
         apiconditiondialogStatus: 'add',
         scriptdialogStatus: 'add',
         dbdialogStatus: 'add',
+        dbvariablesdialogStatus: 'add',
         paramtitle: '用例参数值',
         AssertTitle: '新增修改断言',
         CopyApiCase: '复制用例',
@@ -2121,6 +2295,11 @@
           updateRole: '修改API用例',
           update: '修改API用例',
           add: '添加API用例'
+        },
+        dbvariablestextMap: {
+          updateRole: '修改API用例',
+          update: '修改数据库变量',
+          add: '添加数据库变量'
         },
         AsserttextMap: {
           updateRole: '修改用例断言',
@@ -2382,6 +2561,19 @@
           creator: '',
           projectid: ''
         },
+        tmpdbvariables: {
+          id: '',
+          dbvariablesname: '',
+          variablesdes: '',
+          valuetype: '',
+          fieldname: '',
+          roworder: '',
+          conditionid: '',
+          conditionname: '',
+          memo: '',
+          creator: '',
+          projectid: ''
+        },
         searchapicondition: {
           page: 1,
           size: 10,
@@ -2407,6 +2599,18 @@
           conditionid: '',
           conditiontype: '',
           projectid: ''
+        },
+        searchdbvariables: {
+          page: 1,
+          size: 10,
+          conditionid: '',
+          projectid: ''
+        },
+        searchapicasevariables: {
+          page: 1,
+          size: 10,
+          caseid: '',
+          projectid: ''
         }
       }
     },
@@ -2418,6 +2622,7 @@
       this.searchapicondition.projectid = window.localStorage.getItem('pid')
       this.searchdbcondition.projectid = window.localStorage.getItem('pid')
       this.searchscriptcondition.projectid = window.localStorage.getItem('pid')
+      this.searchapicasevariables.projectid = window.localStorage.getItem('pid')
       this.getenviromentallList()
       this.getapicasesList()
       this.getdepunitLists()
@@ -2438,6 +2643,82 @@
 
     methods: {
       unix2CurrentTime,
+
+      showUpdatedbvariablesDialog(index) {
+        this.adddbvariablesdialogFormVisible = true
+        this.dbvariablesdialogStatus = 'update'
+        this.tmpdbvariables.id = this.dbvariablesList[index].id
+        this.tmpdbvariables.dbvariablesname = this.dbvariablesList[index].dbvariablesname
+        this.tmpdbvariables.variablesdes = this.dbvariablesList[index].variablesdes
+        this.tmpdbvariables.valuetype = this.dbvariablesList[index].valuetype
+        this.tmpdbvariables.roworder = this.dbvariablesList[index].roworder
+        this.tmpdbvariables.fieldname = this.dbvariablesList[index].fieldname
+        this.tmpdbvariables.memo = this.dbvariablesList[index].memo
+        this.tmpdbvariables.creator = this.name
+      },
+      /**
+       * 更新变量
+       */
+      updatedbvariables() {
+        this.$refs.tmpdbvariables.validate(valid => {
+          if (valid) {
+            updatedbvariables(this.tmpdbvariables).then(() => {
+              this.$message.success('更新成功')
+              this.getdbvariablesList()
+              this.adddbvariablesdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
+      getdbvariablesList() {
+        searchdbvariables(this.searchdbvariables).then(response => {
+          this.dbvariablesList = response.data.list
+          this.dbvariablestotal = response.data.total
+        }).catch(res => {
+          this.$message.error('加载变量列表失败')
+        })
+      },
+
+      showdbvariablesDialog(index) {
+        // 显示新增对话框
+        this.dbVariablesDialogFormVisible = true
+        this.tmpdbvariables.conditionid = this.dbconditioncaseList[index].id
+        this.searchdbvariables.conditionid = this.dbconditioncaseList[index].id
+        this.tmpdbvariables.conditionname = this.dbconditioncaseList[index].subconditionname
+        this.getdbvariablesList()
+      },
+
+      showAdddbvariablesDialog() {
+        // 显示新增对话框
+        this.adddbvariablesdialogFormVisible = true
+        this.dbvariablesdialogStatus = 'add'
+        this.tmpdbvariables.id = ''
+        this.tmpdbvariables.dbvariablesname = ''
+        this.tmpdbvariables.variablesdes = ''
+        this.tmpdbvariables.roworder = ''
+        this.tmpdbvariables.fieldname = ''
+        this.tmpdbvariables.memo = ''
+        this.tmpdbvariables.valuetype = ''
+        this.tmpdbvariables.creator = this.name
+        this.tmpdbvariables.projectid = window.localStorage.getItem('pid')
+      },
+
+      adddbvariables() {
+        this.$refs.tmpdbvariables.validate(valid => {
+          if (valid) {
+            adddbvariables(this.tmpdbvariables).then(() => {
+              this.$message.success('添加成功')
+              this.getdbvariablesList()
+              this.adddbvariablesdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
 
       showUpdatescriptconditionDialog(index) {
         this.scriptdialogFormVisible = true
@@ -2943,8 +3224,9 @@
       },
 
       findtestvariablesbycaseid() {
-        findtestvariablesbycaseid(this.tmptestvariables).then(response => {
-          this.ApicasesVariablesList = response.data
+        findtestvariablesbycaseid(this.searchapicasevariables).then(response => {
+          this.ApicasesVariablesList = response.data.list
+          this.apicasevariablestotal = response.data.total
         }).catch(res => {
           this.$message.error('获取用例变量列表失败')
         })
@@ -3025,6 +3307,7 @@
             this.tmpapicasesbodydata = response.data.list[0]
             console.log(this.tmpapicasesbodydata)
           } else {
+            this.tmpapicasesbodydata.id = ''
             this.tmpapicasesbodydata.apiparamvalue = ''
           }
         }).catch(res => {
@@ -3384,6 +3667,12 @@
         this.search.size = size
         this.getapicasesList()
       },
+
+      apicasevariableshandleSizeChange(size) {
+        this.searchapicasevariables.page = 1
+        this.searchapicasevariables.size = size
+        this.findtestvariablesbycaseid()
+      },
       /**
        * 改变页码
        * @param page 页号
@@ -3392,6 +3681,12 @@
         this.search.page = page
         this.getapicasesList()
       },
+
+      apicasevariableshandleCurrentChange(page) {
+        this.searchapicasevariables.page = page
+        this.findtestvariablesbycaseid()
+      },
+
       /**
        * 表格序号
        * 可参考自定义表格序号
@@ -3400,6 +3695,14 @@
        * @returns 表格序号
        */
       getIndex(index) {
+        return (this.search.page - 1) * this.search.size + index + 1
+      },
+
+      ApicasesVariablesgetIndex(index) {
+        return (this.search.page - 1) * this.search.size + index + 1
+      },
+
+      dbVariablesgetIndex(index) {
         return (this.search.page - 1) * this.search.size + index + 1
       },
 
@@ -3707,8 +4010,8 @@
       },
 
       updateapicasesdata() {
-        this.tmpapicasesbodydata.caseid = this.tmpapicases.id
-        this.tmpapicasesbodydata.casename = this.tmpapicases.casename
+        // this.tmpapicasesbodydata.caseid = this.tmpapicases.id
+        // this.tmpapicasesbodydata.casename = this.tmpapicases.casename
         this.tmpapicasesbodydata.apiparam = 'Body'
         this.tmpapicasesbodydata.paramstype = this.tmpapi.requestcontenttype
         this.tmpapicasesbodydata.propertytype = 'Body'
@@ -3792,6 +4095,8 @@
         this.tmpapicases.casename = this.apicasesList[index].casename
         this.tmpapicases.id = this.apicasesList[index].id
         this.tmpapicases.apiid = this.apicasesList[index].apiid
+        this.tmpapicasesbodydata.caseid = this.apicasesList[index].id
+        this.tmpapicasesbodydata.casename = this.apicasesList[index].casename
         this.getheaderdatabycaseidandtype()
         this.getparamdatabycaseidandtype()
         await this.getapi()
@@ -3921,6 +4226,7 @@
        */
       showCaseVariablesDialog(index) {
         this.caseVariablesDialogFormVisible = true
+        this.searchapicasevariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.casename = this.apicasesList[index].casename
         this.findtestvariablesbycaseid()

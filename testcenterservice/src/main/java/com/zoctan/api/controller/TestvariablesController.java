@@ -113,7 +113,13 @@ public class TestvariablesController {
 
     @PostMapping("/findtestvariablesbycaseid")
     public Result findtestvariablesbycaseid(@RequestBody final Map<String, Object> param) {
-        final List<Testvariables> list = this.testvariablesService.findtestvariablesbycaseid(param);
-        return ResultGenerator.genOkResult(list);
+        Integer page= Integer.parseInt(param.get("page").toString());
+        Integer size= Integer.parseInt(param.get("size").toString());
+        PageHelper.startPage(page, size);
+        final List<Testvariables> list = this.testvariablesService.findtestvariablesWithName(param);
+        final PageInfo<Testvariables> pageInfo = new PageInfo<>(list);
+        return ResultGenerator.genOkResult(pageInfo);
+//        final List<Testvariables> list = this.testvariablesService.findtestvariablesbycaseid(param);
+//        return ResultGenerator.genOkResult(list);
     }
 }

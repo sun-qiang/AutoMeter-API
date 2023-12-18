@@ -28,6 +28,7 @@
     <where>
       <if test="testvariablesname != null and testvariablesname != ''">a.testvariablesname like CONCAT('%',#{testvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      <if test="caseid != null  and caseid != ''">and a.caseid =#{caseid}</if>
     </where>
     order by lastmodify_time  DESC
   </select>

@@ -1073,7 +1073,7 @@
 import {
   search as searchcase
 } from '@/api/assets/apicases'
-import { getscriptconditionList as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
+import { search as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
 import { getapiListbydeploy as getapiListbydeploy } from '@/api/deployunit/api'
 import { getdepunitLists as getdepunitLists } from '@/api/deployunit/depunit'
 import { search, addtestscene, updatetestscene, removetestscene, getsceneallList, copyscene } from '@/api/executecenter/testscene'

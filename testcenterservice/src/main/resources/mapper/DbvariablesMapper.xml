@@ -14,12 +14,17 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
+    <result column="fieldname" jdbcType="VARCHAR" property="fieldname" />
+    <result column="roworder" jdbcType="BIGINT" property="roworder" />
   </resultMap>
 
   <select id="finddbvariablesWithName" resultMap="BaseResultMap">
     SELECT a.*
     FROM dbvariables a
     <where>
+      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
       <if test="dbvariablesname != null and dbvariablesname != ''">a.dbvariablesname like CONCAT('%',#{dbvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
     </where>

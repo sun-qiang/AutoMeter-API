@@ -57,12 +57,13 @@ public class ApiCasedataController {
         }
         else
         {
-            if(!apiCasedata.getApiparamvalue().isEmpty())
-            {
-                this.apiCasedataService.update(apiCasedata);
-            }
-        }
+            this.apiCasedataService.update(apiCasedata);
 
+//            if(!apiCasedata.getApiparamvalue().isEmpty())
+//            {
+//                this.apiCasedataService.update(apiCasedata);
+//            }
+        }
         return ResultGenerator.genOkResult();
     }
 

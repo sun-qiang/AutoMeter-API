@@ -202,6 +202,10 @@ public class TestAssert {
         if (apicasesAssert.getAssertcondition().equals("Contain")) {
             AssertInfo = AssertContains(ExpectValue, ActualResult);
         }
+        if (apicasesAssert.getAssertcondition().equals("NoContain")) {
+            AssertInfo = AssertNoContains(ExpectValue, ActualResult);
+        }
+
         return AssertInfo;
     }
 
@@ -409,6 +413,21 @@ public class TestAssert {
     public String AssertContains(String expect, String actual) {
         try {
             if (actual.contains(expect)) {
+                caseresult = true;
+            } else {
+                caseresult = false;
+            }
+            assertinfo = assertinfo + collectioninfo(String.valueOf(expect), String.valueOf(actual), caseresult);
+        } catch (Exception ex) {
+            caseresult = false;
+            assertinfo = assertinfo + " 期望值：" + expect + " 实际值：" + actual + ex.getMessage();
+        }
+        return assertinfo;
+    }
+
+    public String AssertNoContains(String expect, String actual) {
+        try {
+            if (!actual.contains(expect)) {
                 caseresult = true;
             } else {
                 caseresult = false;

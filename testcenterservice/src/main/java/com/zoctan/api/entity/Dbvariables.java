@@ -21,6 +21,43 @@ public class Dbvariables {
 
     private Long projectid;
 
+    public Long getConditionid() {
+        return conditionid;
+    }
+
+    public void setConditionid(Long conditionid) {
+        this.conditionid = conditionid;
+    }
+
+    public Long getRoworder() {
+        return roworder;
+    }
+
+    public void setRoworder(Long roworder) {
+        this.roworder = roworder;
+    }
+
+    public String getConditionname() {
+        return conditionname;
+    }
+
+    public void setConditionname(String conditionname) {
+        this.conditionname = conditionname;
+    }
+
+    public String getFieldname() {
+        return fieldname;
+    }
+
+    public void setFieldname(String fieldname) {
+        this.fieldname = fieldname;
+    }
+
+    private Long conditionid;
+    private Long roworder;
+    private String conditionname;
+    private String fieldname;
+
     /**
      * 变量名
      */

@@ -46,6 +46,10 @@
     where a.apiid=#{apiid} and b.propertytype=#{propertytype} and b.paramstype=#{paramstype}
   </select>
 
+  <update id="updateApicasedata" parameterType="com.zoctan.api.entity.ApiCasedata">
+    update api_casedata set apiparamvalue= #{apiparamvalue}   where caseid = #{caseid} and propertytype=#{propertytype};
+  </update>
+
 
   <insert id="deleteparamvaluebycaseidandtype">
     DELETE from api_casedata where caseid = #{caseid} and propertytype=#{propertytype}

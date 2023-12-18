@@ -93,7 +93,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="550"
+      <el-table-column label="管理" align="center" width="150"
                        v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
         <template slot-scope="scope">
           <el-button
@@ -108,6 +108,11 @@
             v-if="hasPermission('executeplan:delete') && scope.row.id !== id"
             @click.native.prevent="removeexecuteplan(scope.$index)"
           >删除</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="集合操作" align="center" width="400"
+                       v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
+        <template slot-scope="scope">
           <el-button
             type="primary"
             size="mini"
