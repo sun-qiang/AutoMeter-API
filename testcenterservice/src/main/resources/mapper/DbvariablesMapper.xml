@@ -33,7 +33,7 @@
 
   <update id="updatedbvariables" parameterType="com.zoctan.api.entity.Dbvariables">
     update dbvariables set dbvariablesname = #{dbvariablesname},variablesdes=#{variablesdes},valuetype=#{valuetype},
-    creator = #{creator},memo = #{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+                           fieldname = #{fieldname}, roworder = #{roworder}, creator = #{creator},memo = #{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 </mapper>

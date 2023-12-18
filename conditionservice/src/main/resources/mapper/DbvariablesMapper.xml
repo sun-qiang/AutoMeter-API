@@ -13,7 +13,17 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
+    <result column="fieldname" jdbcType="VARCHAR" property="fieldname" />
+    <result column="roworder" jdbcType="BIGINT" property="roworder" />
   </resultMap>
+
+  <select id="getbyconditionid" resultMap="BaseResultMap">
+    SELECT *
+    FROM dbvariables where conditionid=#{conditionid}
+  </select>
 
   <select id="finddbvariablesWithName" resultMap="BaseResultMap">
     SELECT a.*

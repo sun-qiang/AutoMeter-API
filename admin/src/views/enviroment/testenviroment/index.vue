@@ -46,9 +46,9 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="测试环境名" align="center" prop="enviromentname" width="150"/>
+      <el-table-column label="测试环境名"  :show-overflow-tooltip="true" align="center" prop="enviromentname" width="200"/>
       <el-table-column label="环境类型" align="center" prop="envtype" width="80"/>
-      <el-table-column label="描述" align="center" prop="memo" width="150"/>
+      <el-table-column label="描述" align="center"  :show-overflow-tooltip="true" prop="memo" width="130"/>
       <el-table-column label="操作人" align="center" prop="creator" width="80"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="140">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>

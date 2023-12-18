@@ -1893,7 +1893,7 @@
               icon="el-icon-plus"
               v-if="hasPermission('ApicasesVariables:add')"
               @click.native.prevent="showAdddbvariablesDialog"
-            >提取变量</el-button>
+            >添加数据库变量</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -1910,20 +1910,21 @@
             <span v-text="dbVariablesgetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="数据库变量名" align="center" prop="dbvariablesname" width="180"/>
+        <el-table-column label="数据库变量名" align="center" :show-overflow-tooltip="true" prop="dbvariablesname" width="100"/>
         <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="100"/>
         <el-table-column label="变量值类型" align="center" prop="valuetype" width="85"/>
-        <el-table-column :show-overflow-tooltip="true" label="备注" align="center" prop="memo" width="100"/>
-        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
-        <el-table-column label="创建时间" align="center" prop="createTime" width="150">
+        <el-table-column label="列名" :show-overflow-tooltip="true" align="center" prop="fieldname" width="100"/>
+        <el-table-column label="行号" align="center" prop="roworder" width="45"/>
+        <el-table-column label="操作人" align="center" prop="creator" width="60"/>
+        <el-table-column label="创建时间"  :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="150">
+        <el-table-column label="最后修改时间"  :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center"
+        <el-table-column label="管理" align="center"  width="170"
                          v-if="hasPermission('dbvariables:update')  || hasPermission('dbvariables:delete')">
           <template slot-scope="scope">
             <el-button
@@ -2125,7 +2126,7 @@
   import { search as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
   import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
   import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
-  import { search as searchdbvariables, adddbvariables, updatedbvariables } from '@/api/testvariables/dbvariables'
+  import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
 
   export default {
     name: '用例库',
@@ -2643,6 +2644,22 @@
 
     methods: {
       unix2CurrentTime,
+
+      removedbvariables(index) {
+        this.$confirm('删除该变量？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.dbvariablesList[index].id
+          removedbvariables(id).then(() => {
+            this.$message.success('删除成功')
+            this.getdbvariablesList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
 
       showUpdatedbvariablesDialog(index) {
         this.adddbvariablesdialogFormVisible = true

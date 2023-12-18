@@ -2,6 +2,7 @@ package com.zoctan.api.mapper;
 
 import com.zoctan.api.core.mapper.MyMapper;
 import com.zoctan.api.entity.Dbvariables;
+import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.entity.Condition;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface DbvariablesMapper extends MyMapper<Dbvariables> {
      * @return 用户列表
      */
     void updatedbvariables(Dbvariables params);
+    List<Dbvariables> getbyconditionid(@Param("conditionid") long conditionid);
 
 
     int ifexist(Condition condition);

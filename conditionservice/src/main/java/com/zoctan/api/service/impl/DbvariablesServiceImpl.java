@@ -33,6 +33,11 @@ private DbvariablesMapper dbvariablesMapper;
     }
 
     @Override
+    public List<Dbvariables> getbyconditionid(long conditionid) {
+        return dbvariablesMapper.getbyconditionid(conditionid);
+    }
+
+    @Override
     public int ifexist(Condition con) {
         return countByCondition(con);
     }

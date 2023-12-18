@@ -1,10 +1,7 @@
 package com.zoctan.api.entity;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.Date;
+import javax.persistence.*;
 
 public class Dbvariables {
     /**
@@ -13,6 +10,53 @@ public class Dbvariables {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
+    public Long getConditionid() {
+        return conditionid;
+    }
+
+    public void setConditionid(Long conditionid) {
+        this.conditionid = conditionid;
+    }
+
+    public Long getRoworder() {
+        return roworder;
+    }
+
+    public void setRoworder(Long roworder) {
+        this.roworder = roworder;
+    }
+
+    public String getConditionname() {
+        return conditionname;
+    }
+
+    public void setConditionname(String conditionname) {
+        this.conditionname = conditionname;
+    }
+
+    public String getFieldname() {
+        return fieldname;
+    }
+
+    public void setFieldname(String fieldname) {
+        this.fieldname = fieldname;
+    }
+
+    private Long conditionid;
+    private Long roworder;
+    private String conditionname;
+    private String fieldname;
 
     /**
      * 变量名

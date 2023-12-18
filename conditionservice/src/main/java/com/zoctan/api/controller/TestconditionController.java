@@ -1117,7 +1117,7 @@ public class TestconditionController {
     private String GetDBResultValueByEntity(List<Entity> DbResult, String columnname, long rownum) {
         String Result = "未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配";
         for (int i = 0; i < DbResult.size(); i++) {
-            if (i == rownum) {
+            if (i == rownum-1) {
                 Entity row = DbResult.get(i);
                 Result = row.getStr(columnname);
             }
@@ -1155,13 +1155,13 @@ public class TestconditionController {
                 //查询语句结果解析到数据库变量中
                 // 1.查询数据库条件是否有变量关联
                 long Conidtiondbid = conditionDb.getId();
-                List<DbconditionVariables> dbconditionVariablesList = dbconditionVariablesService.getbyconditionid(Conidtiondbid);
+                List<Dbvariables> dbconditionVariablesList = dbvariablesService.getbyconditionid(Conidtiondbid);
                 if (dbconditionVariablesList.size() > 0) {
                     //2.获取查询结果
                     List<HashMap<String, String>> result = PgsqlConnectionUtils.query(Sql);
-                    for (DbconditionVariables dbconditionVariables : dbconditionVariablesList) {
-                        long variablesid = dbconditionVariables.getVariablesid();
-                        String Variablesname = dbconditionVariables.getVariablesname();
+                    for (Dbvariables dbconditionVariables : dbconditionVariablesList) {
+//                        long variablesid = dbconditionVariables.getVariablesid();
+                        String Variablesname = dbconditionVariables.getDbvariablesname();
                         String columnname = dbconditionVariables.getFieldname();
                         long roworder = dbconditionVariables.getRoworder();
                         String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
@@ -1252,13 +1252,13 @@ public class TestconditionController {
         if (SqlType.equalsIgnoreCase("Select")) {
             // 1.查询数据库条件是否有变量关联
             long Conidtiondbid = conditionDb.getId();
-            List<DbconditionVariables> dbconditionVariablesList = dbconditionVariablesService.getbyconditionid(Conidtiondbid);
+            List<Dbvariables> dbconditionVariablesList = dbvariablesService.getbyconditionid(Conidtiondbid);
             if (dbconditionVariablesList.size() > 0) {
                 //2.获取查询结果
                 List<Entity> result = Db.use(ds).query(Sql);
-                for (DbconditionVariables dbconditionVariables : dbconditionVariablesList) {
-                    long variablesid = dbconditionVariables.getVariablesid();
-                    String Variablesname = dbconditionVariables.getVariablesname();
+                for (Dbvariables dbconditionVariables : dbconditionVariablesList) {
+                    long variablesid = dbconditionVariables.getId();
+                    String Variablesname = dbconditionVariables.getDbvariablesname();
                     String columnname = dbconditionVariables.getFieldname();
                     long roworder = dbconditionVariables.getRoworder();
                     if (roworder > 0) {
@@ -1290,13 +1290,15 @@ public class TestconditionController {
         if (SqlType.equalsIgnoreCase("Select")) {
             // 1.查询数据库条件是否有变量关联
             long Conidtiondbid = conditionDb.getId();
-            List<DbconditionVariables> dbconditionVariablesList = dbconditionVariablesService.getbyconditionid(Conidtiondbid);
+            List<Dbvariables> dbconditionVariablesList = dbvariablesService.getbyconditionid(Conidtiondbid);
+
+//            List<DbconditionVariables> dbconditionVariablesList = dbconditionVariablesService.getbyconditionid(Conidtiondbid);
             if (dbconditionVariablesList.size() > 0) {
                 //2.获取查询结果
                 List<Entity> result = Db.use(ds).query(Sql);
-                for (DbconditionVariables dbconditionVariables : dbconditionVariablesList) {
-                    long variablesid = dbconditionVariables.getVariablesid();
-                    String Variablesname = dbconditionVariables.getVariablesname();
+                for (Dbvariables dbconditionVariables : dbconditionVariablesList) {
+//                    long variablesid = dbconditionVariables.getVariablesid();
+                    String Variablesname = dbconditionVariables.getDbvariablesname();
                     String columnname = dbconditionVariables.getFieldname();
                     long roworder = dbconditionVariables.getRoworder();
                     String VariablesValue = GetDBResultValueByEntity(result, columnname, roworder);

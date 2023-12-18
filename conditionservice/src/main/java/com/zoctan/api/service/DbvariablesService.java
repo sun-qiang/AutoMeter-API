@@ -1,6 +1,7 @@
 package com.zoctan.api.service;
 
 import com.zoctan.api.core.service.Service;
+import com.zoctan.api.entity.DbconditionVariables;
 import com.zoctan.api.entity.Dbvariables;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -22,6 +23,7 @@ public interface DbvariablesService extends Service<Dbvariables> {
      */
     void updatedbvariables(Dbvariables params);
 
+    List<Dbvariables> getbyconditionid(long conditionid);
 
     int ifexist(Condition condition);
 
