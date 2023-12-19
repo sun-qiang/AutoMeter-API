@@ -1479,7 +1479,6 @@
       </div>
     </el-dialog>
 
-
     <el-dialog title="用例调试前置条件" width="1100px" :visible.sync="scenecaseConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
@@ -1942,6 +1941,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @size-change="dbvariableshandleSizeChange"
+        @current-change="dbvariableshandleCurrentChange"
+        :current-page="searchdbvariables.page"
+        :page-size="searchdbvariables.size"
+        :total="dbvariablestotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
     </el-dialog>
 
 
@@ -2240,6 +2248,7 @@
         globalheaderctotal: 0,
         caseexisttotal: 0, // 已添加条件用例总数
         apicasevariablestotal: 0,
+        dbvariablestotal: 0,
         apiSearchQuery: {
           deployunitname: '', // 微服务名
           apiname: '' // api名
@@ -3690,6 +3699,12 @@
         this.searchapicasevariables.size = size
         this.findtestvariablesbycaseid()
       },
+
+      dbvariableshandleSizeChange(size) {
+        this.searchdbvariables.page = 1
+        this.searchdbvariables.size = size
+        this.getdbvariablesList()
+      },
       /**
        * 改变页码
        * @param page 页号
@@ -3702,6 +3717,11 @@
       apicasevariableshandleCurrentChange(page) {
         this.searchapicasevariables.page = page
         this.findtestvariablesbycaseid()
+      },
+
+      dbvariableshandleCurrentChange(page) {
+        this.searchdbvariables.page = page
+        this.getdbvariablesList()
       },
 
       /**
