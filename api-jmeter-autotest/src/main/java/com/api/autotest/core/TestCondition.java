@@ -59,49 +59,6 @@ public class TestCondition {
         //查看条件是否已经保存过，有则返回，无则执行
         ArrayList<HashMap<String, String>> ApiConditionReportList = testMysqlHelp.Gettestconditionreport(PlanID, Batchname, ConidtionID, "接口");
         if (ApiConditionReportList.size() == 0)
-//        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetReportByPBST(PlanID, Batchname, Long.parseLong(CondionCaseID), Sceneid);
-//        if (result.size() > 0) {
-//            try {
-//                //条件已经执行过，则将用例结果保存为前置结果
-//                String Reportid = result.get(0).get("id");
-//                ArrayList<HashMap<String, String>> resultex = testMysqlHelp.GetReportEXByReportid(Long.parseLong(Reportid));
-//                //将报告扩展信息还原成TestResponeData
-//                String ReportexInfo = resultex.get(0).get("responeinfo");
-//                logger.info("111111111111111111111111111111111111111111111111111111111111111-============：" + ReportexInfo);
-//                responeData = JSON.parseObject(ReportexInfo, TestResponeData.class);
-//                String ResponeContentType = "application/json;charset=utf-8";
-//                Header[] responeheaderArray = responeData.getHeaderarray();
-////                for (Header head : responeheaderArray) {
-////                    logger.info("44444444444444444444444444444444444444444444444444444444444444444444444444444444444-============：" );
-////                    if (head.getName().equalsIgnoreCase("Content-Type")) {
-////                        ResponeContentType = head.getValue();
-////                        logger.info("555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555-============：" );
-////                    }
-////                }
-//                requestObject.setResponecontenttype(ResponeContentType);
-//                Respone = result.get(0).get("respone");
-//                String status = result.get(0).get("status");
-//                Long runtime = Long.parseLong(result.get(0).get("runtime"));
-//                TestconditionReport testconditionReport = new TestconditionReport();
-//                testconditionReport.setTestplanid(PlanID);
-//                testconditionReport.setPlanname(requestObject.getTestplanname());
-//                testconditionReport.setBatchname(Batchname);
-//                testconditionReport.setConditiontype("前置条件");
-//                testconditionReport.setConditionresult(Respone);
-//                testconditionReport.setConditionstatus(status);
-//                testconditionReport.setRuntime(runtime);
-//                testconditionReport.setSubconditionid(Long.parseLong(conditionApi.get("id")));
-//                testconditionReport.setSubconditionname(conditionApi.get("subconditionname"));
-//                testconditionReport.setSubconditiontype("接口");
-//                testconditionReport.setStatus("已完成");
-//                logger.info("TestCondition条件报告保存子条件已完成状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname() + "|" + requestObject.getCasename());
-//                //增加判断是否已经存在
-//                testMysqlHelp.SubConditionReportSave(testconditionReport);
-//            } catch (Exception ex) {
-//                logger.info("111111111111111111111111111111111111111111111111111111111111111 xxxxxxxxxxxxxxxxxxxxxxx-============：" + ex.getMessage());
-//            }
-//
-//        } else  //条件未执行
         {
             long Start = 0;
             long End = 0;

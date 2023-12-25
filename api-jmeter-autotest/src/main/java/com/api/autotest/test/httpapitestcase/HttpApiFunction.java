@@ -73,38 +73,27 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
                     String status = "";
                     if (result.size() > 0) {
                         status = batchresult.get(0).get("status");
-                        getLogger().info(" requestObject BatchName  is ------------------------------------------------------------------------------。:" + BatchName + " SceneName：" + SceneName +"状态："+status);
+                        getLogger().info(" requestObject BatchName  is ------------------------------------------------------------------------------。:" + BatchName + " SceneName：" + SceneName + "状态：" + status);
                     }
                     // 人工暂停标记，表示停止集合运行，先刷新场景中的dispatch为已停止状态
-                    if (status.equalsIgnoreCase("停止中")||scenestopflag) {
+                    if (status.equalsIgnoreCase("停止中") || scenestopflag) {
                         scenestopflag = true;
                         getLogger().info("场景id：" + Sceneid + " 用例被人工停止  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
                         Core.updatebatchdispatchcasestatus(planid, SlaverId, Sceneid.toString(), BatchName, "已停止");
                     } else {
                         for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
-//                        ArrayList<HashMap<String, String>> batchresult = Core.GetBatchByPBS(planid, BatchName, Sceneid.toString());
-//                        String status = "";
-//                        if (result.size() > 0) {
-//                            status = batchresult.get(0).get("status");
-//                        }
-//                        if (status.equalsIgnoreCase("停止中")||scenecasestopflag) {
-//                            scenestopflag = true;
-//                            getLogger().info("场景id：" + Sceneid + " 用例：" + requestObject.getCasename() + " 被人工停止  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
-//                            Core.updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(),"已停止");
-//                        }
                             getLogger().info(" requestObject casename id is ------------------------------------------------------------------------------。:" + requestObject.getCasename() + " 暂停标志：" + requestObject.getStopflag());
-                            for (int i = 0; i < requestObject.getLoop(); i++) {
-                                try {
-                                    if (scenecasestopflag) {
-                                        Core.updatedispatchcasestatus(planid, requestObject.getCaseid(), SlaverId, Sceneid.toString(), BatchName, "已停止");
-                                    } else {
+                            if (scenecasestopflag) {
+                                Core.updatedispatchcasestatus(planid, requestObject.getCaseid(), SlaverId, Sceneid.toString(), BatchName, "已停止");
+                            } else {
+                                for (int i = 0; i < requestObject.getLoop(); i++) {
+                                    try {
                                         boolean assertflag = Core.FixCase(requestObject, ctx, results);
                                         getLogger().info(" requestObject casename  is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + " 断言结果：" + assertflag);
                                         if (!assertflag) //断言失败开始判断是否停止场景或者集合
                                         {
                                             String CaseStopFlag = requestObject.getStopflag();
                                             getLogger().info(" requestObject casename  is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + " 暂停标志：" + CaseStopFlag);
-
                                             if (CaseStopFlag.equalsIgnoreCase("当前场景")) {
                                                 scenecasestopflag = true;
                                             }
@@ -114,11 +103,12 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
                                             }
                                             if (CaseStopFlag.equalsIgnoreCase("无")) {
                                                 scenecasestopflag = false;
-                                                scenestopflag = false;                                            }
+                                                scenestopflag = false;
+                                            }
                                         }
+                                    } catch (Exception e) {
+                                        getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
                                     }
-                                } catch (Exception e) {
-                                    getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
                                 }
                             }
                         }
