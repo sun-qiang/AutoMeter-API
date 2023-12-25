@@ -2344,6 +2344,7 @@
       },
       confirmEdit(row) {
         row.edit = false
+        console.log(row)
         updateplanscenenorder(row).then(response => {
           row.oldcaseorder = row.ordernum
           this.$message.success('修改顺序成功')

@@ -14,6 +14,16 @@ public class Dispatch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public String getStopflag() {
+        return stopflag;
+    }
+
+    public void setStopflag(String stopflag) {
+        this.stopflag = stopflag;
+    }
+
+    private String stopflag;
+
     /**
      * 执行计划Id
      */

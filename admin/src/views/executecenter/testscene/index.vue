@@ -253,11 +253,11 @@
 
         <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="150"/>
         <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="150"/>
-        <el-table-column label="用例名" align="center" prop="casename" width="150"/>
-        <el-table-column label="微服务" align="center" prop="deployunitname" width="150"/>
-        <el-table-column label="API" align="center" prop="apiname" width="150"/>
+        <el-table-column label="用例名" align="center" prop="casename" width="120"/>
+        <el-table-column label="微服务" align="center" prop="deployunitname" width="120"/>
+        <el-table-column label="API" align="center" prop="apiname" width="120"/>
 
-        <el-table-column width="120" align="center" label="用例顺序">
+        <el-table-column width="100" align="center" label="用例顺序">
           <template slot-scope="{row}">
             <template v-if="row.edit">
               <el-input v-model="row.caseorder" class="edit-input"
@@ -299,7 +299,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center" width="220"
+        <el-table-column label="管理" align="center" width="300"
                          v-if="hasPermission('testscene:deletecase')  || hasPermission('testscene:scenecondition')">
           <template slot-scope="scope">
             <el-button
@@ -314,6 +314,12 @@
               v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
               @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"
             >前置条件</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
+              @click.native.prevent="showtestscenecaseLogicDialog(scope.$index)"
+            >逻辑设置</el-button>
           </template>
         </el-table-column>
 
@@ -1067,6 +1073,44 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="逻辑设置" :visible.sync="LogicdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpscenecaselogic"
+        ref="tmpscenecaselogic"
+      >
+        <el-form-item label="循环次数" prop="loopnums" required>
+          <el-input
+            type="text"
+            maxlength="50"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model.trim="tmpscenecaselogic.loopnums"
+          />
+        </el-form-item>
+        <el-form-item label="断言失败停止项" prop="stopflag" required>
+          <el-select v-model="tmpscenecaselogic.stopflag" placeholder="类型" style="width:100%">
+            <el-option label="无" value="无" />
+            <el-option label="当前场景" value="当前场景" />
+            <el-option label="当前集合" value="当前集合" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="LogicdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          @click.native.prevent="updatescenecaselogic"
+        >保存</el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 <script>
@@ -1077,7 +1121,7 @@ import { search as getscriptconditionList, addscriptcondition, updatescriptcondi
 import { getapiListbydeploy as getapiListbydeploy } from '@/api/deployunit/api'
 import { getdepunitLists as getdepunitLists } from '@/api/deployunit/depunit'
 import { search, addtestscene, updatetestscene, removetestscene, getsceneallList, copyscene } from '@/api/executecenter/testscene'
-import { findcasebyscenenid, addtestscenetestcase, updatescenenCaseorder, removetestscenecase } from '@/api/executecenter/testscenetestcase'
+import { findcasebyscenenid, findscenecasebyid, addtestscenetestcase, updatescenenCaseorder, updatescenecaselogic, removetestscenecase } from '@/api/executecenter/testscenetestcase'
 import { unix2CurrentTime } from '@/utils'
 import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
 import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
@@ -1153,6 +1197,7 @@ export default {
       CopysceneFormVisible: false,
       DelaydialogFormVisible: false,
       scriptdialogFormVisible: false,
+      LogicdialogFormVisible: false,
       tmpcopyscene: {
         sourcesceneid: '',
         sourcescenename: '',
@@ -1196,6 +1241,11 @@ export default {
         deployunitid: 0,
         modelid: 0,
         deployunitname: ''
+      },
+      tmpscenecase: {
+        scenecaseid: '',
+        loop: '',
+        stopitem: ''
       },
       tmpscriptcondition: {
         id: '',
@@ -1260,6 +1310,14 @@ export default {
         creator: '',
         memo: '',
         projectid: ''
+      },
+      tmpscenecaselogic: {
+        id: '',
+        loopnums: '',
+        stopflag: ''
+      },
+      tmpsearchscenecase: {
+        id: ''
       },
       searchcase: {
         page: 1,
@@ -1354,6 +1412,19 @@ export default {
 
   methods: {
     unix2CurrentTime,
+    updatescenecaselogic() {
+      this.$refs.tmpscenecaselogic.validate(valid => {
+        if (valid) {
+          updatescenecaselogic(this.tmpscenecaselogic).then(() => {
+            this.$message.success('更新成功')
+            this.tmpsearchscenecase.id = this.tmpscenecaselogic.id
+            this.LogicdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
 
     removedbcondition(index) {
       this.$confirm('删除该数据库条件？', '警告', {
@@ -1896,6 +1967,18 @@ export default {
     },
     showtestsceneConditionDialog(index) {
       this.sceneConditionFormVisible = true
+    },
+
+    showtestscenecaseLogicDialog(index) {
+      this.LogicdialogFormVisible = true
+      this.tmpscenecaselogic.id = this.testscenecaseList[index].id
+      this.tmpsearchscenecase.id = this.testscenecaseList[index].id
+      findscenecasebyid(this.tmpsearchscenecase).then(response => {
+        this.tmpscenecaselogic.loopnums = response.data.loopnums
+        this.tmpscenecaselogic.stopflag = response.data.stopflag
+      }).catch(res => {
+        this.$message.error('搜索失败')
+      })
     },
 
     showtestscenecaseConditionDialog(index) {

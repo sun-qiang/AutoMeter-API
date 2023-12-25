@@ -877,13 +877,27 @@ public class TestMysqlHelp {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname,String status) {
+    public void updatedispatchcasestatus(String testplanid,String Caseid, String slaverid, String sceneid, String batchname,String status) {
         try {
             Date d = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateNowStr = sdf.format(d);
             String sql = "";
-            sql = "update dispatch set status='"+status+"',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname + "' and testcaseid=" + caseid;
+            sql = "update dispatch set status='"+status+"',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname+ "' and testcaseid=" + Caseid ;
+            logger.info(logplannameandcasename + "获取数据库 更新调度用例状态 result sql is...........: " + sql);
+            logger.info(logplannameandcasename + "获取数据库 更新用例调度结果 is...........: " + MysqlConnectionUtils.update(sql));
+        } catch (Exception ex) {
+            logger.info(logplannameandcasename + "获取数据库 更新用例调度结果异常...........: " + ex.getMessage());
+        }
+    }
+
+    public void updatebatchdispatchcasestatus(String testplanid, String slaverid, String sceneid, String batchname,String status) {
+        try {
+            Date d = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dateNowStr = sdf.format(d);
+            String sql = "";
+            sql = "update dispatch set status='"+status+"',lastmodify_time='" + dateNowStr + "' where slaverid=" + slaverid + " and execplanid=" + testplanid + " and sceneid=" + sceneid + " and batchname='" + batchname+"'";
             logger.info(logplannameandcasename + "获取数据库 更新调度用例状态 result sql is...........: " + sql);
             logger.info(logplannameandcasename + "获取数据库 更新用例调度结果 is...........: " + MysqlConnectionUtils.update(sql));
         } catch (Exception ex) {

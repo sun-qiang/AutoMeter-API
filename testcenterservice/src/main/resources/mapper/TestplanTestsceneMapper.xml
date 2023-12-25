@@ -39,8 +39,18 @@
     where id = #{id};
   </update>
 
+  <update id="updateplanscenename" >
+    update testplan_testscene set scenename = #{scenename},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where testscenenid = #{testscenenid};
+  </update>
 
   <delete id="removeexecuteplantestscene">
     DELETE from testplan_testscene where testplanid = #{testplanid} and testscenenid=#{testscenenid}
   </delete>
+
+  <delete id="removeexecuteplanalltestscene">
+    DELETE from testplan_testscene where testplanid = #{testplanid}
+  </delete>
+
+
 </mapper>

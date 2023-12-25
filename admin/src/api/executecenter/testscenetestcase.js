@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function gettestsceneList(params) {
+export function gettestscenecaList(params) {
   return request({
     url: '/testscene/testcase',
     method: 'get',
@@ -19,6 +19,22 @@ export function addtestscenetestcase(sceneForm) {
 export function updatescenenCaseorder(executeplanForm) {
   return request({
     url: '/testscene/testcase/updatescenenCaseorder',
+    method: 'post',
+    data: executeplanForm
+  })
+}
+
+export function updatescenecaselogic(executeplanForm) {
+  return request({
+    url: '/testscene/testcase/updatescenecaselogic',
+    method: 'post',
+    data: executeplanForm
+  })
+}
+
+export function findscenecasebyid(executeplanForm) {
+  return request({
+    url: '/testscene/testcase/findscenecasebyid',
     method: 'post',
     data: executeplanForm
   })

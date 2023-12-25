@@ -38,16 +38,13 @@ public class EnviromentAssembleController {
 
     @PostMapping
     public Result add(@RequestBody EnviromentAssemble enviromentAssemble) {
-        Condition con=new Condition(EnviromentAssemble.class);
-        con.createCriteria().andCondition("projectid = "+enviromentAssemble.getProjectid())
+        Condition con = new Condition(EnviromentAssemble.class);
+        con.createCriteria().andCondition("projectid = " + enviromentAssemble.getProjectid())
                 .andCondition("assembletype = '" + enviromentAssemble.getAssembletype() + "'")
-                .andCondition("assemblename = '" + enviromentAssemble.getAssemblename().replace("'","''") + "'");
-        if(enviromentAssembleService.ifexist(con)>0)
-        {
+                .andCondition("assemblename = '" + enviromentAssemble.getAssemblename().replace("'", "''") + "'");
+        if (enviromentAssembleService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("已存在相同的环境组件");
-        }
-        else
-        {
+        } else {
             enviromentAssembleService.save(enviromentAssemble);
             return ResultGenerator.genOkResult();
         }
@@ -55,13 +52,10 @@ public class EnviromentAssembleController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        List<Macdepunit>macdepunitList= macdepunitService.findassemblebyassid(id);
-        if(macdepunitList.size()>0)
-        {
+        List<Macdepunit> macdepunitList = macdepunitService.findassemblebyassid(id);
+        if (macdepunitList.size() > 0) {
             return ResultGenerator.genFailedResult("当前组件在环境部署中还在使用，无法删除！");
-        }
-        else
-        {
+        } else {
             enviromentAssembleService.deleteById(id);
             return ResultGenerator.genOkResult();
         }
@@ -72,16 +66,14 @@ public class EnviromentAssembleController {
      */
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final EnviromentAssemble enviromentAssemble) {
-        Condition con=new Condition(EnviromentAssemble.class);
-        con.createCriteria().andCondition("projectid = "+enviromentAssemble.getProjectid())
+        Condition con = new Condition(EnviromentAssemble.class);
+        con.createCriteria().andCondition("projectid = " + enviromentAssemble.getProjectid())
                 .andCondition("assembletype = '" + enviromentAssemble.getAssembletype() + "'")
-                .andCondition("assemblename = '" + enviromentAssemble.getAssemblename().replace("'","''") + "'")
+                .andCondition("assemblename = '" + enviromentAssemble.getAssemblename().replace("'", "''") + "'")
                 .andCondition("id <> " + enviromentAssemble.getId());
-        if(enviromentAssembleService.ifexist(con)>0)
-        {
+        if (enviromentAssembleService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("环境组件已经存在");
-        }
-        else {
+        } else {
 
             this.enviromentAssembleService.updateenviromentassemble(enviromentAssemble);
             return ResultGenerator.genOkResult();
@@ -106,19 +98,20 @@ public class EnviromentAssembleController {
 
     @GetMapping("/getassemblename")
     public Result listall(@RequestParam long projectid) {
-        Condition con=new Condition(EnviromentAssemble.class);
-        con.createCriteria().andCondition("projectid = "+projectid);
+        Condition con = new Condition(EnviromentAssemble.class);
+        con.createCriteria().andCondition("projectid = " + projectid);
         List<EnviromentAssemble> list = enviromentAssembleService.listByCondition(con);
 //        List<EnviromentAssemble> list = enviromentAssembleService.listAll();
         return ResultGenerator.genOkResult(list);
     }
+
     /**
      * 输入框查询
      */
     @PostMapping("/search")
     public Result search(@RequestBody final Map<String, Object> param) {
-        Integer page= Integer.parseInt(param.get("page").toString());
-        Integer size= Integer.parseInt(param.get("size").toString());
+        Integer page = Integer.parseInt(param.get("page").toString());
+        Integer size = Integer.parseInt(param.get("size").toString());
         PageHelper.startPage(page, size);
         final List<EnviromentAssemble> list = this.enviromentAssembleService.findassembleWithName(param);
         final PageInfo<EnviromentAssemble> pageInfo = new PageInfo<>(list);
@@ -126,17 +119,16 @@ public class EnviromentAssembleController {
     }
 
     @PostMapping("/runtest")
-    public Result runtest (@RequestBody final Map<String, Object> param) throws SQLException {
-        Long machineid= Long.parseLong(param.get("machineid").toString());
-        String machinename= param.get("machinename").toString();
-        String visittype= param.get("visittype").toString();
-        String assembletype= param.get("assembletype").toString();
-        String ConStr= param.get("constr").toString();
+    public Result runtest(@RequestBody final Map<String, Object> param) throws SQLException {
+        Long machineid = Long.parseLong(param.get("machineid").toString());
+        String machinename = param.get("machinename").toString();
+        String visittype = param.get("visittype").toString();
+        String assembletype = param.get("assembletype").toString();
+        String ConStr = param.get("constr").toString();
 
         String[] ConnetcArray = ConStr.split(",");
-        if(ConnetcArray.length<4)
-        {
-            return ResultGenerator.genFailedResult("连接字格式错误，请检查："+ConStr);
+        if (ConnetcArray.length < 4) {
+            return ResultGenerator.genFailedResult("连接字格式错误，请检查：" + ConStr);
         }
 
         String username = ConnetcArray[0];
@@ -151,36 +143,27 @@ public class EnviromentAssembleController {
             DBUrl = "jdbc:oracle://";
         }
 
-        String Url="";
-        if(visittype.equalsIgnoreCase("IP"))
-        {
-            Machine machine = machineService.getBy("id",machineid);
-            if(machine==null)
-            {
-                return ResultGenerator.genFailedResult(machinename+" 该服务器不存在，请检查是否已经被删除！");
+        String Url = "";
+        if (visittype.equalsIgnoreCase("IP")) {
+            Machine machine = machineService.getBy("id", machineid);
+            if (machine == null) {
+                return ResultGenerator.genFailedResult(machinename + " 该服务器不存在，请检查是否已经被删除！");
             }
-            Url= machine.getIp();
-            DBUrl =DBUrl+ Url + ":" + port + "/" + dbname ;
+            Url = machine.getIp();
+            DBUrl = DBUrl + Url + ":" + port + "/" + dbname;
+        } else {
+            String domain = param.get("domain").toString();
+            Url = domain;
+            DBUrl = DBUrl + Url + "/" + dbname;
         }
-        else
-        {
-            String domain= param.get("domain").toString();
-            Url=domain;
-            DBUrl =DBUrl+ Url  + "/" + dbname ;
-        }
-        String LastDBUrl=DBUrl+ "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
-        Connection conn=null;
-        try
-        {
-            conn =  DriverManager.getConnection(LastDBUrl,username,pass);//获取连接
-        }
-        catch (Exception ex)
-        {
-            return ResultGenerator.genFailedResult("连接失败,请检查连接字："+DBUrl+" ，异常原因："+ex.getMessage());
-        }
-        finally {
-            if(conn!=null)
-            {
+        String LastDBUrl = DBUrl + "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(LastDBUrl, username, pass);//获取连接
+        } catch (Exception ex) {
+            return ResultGenerator.genFailedResult("连接失败,请检查连接字：" + DBUrl + " ，异常原因：" + ex.getMessage());
+        } finally {
+            if (conn != null) {
                 conn.close();
             }
         }

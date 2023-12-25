@@ -45,9 +45,8 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
         Core = new TestCore(ctx, getLogger(), results);
         // 初始化用例数据
         Map<Long, List<RequestObject>> requestObjectList = Core.InitalTestData(ctx);
-        List<Long>sortlist=new ArrayList<>();
-        for(Long Scenneid:requestObjectList.keySet())
-        {
+        List<Long> sortlist = new ArrayList<>();
+        for (Long Scenneid : requestObjectList.keySet()) {
             sortlist.add(Scenneid);
         }
         Collections.sort(sortlist);
@@ -55,6 +54,7 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
         getLogger().info(" requestObject 初始化数据完成  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
         // 发送用例请求，并返回结果
         boolean scenestopflag = false;
+        boolean scenecasestopflag = false;
         for (Long Sceneid : sortlist) {
             try {
                 ArrayList<HashMap<String, String>> result = Core.GetSceneByid(Sceneid.toString());
@@ -69,39 +69,71 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
                     Core.FixSceneCondition(re);
 
                     getLogger().info(" requestObject Sceneid id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + Sceneid + "用例个数：" + requestObjectList.get(Sceneid).size());
-                    for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
-                        ArrayList<HashMap<String, String>> batchresult = Core.GetBatchByPBS(planid, BatchName, Sceneid.toString());
-                        String status = "";
-                        if (result.size() > 0) {
-                            status = batchresult.get(0).get("status");
-                        }
-                        if (status.equalsIgnoreCase("停止中")) {
-                            scenestopflag = true;
-                            getLogger().info("场景id：" + Sceneid + " 用例：" + requestObject.getCasename() + " 被人工停止  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
-                            Core.updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(),"已停止");
-                        } else {
-                            getLogger().info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + " batch 状态：" + status);
+                    ArrayList<HashMap<String, String>> batchresult = Core.GetBatchByPBS(planid, BatchName, Sceneid.toString());
+                    String status = "";
+                    if (result.size() > 0) {
+                        status = batchresult.get(0).get("status");
+                        getLogger().info(" requestObject BatchName  is ------------------------------------------------------------------------------。:" + BatchName + " SceneName：" + SceneName +"状态："+status);
+                    }
+                    // 人工暂停标记，表示停止集合运行，先刷新场景中的dispatch为已停止状态
+                    if (status.equalsIgnoreCase("停止中")||scenestopflag) {
+                        scenestopflag = true;
+                        getLogger().info("场景id：" + Sceneid + " 用例被人工停止  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
+                        Core.updatebatchdispatchcasestatus(planid, SlaverId, Sceneid.toString(), BatchName, "已停止");
+                    } else {
+                        for (RequestObject requestObject : requestObjectList.get(Sceneid)) {
+//                        ArrayList<HashMap<String, String>> batchresult = Core.GetBatchByPBS(planid, BatchName, Sceneid.toString());
+//                        String status = "";
+//                        if (result.size() > 0) {
+//                            status = batchresult.get(0).get("status");
+//                        }
+//                        if (status.equalsIgnoreCase("停止中")||scenecasestopflag) {
+//                            scenestopflag = true;
+//                            getLogger().info("场景id：" + Sceneid + " 用例：" + requestObject.getCasename() + " 被人工停止  。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。================------------------------------:");
+//                            Core.updatedispatchcasestatus(requestObject.getTestplanid(), requestObject.getCaseid(), requestObject.getSlaverid(), requestObject.getSceneid().toString(), requestObject.getBatchname(),"已停止");
+//                        }
+                            getLogger().info(" requestObject casename id is ------------------------------------------------------------------------------。:" + requestObject.getCasename() + " 暂停标志：" + requestObject.getStopflag());
                             for (int i = 0; i < requestObject.getLoop(); i++) {
                                 try {
-                                    Core.FixCase(requestObject, ctx, results);
+                                    if (scenecasestopflag) {
+                                        Core.updatedispatchcasestatus(planid, requestObject.getCaseid(), SlaverId, Sceneid.toString(), BatchName, "已停止");
+                                    } else {
+                                        boolean assertflag = Core.FixCase(requestObject, ctx, results);
+                                        getLogger().info(" requestObject casename  is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + " 断言结果：" + assertflag);
+                                        if (!assertflag) //断言失败开始判断是否停止场景或者集合
+                                        {
+                                            String CaseStopFlag = requestObject.getStopflag();
+                                            getLogger().info(" requestObject casename  is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + " 暂停标志：" + CaseStopFlag);
+
+                                            if (CaseStopFlag.equalsIgnoreCase("当前场景")) {
+                                                scenecasestopflag = true;
+                                            }
+                                            if (CaseStopFlag.equalsIgnoreCase("当前集合")) {
+                                                scenecasestopflag = true;
+                                                scenestopflag = true;
+                                            }
+                                            if (CaseStopFlag.equalsIgnoreCase("无")) {
+                                                scenecasestopflag = false;
+                                                scenestopflag = false;                                            }
+                                        }
+                                    }
                                 } catch (Exception e) {
                                     getLogger().info(" 用例" + requestObject.getCasename() + "执行异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
                                 }
                             }
                         }
+                        scenecasestopflag = false;
                     }
                 }
             } catch (Exception e) {
                 getLogger().info(" 场景id" + Sceneid + "执行前置条件失败异常 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + e.getMessage());
                 //保存失败结果
             }
-            //更新计划批次场景为运行完成状态
-            if(scenestopflag)
-            {
-                Core.FinisBatchScene(planid, BatchName, Sceneid.toString(),"已停止");
-            } else
-            {
-                Core.FinisBatchScene(planid, BatchName, Sceneid.toString(),"已完成");
+            //更新计划批次场景为运行完成或者已停止状态
+            if (scenestopflag) {
+                Core.FinisBatchScene(planid, BatchName, Sceneid.toString(), "已停止");
+            } else {
+                Core.FinisBatchScene(planid, BatchName, Sceneid.toString(), "已完成");
             }
         }
         //收集本次运行的功能用例统计结果
@@ -126,8 +158,8 @@ public class HttpApiFunction extends AbstractJavaSamplerClient {
     public static void main(String[] args) {
         Arguments params = new Arguments();
         params.addArgument("planid", "11");
-        params.addArgument("batchname", "testscenecondition001");
-        params.addArgument("DispatchIds", "10,11,");
+        params.addArgument("batchname", "77777777777777777777");
+        params.addArgument("DispatchIds", "10,");
         params.addArgument("SlaverId", "2");
         params.addArgument("mysqlurl", "jdbc:mysql://127.0.0.1:3306/testcenter?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
         params.addArgument("mysqlusername", "test");

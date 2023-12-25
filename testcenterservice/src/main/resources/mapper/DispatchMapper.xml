@@ -23,6 +23,7 @@
     <result column="loops" jdbcType="BIGINT" property="loops" />
     <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
     <result column="threadnum" jdbcType="BIGINT" property="threadnum" />
+    <result column="stopflag" jdbcType="VARCHAR" property="stopflag" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />

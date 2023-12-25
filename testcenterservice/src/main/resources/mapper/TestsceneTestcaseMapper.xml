@@ -21,6 +21,9 @@
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="threadnums" jdbcType="BIGINT" property="threadnums" />
+    <result column="loopnums" jdbcType="BIGINT" property="loopnums" />
+    <result column="stopflag" jdbcType="VARCHAR" property="stopflag" />
   </resultMap>
 
   <select id="findCasebyscenenid" resultMap="BaseResultMap">
@@ -35,6 +38,11 @@
     order by a.caseorder
   </select>
 
+
+  <select id="findtestscenencasebyid" resultMap="BaseResultMap">
+    SELECT *
+    FROM testscene_testcase a where a.id=#{id}
+  </select>
 
   <select id="finddeployunitbyscenenid" resultMap="BaseResultMap">
     SELECT distinct (deployunitid),deployunitname
@@ -60,5 +68,12 @@
     update testscene_testcase set caseorder = #{caseorder},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
+
+  <update id="updatescenecaselogic" >
+    update testscene_testcase set loopnums = #{loopnums},stopflag = #{stopflag},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+
 
 </mapper>

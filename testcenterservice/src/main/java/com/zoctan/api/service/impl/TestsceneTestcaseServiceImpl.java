@@ -37,6 +37,11 @@ private TestsceneTestcaseMapper testsceneTestcaseMapper;
     }
 
     @Override
+    public void updatescenecaselogic(long id, long loopnums, String stopflag) {
+        testsceneTestcaseMapper.updatescenecaselogic(id,loopnums,stopflag);
+    }
+
+    @Override
     public List<TestsceneTestcase> finddeployunitbyscenenid(long sceneid) {
         return testsceneTestcaseMapper.finddeployunitbyscenenid(sceneid);
     }

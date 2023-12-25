@@ -12,24 +12,35 @@ public class TestsceneTestcase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    public Long getThreadnum() {
-        return threadnum;
+    public String getStopflag() {
+        return stopflag;
     }
 
-    public void setThreadnum(Long threadnum) {
-        this.threadnum = threadnum;
+    public void setStopflag(String stopflag) {
+        this.stopflag = stopflag;
     }
 
-    public Long getLoops() {
-        return loops;
+    private String stopflag;
+
+
+    public Long getLoopnums() {
+        return loopnums;
     }
 
-    public void setLoops(Long loops) {
-        this.loops = loops;
+    public void setLoopnums(Long loopnums) {
+        this.loopnums = loopnums;
     }
 
-    private Long threadnum;
-    private Long loops;
+    public Long getThreadnums() {
+        return threadnums;
+    }
+
+    public void setThreadnums(Long threadnums) {
+        this.threadnums = threadnums;
+    }
+
+    private Long threadnums;
+    private Long loopnums;
 
     public String getCasejmxname() {
         return casejmxname;

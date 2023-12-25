@@ -140,8 +140,8 @@ public class ExecuteplanController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         executeplanService.deleteById(id);
-        //删除集合用例
-        execplantestcaseService.removeplancase(id);
+        //删除集合场景
+        testplanTestsceneService.removeexecuteplanalltestscene(id);
         //删除集合全局参数
         executeplanParamsService.removeplanparams(id);
         return ResultGenerator.genOkResult();

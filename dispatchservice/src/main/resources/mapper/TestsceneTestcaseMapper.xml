@@ -21,6 +21,9 @@
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="threadnums" jdbcType="BIGINT" property="threadnums" />
+    <result column="loopnums" jdbcType="BIGINT" property="loopnums" />
+    <result column="stopflag" jdbcType="VARCHAR" property="stopflag" />
   </resultMap>
 
   <select id="findCasebyscenenid" resultMap="BaseResultMap">
@@ -56,7 +59,7 @@
   </update>
 
   <select id="findcasebytestscenenid" resultMap="BaseResultMap">
-    select a.testscenenid,a.caseorder, a.scenename, a.testcaseid, c.deployunitname,b.casejmxname,b.casename,b.expect,b.threadnum,b.loops from
+    select a.testscenenid,a.caseorder, a.scenename, a.testcaseid,a.stopflag, c.deployunitname,b.casejmxname,b.casename,b.expect,a.loopnums,a.threadnums from
       testscene_testcase a join apicases b join deployunit c on a.testcaseid = b.id and c.id = a.deployunitid
     where a.testscenenid = #{testscenenid} and b.casetype= #{casetype} order by a.caseorder asc
   </select>

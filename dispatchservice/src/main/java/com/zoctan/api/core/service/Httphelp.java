@@ -50,7 +50,7 @@ public class Httphelp {
      * @return
      * @throws IOException
      */
-    public static String doPost(String url, String paramers, HttpHeader header, int connectTimeout)  {
+    public static String doPost(String url, String paramers, HttpHeader header, int connectTimeout) throws Exception {
         String responseData = "";
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse httpResponse = null;
@@ -78,6 +78,7 @@ public class Httphelp {
             responseData = EntityUtils.toString(resEntity);
         } catch (Exception e) {
             responseData=e.getMessage();
+            throw new Exception(responseData);
         } finally {
             if(httpResponse!=null)
             {

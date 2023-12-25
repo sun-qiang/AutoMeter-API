@@ -16,6 +16,16 @@ import java.util.List;
 public class RequestObject {
 
 
+    public String getStopflag() {
+        return stopflag;
+    }
+
+    public void setStopflag(String stopflag) {
+        this.stopflag = stopflag;
+    }
+
+    private String stopflag;
+
     public Long getSceneid() {
         return sceneid;
     }

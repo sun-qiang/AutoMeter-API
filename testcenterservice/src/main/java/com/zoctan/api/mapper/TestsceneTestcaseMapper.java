@@ -12,5 +12,6 @@ public interface TestsceneTestcaseMapper extends MyMapper<TestsceneTestcase> {
     List<TestsceneTestcase> findCasebyscenenid(final Map<String, Object> params);
     void savetestscenencase(@Param("casedataList")final List<TestsceneTestcase> testcase);
     void updatescenenCaseorder(@Param("id") long id, @Param("caseorder") long caseorder);
+    void updatescenecaselogic(@Param("id") long id, @Param("loopnums") long loopnums, @Param("stopflag") String stopflag);
     List<TestsceneTestcase> finddeployunitbyscenenid(@Param("testscenenid")long sceneid);
 }

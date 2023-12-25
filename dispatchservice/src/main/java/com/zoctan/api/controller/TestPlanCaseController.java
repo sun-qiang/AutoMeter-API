@@ -159,7 +159,7 @@ public class TestPlanCaseController {
                 List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
                 List<Dispatch> dispatchList = new ArrayList<>();
                 for (TestsceneTestcase testcase : testsceneTestcaseList) {
-                    Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, testcase.getThreadnum(), testcase.getLoops());
+                    Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, 1, testcase.getLoopnums());
                     TestPlanCaseController.log.info("getdispatch获取调度slaverid。。。。。。。。。。。。。。。。：" +slaverid);
                     dispatchList.add(dis);
                 }
@@ -311,7 +311,7 @@ public class TestPlanCaseController {
                 Long slaverid = slaverlist.get(i).getId();
                 String slavername = slaverlist.get(i).getSlavername();
                 TestsceneTestcase testcase = caselist.get(j);
-                Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, testcase.getThreadnum(), testcase.getLoops());
+                Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, 1, testcase.getLoopnums());
                 splitdispatchList.add(dis);
             }
             x = j;
@@ -322,15 +322,16 @@ public class TestPlanCaseController {
                 Long slaverid = slaverlist.get(slavernums - 1).getId();
                 String slavername = slaverlist.get(slavernums - 1).getSlavername();
                 TestsceneTestcase testcase = caselist.get(caselist.size() - y);
-                Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, testcase.getThreadnum(), testcase.getLoops());
+                Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, testcase.getThreadnums(), testcase.getLoopnums());
                 LastDispatchList.get(LastDispatchList.size() - 1).add(dis);
             }
         }
         return LastDispatchList;
     }
 
-    public Dispatch getdispatch(Long slaverid, Long caseorder, String slavername, TestsceneTestcase testcase, Executeplan ep, Executeplanbatch epb, Long ThreadNum, Long Loops) {
+    public Dispatch getdispatch(Long slaverid, Long caseorder, String slavername, TestsceneTestcase testcase, Executeplan ep, Executeplanbatch epb, long ThreadNum, Long Loops) {
         Dispatch dis = new Dispatch();
+        dis.setStopflag(testcase.getStopflag());
         dis.setCaseorder(caseorder);
         dis.setSceneid(testcase.getTestscenenid());
         dis.setScenename(testcase.getScenename());
@@ -390,8 +391,8 @@ public class TestPlanCaseController {
         List<List<Dispatch>> LastDispatchList = new ArrayList<List<Dispatch>>();
         List<Dispatch> splitdispatchList = new ArrayList<>();
         for (TestsceneTestcase testcase : caselist) {
-            Long ThreadNUms = testcase.getThreadnum();
-            Long Loops = testcase.getLoops();
+            Long ThreadNUms = testcase.getThreadnums();
+            Long Loops = testcase.getLoopnums();
             Long Threadmode = ThreadNUms / slavernums;
             Long Loopsmode = Loops / slavernums;
             Long Threadleft = ThreadNUms % slavernums;

@@ -51,6 +51,18 @@ public class Dispatch {
     private Long sceneid;
     private String scenename;
 
+    public String getStopflag() {
+        return stopflag;
+    }
+
+    public void setStopflag(String stopflag) {
+        this.stopflag = stopflag;
+    }
+
+    private String stopflag;
+
+
+
 
 
     /**

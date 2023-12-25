@@ -37,7 +37,17 @@ private TestplanTestsceneMapper testplanTestsceneMapper;
     }
 
     @Override
+    public void updateplanscenename(long testscenenid, String scenename) {
+        testplanTestsceneMapper.updateplanscenename(testscenenid, scenename);
+    }
+
+    @Override
     public void removeexecuteplantestscene(long planid, long sceneid) {
         testplanTestsceneMapper.removeexecuteplantestscene(planid,sceneid);
+    }
+
+    @Override
+    public void removeexecuteplanalltestscene(long planid) {
+        testplanTestsceneMapper.removeexecuteplanalltestscene(planid);
     }
 }

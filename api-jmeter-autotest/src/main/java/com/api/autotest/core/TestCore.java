@@ -82,6 +82,7 @@ public class TestCore {
                 //ro=testHttpRequestData.GetFuntionHttpRequestData(ro);
                 ro = GetFuntionHttpRequestData(ro);
                 ro.setLoop(Integer.parseInt(getcaseValue("loops", DispatchDataList)));
+                ro.setStopflag(getcaseValue("stopflag", DispatchDataList));
                 FunctionROList.add(ro);
                 logger.info("CaseId:" + CaseId + "初始化 完成-============================================================：");
             }
@@ -239,14 +240,15 @@ public class TestCore {
         }
     }
 
-    public void FixCase(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results) throws Exception {
+    public boolean FixCase(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results) throws Exception {
         FixCaseCondition(requestObject);
         logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + "条件处理完成");
-        FixCaseData(requestObject, ctx, results, true, null);
+        boolean result= FixCaseData(requestObject, ctx, results, true, null);
         logger.info(" requestObject casename id is 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + requestObject.getCasename() + "数据处理完成");
+        return result;
     }
 
-    public void FixCaseData(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results, boolean flag, TestResponeData responeData1) throws Exception {
+    public boolean FixCaseData(RequestObject requestObject, JavaSamplerContext ctx, SampleResult results, boolean flag, TestResponeData responeData1) throws Exception {
         long Start = new Date().getTime();
         //断言信息汇总
         String AssertInfo = "";
@@ -254,6 +256,7 @@ public class TestCore {
         String ActualResult = "";
         TestResponeData responeData = new TestResponeData();
         TestAssert TestAssert = new TestAssert(logger);
+//        TestAssert.isCaseresult()
         try {
             //增加条件处理逻辑，bug用例前置api还未执行，变量未产生，用例的参数值是错的
             if (flag) {
@@ -279,6 +282,7 @@ public class TestCore {
             long CostTime = End - Start;
             CaseFinish(results, TestAssert, AssertInfo, CostTime, ErrorInfo, ActualResult, ctx, requestObject, responeData);
         }
+        return TestAssert.isCaseresult();
     }
 
 
@@ -837,8 +841,12 @@ public class TestCore {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname, String status) {
-        testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname, status);
+    public void updatedispatchcasestatus(String testplanid,String caseid, String slaverid, String sceneid, String batchname, String status) {
+        testMysqlHelp.updatedispatchcasestatus(testplanid,caseid, slaverid, sceneid, batchname, status);
+    }
+
+    public void updatebatchdispatchcasestatus(String testplanid, String slaverid, String sceneid, String batchname, String status) {
+        testMysqlHelp.updatebatchdispatchcasestatus(testplanid, slaverid, sceneid, batchname, status);
     }
 
     // 更新用例调度结果

@@ -3,12 +3,9 @@ package com.zoctan.api.controller;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.*;
-import com.zoctan.api.service.ConditionApiService;
-import com.zoctan.api.service.ConditionDelayService;
-import com.zoctan.api.service.TestsceneService;
+import com.zoctan.api.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zoctan.api.service.TestsceneTestcaseService;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -29,6 +26,9 @@ public class TestsceneController {
 
     @Resource
     private TestsceneTestcaseService testsceneTestcaseService;
+
+    @Resource
+    private TestplanTestsceneService testplanTestsceneService;
 
     @Resource
     private ConditionApiService conditionApiService;
@@ -53,8 +53,18 @@ public class TestsceneController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        testsceneService.deleteById(id);
-        return ResultGenerator.genOkResult();
+        Condition con = new Condition(TestplanTestscene.class);
+        con.createCriteria().andCondition("testscenenid = " + id);
+        List<TestplanTestscene> testplanTestsceneList= testplanTestsceneService.listByCondition(con);
+        if(testplanTestsceneList.size()>0)
+        {
+            return ResultGenerator.genFailedResult("当前测试场景还有测试集合正在使用，请先删除测试集合中的当前测试场景，再删除");
+
+        } else
+        {
+            testsceneService.deleteById(id);
+            return ResultGenerator.genOkResult();
+        }
     }
 
 
@@ -92,6 +102,7 @@ public class TestsceneController {
             return ResultGenerator.genFailedResult("测试场景名已经存在");
         } else {
             testsceneService.updatescene(testscene);
+            testplanTestsceneService.updateplanscenename(testscene.getId(),testscene.getScenename());
             return ResultGenerator.genOkResult();
         }
     }
@@ -157,6 +168,8 @@ public class TestsceneController {
                     newtestscenecase.setDeployunitname(tts.getDeployunitname());
                     newtestscenecase.setModelid(tts.getModelid());
                     newtestscenecase.setModelname(tts.getModelname());
+                    newtestscenecase.setLoopnums(tts.getLoopnums());
+                    newtestscenecase.setStopflag(tts.getStopflag());
                     testsceneTestcaseService.save(newtestscenecase);
                     Long newtestscenecaseid=newtestscenecase.getId();
 

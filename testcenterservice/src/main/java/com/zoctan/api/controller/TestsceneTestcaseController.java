@@ -79,6 +79,13 @@ public class TestsceneTestcaseController {
         return ResultGenerator.genOkResult(testsceneTestcase);
     }
 
+    @PostMapping("/findscenecasebyid")
+    public Result findscenecasebyid(@RequestBody final Map<String, Object> param) {
+        long id= Long.parseLong(param.get("id").toString());
+        TestsceneTestcase testsceneTestcase = testsceneTestcaseService.getById(id);
+        return ResultGenerator.genOkResult(testsceneTestcase);
+    }
+
     @GetMapping
     public Result list(@RequestParam(defaultValue = "0") Integer page,
                        @RequestParam(defaultValue = "0") Integer size) {
@@ -127,6 +134,15 @@ public class TestsceneTestcaseController {
         long id= Long.parseLong(param.get("id").toString());
         long caseorder= Long.parseLong(param.get("caseorder").toString());
         this.testsceneTestcaseService.updatescenenCaseorder(id,caseorder);
+        return ResultGenerator.genOkResult();
+    }
+
+    @PostMapping("/updatescenecaselogic")
+    public Result updatescenecaselogic(@RequestBody final Map<String, Object> param) {
+        long id= Long.parseLong(param.get("id").toString());
+        long loopnums= Long.parseLong(param.get("loopnums").toString());
+        String stopflag= param.get("stopflag").toString();
+        this.testsceneTestcaseService.updatescenecaselogic(id,loopnums,stopflag);
         return ResultGenerator.genOkResult();
     }
 }

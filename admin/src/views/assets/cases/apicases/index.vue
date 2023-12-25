@@ -200,7 +200,7 @@
             size="mini"
             v-if="hasPermission('apicases:params') && scope.row.id !== id"
             @click.native.prevent="showcasedataDialog(scope.$index)"
-          >用例值
+          >用例数据
           </el-button>
           <el-button
             type="primary"
@@ -1479,7 +1479,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="用例调试前置条件" width="1100px" :visible.sync="scenecaseConditionFormVisible">
+    <el-dialog title="用例调试前置条件" width="1120px" :visible.sync="scenecaseConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
