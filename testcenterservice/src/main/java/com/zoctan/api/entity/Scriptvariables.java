@@ -21,6 +21,26 @@ public class Scriptvariables {
 
     private Long projectid;
 
+
+    public Long getConditionid() {
+        return conditionid;
+    }
+
+    public void setConditionid(Long conditionid) {
+        this.conditionid = conditionid;
+    }
+
+    public String getConditionname() {
+        return conditionname;
+    }
+
+    public void setConditionname(String conditionname) {
+        this.conditionname = conditionname;
+    }
+
+    private Long conditionid;
+    private String conditionname;
+
     /**
      * 变量名
      */

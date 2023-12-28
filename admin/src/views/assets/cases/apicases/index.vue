@@ -1644,11 +1644,10 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
-        <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+        <el-table-column label="创建时间" align="center" :show-overflow-tooltip="true" prop="createTime" width="140">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="160">
+        <el-table-column label="最后修改时间" align="center" :show-overflow-tooltip="true" prop="lastmodifyTime" width="140">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
           </template>
         </el-table-column>
@@ -1668,6 +1667,12 @@
               v-if="hasPermission('scriptcondition:delete') && scope.row.id !== id"
               @click.native.prevent="removescriptcondition(scope.$index)"
             >删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
+              @click.native.prevent="showscriptvariablesDialog(scope.$index)"
+            >提取变量</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -1952,7 +1957,6 @@
       ></el-pagination>
     </el-dialog>
 
-
     <el-dialog :title="dbvariablestextMap[dbvariablesdialogStatus]" :visible.sync="adddbvariablesdialogFormVisible">
       <el-form
         status-icon
@@ -2047,6 +2051,148 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog width="1000px" title='脚本变量列表' :visible.sync="scriptVariablesDialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('ApicasesVariables:add')"
+              @click.native.prevent="showAddscriptvariablesDialog"
+            >添加脚本变量</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="scriptvariablesList"
+        :key="itemKey"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="getIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="脚本变量名" align="center" prop="scriptvariablesname" width="120"/>
+        <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="100"/>
+        <el-table-column label="变量值类型" align="center" prop="valuetype" width="85"/>
+        <el-table-column label="操作人" align="center" prop="creator" width="70"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('scriptvariables:update')  || hasPermission('scriptvariables:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('scriptvariables:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatescriptvariablesDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('scriptvariables:delete') && scope.row.id !== id"
+              @click.native.prevent="removescriptvariables(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="scriptvariableshandleSizeChange"
+        @current-change="scriptvariableshandleCurrentChange"
+        :current-page="searchscriptvariables.page"
+        :page-size="searchscriptvariables.size"
+        :total="scriptvariablestotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+    </el-dialog>
+
+    <el-dialog :title="scriptVariablestextMap[scriptVariablesdialogStatus]" :visible.sync="addscriptVariablesdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 500px; margin-left:50px;"
+        :model="tmpscriptvariables"
+        ref="tmpscriptvariables"
+      >
+        <el-form-item label="变量名" prop="scriptvariablesname" required>
+          <el-input
+            maxlength="50"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpscriptvariables.scriptvariablesname"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量描述" prop="variablesdes" required>
+          <el-input
+            maxlength="20"
+            type="text"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpscriptvariables.variablesdes"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量值类型" prop="valuetype" required >
+          <el-select v-model="tmpscriptvariables.valuetype" placeholder="变量值类型" style="width:100%">
+            <el-option label="Number" value="Number"></el-option>
+            <el-option label="String" value="String"></el-option>
+            <el-option label="Array" value="Array"></el-option>
+            <el-option label="Bool" value="Bool"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="备注" prop="memo">
+          <el-input
+            maxlength="50"
+            type="text"
+            prefix-icon="el-icon-message"
+            auto-complete="off"
+            v-model="tmpscriptvariables.memo"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="addscriptVariablesdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="danger"
+          v-if="scriptVariablesdialogStatus === 'add'"
+          @click.native.prevent="$refs['tmpscriptvariables'].resetFields()"
+        >重置</el-button>
+        <el-button
+          type="success"
+          v-if="scriptVariablesdialogStatus === 'add'"
+          :loading="btnLoading"
+          @click.native.prevent="addscriptvariables"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="scriptVariablesdialogStatus === 'update'"
+          :loading="btnLoading"
+          @click.native.prevent="updatescriptvariables"
+        >修改</el-button>
+      </div>
+    </el-dialog>
+
+
     <el-dialog :title="DelaytextMap[DelaydialogStatus]" :visible.sync="DelaydialogFormVisible">
       <el-form
         status-icon
@@ -2135,6 +2281,7 @@
   import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
   import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
   import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
+  import { search as searchscriptvariables, addscriptvariables, updatescriptvariables, removescriptvariables } from '@/api/testvariables/scriptvariables'
 
   export default {
     name: '用例库',
@@ -2215,6 +2362,7 @@
         dbconditioncaseList: [],
         scriptconditionList: [],
         dbvariablesList: [],
+        scriptvariablesList: [],
         listLoading: false, // 数据加载等待动画
         threadloopvisible: false, // 线程，循环显示
         JmeterClassVisible: false, // JmeterClassVisible显示
@@ -2229,6 +2377,7 @@
         CopybatchdialogFormVisible: false,
         casedebugconditionnotexistdialogFormVisible: false, // 还未添加前置条件的用例
         casedebugconditionexistdialogFormVisible: false, // 已经存在前置条件的用例
+        scriptVariablesDialogFormVisible: false,
         BodyVisible: false,
         BodyParamDataVisible: false,
         BodyDataVisible: false,
@@ -2238,6 +2387,7 @@
         caseaddvariablesdialogFormVisible: false,
         scenecaseConditionFormVisible: false,
         adddbvariablesdialogFormVisible: false,
+        addscriptVariablesdialogFormVisible: false,
         dbVariablesDialogFormVisible: false,
         caseindex: '',
         total: 0, // 数据总数
@@ -2249,6 +2399,7 @@
         caseexisttotal: 0, // 已添加条件用例总数
         apicasevariablestotal: 0,
         dbvariablestotal: 0,
+        scriptvariablestotal: 0,
         apiSearchQuery: {
           deployunitname: '', // 微服务名
           apiname: '' // api名
@@ -2265,6 +2416,7 @@
         scriptdialogStatus: 'add',
         dbdialogStatus: 'add',
         dbvariablesdialogStatus: 'add',
+        scriptVariablesdialogStatus: 'add',
         paramtitle: '用例参数值',
         AssertTitle: '新增修改断言',
         CopyApiCase: '复制用例',
@@ -2310,6 +2462,11 @@
           updateRole: '修改API用例',
           update: '修改数据库变量',
           add: '添加数据库变量'
+        },
+        scriptVariablestextMap: {
+          updateRole: '修改API用例',
+          update: '修改脚本变量',
+          add: '添加脚本变量'
         },
         AsserttextMap: {
           updateRole: '修改用例断言',
@@ -2584,6 +2741,17 @@
           creator: '',
           projectid: ''
         },
+        tmpscriptvariables: {
+          id: '',
+          scriptvariablesname: '',
+          variablesdes: '',
+          valuetype: '',
+          memo: '',
+          creator: '',
+          conditionid: '',
+          conditionname: '',
+          projectid: ''
+        },
         searchapicondition: {
           page: 1,
           size: 10,
@@ -2611,6 +2779,12 @@
           projectid: ''
         },
         searchdbvariables: {
+          page: 1,
+          size: 10,
+          conditionid: '',
+          projectid: ''
+        },
+        searchscriptvariables: {
           page: 1,
           size: 10,
           conditionid: '',
@@ -2670,6 +2844,22 @@
         })
       },
 
+      removescriptvariables(index) {
+        this.$confirm('删除该变量？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.scriptvariablesList[index].id
+          removescriptvariables(id).then(() => {
+            this.$message.success('删除成功')
+            this.getscriptvariablesList()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
+
       showUpdatedbvariablesDialog(index) {
         this.adddbvariablesdialogFormVisible = true
         this.dbvariablesdialogStatus = 'update'
@@ -2681,6 +2871,17 @@
         this.tmpdbvariables.fieldname = this.dbvariablesList[index].fieldname
         this.tmpdbvariables.memo = this.dbvariablesList[index].memo
         this.tmpdbvariables.creator = this.name
+      },
+
+      showUpdatescriptvariablesDialog(index) {
+        this.addscriptVariablesdialogFormVisible = true
+        this.scriptVariablesdialogStatus = 'update'
+        this.tmpscriptvariables.id = this.scriptvariablesList[index].id
+        this.tmpscriptvariables.scriptvariablesname = this.scriptvariablesList[index].scriptvariablesname
+        this.tmpscriptvariables.variablesdes = this.scriptvariablesList[index].variablesdes
+        this.tmpscriptvariables.valuetype = this.scriptvariablesList[index].valuetype
+        this.tmpscriptvariables.memo = this.scriptvariablesList[index].memo
+        this.tmpscriptvariables.creator = this.name
       },
       /**
        * 更新变量
@@ -2699,6 +2900,20 @@
         })
       },
 
+      updatescriptvariables() {
+        this.$refs.tmpscriptvariables.validate(valid => {
+          if (valid) {
+            updatescriptvariables(this.tmpscriptvariables).then(() => {
+              this.$message.success('更新成功')
+              this.getscriptvariablesList()
+              this.addscriptVariablesdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('更新失败')
+            })
+          }
+        })
+      },
+
       getdbvariablesList() {
         searchdbvariables(this.searchdbvariables).then(response => {
           this.dbvariablesList = response.data.list
@@ -2708,6 +2923,14 @@
         })
       },
 
+      getscriptvariablesList() {
+        searchscriptvariables(this.searchscriptvariables).then(response => {
+          this.scriptvariablesList = response.data.list
+          this.scriptvariablestotal = response.data.total
+        }).catch(res => {
+          this.$message.error('加载变量列表失败')
+        })
+      },
       showdbvariablesDialog(index) {
         // 显示新增对话框
         this.dbVariablesDialogFormVisible = true
@@ -2717,6 +2940,14 @@
         this.getdbvariablesList()
       },
 
+      showscriptvariablesDialog(index) {
+        // 显示新增对话框
+        this.scriptVariablesDialogFormVisible = true
+        this.tmpscriptvariables.conditionid = this.scriptconditionList[index].id
+        this.searchscriptvariables.conditionid = this.scriptconditionList[index].id
+        this.tmpscriptvariables.conditionname = this.scriptconditionList[index].subconditionname
+        this.getscriptvariablesList()
+      },
       showAdddbvariablesDialog() {
         // 显示新增对话框
         this.adddbvariablesdialogFormVisible = true
@@ -2732,6 +2963,19 @@
         this.tmpdbvariables.projectid = window.localStorage.getItem('pid')
       },
 
+      showAddscriptvariablesDialog() {
+        // 显示新增对话框
+        this.addscriptVariablesdialogFormVisible = true
+        this.scriptVariablesdialogStatus = 'add'
+        this.tmpscriptvariables.id = ''
+        this.tmpscriptvariables.scriptvariablesname = ''
+        this.tmpscriptvariables.variablesdes = ''
+        this.tmpscriptvariables.valuetype = ''
+        this.tmpscriptvariables.memo = ''
+        this.tmpscriptvariables.creator = this.name
+        this.tmpscriptvariables.projectid = window.localStorage.getItem('pid')
+      },
+
       adddbvariables() {
         this.$refs.tmpdbvariables.validate(valid => {
           if (valid) {
@@ -2739,6 +2983,20 @@
               this.$message.success('添加成功')
               this.getdbvariablesList()
               this.adddbvariablesdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
+
+      addscriptvariables() {
+        this.$refs.tmpscriptvariables.validate(valid => {
+          if (valid) {
+            addscriptvariables(this.tmpscriptvariables).then(() => {
+              this.$message.success('添加成功')
+              this.getscriptvariablesList()
+              this.addscriptVariablesdialogFormVisible = false
             }).catch(res => {
               this.$message.error('添加失败')
             })
@@ -3705,6 +3963,12 @@
         this.searchdbvariables.size = size
         this.getdbvariablesList()
       },
+
+      scriptvariableshandleSizeChange(size) {
+        this.searchscriptvariables.page = 1
+        this.searchscriptvariables.size = size
+        this.getscriptvariablesList()
+      },
       /**
        * 改变页码
        * @param page 页号
@@ -3724,6 +3988,10 @@
         this.getdbvariablesList()
       },
 
+      scriptvariableshandleCurrentChange(page) {
+        this.searchscriptvariables.page = page
+        this.getscriptvariablesList()
+      },
       /**
        * 表格序号
        * 可参考自定义表格序号

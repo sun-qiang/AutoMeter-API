@@ -23,6 +23,17 @@ public class AssembleDeploy extends EnviromentAssemble {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+
+  public String getConnectstr() {
+        return connectstr;
+    }
+
+    public void setConnectstr(String connectstr) {
+        this.connectstr = connectstr;
+    }
+
+    private String connectstr;
+
   public Long getProjectid() {
     return projectid;
   }

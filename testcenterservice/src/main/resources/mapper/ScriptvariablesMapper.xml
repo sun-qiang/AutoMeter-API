@@ -14,12 +14,15 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
   </resultMap>
 
   <select id="findscriptvariablesWithName" resultMap="BaseResultMap">
     SELECT a.*
     FROM scriptvariables a
     <where>
+      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
       <if test="scriptvariablesname != null and scriptvariablesname != ''">a.scriptvariablesname like CONCAT('%',#{scriptvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
     </where>

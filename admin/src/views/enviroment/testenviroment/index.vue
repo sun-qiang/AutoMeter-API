@@ -261,7 +261,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="微服务配置" width="1200px" :visible.sync="ServiceDeployFormVisible">
+    <el-dialog title="微服务配置" width="1100px" :visible.sync="ServiceDeployFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -305,12 +305,11 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
-        <el-table-column label="服务器" align="center" prop="machinename" width="100"/>
+        <el-table-column label="环境" :show-overflow-tooltip="true" align="center" prop="enviromentname" width="140"/>
+        <el-table-column label="服务器" :show-overflow-tooltip="true" align="center" prop="machinename" width="130"/>
         <el-table-column label="微服务" :show-overflow-tooltip="true" align="center" prop="deployunitname" width="100"/>
         <el-table-column label="访问方式" align="center" prop="visittype" width="70"/>
         <el-table-column label="访问域名" :show-overflow-tooltip="true" align="center" prop="domain" width="100"/>
-        <el-table-column label="操作人" align="center" prop="creator" width="60"/>
         <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="140">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>

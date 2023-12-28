@@ -24,6 +24,12 @@
   </resultMap>
 
 
+  <select id="findexistWithid" resultMap="BaseResultMap">
+    select * from
+    macdepunit c where c.envid=#{envid} and c.depunitid=#{depunitid}
+  </select>
+
+
   <select id="findMacAndDepWithid" resultMap="BaseResultMap">
     select a.enviromentname,b.machinename,c.* from
     macdepunit c inner join enviroment a inner join machine b

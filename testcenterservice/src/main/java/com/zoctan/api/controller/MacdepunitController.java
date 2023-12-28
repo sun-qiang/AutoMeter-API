@@ -38,7 +38,7 @@ public class MacdepunitController {
     public Result add(@RequestBody Macdepunit macdepunit) {
         Condition depcon = new Condition(Macdepunit.class);
         depcon.createCriteria().andCondition("envid = " + macdepunit.getEnvid()).andCondition("depunitid = " + macdepunit.getDepunitid());
-        if (macdepunitService.ifexist(depcon) > 0) {
+        if (macdepunitService.findmachinenumbyenvidanddeployid(macdepunit.getEnvid(),macdepunit.getDepunitid()) > 0) {
             return ResultGenerator.genFailedResult("此环境已经存在此微服务或者组件");
         } else {
             macdepunitService.save(macdepunit);
