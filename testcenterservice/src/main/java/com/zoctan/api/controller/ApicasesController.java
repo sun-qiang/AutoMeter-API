@@ -75,6 +75,9 @@ public class ApicasesController {
     private DbvariablesService dbvariablesService;
 
     @Autowired(required = false)
+    private ScriptvariablesService scriptvariablesService;
+
+    @Autowired(required = false)
     private ApicasesDebugConditionService apicasesDebugConditionService;
 
     @Autowired(required = false)
@@ -833,6 +836,8 @@ public class ApicasesController {
         boolean prixflag = Boolean.parseBoolean(param.get("prixflag").toString());
         HashMap<String, String> ParamsValuesMap = new HashMap<>();
         HashMap<String, String> DBParamsValuesMap = new HashMap<>();
+        HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
+
         String Respone = "";
         HashMap<String, Long> debugmap = new HashMap<>();
         debugmap.put("apicaseid", Caseid);
@@ -848,6 +853,8 @@ public class ApicasesController {
         }
         ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
         DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
+        ScriptParamsValuesMap = GetResponeMap(Respone, ScriptParamsValuesMap, "script");
+
 
 //        Condition parecon = new Condition(Testcondition.class);
 //        parecon.createCriteria().andCondition("id = " + conditionid);
@@ -1006,6 +1013,17 @@ public class ApicasesController {
                     resource = resource.replace(VariableName, VariableValue.toString());
                 }
             }
+
+            //5.脚本变量替换
+            for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                String UseScriptvariables = "{" + Scriptvariables + "}";
+                if (resource.contains(UseScriptvariables)) {
+                    Object VariableValue = ScriptParamsValuesMap.get(UseScriptvariables);
+                    resource = resource.replace(UseScriptvariables, VariableValue.toString());
+                }
+            }
+
+
             ApicasesController.log.info("。。。。。。。。处理后的resource Url：" + resource);
 
             List<ApiCasedata> HeaderApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Header");
@@ -1021,7 +1039,7 @@ public class ApicasesController {
             //Header用例值
             HttpHeader header = new HttpHeader();
             try {
-                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList,ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1030,7 +1048,7 @@ public class ApicasesController {
             //参数用例值
             HttpParamers paramers = new HttpParamers();
             try {
-                paramers = GetHttpParamers(ParamsApiCasedataList, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                paramers = GetHttpParamers(ParamsApiCasedataList,ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1040,7 +1058,7 @@ public class ApicasesController {
             HttpParamers Bodyparamers = new HttpParamers();
             if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                 try {
-                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap,ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
                 } catch (Exception exception) {
                     return ResultGenerator.genFailedResult(exception.getMessage());
                 }
@@ -1081,6 +1099,15 @@ public class ApicasesController {
                         if (PostData.contains(VariableName)) {
                             Object VariableValue = GlobalVariablesHashMap.get(variables.getKeyname());
                             PostData = PostData.replace(VariableName, VariableValue.toString());
+                        }
+                    }
+
+                    //5.替换脚本变量
+                    for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                        String UseScriptvariables = "{" + Scriptvariables + "}";
+                        if (PostData.contains(UseScriptvariables)) {
+                            Object VariableValue = ScriptParamsValuesMap.get(Scriptvariables);
+                            PostData = PostData.replace(UseScriptvariables, VariableValue.toString());
                         }
                     }
                 }
@@ -1132,7 +1159,7 @@ public class ApicasesController {
 
 
     //获取HttpHeader
-    private HttpHeader GetHttpHeader(List<GlobalheaderParams> globalheaderParamsList, List<ApiCasedata> HeaderApiCasedataList, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, long projectid) throws Exception {
+    private HttpHeader GetHttpHeader(List<GlobalheaderParams> globalheaderParamsList, List<ApiCasedata> HeaderApiCasedataList,HashMap<String, String>ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, long projectid) throws Exception {
         HashMap<String, String> globalheaderParamsHashMap = new HashMap<>();
         for (ApiCasedata Headdata : HeaderApiCasedataList) {
             if (!globalheaderParamsHashMap.containsKey(Headdata.getApiparam())) {
@@ -1147,9 +1174,9 @@ public class ApicasesController {
         for (String HeaderName : globalheaderParamsHashMap.keySet()) {
             String HeaderValue = globalheaderParamsHashMap.get(HeaderName);
             Object Result = HeaderValue;
-            if ((HeaderValue.contains("<") && HeaderValue.contains(">")) || (HeaderValue.contains("<<") && HeaderValue.contains(">>")) || (HeaderValue.contains("[") && HeaderValue.contains("]")) || (HeaderValue.contains("$") && HeaderValue.contains("$"))) {
+            if ((HeaderValue.contains("{") && HeaderValue.contains("}")) ||(HeaderValue.contains("<") && HeaderValue.contains(">")) || (HeaderValue.contains("<<") && HeaderValue.contains(">>")) || (HeaderValue.contains("[") && HeaderValue.contains("]")) || (HeaderValue.contains("$") && HeaderValue.contains("$"))) {
                 try {
-                    Result = GetVaraibaleValue(HeaderValue, RadomMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
+                    Result = GetVaraibaleValue(HeaderValue, RadomMap,ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
                 } catch (Exception ex) {
                     throw new Exception("当前用例的Header中参数名：" + HeaderName + "-对应的参数值：" + ex.getMessage());
                 }
@@ -1160,7 +1187,7 @@ public class ApicasesController {
     }
 
     //获取HttpParams
-    private HttpParamers GetHttpParamers(List<ApiCasedata> ParamsApiCasedataList, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, long projectid) throws Exception {
+    private HttpParamers GetHttpParamers(List<ApiCasedata> ParamsApiCasedataList, HashMap<String, String>ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, long projectid) throws Exception {
         HttpParamers paramers = new HttpParamers();
         for (ApiCasedata Paramdata : ParamsApiCasedataList) {
             String ParamName = Paramdata.getApiparam();
@@ -1169,7 +1196,7 @@ public class ApicasesController {
             Object ObjectResult = ParamValue;
             if ((ParamValue.contains("<") && ParamValue.contains(">")) || (ParamValue.contains("<<") && ParamValue.contains(">>")) || (ParamValue.contains("[") && ParamValue.contains("]")) || (ParamValue.contains("$") && ParamValue.contains("$"))) {
                 try {
-                    ObjectResult = GetVaraibaleValue(ParamValue, RadomMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
+                    ObjectResult = GetVaraibaleValue(ParamValue, RadomMap,ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
                 } catch (Exception ex) {
                     throw new Exception("当前用例的Params或者Body中参数名：" + ParamName + "-对应的参数值：" + ex.getMessage());
                 }
@@ -1180,9 +1207,34 @@ public class ApicasesController {
         return paramers;
     }
 
-    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> globalvariablesMap, long projectid) throws Exception {
+    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> ScriptMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> globalvariablesMap, long projectid) throws Exception {
         Object ObjectValue = Value;
         boolean exist = false; //标记是否Value有变量处理，false表示没有对应的子条件处理过
+        //参数值替换脚本变量
+        for (String scriptvariablesName : ScriptMap.keySet()) {
+            boolean flag = GetSubOrNot(ScriptMap, Value, "{", "}");
+            if (Value.contains("{" + ScriptMap + "}")) {
+                exist = true;
+                String ActualValue = ScriptMap.get(scriptvariablesName);
+                if (flag) {
+                    //有拼接认为是字符串
+                    Value = Value.replace("{" + scriptvariablesName + "}", ActualValue);
+                    ObjectValue = Value;
+                } else {
+                    //无拼接则转换成具体类型,根据变量名获取变量类型
+                    Condition tvcon = new Condition(Testvariables.class);
+                    tvcon.createCriteria().andCondition("projectid = " + projectid).andCondition("scriptvariablesname= '" + scriptvariablesName + "'");
+                    List<Scriptvariables> variablesList =scriptvariablesService.listByCondition(tvcon);
+                    Scriptvariables testvariables = variablesList.get(0);// testvariablesService.getBy("testvariablesname", interfacevariablesName);//  testMysqlHelp.GetVariablesDataType(interfacevariablesName);
+                    if (testvariables == null) {
+                        ObjectValue = "未找到变量：" + Value + "请检查脚本前置条件是否有配置该提取变量";
+                    } else {
+                        ObjectValue = GetDataByType(ActualValue, testvariables.getValuetype());
+                    }
+                }
+            }
+        }
+
         //参数值替换接口变量
         for (String interfacevariablesName : InterfaceMap.keySet()) {
             boolean flag = GetSubOrNot(InterfaceMap, Value, "<", ">");
@@ -1200,7 +1252,7 @@ public class ApicasesController {
                     List<Testvariables> variablesList = testvariablesService.listByCondition(tvcon);
                     Testvariables testvariables = variablesList.get(0);// testvariablesService.getBy("testvariablesname", interfacevariablesName);//  testMysqlHelp.GetVariablesDataType(interfacevariablesName);
                     if (testvariables == null) {
-                        ObjectValue = "未找到变量：" + Value + "绑定的接口用例，请检查变量管理-用例变量中是否存在此变量绑定的接口用例";
+                        ObjectValue = "未找到变量：" + Value + "请检查前置接口用例是否有配置提取变量";
                     } else {
                         ObjectValue = GetDataByType(ActualValue, testvariables.getValuetype());
                     }
@@ -1224,7 +1276,7 @@ public class ApicasesController {
                     List<Dbvariables> variablesList = dbvariablesService.listByCondition(dbcon);
                     Dbvariables dbvariables = variablesList.get(0);// dbvariablesService.getBy("dbvariablesname", DBvariablesName);//  testMysqlHelp.GetVariablesDataType(interfacevariablesName);
                     if (dbvariables == null) {
-                        ObjectValue = "未找到变量：" + Value + "绑定的接口用例，请检查变量管理-用例变量中是否存在此变量绑定的接口用例";
+                        ObjectValue = "未找到变量：" + Value + "请检查数据库前置操作是否有配置提取数据库变量";
                     } else {
                         ObjectValue = GetDataByType(ActualValue, dbvariables.getValuetype());
                     }
@@ -1260,7 +1312,7 @@ public class ApicasesController {
             }
         }
         if (!exist) {
-            throw new Exception(Value + " 未能获取实际值，请检查：1.是否执行前置条件，2.变量管理中是否有配置此变量以及绑定对应的操作");
+            throw new Exception(Value + " 未能获取该变量实际值，请检查是否配置对应的前置条件来提取此变量值");
         }
         return ObjectValue;
     }

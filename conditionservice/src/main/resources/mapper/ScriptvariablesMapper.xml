@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.ScriptvariablesMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Scriptvariables">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="scriptvariablesname" jdbcType="VARCHAR" property="scriptvariablesname" />
+    <result column="variablesdes" jdbcType="VARCHAR" property="variablesdes" />
+    <result column="valuetype" jdbcType="VARCHAR" property="valuetype" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
+  </resultMap>
+
+  <select id="findscriptvariablesWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM scriptvariables a
+    <where>
+      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
+      <if test="scriptvariablesname != null and scriptvariablesname != ''">a.scriptvariablesname like CONCAT('%',#{scriptvariablesname},'%')</if>
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+  <update id="updatescriptvariables" parameterType="com.zoctan.api.entity.Scriptvariables">
+    update scriptvariables set scriptvariablesname = #{scriptvariablesname},variablesdes=#{variablesdes},valuetype=#{valuetype},
+                           creator = #{creator},memo = #{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+
+  <select id="getbyconditionid" resultMap="BaseResultMap">
+    SELECT *
+    FROM scriptvariables where conditionid=#{conditionid}
+  </select>
+</mapper>

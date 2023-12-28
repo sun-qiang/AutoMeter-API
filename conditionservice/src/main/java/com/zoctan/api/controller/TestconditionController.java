@@ -113,6 +113,10 @@ public class TestconditionController {
     @Resource
     private DbvariablesService dbvariablesService;
 
+    @Resource
+    private ScriptvariablesService scriptvariablesService;
+
+
 
     @PostMapping
     public Result add(@RequestBody Testcondition testcondition) {
@@ -842,7 +846,14 @@ public class TestconditionController {
                 String Script = conditionScript.getScript();
                 TestconditionController.log.info("调试脚本报告脚本子条件:-============：" + conditionScript.getScript());
                 String Source = dnamicCompilerHelp.GetCompeleteClass(Script, Caseid);
-                dnamicCompilerHelp.CallDynamicScript(Source);
+                Object ScriptResult= dnamicCompilerHelp.CallDynamicScript(Source);
+
+                List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getId());
+
+                for (Scriptvariables scriptvariables:scriptvariablesList) {
+                    String scriptvariablesname=scriptvariables.getScriptvariablesname();
+                    Result.get("script").put(scriptvariablesname,ScriptResult.toString());
+                }
             } catch (Exception ex) {
                 Respone = ex.getMessage();
                 throw new Exception("脚本条件执行异常:" + Respone);
@@ -1456,7 +1467,16 @@ public class TestconditionController {
                 String Script = conditionScript.getScript();
                 TestconditionController.log.info("脚本报告脚本子条件:-============：" + conditionScript.getScript());
                 String Source = dnamicCompilerHelp.GetCompeleteClass(Script, Caseid);
-                dnamicCompilerHelp.CallDynamicScript(Source);
+                Object ScriptResult= dnamicCompilerHelp.CallDynamicScript(Source);
+
+                List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(ConditionID);
+
+                for (Scriptvariables scriptvariables:scriptvariablesList) {
+
+
+
+                }
+
             } catch (Exception ex) {
                 ConditionResultStatus = "失败";
                 Respone = ex.getMessage();

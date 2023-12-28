@@ -20,7 +20,7 @@ public class DnamicCompilerHelp {
                 "import com.zoctan.api.util.DES;" +
                 "import com.zoctan.api.util.AutoMeter;" +
                 "public class TestCasePreClass{" +
-                "public void AutoMeterPreScriptFun() {" +
+                "public String AutoMeterPreScriptFun() {" +
                 "AutoMeter.caseid=new Long(" + Caseid + ");" +
                 SourceClassScript +
                 "}" +
@@ -28,7 +28,7 @@ public class DnamicCompilerHelp {
         return javaSrc;
     }
 
-    public void CallDynamicScript(String javaSrc) throws Exception {
+    public Object CallDynamicScript(String javaSrc) throws Exception {
         Map<String, byte[]> results = new HashMap<>();
         StringWriter sw=new StringWriter();
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -47,6 +47,7 @@ public class DnamicCompilerHelp {
         Class clazz = classLoader.loadClass("TestCasePreClass");
         Object object = clazz.newInstance();
         Method method = clazz.getMethod("AutoMeterPreScriptFun");
-        method.invoke(object);
+        Object Result= method.invoke(object);
+        return Result;
     }
 }
