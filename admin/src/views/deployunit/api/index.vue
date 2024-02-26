@@ -50,14 +50,17 @@
         </el-form-item>
 
         <span v-if="hasPermission('api:search')">
-          <el-form-item>
+          <el-form-item  label="API名:">
             <el-input style="width: 130px" v-model="search.apiname" clearable @keyup.enter.native="searchBy" placeholder="API名"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item  label="微服务名:">
             <el-input style="width: 130px" v-model="search.deployunitname" clearable @keyup.enter.native="searchBy" placeholder="微服务名"></el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item  label="模块名:">
             <el-input style="width: 130px" v-model="search.modelname" clearable @keyup.enter.native="searchBy" placeholder="模块名"></el-input>
+          </el-form-item>
+           <el-form-item  label="Url路径:">
+            <el-input style="width: 130px" v-model="search.path" clearable @keyup.enter.native="searchBy" placeholder="Url路径"></el-input>
           </el-form-item>
           <el-form-item  label="范围:">
             <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
@@ -98,7 +101,7 @@
       <el-table-column label="模块" align="center" prop="modelname" width="80"/>
       <el-table-column label="风格" align="center" prop="apistyle" width="80"/>
       <el-table-column label="访问方式" align="center" prop="visittype" width="80"/>
-      <el-table-column label="路径" align="center" prop="path" width="60">
+      <el-table-column label="Url路径" align="center" prop="path" width="80">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>{{ scope.row.path }}</p>
@@ -350,7 +353,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog title='API参数' :visible.sync="ParamsdialogFormVisible">
+    <el-dialog title='API老参数' :visible.sync="ParamsdialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -414,7 +417,7 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-    <el-dialog  title='API新参数' :visible.sync="NewParamsdialogFormVisible">
+    <el-dialog  title='API参数' :visible.sync="NewParamsdialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <template>
@@ -432,8 +435,10 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                       </template>
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" width="300">
                       <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                        </el-button>
                         <el-button type="primary" size="mini" @click="copeHeader(scope.row,scope.$index)">新增
                         </el-button>
                         <el-button type="primary" size="mini" @click="delectHeader(scope.$index)">删除</el-button>
@@ -464,8 +469,10 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                       </template>
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column label="操作" align="center" width="250">
                       <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                        </el-button>
                         <el-button type="primary" size="mini" @click="copeParam(scope.row,scope.$index)">新增
                         </el-button>
                         <el-button type="primary" size="mini" @click="delectParam(scope.$index)">删除</el-button>
@@ -497,8 +504,10 @@
                           <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                         </template>
                       </el-table-column>
-                      <el-table-column label="操作" align="center">
+                      <el-table-column label="操作" align="center" width="250">
                         <template slot-scope="scope">
+                          <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                          </el-button>
                           <el-button type="primary" size="mini" @click="copeBodyParam(scope.row,scope.$index)">新增
                           </el-button>
                           <el-button type="primary" size="mini" @click="delectBodyParam(scope.$index)">删除</el-button>
@@ -515,7 +524,8 @@
 <!--                          <json-editor ref="jsonEditor" v-model="tmpapiparams.keyname" />-->
 <!--                        </div>-->
 
-
+                        <el-button type="primary" size="mini" @click="UseParams">使用变量
+                        </el-button>
                         <el-input
                             type="textarea"
                           style="width: 650px;height: 400px;color: #0000FF"
@@ -684,6 +694,59 @@
       </el-form>
     </el-dialog>
 
+    <el-dialog title='使用变量' :visible.sync="SearchParamsdialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item  label="变量类型:">
+            <el-select v-model="searchparam.paramtype" clearable placeholder="变量类型" >
+              <el-option label="接口变量" value="接口变量" />
+              <el-option label="数据库变量" value="数据库变量" />
+              <el-option label="脚本变量" value="脚本变量" />
+              <el-option label="延时变量" value="延时变量" />
+              <el-option label="全局变量" value="全局变量" />
+              <el-option label="随机变量" value="随机变量" />
+              <el-option label="环境变量" value="环境变量" />
+              <el-option label="全局Header" value="全局Header" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="paramsList"
+        :key="itemKey"
+        v-loading.body="listLoading"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="45">
+          <template slot-scope="scope">
+            <span v-text="paramgetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="变量名" align="center" prop="paramname" width="80"/>
+        <el-table-column label="变量类型" align="center" prop="paramname" width="80"/>
+        <el-table-column label="来源前置条件" align="center" prop="paramname" width="120"/>
+        <el-table-column label="来源" align="center" prop="paramname" width="80"/>
+        <el-table-column label="来源类型" align="center" prop="paramname" width="80"/>
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdateparamsDialog(scope.$index)"
+            >复制使用</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -739,6 +802,7 @@ export default {
       tmpapiname: '',
       tmpdeployunitname: '',
       tmpmodelname: '',
+      tmppath: '',
       apiList: [], // api列表
       sourceapiList: [],
       visittypeList: [], // api访问方式列表
@@ -751,6 +815,7 @@ export default {
       BodyVisible: false, // 参数类型为Body显示
       BodyDataVisible: false, // 参数类型为Body显示
       BodyParamDataVisible: false, // 参数类型为Body显示
+      SearchParamsdialogFormVisible: false, // 使用变量
       listLoading: false, // 数据加载等待动画
       dicvisitypeQuery: {
         page: 1, // 页码
@@ -852,9 +917,15 @@ export default {
         apiname: null,
         deployunitname: null,
         modelname: null,
+        path: null,
         projectid: '',
         nickname: '',
         creator: ''
+      },
+      searchparam: {
+        page: 1,
+        size: 10,
+        paramtype: ''
       },
       tmpmodelquery: {
         page: 1,
@@ -909,6 +980,11 @@ export default {
     },
     tabclick(tab, event) {
       console.log(tab, event)
+    },
+    UseParams(val, index) {
+      console.log(val)
+      console.log(index)
+      this.SearchParamsdialogFormVisible = true
     },
     // 单个复制
     copeHeader(val, index) {
@@ -1426,8 +1502,9 @@ export default {
       this.listLoading = true
       this.search.apiname = this.tmpapiname
       this.search.deployunitname = this.tmpdeployunitname
-      this.search.modelname = this.modelname
+      this.search.modelname = this.tmpmodelname
       this.search.creator = this.name
+      this.search.path = this.tmppath
       search(this.search).then(response => {
         this.apiList = response.data.list
         this.total = response.data.total
@@ -1591,6 +1668,7 @@ export default {
       this.tmpapiname = this.search.apiname
       this.tmpdeployunitname = this.search.deployunitname
       this.tmpmodelname = this.search.modelname
+      this.tmppath = this.search.path
     },
     /**
      * 改变每页数量

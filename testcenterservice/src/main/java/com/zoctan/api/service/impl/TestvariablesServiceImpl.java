@@ -1,5 +1,6 @@
 package com.zoctan.api.service.impl;
 
+import com.zoctan.api.dto.TestVariablesDto;
 import com.zoctan.api.mapper.TestvariablesMapper;
 import com.zoctan.api.entity.Testvariables;
 import com.zoctan.api.service.TestvariablesService;
@@ -23,7 +24,7 @@ public class TestvariablesServiceImpl extends AbstractService<Testvariables> imp
 private TestvariablesMapper testvariablesMapper;
 
     @Override
-    public List<Testvariables> findtestvariablesWithName(Map<String, Object> params) {
+    public List<TestVariablesDto> findtestvariablesWithName(Map<String, Object> params) {
         return testvariablesMapper.findtestvariablesWithName(params);
     }
 

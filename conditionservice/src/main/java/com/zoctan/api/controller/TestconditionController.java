@@ -117,7 +117,6 @@ public class TestconditionController {
     private ScriptvariablesService scriptvariablesService;
 
 
-
     @PostMapping
     public Result add(@RequestBody Testcondition testcondition) {
         Condition con = new Condition(Testcondition.class);
@@ -710,7 +709,7 @@ public class TestconditionController {
         }
         //接口条件
         try {
-            Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID,EnviromentID);
+            Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
             TestconditionController.log.info("用例调试条件接口条件完成-==================：");
 
         } catch (Exception ex) {
@@ -846,13 +845,13 @@ public class TestconditionController {
                 String Script = conditionScript.getScript();
                 TestconditionController.log.info("调试脚本报告脚本子条件:-============：" + conditionScript.getScript());
                 String Source = dnamicCompilerHelp.GetCompeleteClass(Script, Caseid);
-                Object ScriptResult= dnamicCompilerHelp.CallDynamicScript(Source);
+                Object ScriptResult = dnamicCompilerHelp.CallDynamicScript(Source);
 
                 List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getId());
 
-                for (Scriptvariables scriptvariables:scriptvariablesList) {
-                    String scriptvariablesname=scriptvariables.getScriptvariablesname();
-                    Result.get("script").put(scriptvariablesname,ScriptResult.toString());
+                for (Scriptvariables scriptvariables : scriptvariablesList) {
+                    String scriptvariablesname = scriptvariables.getScriptvariablesname();
+                    Result.get("script").put(scriptvariablesname, conditionScript.getConditionid()+","+ScriptResult.toString());
                 }
             } catch (Exception ex) {
                 Respone = ex.getMessage();
@@ -892,9 +891,10 @@ public class TestconditionController {
             }
             try {
                 VariableNameValueMap = RundbforDebug(conditionDb, ConnetcArray, AssembleType, deployunitvisittype, machine, macdepunit, Sql, Sqltype);
-                for (String key : VariableNameValueMap.keySet()) {
-                    Result.get("db").put(key, VariableNameValueMap.get(key));
-                }
+                Result.put("db",VariableNameValueMap);
+//                for (String key : VariableNameValueMap.keySet()) {
+//                    Result.get("db").put(key, VariableNameValueMap.get(key));
+//                }
             } catch (Exception ex) {
                 throw new Exception("数据库子条件执行异常：" + ex.getMessage());
             }
@@ -981,7 +981,7 @@ public class TestconditionController {
                             default:
                                 ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
                         }
-                        Result.get("api").put(testvariables.getTestvariablesname(), ParseValue);
+                        Result.get("api").put(testvariables.getTestvariablesname(), CaseID+","+ParseValue);
                     } catch (Exception ex) {
                         throw new Exception("前置接口子条件执行异常，变量:" + testvariables.getTestvariablesname() + " 获取值异常,原因为：" + ex.getMessage());
                     }
@@ -1128,7 +1128,7 @@ public class TestconditionController {
     private String GetDBResultValueByEntity(List<Entity> DbResult, String columnname, long rownum) {
         String Result = "未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配";
         for (int i = 0; i < DbResult.size(); i++) {
-            if (i == rownum-1) {
+            if (i == rownum - 1) {
                 Entity row = DbResult.get(i);
                 Result = row.getStr(columnname);
             }
@@ -1177,7 +1177,7 @@ public class TestconditionController {
                         long roworder = dbconditionVariables.getRoworder();
                         String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
                         //保存数据库变量
-                        VariableNameValueMap.put(Variablesname, VariablesValue);
+                        VariableNameValueMap.put(Variablesname, conditionDb.getId() + "," + VariablesValue);
                     }
                 }
             } else {
@@ -1314,7 +1314,7 @@ public class TestconditionController {
                     long roworder = dbconditionVariables.getRoworder();
                     String VariablesValue = GetDBResultValueByEntity(result, columnname, roworder);
                     //保存数据库变量
-                    VariableNameValueMap.put(Variablesname, VariablesValue);
+                    VariableNameValueMap.put(Variablesname, Conidtiondbid+","+VariablesValue);
                 }
             }
         } else {
@@ -1467,12 +1467,11 @@ public class TestconditionController {
                 String Script = conditionScript.getScript();
                 TestconditionController.log.info("脚本报告脚本子条件:-============：" + conditionScript.getScript());
                 String Source = dnamicCompilerHelp.GetCompeleteClass(Script, Caseid);
-                Object ScriptResult= dnamicCompilerHelp.CallDynamicScript(Source);
+                Object ScriptResult = dnamicCompilerHelp.CallDynamicScript(Source);
 
                 List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(ConditionID);
 
-                for (Scriptvariables scriptvariables:scriptvariablesList) {
-
+                for (Scriptvariables scriptvariables : scriptvariablesList) {
 
 
                 }

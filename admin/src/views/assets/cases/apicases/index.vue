@@ -110,6 +110,10 @@
             </el-select>
           </el-form-item>
 
+           <el-form-item  label="Url路径:">
+            <el-input style="width: 130px" v-model="search.path" clearable @keyup.enter.native="searchBy" placeholder="Url路径"></el-input>
+          </el-form-item>
+
           <el-form-item label="用例类型：">
           <el-select style="width: 120px" v-model="search.casetype" placeholder="用例类型" clearable>
             <el-option label="请选择" value />
@@ -471,6 +475,12 @@
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
                     </template>
                   </el-table-column>
+                  <el-table-column label="操作" align="center" width="110">
+                    <template slot-scope="scope">
+                      <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                      </el-button>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </template>
             </el-tab-pane>
@@ -490,6 +500,12 @@
                   <el-table-column label="值"  align="center">
                     <template slot-scope="scope">
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" align="center" width="110">
+                    <template slot-scope="scope">
+                      <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                      </el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -514,10 +530,17 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
                       </template>
                     </el-table-column>
+                    <el-table-column label="操作" align="center" width="110">
+                      <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
+                        </el-button>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </div>
                 <div v-if="BodyDataVisible">
                     <el-form-item label="Body值：" prop="apiparamvalue" >
+                      <el-button type="primary" size="mini" @click="UseParams">使用变量</el-button>
                       <el-input
                         type="textarea"
                         rows="20" cols="70"
@@ -529,6 +552,7 @@
                 </div>
               </template>
             </el-tab-pane>
+
           </el-tabs>
         </template>
       </el-form>
@@ -1309,7 +1333,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog width="1000px" title='变量列表' :visible.sync="caseVariablesDialogFormVisible">
+    <el-dialog width="1200px" title='变量列表' :visible.sync="caseVariablesDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -1336,15 +1360,18 @@
             <span v-text="ApicasesVariablesgetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="变量名" align="center" prop="testvariablesname" width="80"/>
-        <el-table-column label="变量来源" align="center" prop="testvariablestype" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="变量名" align="center" prop="testvariablesname" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="所属用例" align="center" prop="casename" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="所属API" align="center" prop="apiname" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="所属微服务" align="center" prop="deployunitname" width="90"/>
+        <el-table-column label="变量来源" align="center" prop="testvariablestype" width="70"/>
         <el-table-column label="变量值类型" align="center" prop="valuetype" width="90"/>
-        <el-table-column label="变量值提取表达" align="center" prop="variablesexpress" width="120"/>
-        <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="120"/>
-        <el-table-column label="创建时间" align="center" prop="createTime" width="120">
+        <el-table-column :show-overflow-tooltip="true" label="变量值提取表达" align="center" prop="variablesexpress" width="110"/>
+        <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="110"/>
+        <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
-        <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="120">
+        <el-table-column :show-overflow-tooltip="true" label="最后修改时间" align="center" prop="lastmodifyTime" width="120">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
           </template>
         </el-table-column>
@@ -2317,6 +2344,7 @@
         // tmpdeployunitname: null,
         // tmpapiname: null,
         tmpapiid: null,
+        tmppath: null,
         tmpdeployunitid: null,
         tmpcasetype: null,
         tmpcasename: null,
@@ -2611,6 +2639,7 @@
           deployunitid: '',
           modelid: '',
           apiname: null,
+          path: null,
           casetype: null,
           casename: null,
           projectid: '',
@@ -2793,8 +2822,13 @@
         searchapicasevariables: {
           page: 1,
           size: 10,
-          caseid: '',
+          // caseid: '',
           projectid: ''
+        },
+        searchparam: {
+          page: 1,
+          size: 10,
+          paramtype: ''
         }
       }
     },
@@ -3732,6 +3766,7 @@
         this.search.casetype = this.tmpcasetype
         this.search.casename = this.tmpcasename
         this.search.creator = this.name
+        this.search.path = this.tmppath
         search(this.search).then(response => {
           this.apicasesList = response.data.list
           this.total = response.data.total
@@ -3940,6 +3975,7 @@
         this.tmpapiid = this.search.apiid
         this.tmpcasetype = this.search.casetype
         this.tmpcasename = this.search.casename
+        this.tmppath = this.search.path
       },
 
       /**
@@ -4008,7 +4044,7 @@
       },
 
       dbVariablesgetIndex(index) {
-        return (this.search.page - 1) * this.search.size + index + 1
+        return (this.searchdbvariables.page - 1) * this.searchdbvariables.size + index + 1
       },
 
       searchassertBy() {
@@ -4531,7 +4567,7 @@
        */
       showCaseVariablesDialog(index) {
         this.caseVariablesDialogFormVisible = true
-        this.searchapicasevariables.caseid = this.apicasesList[index].id
+        // this.searchapicasevariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.casename = this.apicasesList[index].casename
         this.findtestvariablesbycaseid()

@@ -38,8 +38,8 @@
       <if test="deployunitid != null  and deployunitid != ''">and a.deployunitid = #{deployunitid}</if>
       <if test="casename != null and casename != ''">and a.casename like CONCAT('%',#{casename},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
-    </where>
+      <if test="creator != null and creator != ''">and a.creator =#{creator}</if>
+      <if test="path != null  and path != ''">and c.path like CONCAT('%',#{path},'%')</if>    </where>
     order by lastmodify_time  DESC
   </select>
 

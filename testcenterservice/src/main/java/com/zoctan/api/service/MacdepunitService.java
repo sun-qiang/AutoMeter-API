@@ -21,7 +21,10 @@ public interface MacdepunitService extends Service<Macdepunit> {
      * @param params 参数
      * @return 环境服务器列表
      */
+
+
     List<Macdepunit> findMacAndDepWithName(final Map<String, Object> params);
+    AssembleDeploy  findassembledeploybyid(long id);
 
     List<Macdepunit> findMacAndDepWithEnv(final Map<String, Object> params);
     List<AssembleDeploy> findMacAndAssembleWithEnv(final Map<String, Object> params);
@@ -38,11 +41,15 @@ public interface MacdepunitService extends Service<Macdepunit> {
      * @param params 参数
      * @return 环境服务器列表
      */
-    void updateMacAndDep(Macdepunit params);
+    void updateMacAndDep(AssembleDeploy params);
 
     int ifexist(Condition condition);
 
     Integer findmachinenumbyenvidanddeployid(long envid,long depunitid);
+
+    Integer findmachinenumbyenvidanddeployidforup(long envid,long depunitid,long id);
+
+    Integer findmachinenumbyenvidandassemidforup(long envid,long assembleid,long id);
 
     List<Macdepunit> getmacdepbyenvidandassid(long envid,long depunitid);
     void deletemacdepbyenvidandassid(long envid,long depunitid);

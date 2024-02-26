@@ -159,8 +159,8 @@ export const asyncRouterMap = [
       { path: 'globalheader/list', name: '全局Header', component: _import('testvariables/globalheader/index'), meta: { title: '全局Header', permission: ['globalheader:list'] }},
       { path: 'variables/list', name: '随机变量', component: _import('testvariables/variables/index'), meta: { title: '随机变量', permission: ['variables:list'] }},
       // { path: 'testvariables/list', name: '接口变量', component: _import('testvariables/testvariables/index'), meta: { title: '接口变量', permission: ['testvariables:list'] }},
-      { path: 'dbvariables/list', name: '数据库变量', component: _import('testvariables/dbvariables/index'), meta: { title: '数据库变量', permission: ['dbvariables:list'] }},
-      { path: 'scriptvariables/list', name: '脚本变量', component: _import('testvariables/scriptvariables/index'), meta: { title: '脚本变量', permission: ['scriptvariables:list'] }},
+      // { path: 'dbvariables/list', name: '数据库变量', component: _import('testvariables/dbvariables/index'), meta: { title: '数据库变量', permission: ['dbvariables:list'] }},
+      // { path: 'scriptvariables/list', name: '脚本变量', component: _import('testvariables/scriptvariables/index'), meta: { title: '脚本变量', permission: ['scriptvariables:list'] }},
       { path: 'scriptvariables/list', name: '环境变量', component: _import('testvariables/scriptvariables/index'), meta: { title: '环境变量', permission: ['scriptvariables:list'] }}
       // { path: 'apicasesvariables/list', name: '绑定变量', component: _import('assets/cases/apicasesvariables/index'), meta: { title: '绑定变量', permission: ['testvariables:list'] }}
       // { path: 'testvariablesvalue/list', name: '变量结果', component: _import('testvariables/testvariablesvalue/index'), meta: { title: '变量结果', permission: ['testvariablesvalue:list'] }}

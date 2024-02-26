@@ -30,6 +30,11 @@ private MacdepunitMapper macdepunitMapper;
     }
 
     @Override
+    public AssembleDeploy findassembledeploybyid(long id) {
+        return macdepunitMapper.findassembledeploybyid(id);
+    }
+
+    @Override
     public List<Macdepunit> findMacAndDepWithEnv(Map<String, Object> params) {
         return macdepunitMapper.findMacAndDepWithEnv(params);
     }
@@ -45,7 +50,7 @@ private MacdepunitMapper macdepunitMapper;
     }
 
     @Override
-    public void updateMacAndDep(Macdepunit params) {
+    public void updateMacAndDep(AssembleDeploy params) {
         macdepunitMapper.updateMacAndDep(params);
     }
 
@@ -57,6 +62,16 @@ private MacdepunitMapper macdepunitMapper;
     @Override
     public Integer findmachinenumbyenvidanddeployid(long envid, long depunitid) {
         return macdepunitMapper.findmachinenumbyenvidanddeployid(envid,depunitid);
+    }
+
+    @Override
+    public Integer findmachinenumbyenvidanddeployidforup(long envid, long depunitid, long id) {
+        return macdepunitMapper.findmachinenumbyenvidanddeployidforup(envid, depunitid, id);
+    }
+
+    @Override
+    public Integer findmachinenumbyenvidandassemidforup(long envid, long assembleid, long id) {
+        return macdepunitMapper.findmachinenumbyenvidandassemidforup(envid, assembleid, id);
     }
 
     @Override

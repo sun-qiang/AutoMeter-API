@@ -24,6 +24,29 @@
   </resultMap>
 
 
+  <resultMap id="AssembleDeployResultMap" type="com.zoctan.api.dto.AssembleDeploy">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="depunitid" jdbcType="BIGINT" property="depunitid" />
+    <result column="assembleid" jdbcType="BIGINT" property="assembleid" />
+    <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
+    <result column="assembletype" jdbcType="VARCHAR" property="assembletype" />
+    <result column="machineid" jdbcType="BIGINT" property="machineid" />
+    <result column="machinename" jdbcType="VARCHAR" property="machinename" />
+    <result column="envid" jdbcType="BIGINT" property="envid" />
+    <result column="enviromentname" jdbcType="VARCHAR" property="enviromentname" />
+    <result column="domain" jdbcType="VARCHAR" property="domain" />
+    <result column="visittype" jdbcType="VARCHAR" property="visittype" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="connectstr" jdbcType="VARCHAR" property="connectstr" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+  </resultMap>
+
+
   <select id="findexistWithid" resultMap="BaseResultMap">
     select * from
     macdepunit c where c.envid=#{envid} and c.depunitid=#{depunitid}
@@ -71,8 +94,8 @@
     order by lastmodify_time  DESC
   </select>
 
-  <select id="findMacAndAssembleWithEnv" resultMap="BaseResultMap">
-    select a.enviromentname,b.ip,b.machinename,d.connectstr,d.assemblename, d.assembletype , c.* from
+  <select id="findMacAndAssembleWithEnv" resultMap="AssembleDeployResultMap">
+    select a.enviromentname,b.ip,b.machinename,d.connectstr,d.assemblename , d.assembletype , c.* from
     macdepunit c inner join enviroment a inner join machine b inner join enviroment_assemble d
     on a.id=c.envid and b.id=c.machineid and c.assembleid=d.id
     <where>
@@ -89,7 +112,21 @@
     select COUNT(*) from macdepunit a where a.envid = #{envid} and depunitid =#{depunitid}
   </select>
 
-  <update id="updateMacAndDep" parameterType="com.zoctan.api.entity.Envmachine">
+
+  <select id="findmachinenumbyenvidanddeployidforup" resultType="java.lang.Integer">
+    select COUNT(*) from macdepunit a where a.envid = #{envid} and depunitid =#{depunitid} and id != #{id}
+  </select>
+
+  <select id="findmachinenumbyenvidandassemidforup" resultType="java.lang.Integer">
+    select COUNT(*) from macdepunit a where a.envid = #{envid} and assembleid = #{assembleid} and id != #{id}
+  </select>
+
+  <select id="findassembledeploybyid" resultMap="AssembleDeployResultMap">
+    select * from macdepunit
+    where  id = #{id}
+  </select>
+
+  <update id="updateMacAndDep">
     update macdepunit set depunitid =#{depunitid}, assembleid = #{assembleid}, machineid = #{machineid}, envid = #{envid},
      enviromentname = #{enviromentname}, deployunitname = #{deployunitname},assembletype = #{assembletype}, machinename= #{machinename},
      visittype = #{visittype},domain= #{domain},creator = #{creator},

@@ -39,7 +39,7 @@ public class ConditionApiController {
                 .andCondition("casename = '" + conditionApi.getCasename()+ "'");
         if(conditionApiService.ifexist(con)>0)
         {
-            return ResultGenerator.genFailedResult("已存在该子条件名或者接口");
+            return ResultGenerator.genFailedResult("已存在该前置条件名");
         }
         else {
             conditionApiService.save(conditionApi);

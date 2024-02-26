@@ -125,29 +125,34 @@ public class MacdepunitController {
      * 更新自己的资料
      */
     @PutMapping("/detail")
-    public Result updateDeploy(@RequestBody final Macdepunit macdepunit) {
-
-        Condition assemcon = new Condition(Macdepunit.class);
-        assemcon.createCriteria().andCondition("envid = " + macdepunit.getEnvid()).andCondition("assembleid = " + macdepunit.getAssembleid())
-                .andCondition("id <> " + macdepunit.getId());
-        if (macdepunitService.ifexist(assemcon) > 0) {
-            return ResultGenerator.genFailedResult("此环境已经存在此微服务或者组件");
+    public Result updateDeploy(@RequestBody final AssembleDeploy macdepunit) {
+        if (macdepunitService.findmachinenumbyenvidanddeployidforup(macdepunit.getEnvid(),macdepunit.getDepunitid(),macdepunit.getId()) > 0) {
+            return ResultGenerator.genFailedResult("当前环境已经存在此微服务");
         } else {
-            Condition con = new Condition(Macdepunit.class);
-            con.createCriteria().andCondition("envid = " + macdepunit.getEnvid()).andCondition("depunitid = " + macdepunit.getDepunitid())
-                    .andCondition("id <> " + macdepunit.getId());
-            if (macdepunitService.ifexist(con) > 0) {
-                return ResultGenerator.genFailedResult("此环境已经存在此微服务或者组件");
-            } else {
-                this.macdepunitService.updateMacAndDep(macdepunit);
-                return ResultGenerator.genOkResult();
-            }
+            this.macdepunitService.updateMacAndDep(macdepunit);
+            return ResultGenerator.genOkResult();
         }
+//        Condition assemcon = new Condition(Macdepunit.class);
+//        assemcon.createCriteria().andCondition("envid = " + macdepunit.getEnvid()).andCondition("assembleid = " + macdepunit.getAssembleid())
+//                .andCondition("id <> " + macdepunit.getId());
+//        if (macdepunitService.ifexist(assemcon) > 0) {
+//            return ResultGenerator.genFailedResult("此环境已经存在此微服务或者组件");
+//        } else {
+//            Condition con = new Condition(Macdepunit.class);
+//            con.createCriteria().andCondition("envid = " + macdepunit.getEnvid()).andCondition("depunitid = " + macdepunit.getDepunitid())
+//                    .andCondition("id <> " + macdepunit.getId());
+//            if (macdepunitService.findmachinenumbyenvidanddeployidforup() > 0) {
+//                return ResultGenerator.genFailedResult("此环境已经存在此微服务或者组件");
+//            } else {
+//                this.macdepunitService.updateMacAndDep(macdepunit);
+//                return ResultGenerator.genOkResult();
+//            }
+//        }
     }
 
 
     @PutMapping("/detailassemble")
-    public Result updateDeploy(@RequestBody final AssembleDeploy assembleDeploy) {
+    public Result updateassemble(@RequestBody final AssembleDeploy assembleDeploy) {
         Condition con=new Condition(EnviromentAssemble.class);
         con.createCriteria().andCondition("projectid = "+assembleDeploy.getProjectid())
                 .andCondition("assembletype = '" + assembleDeploy.getAssembletype() + "'")
@@ -165,13 +170,13 @@ public class MacdepunitController {
             enviromentAssemble.setCreator(assembleDeploy.getCreator());
             enviromentAssemble.setLastmodifyTime(new Date());
             enviromentAssembleService.update(enviromentAssemble);
-            Condition assemcon = new Condition(Macdepunit.class);
-            assemcon.createCriteria().andCondition("envid = " + assembleDeploy.getEnvid()).andCondition("assembleid = " + assembleDeploy.getAssembleid())
-                    .andCondition("id <> " + assembleDeploy.getId());
-            if (macdepunitService.ifexist(assemcon) > 0) {
+//            Condition assemcon = new Condition(Macdepunit.class);
+//            assemcon.createCriteria().andCondition("envid = " + assembleDeploy.getEnvid()).andCondition("assembleid = " + assembleDeploy.getAssembleid())
+//                    .andCondition("id <> " + assembleDeploy.getId());
+            if (macdepunitService.findmachinenumbyenvidandassemidforup(assembleDeploy.getEnvid(),assembleDeploy.getAssembleid(),assembleDeploy.getId()) > 0) {
                 return ResultGenerator.genFailedResult("此环境已经存在此组件");
             } else {
-                Macdepunit macdepunit= macdepunitService.getById(assembleDeploy.getId());
+                AssembleDeploy macdepunit= macdepunitService.findassembledeploybyid(assembleDeploy.getId());
                 macdepunit.setMachinename(assembleDeploy.getMachinename());
                 macdepunit.setMachineid(assembleDeploy.getMachineid());
                 macdepunit.setDeployunitname(assembleDeploy.getAssemblename());

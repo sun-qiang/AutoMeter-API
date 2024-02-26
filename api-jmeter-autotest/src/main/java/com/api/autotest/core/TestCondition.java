@@ -471,6 +471,7 @@ public class TestCondition {
         Long DBConditionid = Long.parseLong(conditionDb.get("id"));
         String SqlType = conditionDb.get("dbtype");
         String DBConditionName = conditionDb.get("subconditionname");
+        String conditiontype = conditionDb.get("conditiontype");
         try {
             ArrayList<HashMap<String, String>> enviromentAssemblelist = testMysqlHelp.getcaseData("select * from enviroment_assemble where id=" + Assembleid);
             if (enviromentAssemblelist.size() == 0) {
@@ -506,7 +507,7 @@ public class TestCondition {
             }
             Long planid = Long.parseLong(requestObject.getTestplanid());
             Start = new Date().getTime();
-            Respone=Rundb(planid, requestObject.getTestplanname(), requestObject.getBatchname(), DBConditionid, DBConditionName, macdepunitlist, machinelist, ConnetcArray, AssembleType, deployunitvisittype, Sql, SqlType);
+            Respone=Rundb(conditiontype,requestObject, DBConditionid, DBConditionName, macdepunitlist, machinelist, ConnetcArray, AssembleType, deployunitvisittype, Sql, SqlType);
         } catch (Exception ex) {
             ConditionResultStatus = "失败";
             Respone = ex.getMessage();
@@ -655,22 +656,26 @@ public class TestCondition {
     }
 
     //保存数据库变量值
-    private void SaveDBTestVariablesValue(long planid, String planname, String batchname, long Conidtiondbid, String DBConditionName, long variablesid, String Variablesname, String VariablesValue) {
+    private void SaveDBTestVariablesValue(String conditiontype,RequestObject requestObject, long Conidtiondbid, String DBConditionName, long variablesid, String Variablesname, String VariablesValue) {
         TestvariablesValue testvariablesValue = new TestvariablesValue();
-        testvariablesValue.setPlanid(planid);
-        testvariablesValue.setPlanname(planname);
-        testvariablesValue.setBatchname(batchname);
-        testvariablesValue.setCaseid(Conidtiondbid);
+        testvariablesValue.setPlanid(Long.parseLong(requestObject.getTestplanid()));
+        testvariablesValue.setPlanname(requestObject.getTestplanname());
+        testvariablesValue.setBatchname(requestObject.getBatchname());
         testvariablesValue.setVariablestype("数据库");
         testvariablesValue.setCasename(DBConditionName);
         testvariablesValue.setVariablesid(variablesid);
         testvariablesValue.setVariablesname(Variablesname);
         testvariablesValue.setVariablesvalue(VariablesValue);
+        testvariablesValue.setConditiontype(conditiontype);
         testvariablesValue.setMemo("test");
+        testvariablesValue.setCaseid(Long.parseLong(requestObject.getCaseid()));
+        testvariablesValue.setConditionid(Conidtiondbid);
+        testvariablesValue.setCasename(requestObject.getCasename());
+        testvariablesValue.setSlaverid(Long.parseLong(requestObject.getSlaverid()));
         testMysqlHelp.testVariablesValueSave(testvariablesValue);
     }
 
-    private String Rundb(long planid, String planname, String batchname, long Conidtiondbid, String DBConditionName, ArrayList<HashMap<String, String>> macdepunitlist, ArrayList<HashMap<String, String>> machinelist, String[] ConnetcArray, String AssembleType, String deployunitvisittype, String Sql, String SqlType) throws Exception {
+    private String Rundb(String conditiontype,RequestObject requestObject, long Conidtiondbid, String DBConditionName, ArrayList<HashMap<String, String>> macdepunitlist, ArrayList<HashMap<String, String>> machinelist, String[] ConnetcArray, String AssembleType, String deployunitvisittype, String Sql, String SqlType) throws Exception {
         String Respone = "";
         String username = ConnetcArray[0];
         String pass = ConnetcArray[1];
@@ -698,7 +703,7 @@ public class TestCondition {
                         String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
                         //保存数据库变量
                         Respone = Respone + "成功获取 数据库变量名：" + Variablesname + " 值:" + VariablesValue;
-                        SaveDBTestVariablesValue(planid, planname, batchname, Conidtiondbid, DBConditionName, variablesid, Variablesname, VariablesValue);
+                        SaveDBTestVariablesValue(conditiontype,requestObject, Conidtiondbid, DBConditionName, variablesid, Variablesname, VariablesValue);
                     }
                 }
             } else {
@@ -712,16 +717,16 @@ public class TestCondition {
 
         if (AssembleType.equalsIgnoreCase("mysql")) {
             DBUrl = GetDbUrl(AssembleType, macdepunitlist, deployunitvisittype, machinelist, dbname, port);
-            Respone = UseHutoolDb(planid, planname, batchname, Conidtiondbid, DBConditionName, SqlType, DBUrl, username, pass, Sql);
+            Respone = UseHutoolDb(conditiontype,requestObject, Conidtiondbid, DBConditionName, SqlType, DBUrl, username, pass, Sql);
         }
         if (AssembleType.equalsIgnoreCase("oracle")) {
             DBUrl = GetDbUrl(AssembleType, macdepunitlist, deployunitvisittype, machinelist, dbname, port);
-            Respone = UseHutoolDb(planid, planname, batchname, Conidtiondbid, DBConditionName, SqlType, DBUrl, username, pass, Sql);
+            Respone = UseHutoolDb(conditiontype,requestObject, Conidtiondbid, DBConditionName, SqlType, DBUrl, username, pass, Sql);
         }
         return Respone;
     }
 
-    private String UseHutoolDb(long planid, String planname, String batchname, long Conidtiondbid, String DBConditionName, String SqlType, String DBUrl, String username, String pass, String Sql) throws SQLException {
+    private String UseHutoolDb(String conditiontype,RequestObject requestObject, long Conidtiondbid, String DBConditionName, String SqlType, String DBUrl, String username, String pass, String Sql) throws SQLException {
         String Respone = "";
         DataSource ds = new SimpleDataSource(DBUrl, username, pass);
 
@@ -732,8 +737,8 @@ public class TestCondition {
                 //2.获取查询结果
                 List<Entity> result = Db.use(ds).query(Sql);
                 for (HashMap<String, String> dbconditionVariables : dbconditionVariablesList) {
-                    long variablesid = Long.parseLong(dbconditionVariables.get("variablesid"));
-                    String Variablesname = dbconditionVariables.get("variablesname");
+                    long variablesid = Long.parseLong(dbconditionVariables.get("id"));
+                    String Variablesname = dbconditionVariables.get("dbvariablesname");
                     String columnname = dbconditionVariables.get("fieldname");
                     long roworder = Long.parseLong(dbconditionVariables.get("roworder"));
                     if (roworder > 0) {
@@ -742,7 +747,7 @@ public class TestCondition {
                     String VariablesValue = GetDBResultValueByEntity(result, columnname, roworder);
                     Respone = Respone + "成功获取 数据库变量名：" + Variablesname + " 值:" + VariablesValue;
                     //保存数据库变量
-                    SaveDBTestVariablesValue(planid, planname, batchname, Conidtiondbid, DBConditionName, variablesid, Variablesname, VariablesValue);
+                    SaveDBTestVariablesValue(conditiontype,requestObject, Conidtiondbid, DBConditionName, variablesid, Variablesname, VariablesValue);
                 }
             }
         } else {

@@ -28,7 +28,7 @@ public class ScriptvariablesController {
     public Result add(@RequestBody Scriptvariables scriptvariables) {
 
         Condition con=new Condition(Scriptvariables.class);
-        con.createCriteria().andCondition("projectid = "+scriptvariables.getProjectid())
+        con.createCriteria().andCondition("projectid = "+scriptvariables.getProjectid()).andCondition("conditionid = "+scriptvariables.getConditionid())
                 .andCondition("scriptvariablesname = '" + scriptvariables.getScriptvariablesname().replace("'","''") + "'");
         if(scriptvariablesService.ifexist(con)>0)
         {
@@ -70,7 +70,7 @@ public class ScriptvariablesController {
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Scriptvariables dic) {
         Condition con=new Condition(Dbvariables.class);
-        con.createCriteria().andCondition("projectid = "+dic.getProjectid())
+        con.createCriteria().andCondition("projectid = "+dic.getProjectid()).andCondition("conditionid = "+dic.getConditionid())
                 .andCondition("scriptvariablesname = '" + dic.getScriptvariablesname().replace("'","''") + "'").andCondition("id <> " + dic.getId());
         if(scriptvariablesService.ifexist(con)>0)
         {

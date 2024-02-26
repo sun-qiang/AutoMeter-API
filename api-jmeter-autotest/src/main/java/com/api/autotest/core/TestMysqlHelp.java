@@ -612,11 +612,11 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> getbyconditionid(long dbconditionid) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM dbcondition_variables where dbcondition_variables= " + dbconditionid;
-            logger.info(logplannameandcasename + "获取随机变量  result sql is...........: " + sql);
+            String sql = "SELECT * FROM dbvariables where conditionid= " + dbconditionid;
+            logger.info(logplannameandcasename + "获取数据库关联变量  result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
-            logger.info(logplannameandcasename + "获取随机变量 异常...........: " + e.getMessage());
+            logger.info(logplannameandcasename + "获取数据库关联变量 异常...........: " + e.getMessage());
         }
         return list;
     }

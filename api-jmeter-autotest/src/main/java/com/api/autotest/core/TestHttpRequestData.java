@@ -74,19 +74,10 @@ public class TestHttpRequestData {
                 logger.info(logplannameandcasename + "TestHttpRequestData ConditionidStr 场景条件产生的变量结果列表 获取接口变量值。。。。 " + SceneConditionidStr);
                 SceneConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scence'"+ " and conditionid in(" + SceneConditionidStr + ") and variablestype='接口'");
             }
-//            if (SceneConditionlist.size() > 0) {
-//                String ConditionidStr = "";
-//                for (HashMap<String, String> hs : SceneConditionlist) {
-//                    String Conditionid = hs.get("id");
-//                    ConditionidStr = ConditionidStr + Conditionid + ",";
-//                }
-//                ConditionidStr = ConditionidStr.substring(0, ConditionidStr.length() - 1);
-//                logger.info(logplannameandcasename + "TestHttpRequestData ConditionidStr 场景条件产生的变量结果列表 获取接口变量值。。。。 " + ConditionidStr);
-//                SceneConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scence'"+ " and conditionid in(" + ConditionidStr + ") and variablestype='接口'");
-//            }
-            //2.场景用例条件产生的变量结果列表
 
-            ArrayList<HashMap<String, String>> SceneCaselist = testMysqlHelp.getcaseData("select *  from testscene_testcase where testscenenid= " + SceneId);
+            //2.场景用例条件产生的变量结果列表
+            //ArrayList<HashMap<String, String>> SceneCaselist = testMysqlHelp.getcaseData("select *  from testscene_testcase where testscenenid= " + SceneId);
+            ArrayList<HashMap<String, String>> SceneCaselist = testMysqlHelp.getcaseData("select *  from testscene_testcase where testcaseid= " + TestCaseId+" and testscenenid="+ SceneId);
             ArrayList<HashMap<String, String>> SceneCaseApiConditionlist = new ArrayList<>();
             String ScenceCaseConditionidStr=GetIdsStr(SceneCaselist);
             if(!ScenceCaseConditionidStr.isEmpty())
@@ -95,17 +86,6 @@ public class TestHttpRequestData {
                 SceneCaseApiConditionlist = testMysqlHelp.getcaseData("select *  from condition_api where conditionid in(" + ScenceCaseConditionidStr + ")" + " and conditiontype='scencecase'");
 
             }
-//            ArrayList<HashMap<String, String>> SceneCaseApiConditionlist = new ArrayList<>();
-//            if(SceneCaselist.size()>0)
-//            {
-//                for (HashMap<String, String> hs : SceneCaselist) {
-//                    String Conditionid = hs.get("id");
-//                    CaseConditionidStr = CaseConditionidStr + Conditionid + ",";
-//                }
-//                CaseConditionidStr = CaseConditionidStr.substring(0, CaseConditionidStr.length() - 1);
-//                logger.info(logplannameandcasename + "TestHttpRequestData CaseConditionidStr 场景用例条件ids。。。。 " + CaseConditionidStr);
-//                SceneCaseApiConditionlist = testMysqlHelp.getcaseData("select *  from condition_api where conditionid in(" + CaseConditionidStr + ")" + " and conditiontype='scencecase'");
-//            }
             String CaseConditionidvaluesStr=GetIdsStr(SceneCaseApiConditionlist);
             ArrayList<HashMap<String, String>> SceneCaseConditionValueslist = new ArrayList<>();
             if(!CaseConditionidvaluesStr.isEmpty())
@@ -113,32 +93,59 @@ public class TestHttpRequestData {
                 logger.info(logplannameandcasename + "TestHttpRequestData CaseConditionidvaluesStr 场景用例条件产生的变量获取接口变量值ids。。。。 " + CaseConditionidvaluesStr);
                 SceneCaseConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scencecase'"+ " and conditionid in(" + CaseConditionidvaluesStr + ") and variablestype='接口'");
             }
-
-//            if(SceneCaseApiConditionlist.size()>0)
-//            {
-//                for (HashMap<String, String> hs : SceneCaseApiConditionlist) {
-//                    String Conditionid = hs.get("id");
-//                    CaseConditionidvaluesStr = CaseConditionidvaluesStr + Conditionid + ",";
-//                }
-//                CaseConditionidvaluesStr = CaseConditionidvaluesStr.substring(0, CaseConditionidvaluesStr.length() - 1);
-//                logger.info(logplannameandcasename + "TestHttpRequestData CaseConditionidvaluesStr 场景用例条件产生的变量获取接口变量值ids。。。。 " + CaseConditionidvaluesStr);
-//                SceneCaseConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scencecase'"+ " and conditionid in(" + CaseConditionidvaluesStr + ") and variablestype='接口'");
-//            }
             //3.集合条件产生的变量结果列表
             ArrayList<HashMap<String, String>> Interfacevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=0 and batchname = '" + BatchName + "'"+" and conditiontype='execplan' and variablestype='接口'");
-            if(SceneCaseConditionValueslist.size()>0)
-            {
-                Interfacevariableslist.addAll(SceneCaseConditionValueslist);
-            }
             if(SceneConditionValueslist.size()>0)
             {
                 Interfacevariableslist.addAll(SceneConditionValueslist);
             }
+            if(SceneCaseConditionValueslist.size()>0)
+            {
+                Interfacevariableslist.addAll(SceneCaseConditionValueslist);
+            }
+
+            logger.info(logplannameandcasename + "TestHttpRequestData 获取接口变量值完成。。。。 ");
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            logger.info(logplannameandcasename + "TestHttpRequestData 获取接口变量值。。。。 ");
-            ArrayList<HashMap<String, String>> DBvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "数据库" + "'");
-            logger.info(logplannameandcasename + "TestHttpRequestData 获取数据库变量值。。。。 ");
+            //////////////////////数据库变量////////////////////////////////////////////////////////////////////////////////////////
+            ArrayList<HashMap<String, String>> SceneDBConditionlist = testMysqlHelp.getcaseData("select *  from condition_db where conditionid= " + SceneId + "  and conditiontype='" + "scence" + "'");
+            //1.场景条件产生的变量结果列表
+            ArrayList<HashMap<String, String>> SceneDBConditionValueslist = new ArrayList<>();
+            String SceneDBConditionidStr=GetIdsStr(SceneDBConditionlist);
+            if(!SceneDBConditionidStr.isEmpty())
+            {
+                logger.info(logplannameandcasename + "TestHttpRequestData SceneDBConditionidStr 场景条件产生的变量结果列表 获取数据库变量值。。。。 " + SceneDBConditionidStr);
+                SceneDBConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scence'"+ " and conditionid in(" + SceneDBConditionidStr + ") and variablestype='数据库'");
+            }
+
+            //2.场景用例条件产生的变量结果列表
+            ArrayList<HashMap<String, String>> SceneCaseDBConditionlist = new ArrayList<>();
+            String ScenceDBCaseConditionidStr=GetIdsStr(SceneCaselist);
+            if(!ScenceDBCaseConditionidStr.isEmpty())
+            {
+                logger.info(logplannameandcasename + "TestHttpRequestData ScenceDBCaseConditionidStr 场景用例条件ids。。。。 " + ScenceDBCaseConditionidStr);
+                SceneCaseDBConditionlist = testMysqlHelp.getcaseData("select *  from condition_db where conditionid in(" + ScenceDBCaseConditionidStr + ")" + " and conditiontype='scencecase'");
+
+            }
+            String CaseDBConditionidvaluesStr=GetIdsStr(SceneCaseDBConditionlist);
+            ArrayList<HashMap<String, String>> SceneDBCaseConditionValueslist = new ArrayList<>();
+            if(!CaseDBConditionidvaluesStr.isEmpty())
+            {
+                logger.info(logplannameandcasename + "TestHttpRequestData CaseDBConditionidvaluesStr 场景用例条件产生的变量获取数据库变量值ids。。。。 " + CaseDBConditionidvaluesStr);
+                SceneDBCaseConditionValueslist = testMysqlHelp.getcaseData("select *  from testvariables_value where planid=" + PlanId + " and batchname='" + BatchName + "'" +" and conditiontype='scencecase'"+ " and conditionid in(" + CaseDBConditionidvaluesStr + ") and variablestype='数据库'");
+            }
+            //3.集合条件产生的变量结果列表
+            ArrayList<HashMap<String, String>> DBvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=0 and batchname = '" + BatchName + "'"+" and conditiontype='execplan' and variablestype='数据库'");
+            if(SceneDBConditionValueslist.size()>0)
+            {
+                DBvariableslist.addAll(SceneDBConditionValueslist);
+            }
+            if(SceneDBCaseConditionValueslist.size()>0)
+            {
+                DBvariableslist.addAll(SceneDBCaseConditionValueslist);
+            }
+            //ArrayList<HashMap<String, String>> DBvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "数据库" + "'");
+            logger.info(logplannameandcasename + "TestHttpRequestData 获取数据库变量值完成。。。。 ");
             //文件变量
             ArrayList<HashMap<String, String>> Filevariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue   from testvariables_value where planid= " + PlanId + " and slaverid=" + requestObject.getSlaverid() + " and batchname = '" + BatchName + "' and variablestype='" + "文件" + "'");
             logger.info(logplannameandcasename + "TestHttpRequestData 获取文件变量值。。。。 ");
@@ -431,7 +438,7 @@ public class TestHttpRequestData {
                     Key = map.get(column);
                 }
                 if (column.equalsIgnoreCase(CloumnValue)) {
-                    Value = map.get(column);
+                    Value = map.get(column);dmsbfmsbfs
                 }
             }
             RadomMap.put(Key, Value);

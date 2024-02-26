@@ -1,5 +1,6 @@
 package com.zoctan.api.service;
 
+import com.zoctan.api.dto.TestVariablesDto;
 import com.zoctan.api.entity.Enviroment;
 import com.zoctan.api.entity.TestplanTestscene;
 import com.zoctan.api.entity.Testvariables;
@@ -15,7 +16,7 @@ import java.util.Map;
 */
 public interface TestvariablesService extends Service<Testvariables> {
 
-    List<Testvariables> findtestvariablesWithName(final Map<String, Object> params);
+    List<TestVariablesDto> findtestvariablesWithName(final Map<String, Object> params);
 
     /**
      * 更新字典内容

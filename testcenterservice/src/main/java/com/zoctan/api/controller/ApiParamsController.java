@@ -51,87 +51,90 @@ public class ApiParamsController {
             String Property = apiParams.getPropertytype();
             Condition con = new Condition(ApiParams.class);
             con.createCriteria().andCondition("keytype = '" + apiParams.getKeytype() + "'").andCondition("apiid = " + apiParams.getApiid());
-            List<ApiCasedata> apiCasedataList = apiCasedataService.getdataidbyapiidandtype(apiid, Property);
-            String IDS = "";
-            if (apiCasedataList.size() > 0) {
-                for (ApiCasedata apicasedata : apiCasedataList) {
-                    IDS = IDS + "," + apicasedata.getId();
-                }
-                IDS = IDS.substring(1);
-                ApiParamsController.log.info("删除用例数据表的id为：" + IDS);
-            }
-            List<Apicases>apicasesList=apicasesService.getcasebyapiid(apiid);
+//            List<ApiCasedata> apiCasedataList = apiCasedataService.getdataidbyapiidandtype(apiid, Property);
+//            String IDS = "";
+//            if (apiCasedataList.size() > 0) {
+//                for (ApiCasedata apicasedata : apiCasedataList) {
+//                    IDS = IDS + "," + apicasedata.getId();
+//                }
+//                IDS = IDS.substring(1);
+//                ApiParamsController.log.info("删除用例数据表的id为：" + IDS);
+//            }
+//            List<Apicases>apicasesList=apicasesService.getcasebyapiid(apiid);
             //存在此类型的body参数
             if (apiParamsService.ifexist(con) > 0) {
+                //更新参数表
+                apiParamsService.updateApiParams(apiParams);
                 //参数值是空，做删除操作
-                if(apiParams.getKeyname().isEmpty())
-                {
-                    //Body值为空，则当做删除类型为keytype的Body，并且删除用例参数值
-                    apiParamsService.deleteByCondition(con);
-                    if(!IDS.isEmpty())
-                    {
-                        apiCasedataService.deleteByIds(IDS);
-                    }
-                }
-                //更新操作
-                else
-                {
-                    //更新参数表
-                    apiParamsService.updateApiParams(apiParams);
-                    //判断用例数据表中类型是否和当前相同，如果不同，先删除，保存当前类型的默认值
-                    if(!IDS.isEmpty())
-                    {
-                        apiCasedataService.deleteByIds(IDS);
-                    }
-                    //保存新的Body参数值
-                    List< ApiCasedata> apiCasedataList1=new ArrayList<>();
-                    for (Apicases apicases:apicasesList) {
-                        ApiCasedata apiCasedata=new ApiCasedata();
-                        apiCasedata.setCaseid(apicases.getId());
-                        apiCasedata.setCasename(apicases.getCasename());
-                        apiCasedata.setApiparam("Body");
-                        apiCasedata.setApiparamvalue(apiParams.getKeyname());
-                        apiCasedata.setParamstype(apiParams.getKeytype());
-                        apiCasedata.setPropertytype("Body");
-                        apiCasedata.setMemo("");
-                        apiCasedataList1.add(apiCasedata);
-                    }
-                    if(apiCasedataList1.size()>0)
-                    {
-                        apiCasedataService.saveCasedata(apiCasedataList1);
-                    }
-                }
+//                if(apiParams.getKeyname().isEmpty())
+//                {
+//                    //Body值为空，则当做删除类型为keytype的Body，并且删除用例参数值
+//                    apiParamsService.deleteByCondition(con);
+////                    if(!IDS.isEmpty())
+////                    {
+////                        apiCasedataService.deleteByIds(IDS);
+////                    }
+//                }
+//                //更新操作
+//                else
+//                {
+//                    //更新参数表
+//                    apiParamsService.updateApiParams(apiParams);
+//                    //判断用例数据表中类型是否和当前相同，如果不同，先删除，保存当前类型的默认值
+////                    if(!IDS.isEmpty())
+////                    {
+////                        apiCasedataService.deleteByIds(IDS);
+////                    }
+////                    //保存新的Body参数值
+////                    List< ApiCasedata> apiCasedataList1=new ArrayList<>();
+////                    for (Apicases apicases:apicasesList) {
+////                        ApiCasedata apiCasedata=new ApiCasedata();
+////                        apiCasedata.setCaseid(apicases.getId());
+////                        apiCasedata.setCasename(apicases.getCasename());
+////                        apiCasedata.setApiparam("Body");
+////                        apiCasedata.setApiparamvalue(apiParams.getKeyname());
+////                        apiCasedata.setParamstype(apiParams.getKeytype());
+////                        apiCasedata.setPropertytype("Body");
+////                        apiCasedata.setMemo("");
+////                        apiCasedataList1.add(apiCasedata);
+////                    }
+////                    if(apiCasedataList1.size()>0)
+////                    {
+////                        apiCasedataService.saveCasedata(apiCasedataList1);
+////                    }
+//                }
             }
             //不存在此类型的body参数，新增，删除老的Body用例数据，同步新的Body用例数据
             else
             {
+                apiParamsService.SaveApiParams(apiParams);
                 //保存Body参数
-                if(!apiParams.getKeyname().isEmpty())
-                {
-                    apiParamsService.SaveApiParams(apiParams);
-                    //同步删除已存在的用例数据
-                    if(!IDS.isEmpty())
-                    {
-                        apiCasedataService.deleteByIds(IDS);
-                    }
-                    //保存新的Body参数值
-                    List< ApiCasedata> apiCasedataList1=new ArrayList<>();
-                    for (Apicases apicases:apicasesList) {
-                        ApiCasedata apiCasedata=new ApiCasedata();
-                        apiCasedata.setCaseid(apicases.getId());
-                        apiCasedata.setCasename(apicases.getCasename());
-                        apiCasedata.setApiparam("Body");
-                        apiCasedata.setApiparamvalue(apiParams.getKeyname());
-                        apiCasedata.setParamstype(apiParams.getKeytype());
-                        apiCasedata.setPropertytype("Body");
-                        apiCasedata.setMemo("");
-                        apiCasedataList1.add(apiCasedata);
-                    }
-                    if(apiCasedataList1.size()>0)
-                    {
-                        apiCasedataService.saveCasedata(apiCasedataList1);
-                    }
-                }
+//                if(!apiParams.getKeyname().isEmpty())
+//                {
+//                    apiParamsService.SaveApiParams(apiParams);
+//                    //同步删除已存在的用例数据
+////                    if(!IDS.isEmpty())
+////                    {
+////                        apiCasedataService.deleteByIds(IDS);
+////                    }
+////                    //保存新的Body参数值
+////                    List< ApiCasedata> apiCasedataList1=new ArrayList<>();
+////                    for (Apicases apicases:apicasesList) {
+////                        ApiCasedata apiCasedata=new ApiCasedata();
+////                        apiCasedata.setCaseid(apicases.getId());
+////                        apiCasedata.setCasename(apicases.getCasename());
+////                        apiCasedata.setApiparam("Body");
+////                        apiCasedata.setApiparamvalue(apiParams.getKeyname());
+////                        apiCasedata.setParamstype(apiParams.getKeytype());
+////                        apiCasedata.setPropertytype("Body");
+////                        apiCasedata.setMemo("");
+////                        apiCasedataList1.add(apiCasedata);
+////                    }
+////                    if(apiCasedataList1.size()>0)
+////                    {
+////                        apiCasedataService.saveCasedata(apiCasedataList1);
+////                    }
+//                }
             }
         }
         return ResultGenerator.genOkResult();
@@ -151,101 +154,11 @@ public class ApiParamsController {
                 if(requesttype.equalsIgnoreCase("Form表单"))
                 {
                     updateparams(apiParamsList);
-                } else
-                {
-
                 }
-//                List<ApiParams> apiParamsListDelete=apiParamsService.getApiParamsbypropertytype(apiid,"Body");
-//                List<ApiCasedata> apiCasedataList = apiCasedataService.getdataidbyapiidandtype(apiid, Property);
-//                if (apiCasedataList.size() > 0) {
-//                    for (ApiCasedata apicasedata : apiCasedataList) {
-//                        IDS = IDS + "," + apicasedata.getId();
-//                    }
-//                    IDS = IDS.substring(1);
-//                    ApiParamsController.log.info("删除用例数据表的id为：" + IDS);
-//                }
-//                if(!IDS.isEmpty())
-//                {
-//                    apiCasedataService.deleteByIds(IDS);
-//                }
-//                for (ApiParams apiParamsdelete :apiParamsListDelete) {
-//                    apiParamsService.deleteById(apiParamsdelete.getId());
-//                }
-//                for (ApiParams apiparam: apiParamsList) {
-//                    String Protype=apiparam.getPropertytype();
-//                    String KeyName=apiparam.getKeyname();
-//                    String KeyValue=apiparam.getKeydefaultvalue();
-//                    String ParamType=apiparam.getKeytype();
-//                    if ((!KeyName.isEmpty()) || (!ParamType.isEmpty()) || (!KeyValue.isEmpty())) {
-//                        apiParamsService.SaveApiParams(apiparam);
-//                        List<Apicases>apicasesList= apicasesService.getcasebyapiid(apiid);
-//                        if(apicasesList.size()>0)
-//                        {
-//                            List<ApiCasedata> apiCasedataListnew=new ArrayList<>();
-//                            for (Apicases apicase : apicasesList) {
-//                                ApiCasedata apiCasedata=new ApiCasedata();
-//                                apiCasedata.setCaseid(apicase.getId());
-//                                apiCasedata.setCasename(apicase.getCasename());
-//                                apiCasedata.setApiparam(KeyName);
-//                                apiCasedata.setApiparamvalue(KeyValue);
-//                                apiCasedata.setPropertytype(Protype);
-//                                apiCasedata.setParamstype(ParamType);
-//                                apiCasedata.setMemo("");
-//                                apiCasedataListnew.add(apiCasedata);
-//                            }
-//                            if(apiCasedataListnew.size()>0)
-//                            {
-//                                apiCasedataService.saveCasedata(apiCasedataListnew);
-//                            }
-//                        }
-//                    }
-//                }
             }
             else
             {
                 updateparams(apiParamsList);
-//                for (ApiParams apiparam: apiParamsList) {
-//                    Long apiidnew = apiparam.getApiid();
-//                    String Protype = apiparam.getPropertytype();
-//                    String KeyName = apiparam.getKeyname();
-//                    String KeyValue = apiparam.getKeydefaultvalue();
-//                    String ParamType = apiparam.getKeytype();
-//                    List<Apicases> apicasesList = apicasesService.getcasebyapiid(apiidnew);
-//                    if (apiparam.getId() == null) {
-//                        if ((!apiparam.getKeyname().isEmpty()) || (!apiparam.getKeytype().isEmpty()) || (!apiparam.getKeydefaultvalue().isEmpty())) {
-//                            apiParamsService.SaveApiParams(apiparam);
-//                            //新增所有用例值的参数名，参数值为默认值
-//                            if (apicasesList.size() > 0) {
-//                                List<ApiCasedata> apiCasedataList = new ArrayList<>();
-//                                for (Apicases apicase : apicasesList) {
-//                                    ApiCasedata apiCasedata = new ApiCasedata();
-//                                    apiCasedata.setCaseid(apicase.getId());
-//                                    apiCasedata.setCasename(apicase.getCasename());
-//                                    apiCasedata.setApiparam(KeyName);
-//                                    apiCasedata.setApiparamvalue(KeyValue);
-//                                    apiCasedata.setPropertytype(Protype);
-//                                    apiCasedata.setParamstype(ParamType);
-//                                    apiCasedata.setMemo("");
-//                                    apiCasedataList.add(apiCasedata);
-//                                }
-//                                if(apiCasedataList.size()>0)
-//                                {
-//                                    apiCasedataService.saveCasedata(apiCasedataList);
-//                                }
-//                            }
-//                        }
-//                    }
-//                    else
-//                    {
-//                        ApiParams oldparam=apiParamsService.getById(apiparam.getId());
-//                        String OldParamName=oldparam.getKeyname();
-//                        apiParamsService.updateApiParams(apiparam);
-//                        //更新所有用例值的参数名，（参数值先不刷新成默认值）
-//                        for (Apicases apicase : apicasesList) {
-//                            apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
-//                        }
-//                    }
-//                }
             }
         }
         return ResultGenerator.genOkResult();
@@ -290,9 +203,9 @@ public class ApiParamsController {
                 String OldParamName=oldparam.getKeyname();
                 apiParamsService.updateApiParams(apiparam);
                 //更新所有用例值的参数名，（参数值先不刷新成默认值）
-                for (Apicases apicase : apicasesList) {
-                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
-                }
+//                for (Apicases apicase : apicasesList) {
+//                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
+//                }
             }
         }
     }

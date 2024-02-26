@@ -2,6 +2,7 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
+import com.zoctan.api.dto.TestVariablesDto;
 import com.zoctan.api.entity.Deployunit;
 import com.zoctan.api.entity.Enviroment;
 import com.zoctan.api.entity.TestplanTestscene;
@@ -33,7 +34,7 @@ public class TestvariablesController {
     public Result add(@RequestBody Testvariables testvariables) {
 
         Condition con=new Condition(Testvariables.class);
-        con.createCriteria().andCondition("projectid = "+testvariables.getProjectid())
+        con.createCriteria().andCondition("projectid = "+testvariables.getProjectid()).andCondition("caseid = "+testvariables.getCaseid())
                 .andCondition("testvariablesname = '" + testvariables.getTestvariablesname().replace("'","''") + "'");
         if(testvariablesService.ifexist(con)>0)
         {
@@ -85,7 +86,7 @@ public class TestvariablesController {
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Testvariables dic) {
         Condition con=new Condition(Testvariables.class);
-        con.createCriteria().andCondition("projectid = "+dic.getProjectid())
+        con.createCriteria().andCondition("projectid = "+dic.getProjectid()).andCondition("caseid = "+dic.getCaseid())
                 .andCondition("testvariablesname = '" + dic.getTestvariablesname().replace("'","''") + "'").andCondition("id <> " + dic.getId());
         if(testvariablesService.ifexist(con)>0)
         {
@@ -106,8 +107,8 @@ public class TestvariablesController {
         Integer page= Integer.parseInt(param.get("page").toString());
         Integer size= Integer.parseInt(param.get("size").toString());
         PageHelper.startPage(page, size);
-        final List<Testvariables> list = this.testvariablesService.findtestvariablesWithName(param);
-        final PageInfo<Testvariables> pageInfo = new PageInfo<>(list);
+        final List<TestVariablesDto> list = this.testvariablesService.findtestvariablesWithName(param);
+        final PageInfo<TestVariablesDto> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
     }
 
@@ -116,8 +117,8 @@ public class TestvariablesController {
         Integer page= Integer.parseInt(param.get("page").toString());
         Integer size= Integer.parseInt(param.get("size").toString());
         PageHelper.startPage(page, size);
-        final List<Testvariables> list = this.testvariablesService.findtestvariablesWithName(param);
-        final PageInfo<Testvariables> pageInfo = new PageInfo<>(list);
+        final List<TestVariablesDto> list = this.testvariablesService.findtestvariablesWithName(param);
+        final PageInfo<TestVariablesDto> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
 //        final List<Testvariables> list = this.testvariablesService.findtestvariablesbycaseid(param);
 //        return ResultGenerator.genOkResult(list);

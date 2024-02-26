@@ -30,11 +30,16 @@ public interface MacdepunitMapper extends MyMapper<Macdepunit> {
      * @param params 参数
      * @return 环境服务器列表
      */
-    void updateMacAndDep(Macdepunit params);
+    void updateMacAndDep(AssembleDeploy params);
+    AssembleDeploy  findassembledeploybyid(long id);
 
     int ifexist(Condition condition);
 
     Integer findmachinenumbyenvidanddeployid(@Param("envid") long envid, @Param("depunitid") long depunitid);
+
+    Integer findmachinenumbyenvidanddeployidforup(@Param("envid") long envid, @Param("depunitid") long depunitid,@Param("id")long id);
+
+    Integer findmachinenumbyenvidandassemidforup(@Param("envid") long envid, @Param("assembleid") long assembleid,@Param("id")long id);
 
     List<Macdepunit> getmacdepbyenvidandassid(@Param("envid") long envid, @Param("assembleid") long assembleid);
     void deletemacdepbyenvidandassid(@Param("envid") long envid, @Param("assembleid") long assembleid);

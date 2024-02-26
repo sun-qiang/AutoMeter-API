@@ -18,13 +18,32 @@
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="casename" jdbcType="VARCHAR" property="casename" />
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
-
-
   </resultMap>
 
-  <select id="findtestvariablesWithName" resultMap="BaseResultMap">
-    SELECT a.*
-    FROM testvariables a
+  <resultMap id="BaseResultDto" type="com.zoctan.api.dto.TestVariablesDto">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="testvariablesname" jdbcType="VARCHAR" property="testvariablesname" />
+    <result column="variablesdes" jdbcType="VARCHAR" property="variablesdes" />
+    <result column="testvariablestype" jdbcType="VARCHAR" property="testvariablestype" />
+    <result column="variablesexpress" jdbcType="VARCHAR" property="variablesexpress" />
+    <result column="valuetype" jdbcType="VARCHAR" property="valuetype" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
+    <result column="apiname" jdbcType="VARCHAR" property="apiname" />
+    <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
+    <result column="caseid" jdbcType="BIGINT" property="caseid" />
+  </resultMap>
+
+  <select id="findtestvariablesWithName" resultMap="BaseResultDto">
+    SELECT a.*,b.deployunitname,b.apiname
+    FROM testvariables a inner join apicases b on a.caseid=b.id
     <where>
       <if test="testvariablesname != null and testvariablesname != ''">a.testvariablesname like CONCAT('%',#{testvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
@@ -35,7 +54,7 @@
 
   <select id="findtestvariablesbycaseid" resultMap="BaseResultMap">
     SELECT a.*
-    FROM testvariables a
+    FROM testvariables
     where a.caseid=#{caseid}
     order by  lastmodify_time  DESC
   </select>
