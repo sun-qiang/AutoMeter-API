@@ -443,13 +443,13 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog title="用例值" :visible.sync="casedataialogFormVisible">
+    <el-dialog title="用例值"  width="1000px"  :visible.sync="casedataialogFormVisible">
       <el-form
         status-icon
         class="small-space"
         label-position="left"
         label-width="80px"
-        style="width: 600px; margin-left:50px;"
+        style="width: 900px; margin-left:50px;"
         :model="tmpapicasesdata"
         ref="tmpapicasesdata"
       >
@@ -475,12 +475,6 @@
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
                     </template>
                   </el-table-column>
-                  <el-table-column label="操作" align="center" width="110">
-                    <template slot-scope="scope">
-                      <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                      </el-button>
-                    </template>
-                  </el-table-column>
                 </el-table>
               </template>
             </el-tab-pane>
@@ -500,12 +494,6 @@
                   <el-table-column label="值"  align="center">
                     <template slot-scope="scope">
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="操作" align="center" width="110">
-                    <template slot-scope="scope">
-                      <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                      </el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -530,17 +518,10 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
                       </template>
                     </el-table-column>
-                    <el-table-column label="操作" align="center" width="110">
-                      <template slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                        </el-button>
-                      </template>
-                    </el-table-column>
                   </el-table>
                 </div>
                 <div v-if="BodyDataVisible">
                     <el-form-item label="Body值：" prop="apiparamvalue" >
-                      <el-button type="primary" size="mini" @click="UseParams">使用变量</el-button>
                       <el-input
                         type="textarea"
                         rows="20" cols="70"
@@ -552,7 +533,9 @@
                 </div>
               </template>
             </el-tab-pane>
-
+            <el-tab-pane label="使用变量" name="third">
+              <uservariables></uservariables>
+            </el-tab-pane>
           </el-tabs>
         </template>
       </el-form>
@@ -2309,9 +2292,11 @@
   import { getassembleallnameList as getassembleallnameList } from '@/api/enviroment/enviromentassemble'
   import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
   import { search as searchscriptvariables, addscriptvariables, updatescriptvariables, removescriptvariables } from '@/api/testvariables/scriptvariables'
+  import uservariables from '@/components/testvariables'
 
   export default {
     name: '用例库',
+    components: { uservariables },
     filters: {
       statusFilter(status) {
         const statusMap = {

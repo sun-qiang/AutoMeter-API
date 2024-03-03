@@ -21,6 +21,7 @@
     "settings": "^0.1.1",
     "sortablejs": "^1.8.4",
     "vue": "^2.6.12",
+    "vue-clipboard2": "^0.3.3",
     "vue-count-to": "^1.0.13",
     "vue-file-upload": "^0.1.12",
     "vue-json-viewer": "^2.2.22",

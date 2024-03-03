@@ -438,7 +438,7 @@ public class TestHttpRequestData {
                     Key = map.get(column);
                 }
                 if (column.equalsIgnoreCase(CloumnValue)) {
-                    Value = map.get(column);dmsbfmsbfs
+                    Value = map.get(column);
                 }
             }
             RadomMap.put(Key, Value);

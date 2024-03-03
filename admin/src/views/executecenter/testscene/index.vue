@@ -324,12 +324,10 @@
               type="primary"
               size="mini"
               v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
-              @click.native.prevent="showtestscenecaseLogicDialog(scope.$index)"
+              @click.native.prevent="showtestcasedataDialog(scope.$index)"
             >用例数据</el-button>
           </template>
         </el-table-column>
-
-
       </el-table>
       <el-pagination
         @size-change="casehandleSizeChange"
@@ -1292,6 +1290,112 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="用例值" width="1000px" :visible.sync="casedataialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="80px"
+        style="width: 900px; margin-left:50px;"
+        :model="tmpapicasesdata"
+        ref="tmpapicasesdata"
+      >
+        <el-form-item label="用例名:">
+          <el-input
+            readonly="true"
+            v-model="tmpapicase.casename"
+          />
+        </el-form-item>
+
+        <template>
+          <el-tabs v-model="activeName" type="card" ref="tabs">
+            <el-tab-pane label="Header" name="zero">
+              <template>
+                <el-table :data="Headertabledatas" border>
+                  <el-table-column label="参数" prop="apiparam" align="center">
+                    <template slot-scope="scope">
+                      <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="值" prop="apiparamvalue" align="center">
+                    <template slot-scope="scope">
+                      <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-tab-pane>
+            <el-tab-pane label="Params" name="first">
+              <template>
+                <el-table :data="Paramstabledatas" border>
+                  <el-table-column label="参数"  align="center">
+                    <template slot-scope="scope">
+                      <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="值类型"  align="center">
+                    <template slot-scope="scope">
+                      <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="值"  align="center">
+                    <template slot-scope="scope">
+                      <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </el-tab-pane>
+            <el-tab-pane label="Body" name="second">
+              <template>
+                <div v-if="BodyParamDataVisible">
+                  <el-table :data="Bodytabledatas" border>
+                    <el-table-column label="参数"  align="center">
+                      <template slot-scope="scope">
+                        <el-input size="mini" placeholder="参数名" v-model="scope.row.apiparam"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="值类型"  align="center">
+                      <template slot-scope="scope">
+                        <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="默认值"  align="center">
+                      <template slot-scope="scope">
+                        <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
+                <div v-if="BodyDataVisible">
+                  <el-form-item label="Body值：" prop="apiparamvalue" >
+                    <el-input
+                      type="textarea"
+                      rows="20" cols="70"
+                      prefix-icon="el-icon-message"
+                      auto-complete="off"
+                      v-model.trim="tmpapicasesbodydata.apiparamvalue"
+                    />
+                  </el-form-item>
+                </div>
+              </template>
+            </el-tab-pane>
+            <el-tab-pane label="使用变量" name="third">
+              <uservariables></uservariables>
+            </el-tab-pane>
+          </el-tabs>
+        </template>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="casedataialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          :loading="btnLoading"
+          @click.native.prevent="addnewapicasesdata"
+        >保存
+        </el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -1314,9 +1418,13 @@ import { getassembleallnameList as getassembleallnameList } from '@/api/envirome
 import { adddelaycondition, updatedelaycondition, removedelaycondition, searchbytype } from '@/api/condition/delaycondition'
 import { mapGetters } from 'vuex'
 import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
+import uservariables from '@/components/testvariables'
+import { getparamvaluebycaseidandtype as getparamvaluebycaseidandtype, casevalueforbody as casevalueforbody, updatepropertydata, updateapicasesdata } from '@/api/assets/apicasesdata'
+import { getapi } from '@/api/deployunit/api'
 
 export default {
   name: '测试场景',
+  components: { uservariables },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -1330,6 +1438,13 @@ export default {
   data() {
     return {
       id: null,
+      activeName: 'zero',
+      Headertabledatas: [],
+      Paramstabledatas: [],
+      Bodytabledatas: [],
+      BodyVisible: false,
+      BodyParamDataVisible: false,
+      BodyDataVisible: false,
       tmpexecuteplanid: null,
       tmpaddcaseexecuteplanid: null,
       tmpdeployunitid: null,
@@ -1386,6 +1501,7 @@ export default {
       LogicdialogFormVisible: false,
       dbVariablesDialogFormVisible: false,
       adddbvariablesdialogFormVisible: false,
+      casedataialogFormVisible: false,
       tmpcopyscene: {
         sourcesceneid: '',
         sourcescenename: '',
@@ -1595,6 +1711,44 @@ export default {
         size: 10,
         conditionid: '',
         projectid: ''
+      },
+      tmpapicasesdata: {
+        id: '',
+        caseid: '',
+        casename: '',
+        propertytype: '',
+        memo: '',
+        casedataMap: [],
+        keyname: ''
+      },
+      tmpapicasesbodydata: {
+        id: '',
+        caseid: '',
+        casename: '',
+        propertytype: '',
+        memo: '',
+        apiparam: '',
+        apiparamvalue: '',
+        paramstype: ''
+      },
+      tmpapicase: {
+        caseid: '',
+        casename: '',
+        apiid: ''
+      },
+      tmpapi: {
+        id: '',
+        deployunitid: '',
+        deployunitname: '',
+        apiname: '',
+        visittype: '',
+        requesttype: '',
+        apistyle: '',
+        path: '',
+        requestcontenttype: '',
+        responecontenttype: '',
+        memo: '',
+        creator: ''
       }
     }
   },
@@ -1624,6 +1778,165 @@ export default {
 
   methods: {
     unix2CurrentTime,
+
+    selectparamsChanged(e) {
+      this.getcaseparamsbytype(e)
+    },
+    getcaseparamsbytype(e) {
+      if (e === 'Body') {
+        console.log('Body的数据，如果没有用例值，则从参数中获取，如果有，则永远取用例中的数据')
+        this.HeaderandParamsVisible = false
+        this.BodyVisible = true
+        this.casevalue.apiid = this.apicasesList[this.caseindex].apiid
+        this.casevalue.caseid = this.apicasesList[this.caseindex].id
+        this.casevalue.propertytype = e
+        casevalueforbody(this.casevalue).then(response => {
+          this.tmpapicasesdata.keyname = response.data
+        }).catch(res => {
+          this.$message.error()
+        })
+      } else {
+        this.HeaderandParamsVisible = true
+        this.BodyVisible = false
+        this.tmpcaseparamslist = null
+        // this.paraList = null
+        this.paravaluemap === null
+        for (let i = 0; i < this.caseparamsbytypelist.length; i++) {
+          if (this.caseparamsbytypelist[i].propertytype === e) {
+            this.tmpcaseparamslist = this.caseparamsbytypelist[i].keyname.split(',')
+            // todo 根据参数类型获取已存在的数据，用例id，参数类型
+            this.casevalue.caseid = this.apicasesList[this.caseindex].id
+            this.casevalue.propertytype = e
+            getparamvaluebycaseidandtype(this.casevalue).then(response => {
+              this.paraList = []
+              this.paravaluemap = new Map()
+              for (let j = 0; j < response.data.list.length; j++) {
+                this.paravaluemap.set(response.data.list[j].apiparam, response.data.list[j].apiparamvalue)
+              }
+              for (let k = 0; k < this.tmpcaseparamslist.length; k++) {
+                if (this.paravaluemap.has(this.tmpcaseparamslist[k])) {
+                  this.paraList.push(this.paravaluemap.get(this.tmpcaseparamslist[k]))
+                } else {
+                  this.paraList.push('')
+                }
+                console.log(this.paraList)
+              }
+              if (this.paraList === null) {
+                this.paraList = new Array(this.tmpcaseparamslist.length)
+              }
+            }).catch(res => {
+              this.$message.error()
+            })
+          }
+        }
+      }
+    },
+    getheaderdatabycaseidandtype() {
+      var casedata = { caseid: this.tmpapicase.caseid, propertytype: 'Header' }
+      getparamvaluebycaseidandtype(casedata).then(response => {
+        this.Headertabledatas = response.data.list
+      }).catch(res => {
+        this.$message.error('获取Header参数值失败')
+      })
+    },
+    getparamdatabycaseidandtype(property) {
+      var casedata = { caseid: this.tmpapicase.caseid, propertytype: 'Params' }
+      getparamvaluebycaseidandtype(casedata).then(response => {
+        this.Paramstabledatas = response.data.list
+      }).catch(res => {
+        this.$message.error('获取Params参数值失败')
+      })
+    },
+
+    getbodydatabycaseidandtype(property) {
+      var casedata = { caseid: this.tmpapicase.caseid, propertytype: 'Body' }
+      getparamvaluebycaseidandtype(casedata).then(response => {
+        this.Bodytabledatas = response.data.list
+      }).catch(res => {
+        this.$message.error('获取Body参数值失败')
+      })
+    },
+
+    getbodytextdatabycaseidandtype() {
+      var casedata = { caseid: this.tmpapicase.caseid, propertytype: 'Body' }
+      getparamvaluebycaseidandtype(casedata).then(response => {
+        console.log(response.data.list)
+        if (response.data.list.length > 0) {
+          this.tmpapicasesbodydata = response.data.list[0]
+          console.log(this.tmpapicasesbodydata)
+        } else {
+          this.tmpapicasesbodydata.id = ''
+          this.tmpapicasesbodydata.apiparamvalue = ''
+        }
+      }).catch(res => {
+        this.$message.error('获取Body文本参数值失败')
+      })
+    },
+
+    updateapicasesdata() {
+      // this.tmpapicasesbodydata.caseid = this.tmpapicases.id
+      // this.tmpapicasesbodydata.casename = this.tmpapicases.casename
+      this.tmpapicasesbodydata.apiparam = 'Body'
+      this.tmpapicasesbodydata.paramstype = this.tmpapi.requestcontenttype
+      this.tmpapicasesbodydata.propertytype = 'Body'
+      updateapicasesdata(this.tmpapicasesbodydata).then(response => {
+      }).catch(res => {
+        this.$message.error('更新用例Body值失败')
+      })
+    },
+    updateHeaderpropertydata(datas) {
+      updatepropertydata(datas).then(response => {
+      }).catch(res => {
+        this.$message.error('更新用例Header,Params值失败')
+      })
+    },
+    async addnewapicasesdata() {
+      this.updateHeaderpropertydata(this.Headertabledatas)
+      this.updateHeaderpropertydata(this.Paramstabledatas)
+      await this.getapi()
+      if (this.tmpapi.requestcontenttype === 'Form表单') {
+        this.updateHeaderpropertydata(this.Bodytabledatas)
+      } else {
+        this.updateapicasesdata()
+      }
+      this.$message.success('保存成功')
+      this.casedataialogFormVisible = false
+    },
+    async showtestcasedataDialog(index) {
+      console.log(index)
+      console.log(this.testscenecaseList)
+      this.casedataialogFormVisible = true
+      this.activeName = 'zero'
+      this.tmpapicase.caseid = this.testscenecaseList[index].testcaseid
+      this.tmpapicase.casename = this.testscenecaseList[index].casename
+      this.tmpapicase.apiid = this.testscenecaseList[index].apiid
+      this.tmpapicasesbodydata.caseid = this.testscenecaseList[index].testcaseid
+      this.tmpapicasesbodydata.casename = this.testscenecaseList[index].casename
+      console.log(11111111111111111111111)
+      this.getheaderdatabycaseidandtype()
+      this.getparamdatabycaseidandtype()
+      await this.getapi()
+      if (this.tmpapi.requestcontenttype === 'Form表单') {
+        this.BodyParamDataVisible = true
+        this.BodyDataVisible = false
+        // 获取Body参数数据
+        this.getbodydatabycaseidandtype()
+      } else {
+        // 获取body文本数据
+        this.BodyDataVisible = true
+        this.BodyParamDataVisible = false
+        this.getbodytextdatabycaseidandtype()
+        //
+      }
+    },
+
+    async getapi() {
+      await getapi(this.tmpapicase.apiid).then(response => {
+        this.tmpapi = response.data
+      }).catch(res => {
+        this.$message.error('获取api失败')
+      })
+    },
 
     showUpdatedbvariablesDialog(index) {
       this.adddbvariablesdialogFormVisible = true

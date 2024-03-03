@@ -417,7 +417,7 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-    <el-dialog  title='API参数' :visible.sync="NewParamsdialogFormVisible">
+    <el-dialog  title='API参数' width="900px" :visible.sync="NewParamsdialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <template>
@@ -539,6 +539,9 @@
                     </el-form>
                   </div>
                 </template>
+              </el-tab-pane>
+              <el-tab-pane label="变量使用" name="third">
+                <uservariables></uservariables>
               </el-tab-pane>
             </el-tabs>
           </template>
@@ -693,60 +696,6 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-
-    <el-dialog title='使用变量' :visible.sync="SearchParamsdialogFormVisible">
-      <div class="filter-container">
-        <el-form :inline="true">
-          <el-form-item  label="变量类型:">
-            <el-select v-model="searchparam.paramtype" clearable placeholder="变量类型" >
-              <el-option label="接口变量" value="接口变量" />
-              <el-option label="数据库变量" value="数据库变量" />
-              <el-option label="脚本变量" value="脚本变量" />
-              <el-option label="延时变量" value="延时变量" />
-              <el-option label="全局变量" value="全局变量" />
-              <el-option label="随机变量" value="随机变量" />
-              <el-option label="环境变量" value="环境变量" />
-              <el-option label="全局Header" value="全局Header" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-      <el-table
-        :data="paramsList"
-        :key="itemKey"
-        v-loading.body="listLoading"
-        element-loading-text="loading"
-        border
-        fit
-        highlight-current-row
-      >
-        <el-table-column label="编号" align="center" width="45">
-          <template slot-scope="scope">
-            <span v-text="paramgetIndex(scope.$index)"></span>
-          </template>
-        </el-table-column>
-        <el-table-column label="变量名" align="center" prop="paramname" width="80"/>
-        <el-table-column label="变量类型" align="center" prop="paramname" width="80"/>
-        <el-table-column label="来源前置条件" align="center" prop="paramname" width="120"/>
-        <el-table-column label="来源" align="center" prop="paramname" width="80"/>
-        <el-table-column label="来源类型" align="center" prop="paramname" width="80"/>
-        <el-table-column label="管理" align="center"
-                         v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
-          <template slot-scope="scope">
-            <el-button
-              type="warning"
-              size="mini"
-              v-if="hasPermission('executeplan:update') && scope.row.id !== id"
-              @click.native.prevent="showUpdateparamsDialog(scope.$index)"
-            >复制使用</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-
   </div>
 </template>
 <script>
@@ -764,14 +713,16 @@ import {
   searchparamsbyapiid as searchparamsbyapiid
 } from '@/api/deployunit/apiparams'
 import { searchdeployunitmodel } from '@/api/deployunit/depunitmodel'
+import { search as searchtestvariables } from '@/api/testvariables/testvariables'
 import { unix2CurrentTime } from '@/utils'
-// import { getToken } from '@/utils/token'
 import { mapGetters } from 'vuex'
 import store from '@/store'
 import JsonEditor from '@/components/JsonEditor'
+import uservariables from '@/components/testvariables'
+
 export default {
   name: 'API接口',
-  components: { JsonEditor },
+  components: { JsonEditor, uservariables },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -795,10 +746,12 @@ export default {
       Bodytabledatas: [],
       multipleSelection: [],
       activeName: 'zero',
+      variablesactiveName: 'zero',
       fileurl: window.g.SERVER_URL + '/api/exportpostman',
       swfileurl: window.g.SERVER_URL + '/api/exportswagger',
       paramsplaceholder: '',
       itemKey: null,
+      variablesitemKey: null,
       tmpapiname: '',
       tmpdeployunitname: '',
       tmpmodelname: '',
@@ -811,6 +764,7 @@ export default {
       paramlist: [],
       requestcontentList: [], // 字典表获取api请求数据格式
       responecontenttypeList: [], // 字典表获取api响应数据格式
+      VariablesList: [], // 变量列表
       requestcontenttypeVisible: true, // 请求方式是否显示标志
       BodyVisible: false, // 参数类型为Body显示
       BodyDataVisible: false, // 参数类型为Body显示
@@ -833,6 +787,7 @@ export default {
         diccode: 'responecontenttype' // 获取字典表入参
       },
       total: 0, // 数据总数
+      variablestotal: 0, // 数据总数
       listQuery: {
         page: 1, // 页码
         size: 20, // 每页数量
@@ -922,10 +877,11 @@ export default {
         nickname: '',
         creator: ''
       },
-      searchparam: {
+      searchvaraibles: {
         page: 1,
         size: 10,
-        paramtype: ''
+        varaiblestype: '',
+        variablesname: ''
       },
       tmpmodelquery: {
         page: 1,
@@ -1670,6 +1626,26 @@ export default {
       this.tmpmodelname = this.search.modelname
       this.tmppath = this.search.path
     },
+
+    searchVariablesBy() {
+      this.variablesitemKey = Math.random()
+      if (this.searchvaraibles.varaiblestype === '接口变量') {
+        searchtestvariables(this.searchvaraibles).then(response => {
+          this.VariablesList = response.data.list
+          this.variablestotal = response.data.total
+        }).catch(res => {
+          this.$message.error('搜索失败')
+        })
+      }
+      if (this.searchvaraibles.varaiblestype === '数据库变量') {
+        searchtestvariables(this.searchvaraibles).then(response => {
+          this.VariablesList = response.data.list
+          this.variablestotal = response.data.total
+        }).catch(res => {
+          this.$message.error('搜索失败')
+        })
+      }
+    },
     /**
      * 改变每页数量
      * @param size 页大小
@@ -1705,7 +1681,7 @@ export default {
      * @returns 表格序号
      */
     paramgetIndex(index) {
-      return (this.paramssearch.page - 1) * this.paramssearch.size + index + 1
+      return (this.searchvaraibles.page - 1) * this.searchvaraibles.size + index + 1
     },
     /**
      * 显示添加apiparams对话框
