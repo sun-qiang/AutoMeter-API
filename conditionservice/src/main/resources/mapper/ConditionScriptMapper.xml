@@ -8,6 +8,9 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="conditionid" jdbcType="BIGINT" property="conditionid" />
     <result column="script" jdbcType="VARCHAR" property="script" />
+    <result column="conditionname" jdbcType="VARCHAR" property="conditionname" />
+    <result column="conditiontype" jdbcType="VARCHAR" property="conditiontype" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
@@ -26,7 +29,7 @@
   <select id="findtestconditionscriptwithid" resultMap="BaseResultMap">
     SELECT *
     FROM condition_script
-    where conditionid =#{conditionid}
+    where conditionid =#{conditionid} and conditiontype=#{conditiontype}
   </select>
 
   <update id="updateTestconditionScript" parameterType="com.zoctan.api.entity.ConditionScript">

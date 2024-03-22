@@ -311,10 +311,16 @@ public class TestCondition {
     }
 
     //处理脚本子条件
-    public void conditionscript(HashMap<String, String> conditionScript, long ConditionID, RequestObject requestObject, Long PlanID, Long CaseID) throws Exception {
+    public void conditionscript(HashMap<String, String> conditionScript,  RequestObject requestObject) throws Exception {
         long Start = 0;
         long End = 0;
         long CostTime = 0;
+        Long PlanID = Long.parseLong(requestObject.getTestplanid());
+        Long CaseID = Long.parseLong(requestObject.getCaseid());
+        Long ConditionID = Long.parseLong(conditionScript.get("id"));
+        String conditionname = conditionScript.get("conditionname");
+        String conditiontype = conditionScript.get("conditiontype");
+
         String Respone = "执行脚本成功";
         String ConditionResultStatus = "成功";
         try {
@@ -324,10 +330,35 @@ public class TestCondition {
             String JavaSource = conditionScript.get("script");
             logger.info("TestCondition条件报告脚本子条件:-============：" + JavaSource);
             String Source = dnamicCompilerHelp.GetCompeleteClass(JavaSource, CaseID);
-            dnamicCompilerHelp.CallDynamicScript(Source);
+            Object Result= dnamicCompilerHelp.CallDynamicScript(Source);
             End = new Date().getTime();
             CostTime = End - Start;
-            SaveSubCondition("脚本", requestObject, PlanID, ConditionID, conditionScript, Respone, ConditionResultStatus, CostTime);
+            ArrayList<HashMap<String, String>> scriptconditionVariablesList = testMysqlHelp.getscriptvariablesbyconditionid(ConditionID);
+            if (scriptconditionVariablesList.size() > 0) {
+                //2.获取查询结果
+                for (HashMap<String, String> scriptconditionVariables : scriptconditionVariablesList) {
+                    long variablesid = Long.parseLong(scriptconditionVariables.get("id"));
+                    String Variablesname = scriptconditionVariables.get("scriptvariablesname");
+                    String VariablesValue = Result.toString();
+                    TestvariablesValue testvariablesValue = new TestvariablesValue();
+                    testvariablesValue.setPlanid(Long.parseLong(requestObject.getTestplanid()));
+                    testvariablesValue.setPlanname(requestObject.getTestplanname());
+                    testvariablesValue.setBatchname(requestObject.getBatchname());
+                    testvariablesValue.setVariablestype("脚本");
+                    testvariablesValue.setCasename(conditionname);
+                    testvariablesValue.setVariablesid(variablesid);
+                    testvariablesValue.setVariablesname(Variablesname);
+                    testvariablesValue.setVariablesvalue(VariablesValue);
+                    testvariablesValue.setConditiontype(conditiontype);
+                    testvariablesValue.setMemo("test");
+                    testvariablesValue.setCaseid(Long.parseLong(requestObject.getCaseid()));
+                    testvariablesValue.setConditionid(ConditionID);
+                    testvariablesValue.setCasename(requestObject.getCasename());
+                    testvariablesValue.setSlaverid(Long.parseLong(requestObject.getSlaverid()));
+                    testMysqlHelp.testVariablesValueSave(testvariablesValue);
+                }
+            }
+            SaveSubCondition("脚本", requestObject, PlanID, ConditionID, conditionScript, Result.toString(), ConditionResultStatus, CostTime);
         } catch (Exception ex) {
             ConditionResultStatus = "失败";
             Respone = ex.getMessage();
@@ -344,7 +375,7 @@ public class TestCondition {
         Long CaseID = Long.parseLong(requestObject.getCaseid());
         ArrayList<HashMap<String, String>> conditionScriptList = testMysqlHelp.GetScriptConditionByConditionID(ConditionID);
         for (HashMap<String, String> conditionScript : conditionScriptList) {
-            conditionscript(conditionScript, ConditionID, requestObject, PlanID, CaseID);
+//            conditionscript(conditionScript, ConditionID, requestObject, PlanID, CaseID);
 //            long Start = 0;
 //            long End = 0;
 //            long CostTime = 0;
@@ -628,8 +659,8 @@ public class TestCondition {
     }
 
     //获取数据库变量值
-    private String GetDBResultValueByMap(List<HashMap<String, String>> DbResult, String columnname, long rownum) {
-        String Result = "未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配";
+    private String GetDBResultValueByMap(List<HashMap<String, String>> DbResult, String columnname, long rownum) throws Exception {
+        String Result = null;
         for (int i = 0; i < DbResult.size(); i++) {
             if (i == rownum) {
                 HashMap<String, String> rowdata = DbResult.get(i);
@@ -640,17 +671,25 @@ public class TestCondition {
                 }
             }
         }
+        if(Result==null)
+        {
+            throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配");
+        }
         return Result;
     }
 
     //获取数据库变量值
-    private String GetDBResultValueByEntity(List<Entity> DbResult, String columnname, long rownum) {
-        String Result = "未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配";
+    private String GetDBResultValueByEntity(List<Entity> DbResult, String columnname, long rownum) throws Exception {
+        String Result = null;
         for (int i = 0; i < DbResult.size(); i++) {
             if (i == rownum) {
                 Entity row = DbResult.get(i);
                 Result = row.getStr(columnname);
             }
+        }
+        if(Result==null)
+        {
+            throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配");
         }
         return Result;
     }
@@ -668,7 +707,7 @@ public class TestCondition {
         testvariablesValue.setVariablesvalue(VariablesValue);
         testvariablesValue.setConditiontype(conditiontype);
         testvariablesValue.setMemo("test");
-        testvariablesValue.setCaseid(Long.parseLong(requestObject.getCaseid()));
+        testvariablesValue.setCaseid(new Long(requestObject.getCaseid()));
         testvariablesValue.setConditionid(Conidtiondbid);
         testvariablesValue.setCasename(requestObject.getCasename());
         testvariablesValue.setSlaverid(Long.parseLong(requestObject.getSlaverid()));
@@ -726,7 +765,7 @@ public class TestCondition {
         return Respone;
     }
 
-    private String UseHutoolDb(String conditiontype,RequestObject requestObject, long Conidtiondbid, String DBConditionName, String SqlType, String DBUrl, String username, String pass, String Sql) throws SQLException {
+    private String UseHutoolDb(String conditiontype,RequestObject requestObject, long Conidtiondbid, String DBConditionName, String SqlType, String DBUrl, String username, String pass, String Sql) throws Exception {
         String Respone = "";
         DataSource ds = new SimpleDataSource(DBUrl, username, pass);
 

@@ -22,7 +22,6 @@
     SELECT a.*
     FROM scriptvariables a
     <where>
-      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
       <if test="scriptvariablesname != null and scriptvariablesname != ''">a.scriptvariablesname like CONCAT('%',#{scriptvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
     </where>

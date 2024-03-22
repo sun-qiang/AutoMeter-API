@@ -24,7 +24,6 @@
     SELECT a.*
     FROM dbvariables a
     <where>
-      <if test="conditionid != null  and conditionid != ''">and a.conditionid =#{conditionid}</if>
       <if test="dbvariablesname != null and dbvariablesname != ''">a.dbvariablesname like CONCAT('%',#{dbvariablesname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
     </where>

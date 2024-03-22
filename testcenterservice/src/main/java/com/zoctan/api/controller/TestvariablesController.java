@@ -34,7 +34,7 @@ public class TestvariablesController {
     public Result add(@RequestBody Testvariables testvariables) {
 
         Condition con=new Condition(Testvariables.class);
-        con.createCriteria().andCondition("projectid = "+testvariables.getProjectid()).andCondition("caseid = "+testvariables.getCaseid())
+        con.createCriteria().andCondition("projectid = "+testvariables.getProjectid())
                 .andCondition("testvariablesname = '" + testvariables.getTestvariablesname().replace("'","''") + "'");
         if(testvariablesService.ifexist(con)>0)
         {
@@ -86,7 +86,7 @@ public class TestvariablesController {
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Testvariables dic) {
         Condition con=new Condition(Testvariables.class);
-        con.createCriteria().andCondition("projectid = "+dic.getProjectid()).andCondition("caseid = "+dic.getCaseid())
+        con.createCriteria().andCondition("projectid = "+dic.getProjectid())
                 .andCondition("testvariablesname = '" + dic.getTestvariablesname().replace("'","''") + "'").andCondition("id <> " + dic.getId());
         if(testvariablesService.ifexist(con)>0)
         {

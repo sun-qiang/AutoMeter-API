@@ -1316,7 +1316,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog width="1200px" title='变量列表' :visible.sync="caseVariablesDialogFormVisible">
+    <el-dialog width="1200px" title='用例提取变量列表' :visible.sync="caseVariablesDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -1468,7 +1468,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native.prevent="dialogFormVisible = false">取消</el-button>
+        <el-button @click.native.prevent="caseaddvariablesdialogFormVisible = false">取消</el-button>
         <el-button
           type="danger"
           v-if="caseaddvariablesdialogStatus === 'add'"
@@ -1564,6 +1564,13 @@
               v-if="hasPermission('testscene:casedeleteapicondition') && scope.row.id !== id"
               @click.native.prevent="removecaseapicondition(scope.$index)"
             >删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('apicases:params') && scope.row.id !== id"
+              @click.native.prevent="showCaseVariablesforConditionDialog(scope.$index)"
+            >提取变量
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -1850,7 +1857,7 @@
           <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件" style="width:100%" @change="ConditionselectChangedAS($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(macname, index) in enviroment_assembleList" :key="index">
-              <el-option :label="macname.assemblename" :value="macname.assemblename" required/>
+              <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
             </div>
           </el-select>
         </el-form-item>
@@ -1925,6 +1932,7 @@
           </template>
         </el-table-column>
         <el-table-column label="数据库变量名" align="center" :show-overflow-tooltip="true" prop="dbvariablesname" width="100"/>
+        <el-table-column :show-overflow-tooltip="true" label="来源前置条件" align="center" prop="conditionname" width="100"/>
         <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="100"/>
         <el-table-column label="变量值类型" align="center" prop="valuetype" width="85"/>
         <el-table-column label="列名" :show-overflow-tooltip="true" align="center" prop="fieldname" width="100"/>
@@ -2062,7 +2070,7 @@
     </el-dialog>
 
 
-    <el-dialog width="1000px" title='脚本变量列表' :visible.sync="scriptVariablesDialogFormVisible">
+    <el-dialog width="1050px" title='脚本变量列表' :visible.sync="scriptVariablesDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -2087,10 +2095,11 @@
       >
         <el-table-column label="编号" align="center" width="60">
           <template slot-scope="scope">
-            <span v-text="getIndex(scope.$index)"></span>
+            <span v-text="scriptvariablesgetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
         <el-table-column label="脚本变量名" align="center" prop="scriptvariablesname" width="120"/>
+        <el-table-column :show-overflow-tooltip="true" label="来源前置条件" align="center" prop="conditionname" width="100"/>
         <el-table-column :show-overflow-tooltip="true" label="变量描述" align="center" prop="variablesdes" width="100"/>
         <el-table-column label="变量值类型" align="center" prop="valuetype" width="85"/>
         <el-table-column label="操作人" align="center" prop="creator" width="70"/>
@@ -2293,6 +2302,7 @@
   import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
   import { search as searchscriptvariables, addscriptvariables, updatescriptvariables, removescriptvariables } from '@/api/testvariables/scriptvariables'
   import uservariables from '@/components/testvariables'
+  import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
 
   export default {
     name: '用例库',
@@ -2814,6 +2824,12 @@
           page: 1,
           size: 10,
           paramtype: ''
+        },
+        searchassemble: {
+          page: 1,
+          size: 100,
+          assembletype: '组件',
+          envid: ''
         }
       }
     },
@@ -3087,18 +3103,30 @@
         })
       },
 
+      findMacAndDepWithEnv() {
+        findMacAndDepWithEnv(this.searchassemble).then(response => {
+          this.enviroment_assembleList = response.data.list
+        }).catch(res => {
+          this.$message.error('获取组件列表失败')
+        })
+      },
+
       selectChangedEN(e) {
         for (let i = 0; i < this.enviromentnameList.length; i++) {
           if (this.enviromentnameList[i].enviromentname === e) {
             this.tmpdbcondition.enviromentid = this.enviromentnameList[i].id
+            this.searchassemble.envid = this.enviromentnameList[i].id
+            this.tmpdbcondition.assembleid = null
+            this.tmpdbcondition.assemblename = null
+            this.findMacAndDepWithEnv()
           }
         }
       },
 
       ConditionselectChangedAS(e) {
         for (let i = 0; i < this.enviroment_assembleList.length; i++) {
-          if (this.enviroment_assembleList[i].assemblename === e) {
-            this.tmpdbcondition.assembleid = this.enviroment_assembleList[i].id
+          if (this.enviroment_assembleList[i].deployunitname === e) {
+            this.tmpdbcondition.assembleid = this.enviroment_assembleList[i].assembleid
           }
         }
       },
@@ -3606,10 +3634,13 @@
         var casedata = { caseid: this.tmpapicases.id, propertytype: 'Body' }
         getparamvaluebycaseidandtype(casedata).then(response => {
           console.log(response.data.list)
+          console.log(33333333333)
           if (response.data.list.length > 0) {
             this.tmpapicasesbodydata = response.data.list[0]
+            console.log(1111111)
             console.log(this.tmpapicasesbodydata)
           } else {
+            console.log(2222)
             this.tmpapicasesbodydata.id = ''
             this.tmpapicasesbodydata.apiparamvalue = ''
           }
@@ -4024,8 +4055,12 @@
         return (this.search.page - 1) * this.search.size + index + 1
       },
 
+      scriptvariablesgetIndex(index) {
+        return (this.searchscriptvariables.page - 1) * this.searchscriptvariables.size + index + 1
+      },
+
       ApicasesVariablesgetIndex(index) {
-        return (this.search.page - 1) * this.search.size + index + 1
+        return (this.searchapicasevariables.page - 1) * this.searchapicasevariables.size + index + 1
       },
 
       dbVariablesgetIndex(index) {
@@ -4545,7 +4580,7 @@
         this.tmpscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditionid = this.apicasesList[index].id
-        this.getassembleallnameList()
+        // this.getassembleallnameList()
       },
       /**
        * 显示用例变量对话框
@@ -4555,6 +4590,14 @@
         // this.searchapicasevariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.caseid = this.apicasesList[index].id
         this.tmptestvariables.casename = this.apicasesList[index].casename
+        this.findtestvariablesbycaseid()
+      },
+
+      showCaseVariablesforConditionDialog(index) {
+        this.caseVariablesDialogFormVisible = true
+        // this.searchapicasevariables.caseid = this.apicasesList[index].id
+        this.tmptestvariables.caseid = this.apiconditioncaseList[index].caseid
+        this.tmptestvariables.casename = this.apiconditioncaseList[index].casename
         this.findtestvariablesbycaseid()
       },
 

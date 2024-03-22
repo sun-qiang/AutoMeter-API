@@ -28,8 +28,8 @@ private ConditionScriptMapper conditionScriptMapper;
     }
 
     @Override
-    public ConditionScript findtestconditionscriptwithid(Long conditionid) {
-        return conditionScriptMapper.findtestconditionscriptwithid(conditionid);
+    public List<ConditionScript> findtestconditionscriptwithid(Long conditionid,String conditiontype) {
+        return conditionScriptMapper.findtestconditionscriptwithid(conditionid,conditiontype);
     }
 
     @Override

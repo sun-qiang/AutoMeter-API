@@ -12,7 +12,7 @@ import java.util.Map;
 public interface ConditionScriptMapper extends MyMapper<ConditionScript> {
     List<ConditionScript> findtestconditionscriptWithName(final Map<String, Object> params);
 
-    ConditionScript findtestconditionscriptwithid(@Param("conditionid")Long conditionid);
+    List<ConditionScript> findtestconditionscriptwithid(@Param("conditionid")Long conditionid, @Param("conditiontype")String conditiontype);
 
     void updateTestconditionScript(ConditionScript params);
     List<ConditionScript> GetCaseListByConditionID(@Param("conditionid")Long conditionid, @Param("conditiontype")String conditiontype);

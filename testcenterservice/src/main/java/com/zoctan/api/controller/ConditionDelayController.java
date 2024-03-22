@@ -101,7 +101,11 @@ public class ConditionDelayController {
 
     @PostMapping("/searchbytype")
     public Result searchbytype(@RequestBody final Map<String, Object> param) {
+        Integer page= Integer.parseInt(param.get("page").toString());
+        Integer size= Integer.parseInt(param.get("size").toString());
+        PageHelper.startPage(page, size);
         final List<ConditionDelay> list = this.conditionDelayService.findtestconditiondelayWithType(param);
-        return ResultGenerator.genOkResult(list);
+        final PageInfo<ConditionDelay> pageInfo = new PageInfo<>(list);
+        return ResultGenerator.genOkResult(pageInfo);
     }
 }

@@ -295,7 +295,7 @@ public class TestCore {
             long SceneCaseID = Long.parseLong(testscenecaseList.get(0).get("id"));
             //接口条件
             ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(SceneCaseID, "scencecase");
-            logger.info("TestCore 开始处理用例前置条件-接口子条件-============：" + ConditionApiList.size());
+            logger.info("TestCore 开始处理用例--前置条件-接口子条件-============：" + ConditionApiList.size());
             for (int i = 0; i < ConditionApiList.size(); i++) {
                 HashMap<String, String> hs = ConditionApiList.get(i);
                 testCondition.conditionapi(hs, requestObject);
@@ -321,6 +321,17 @@ public class TestCore {
                 }
             }
             logger.info("TestCore 完成处理用例前置条件-数据库子条件-============：");
+
+            ArrayList<HashMap<String, String>> ConditionScriptList = GetConditionScriptByObjectIDAndType(SceneCaseID, "scencecase");
+            logger.info("TestCore 开始处理用例前置条件-脚本子条件-============：" + ConditionDbList.size());
+            if (ConditionScriptList.size() > 0) {
+                for (int i = 0; i < ConditionScriptList.size(); i++) {
+                    HashMap<String, String> hs = ConditionScriptList.get(i);
+                    testCondition.conditionscript(hs, requestObject);
+                }
+            }
+            logger.info("TestCore 完成处理用例前置条件-脚本子条件-============：");
+
         }
 //        Long ObjectID = Long.parseLong(requestObject.getCaseid());
 //        ArrayList<HashMap<String, String>> testconditionList = GetConditionByPlanIDAndConditionType(ObjectID, "前置条件", "测试用例");
@@ -421,6 +432,16 @@ public class TestCore {
             testCondition.conditiondelay(hs, requestObject);
         }
         logger.info("完成处理场景延时前置条件-============================================================：");
+
+        ArrayList<HashMap<String, String>> ConditionScriptList = GetConditionScriptByObjectIDAndType(requestObject.getSceneid(), "scene");
+        logger.info("TestCore 开始处理场景前置条件-脚本子条件-============：" + ConditionScriptList.size());
+        if (ConditionScriptList.size() > 0) {
+            for (int i = 0; i < ConditionScriptList.size(); i++) {
+                HashMap<String, String> hs = ConditionScriptList.get(i);
+                testCondition.conditionscript(hs, requestObject);
+            }
+        }
+        logger.info("TestCore 完成处理场景前置条件-脚本子条件-============：");
     }
 
     // 发送http请求
@@ -717,6 +738,12 @@ public class TestCore {
     //根据目标id和类型获取接口条件
     private ArrayList<HashMap<String, String>> GetConditionDBByObjectIDAndType(Long Objectid, String Objecttype) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionDBByObjectIDAndType(Objectid, Objecttype);
+        return result;
+    }
+
+    //根据目标id和类型获取接口条件
+    private ArrayList<HashMap<String, String>> GetConditionScriptByObjectIDAndType(Long Objectid, String Objecttype) {
+        ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionScriptByObjectIDAndType(Objectid, Objecttype);
         return result;
     }
 

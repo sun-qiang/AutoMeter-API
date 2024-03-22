@@ -21,7 +21,7 @@ public class DnamicCompilerHelp {
                 "import com.api.autotest.common.utils.DES;" +
                 "import com.api.autotest.common.utils.AutoMeter;" +
                 "public class TestCasePreClass{" +
-                "public void AutoMeterPreScriptFun() {" +
+                "public String AutoMeterPreScriptFun() {" +
                 "AutoMeter.caseid=new Long(" + Caseid + ");" +
                 SourceClassScript +
                 "}" +
@@ -29,7 +29,7 @@ public class DnamicCompilerHelp {
         return javaSrc;
     }
 
-    public void CallDynamicScript(String javaSrc) throws Exception {
+    public Object CallDynamicScript(String javaSrc) throws Exception {
         Map<String, byte[]> results = new HashMap<>();
         StringWriter stringWriter=new StringWriter();
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -48,6 +48,8 @@ public class DnamicCompilerHelp {
         Class clazz = classLoader.loadClass("TestCasePreClass");
         Object object = clazz.newInstance();
         Method method = clazz.getMethod("AutoMeterPreScriptFun");
-        method.invoke(object);
+        Object Result= method.invoke(object);
+        return Result;
     }
+
 }

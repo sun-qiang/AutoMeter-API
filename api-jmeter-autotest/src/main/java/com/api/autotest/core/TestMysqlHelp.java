@@ -173,6 +173,22 @@ public class TestMysqlHelp {
         return ValueType;
     }
 
+    //获取变量值类型
+    public String GetScriptVariablesDataType(String VariablesName, long projectid) {
+        String ValueType = "";
+        try {
+            String sql = "select valuetype from scriptvariables where  scriptvariablesname='" + VariablesName + "' and projectid=" + projectid;
+            logger.info(logplannameandcasename + "获取数据库 获取变量值类型 result sql is...........: " + sql);
+            ArrayList<HashMap<String, String>> result = MysqlConnectionUtils.query(sql);
+            if (result.size() > 0) {
+                ValueType = result.get(0).get("valuetype");
+            }
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取脚本变量值类型异常...........: " + e.getMessage());
+        }
+        return ValueType;
+    }
+
     //获取数据库变量值类型
     public String GetDBVariablesDataType(String VariablesName, long projectid) {
         String ValueType = "";
@@ -270,6 +286,18 @@ public class TestMysqlHelp {
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
             logger.info(logplannameandcasename + "获取数据库 获取场景数据库条件异常...........: " + e.getMessage());
+        }
+        return result;
+    }
+
+    public ArrayList<HashMap<String, String>> GetConditionScriptByObjectIDAndType(Long Objectid, String ObjectType) {
+        ArrayList<HashMap<String, String>> result = new ArrayList<>();
+        try {
+            String sql = "select * from condition_script where conditionid=" + Objectid + " and conditiontype='" + ObjectType + "'";
+            logger.info(logplannameandcasename + "获取数据库 获取场景脚本条件 result sql is...........: " + sql);
+            result = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取场景脚本条件异常...........: " + e.getMessage());
         }
         return result;
     }
@@ -546,7 +574,7 @@ public class TestMysqlHelp {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateNowStr = sdf.format(d);
         String sql = "insert testvariables_value (planid,planname,caseid,casename,variablesid,variablesname,variablesvalue,memo,create_time,lastmodify_time,batchname,variablestype,slaverid,conditionid,conditiontype)" +
-                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'", "''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'", "''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'", "''") + "', '" + testvariablesValue.getVariablesvalue().replace("'", "''") + "', '" + testvariablesValue.getMemo().replace("'", "''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'", "''") + "', '" + testvariablesValue.getVariablestype().replace("'", "''") + "',"+ testvariablesValue.getSlaverid()+","+ testvariablesValue.getConditionid()+",'scencecase')";
+                " values(" + testvariablesValue.getPlanid() + ", '" + testvariablesValue.getPlanname().replace("'", "''") + "', " + testvariablesValue.getCaseid() + ", '" + testvariablesValue.getCasename().replace("'", "''") + "', " + testvariablesValue.getVariablesid() + ", '" + testvariablesValue.getVariablesname().replace("'", "''") + "', '" + testvariablesValue.getVariablesvalue().replace("'", "''") + "', '" + testvariablesValue.getMemo().replace("'", "''") + "' , '" + dateNowStr + "', '" + dateNowStr + "', '" + testvariablesValue.getBatchname().replace("'", "''") + "', '" + testvariablesValue.getVariablestype().replace("'", "''") + "',"+ testvariablesValue.getSlaverid()+","+ testvariablesValue.getConditionid()+",'"+testvariablesValue.getConditiontype()+"')";
         logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + sql);
         try {
             logger.info(logplannameandcasename + "获取数据库 保存变量结果 result sql is...........: " + MysqlConnectionUtils.update(sql));
@@ -613,6 +641,19 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
             String sql = "SELECT * FROM dbvariables where conditionid= " + dbconditionid;
+            logger.info(logplannameandcasename + "获取数据库关联变量  result sql is...........: " + sql);
+            list = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库关联变量 异常...........: " + e.getMessage());
+        }
+        return list;
+    }
+
+    //获取数据库关联变量
+    public ArrayList<HashMap<String, String>> getscriptvariablesbyconditionid(long conditionid) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM scriptvariables where conditionid= " + conditionid;
             logger.info(logplannameandcasename + "获取数据库关联变量  result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {

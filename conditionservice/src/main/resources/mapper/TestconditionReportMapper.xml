@@ -34,7 +34,7 @@
 
   <select id="getsubconditionnumswithstatus" resultMap="BaseResultMap">
     SELECT * FROM testcondition_report where  testplanid=#{testplanid}
-                                         and batchname=#{batchname} and conditionstatus=#{conditionstatus} and status =#{status}
+      and batchname=#{batchname}  and status =#{status}
   </select>
 
 </mapper>

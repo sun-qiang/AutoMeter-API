@@ -15,7 +15,7 @@ import java.util.Map;
 public interface ConditionScriptService extends Service<ConditionScript> {
     List<ConditionScript> findtestconditionapiWithName(final Map<String, Object> params);
 
-    ConditionScript findtestconditionscriptwithid(Long conditionid);
+    List<ConditionScript> findtestconditionscriptwithid(Long conditionid,String conditiontype);
     List<ConditionScript> GetCaseListByConditionID(Long conditionid, String conditiontype);
 
 

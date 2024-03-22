@@ -17,6 +17,17 @@ public class ConditionScript {
      */
     private Long conditionid;
 
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
+
     public String getConditionname() {
         return conditionname;
     }
@@ -26,6 +37,19 @@ public class ConditionScript {
     }
 
     private String conditionname;
+
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
+
+
 
     public String getSubconditionname() {
         return subconditionname;

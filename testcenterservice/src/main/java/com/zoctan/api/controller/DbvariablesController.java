@@ -28,7 +28,7 @@ public class DbvariablesController {
     public Result add(@RequestBody Dbvariables dbvariables) {
 
         Condition con=new Condition(Dbvariables.class);
-        con.createCriteria().andCondition("projectid = "+dbvariables.getProjectid()).andCondition("conditionid = "+dbvariables.getConditionid())
+        con.createCriteria().andCondition("projectid = "+dbvariables.getProjectid())
                 .andCondition("dbvariablesname = '" + dbvariables.getDbvariablesname().replace("'","''") + "'");
         if(dbvariablesService.ifexist(con)>0)
         {
@@ -72,7 +72,7 @@ public class DbvariablesController {
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Dbvariables dic) {
         Condition con=new Condition(Dbvariables.class);
-        con.createCriteria().andCondition("projectid = "+dic.getProjectid()).andCondition("conditionid = "+dic.getConditionid())
+        con.createCriteria().andCondition("projectid = "+dic.getProjectid())
                 .andCondition("dbvariablesname = '" + dic.getDbvariablesname().replace("'","''") + "'").andCondition("id <> " + dic.getId());
         if(dbvariablesService.ifexist(con)>0)
         {

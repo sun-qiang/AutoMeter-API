@@ -38,7 +38,7 @@
                 type="primary"
                 size="mini"
                 @click="clickCopy(scope.$index)"
-              >复制使用</el-button>
+              >复制变量</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -90,7 +90,7 @@
                 type="primary"
                 size="mini"
                 @click="clickDbCopy(scope.$index)"
-              >复制使用</el-button>
+              >复制变量</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -141,7 +141,7 @@
                 type="primary"
                 size="mini"
                 @click="clickScriptCopy(scope.$index)"
-              >复制使用</el-button>
+              >复制变量</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -191,7 +191,7 @@
                 type="primary"
                 size="mini"
                 @click="clickGlobalCopy(scope.$index)"
-              >复制使用</el-button>
+              >复制变量</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -242,7 +242,7 @@
                 type="primary"
                 size="mini"
                 @click="clickRadomCopy(scope.$index)"
-              >复制使用</el-button>
+              >复制变量</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -257,60 +257,60 @@
         ></el-pagination>
       </template>
     </el-tab-pane>
-    <el-tab-pane label="环境变量" name="five">
-      <template>
-        <div class="filter-container">
-          <el-form :inline="true">
-            <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchtestvaraibles.testvariablesname" clearable @keyup.enter.native="searchTestVariablesBy" placeholder="变量名"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="searchTestVariablesBy" :loading="btnLoading">查询</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-        <el-table
-          :data="TestVariablesList"
-          :key="TestvariablesitemKey"
-          element-loading-text="loading"
-          border
-          fit
-          highlight-current-row
-        >
-          <el-table-column label="编号" align="center" width="45">
-            <template slot-scope="scope">
-              <span v-text="TestVariablesIndex(scope.$index)"></span>
-            </template>
-          </el-table-column>
-          <el-table-column label="变量名" align="center" prop="testvariablesname" width="100"/>
-          <el-table-column label="变量类型" align="center" prop="valuetype" width="80"/>
-          <el-table-column label="来源用例" align="center" prop="casename" width="100"/>
-          <el-table-column label="来源微服务" align="center" prop="deployunitname" width="120"/>
-          <el-table-column label="来源类型" align="center" prop="testvariablestype" width="80"/>
-          <el-table-column :show-overflow-tooltip="true"  label="变量表达式" align="center" prop="variablesexpress" width="90"/>
-          <el-table-column :show-overflow-tooltip="true"  label="变量描述" align="center" prop="variablesdes" width="120"/>
-          <el-table-column label="操作" align="center"
-                           v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
-            <template slot-scope="scope">
-              <el-button
-                type="primary"
-                size="mini"
-                @click="clickCopy(scope.$index)"
-              >复制使用</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="searchtestvaraibles.page"
-          :page-size="searchtestvaraibles.size"
-          :total="Testvariablestotal"
-          :page-sizes="[10, 20, 30, 40]"
-          layout="total, sizes, prev, pager, next, jumper"
-        ></el-pagination>
-      </template>
-    </el-tab-pane>
+<!--    <el-tab-pane label="环境变量" name="five">-->
+<!--      <template>-->
+<!--        <div class="filter-container">-->
+<!--          <el-form :inline="true">-->
+<!--            <el-form-item  label="变量名:">-->
+<!--              <el-input style="width: 130px" v-model="searchtestvaraibles.testvariablesname" clearable @keyup.enter.native="searchTestVariablesBy" placeholder="变量名"></el-input>-->
+<!--            </el-form-item>-->
+<!--            <el-form-item>-->
+<!--              <el-button type="primary" @click="searchTestVariablesBy" :loading="btnLoading">查询</el-button>-->
+<!--            </el-form-item>-->
+<!--          </el-form>-->
+<!--        </div>-->
+<!--        <el-table-->
+<!--          :data="TestVariablesList"-->
+<!--          :key="TestvariablesitemKey"-->
+<!--          element-loading-text="loading"-->
+<!--          border-->
+<!--          fit-->
+<!--          highlight-current-row-->
+<!--        >-->
+<!--          <el-table-column label="编号" align="center" width="45">-->
+<!--            <template slot-scope="scope">-->
+<!--              <span v-text="TestVariablesIndex(scope.$index)"></span>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
+<!--          <el-table-column label="变量名" align="center" prop="testvariablesname" width="100"/>-->
+<!--          <el-table-column label="变量类型" align="center" prop="valuetype" width="80"/>-->
+<!--          <el-table-column label="来源用例" align="center" prop="casename" width="100"/>-->
+<!--          <el-table-column label="来源微服务" align="center" prop="deployunitname" width="120"/>-->
+<!--          <el-table-column label="来源类型" align="center" prop="testvariablestype" width="80"/>-->
+<!--          <el-table-column :show-overflow-tooltip="true"  label="变量表达式" align="center" prop="variablesexpress" width="90"/>-->
+<!--          <el-table-column :show-overflow-tooltip="true"  label="变量描述" align="center" prop="variablesdes" width="120"/>-->
+<!--          <el-table-column label="操作" align="center"-->
+<!--                           v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">-->
+<!--            <template slot-scope="scope">-->
+<!--              <el-button-->
+<!--                type="primary"-->
+<!--                size="mini"-->
+<!--                @click="clickCopy(scope.$index)"-->
+<!--              >复制变量</el-button>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
+<!--        </el-table>-->
+<!--        <el-pagination-->
+<!--          @size-change="handleSizeChange"-->
+<!--          @current-change="handleCurrentChange"-->
+<!--          :current-page="searchtestvaraibles.page"-->
+<!--          :page-size="searchtestvaraibles.size"-->
+<!--          :total="Testvariablestotal"-->
+<!--          :page-sizes="[10, 20, 30, 40]"-->
+<!--          layout="total, sizes, prev, pager, next, jumper"-->
+<!--        ></el-pagination>-->
+<!--      </template>-->
+<!--    </el-tab-pane>-->
   </el-tabs>
 </template>
 

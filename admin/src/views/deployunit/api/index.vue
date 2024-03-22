@@ -437,8 +437,8 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="300">
                       <template slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                        </el-button>
+<!--                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量-->
+<!--                        </el-button>-->
                         <el-button type="primary" size="mini" @click="copeHeader(scope.row,scope.$index)">新增
                         </el-button>
                         <el-button type="primary" size="mini" @click="delectHeader(scope.$index)">删除</el-button>
@@ -471,8 +471,8 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="250">
                       <template slot-scope="scope">
-                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                        </el-button>
+<!--                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量-->
+<!--                        </el-button>-->
                         <el-button type="primary" size="mini" @click="copeParam(scope.row,scope.$index)">新增
                         </el-button>
                         <el-button type="primary" size="mini" @click="delectParam(scope.$index)">删除</el-button>
@@ -524,8 +524,8 @@
 <!--                          <json-editor ref="jsonEditor" v-model="tmpapiparams.keyname" />-->
 <!--                        </div>-->
 
-                        <el-button type="primary" size="mini" @click="UseParams">使用变量
-                        </el-button>
+<!--                        <el-button type="primary" size="mini" @click="UseParams">使用变量-->
+<!--                        </el-button>-->
                         <el-input
                             type="textarea"
                           style="width: 650px;height: 400px;color: #0000FF"
