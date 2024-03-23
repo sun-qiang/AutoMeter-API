@@ -641,6 +641,13 @@
               @click.native.prevent="showAddplanscriptDialog"
             >添加脚本前置条件
             </el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddplanscriptDialog"
+            >设置前置条件顺序
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -847,6 +854,12 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showAddscriptDialog"
             >添加脚本前置条件</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddscriptDialog"
+            >设置前置条件顺序</el-button>
           </el-form-item>
         </el-form>
       </div>

@@ -1521,6 +1521,12 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showAddscriptDialog"
             >添加前置脚本</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddscriptDialog"
+            >设置前置条件顺序</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -2784,6 +2790,8 @@
           projectid: ''
         },
         Scenedelaysearch: {
+          page: 1,
+          size: 10,
           conditionid: null,
           conditiontype: null,
           projectid: null
@@ -2842,6 +2850,7 @@
       this.searchdbcondition.projectid = window.localStorage.getItem('pid')
       this.searchscriptcondition.projectid = window.localStorage.getItem('pid')
       this.searchapicasevariables.projectid = window.localStorage.getItem('pid')
+      this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
       this.getenviromentallList()
       this.getapicasesList()
       this.getdepunitLists()
@@ -3438,7 +3447,7 @@
       },
 
       getdelayconditionList() {
-        this.Scenedelaysearch.conditiontype = 'scencecase'
+        this.Scenedelaysearch.conditiontype = 'case'
         searchbytype(this.Scenedelaysearch).then(response => {
           this.delayconditionList = response.data
         }).catch(res => {

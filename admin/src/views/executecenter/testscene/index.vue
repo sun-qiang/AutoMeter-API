@@ -528,12 +528,6 @@
             <el-button
               type="primary"
               size="mini"
-              v-if="hasPermission('testscene:scenecasecondition')"
-              @click.native.prevent="ShowAddcasecaseconditionDialog"
-            >同步调试前置条件</el-button>
-            <el-button
-              type="primary"
-              size="mini"
               icon="el-icon-plus"
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="ShowAddcasecaseconditionDialog"
@@ -559,6 +553,18 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showAddscriptDialog"
             >添加前置脚本</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="showAddscriptDialog"
+            >设置前置条件顺序</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('testscene:scenecasecondition')"
+              @click.native.prevent="ShowAddcasecaseconditionDialog"
+            >同步用例调试前置条件</el-button>
           </el-form-item>
         </el-form>
       </div>
