@@ -557,7 +557,7 @@
               type="primary"
               size="mini"
               v-if="hasPermission('testscene:scenecasecondition')"
-              @click.native.prevent="showAddscriptDialog"
+              @click.native.prevent="showscenecaseconditionorderDialog"
             >设置前置条件顺序</el-button>
             <el-button
               type="primary"
@@ -1756,6 +1756,54 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog title="前置条件顺序" width="840px" :visible.sync="ConditionOrderdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+      >
+        <el-table
+          :data="conditionorderList"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%" >
+          <el-table-column label="编号" align="center" width="50">
+            <template slot-scope="scope">
+              <span v-text="getIndex(scope.$index)"></span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="subconditionname" align="center" label="前置条件名"  width="200px"></el-table-column>
+          <el-table-column prop="conditionname" align="center" label="条件来源" width="200px"></el-table-column>
+          <el-table-column prop="subconditiontype" align="center" label="条件类型"  width="110px"></el-table-column>
+          <el-table-column prop="orderstatus" align="center" label="状态"  width="60px"></el-table-column>
+          <el-table-column prop="conditionorder" align="center" label="顺序"  width="50px"></el-table-column>
+
+          <el-table-column label="操作排序" align="center" width="140px" >
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                :disabled="scope.$index===0"
+                @click="moveUp(scope.$index,scope.row)"><i class="el-icon-arrow-up"></i></el-button>
+              <el-button
+                size="mini"
+                :disabled="scope.$index===(conditionorderList.length-1)"
+                @click="moveDown(scope.$index,scope.row)"><i class="el-icon-arrow-down"></i></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="ConditionOrderdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          @click.native.prevent="saveconditionorder"
+        >保存</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -1783,6 +1831,7 @@ import { addtestvariables, updatetestvariables, removetestvariables, findtestvar
 import { getparamvaluebycaseidandtype as getparamvaluebycaseidandtype, casevalueforbody as casevalueforbody, updatepropertydata, updateapicasesdata } from '@/api/assets/apicasesdata'
 import { getapi } from '@/api/deployunit/api'
 import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
+import { searchconditionorder, addconditionorder } from '@/api/condition/conditionorder'
 
 export default {
   name: '测试场景',
@@ -1799,6 +1848,14 @@ export default {
   },
   data() {
     return {
+      tmpsubconditionid: '',
+      conditionorderList: [], // 条件顺序显示列表
+      saveconditionorderList: [], // 条件顺序保存列表
+      searchconditionorder: {
+        subconditionid: '',
+        conditiontype: ''
+      },
+      ConditionOrderdialogFormVisible: false,
       id: null,
       activeName: 'zero',
       ApicasesVariablesList: [],
@@ -2206,6 +2263,74 @@ export default {
 
   methods: {
     unix2CurrentTime,
+    showscenecaseconditionorderDialog() {
+      // 显示新增对话框
+      this.ConditionOrderdialogFormVisible = true
+      this.searchconditionorder.subconditionid = this.tmpsubconditionid
+      this.searchconditionorder.conditiontype = 'scencecase'
+      this.searchConditionorder()
+    },
+
+    searchConditionorder() {
+      searchconditionorder(this.searchconditionorder).then(response => {
+        this.conditionorderList = response.data
+      }).catch(res => {
+        this.$message.error('查询条件顺序失败')
+      })
+    },
+    /**
+     * 添加条件顺序
+     */
+    saveconditionorder() {
+      this.saveconditionorderList = []
+      for (let i = 0; i < this.conditionorderList.length; i++) {
+        this.saveconditionorderList.push({
+          'id': this.conditionorderList[i].id,
+          'conditionid': this.conditionorderList[i].conditionid,
+          'subconditionid': this.conditionorderList[i].subconditionid,
+          'subconditiontype': this.conditionorderList[i].subconditiontype,
+          'orderstatus': '已排序',
+          'subconditionname': this.conditionorderList[i].subconditionname,
+          'conditionname': this.conditionorderList[i].conditionname,
+          'conditionorder': i + 1,
+          'creator': this.name
+        })
+      }
+      console.log(this.saveconditionorderList)
+      addconditionorder(this.saveconditionorderList).then(() => {
+        this.$message.success('条件顺序保存成功')
+      }).catch(res => {
+        this.$message.error('条件顺序保存失败')
+      })
+      this.ConditionOrderdialogFormVisible = false
+    },
+
+    // 上移
+    moveUp(index, row) {
+      var that = this
+      if (index > 0) {
+        const upDate = that.conditionorderList[index - 1]
+        that.conditionorderList.splice(index - 1, 1)
+        that.conditionorderList.splice(index, 0, upDate)
+      } else {
+        alert('已经是第一条，不可上移')
+      }
+      console.log(that.conditionorderList)
+    },
+
+    // 下移
+    moveDown(index, row) {
+      var that = this
+      console.log('下移', index, row)
+      if ((index + 1) === that.conditionorderList.length) {
+        alert('已经是最后一条，不可下移')
+      } else {
+        console.log(index)
+        const downDate = that.conditionorderList[index + 1]
+        that.conditionorderList.splice(index + 1, 1)
+        that.conditionorderList.splice(index, 0, downDate)
+      }
+    },
 
     findMacAndDepWithEnv() {
       findMacAndDepWithEnv(this.searchassemble).then(response => {
@@ -3255,6 +3380,7 @@ export default {
 
     showtestscenecaseConditionDialog(index) {
       this.scenecaseConditionFormVisible = true
+      this.tmpsubconditionid = this.testscenecaseList[index].id
       this.tmpapicondition.conditionid = this.testscenecaseList[index].id
       this.tmpapicondition.conditionname = this.testscenecaseList[index].casename
       this.tmpapicondition.conditiontype = 'scencecase'

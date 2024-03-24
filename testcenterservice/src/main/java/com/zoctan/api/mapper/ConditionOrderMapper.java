@@ -16,6 +16,9 @@ public interface ConditionOrderMapper extends MyMapper<ConditionOrder> {
 
     void saveconditionorder(@Param("conditionOrderList") final List<ConditionOrder> conditionOrderList);
 
+    void updateBatchconditionOrderList(@Param("conditionOrderList")final List<ConditionOrder> conditionOrderList);
+
+
     void deleteconditionorderbyconid(@Param("conditionid") Long conditionid);
 
     void deleteconditionorderbysubconid(@Param("conditionid") Long conditionid, @Param("subconditionid") Long subconditionid, @Param("subconditiontype") String subconditiontype);

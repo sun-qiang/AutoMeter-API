@@ -18,6 +18,8 @@ public interface ConditionOrderService extends Service<ConditionOrder> {
     List<ConditionOrder> findconditionorderWithid(final Map<String, Object> params);
     List<ConditionOrder> findconditionorderWithidandtype(Long conditionid,String subconditiontype);
     void saveconditionorder(final List<ConditionOrder> conditionOrderList);
+    void updateBatchconditionOrderList(final List<ConditionOrder> conditionOrderList);
+
     void deleteconditionorderbyconid(Long conditionid);
     void deleteconditionorderbysubconid(Long conditionid,Long subconditionid,String subconditiontype);
 }

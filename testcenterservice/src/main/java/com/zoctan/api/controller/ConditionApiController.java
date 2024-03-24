@@ -3,6 +3,7 @@ package com.zoctan.api.controller;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.ConditionApi;
+import com.zoctan.api.entity.ConditionOrder;
 import com.zoctan.api.entity.Testcondition;
 import com.zoctan.api.service.ConditionApiService;
 import com.github.pagehelper.PageHelper;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ public class ConditionApiController {
     private ConditionApiService conditionApiService;
     @Resource
     private ConditionOrderService conditionOrderService;
+
 
 
     @PostMapping
@@ -43,6 +46,21 @@ public class ConditionApiController {
         }
         else {
             conditionApiService.save(conditionApi);
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(conditionApi.getConditiontype());
+            conditionOrder.setConditionid(conditionApi.getId());
+            conditionOrder.setConditionname(conditionApi.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(conditionApi.getConditionid());
+            conditionOrder.setSubconditionname(conditionApi.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置接口条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(conditionApi.getCreator());
+            conditionOrderService.save(conditionOrder);
         }
         return ResultGenerator.genOkResult();
     }

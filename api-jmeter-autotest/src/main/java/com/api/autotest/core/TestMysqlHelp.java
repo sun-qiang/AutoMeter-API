@@ -270,10 +270,10 @@ public class TestMysqlHelp {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
             String sql = "select * from condition_api where conditionid=" + Objectid + " and conditiontype='" + ObjectType + "'";
-            logger.info(logplannameandcasename + "获取数据库 获取场景用例id result sql is...........: " + sql);
+            logger.info(logplannameandcasename + "获取数据库 GetConditionApiByObjectIDAndType result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
-            logger.info(logplannameandcasename + "获取数据库 获取场景用例id异常...........: " + e.getMessage());
+            logger.info(logplannameandcasename + "获取数据库 GetConditionApiByObjectIDAndType异常...........: " + e.getMessage());
         }
         return result;
     }
@@ -382,10 +382,10 @@ public class TestMysqlHelp {
     }
 
     //获取条件顺序
-    public ArrayList<HashMap<String, String>> GetConditionOrderByID(Long ConditionID) {
+    public ArrayList<HashMap<String, String>> GetConditionOrderByID(Long ConditionID,String ConditionType) {
         ArrayList<HashMap<String, String>> result = new ArrayList<>();
         try {
-            String sql = "select * from condition_order where conditionid=" + ConditionID + " order by conditionorder  asc";
+            String sql = "select * from condition_order where subconditionid=" + ConditionID+ " and conditiontype='" + ConditionType  + "' order by conditionorder  asc";
             logger.info(logplannameandcasename + "获取数据库 获取条件顺序 result sql is...........: " + sql);
             result = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {

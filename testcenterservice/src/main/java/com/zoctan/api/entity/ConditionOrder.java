@@ -38,6 +38,19 @@ public class ConditionOrder {
     private String orderstatus;
 
 
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
+
+
+
+
 
     /**
      * 子条件名

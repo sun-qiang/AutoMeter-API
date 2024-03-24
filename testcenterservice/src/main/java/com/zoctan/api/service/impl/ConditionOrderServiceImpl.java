@@ -42,6 +42,11 @@ private ConditionOrderMapper conditionOrderMapper;
     }
 
     @Override
+    public void updateBatchconditionOrderList(List<ConditionOrder> conditionOrderList) {
+        conditionOrderMapper.updateBatchconditionOrderList(conditionOrderList);
+    }
+
+    @Override
     public void deleteconditionorderbyconid(Long conditionid) {
         conditionOrderMapper.deleteconditionorderbyconid(conditionid);
     }

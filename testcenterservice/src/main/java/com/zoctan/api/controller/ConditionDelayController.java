@@ -4,13 +4,16 @@ import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDelay;
+import com.zoctan.api.entity.ConditionOrder;
 import com.zoctan.api.service.ConditionDelayService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zoctan.api.service.ConditionOrderService;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +26,11 @@ import java.util.Map;
 public class ConditionDelayController {
     @Resource
     private ConditionDelayService conditionDelayService;
+    @Resource
+    private ConditionOrderService conditionOrderService;
 
     @PostMapping
     public Result add(@RequestBody ConditionDelay conditionDelay) {
-
-
         Condition con=new Condition(ConditionDelay.class);
         con.createCriteria().andCondition("projectid = "+conditionDelay.getProjectid())
                 .andCondition("subconditionname = '" + conditionDelay.getSubconditionname().replace("'","''")+ "'");
@@ -38,6 +41,21 @@ public class ConditionDelayController {
         else
         {
             conditionDelayService.save(conditionDelay);
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(conditionDelay.getConditiontype());
+            conditionOrder.setConditionid(conditionDelay.getId());
+            conditionOrder.setConditionname(conditionDelay.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(conditionDelay.getConditionid());
+            conditionOrder.setSubconditionname(conditionDelay.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置延时条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(conditionDelay.getCreator());
+            conditionOrderService.save(conditionOrder);
             return ResultGenerator.genOkResult();
         }
     }

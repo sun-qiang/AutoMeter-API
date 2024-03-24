@@ -14,6 +14,7 @@
     <result column="orderstatus" jdbcType="VARCHAR" property="orderstatus" />
     <result column="conditionorder" jdbcType="BIGINT" property="conditionorder" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="conditiontype" jdbcType="VARCHAR" property="conditiontype" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
   </resultMap>
@@ -30,7 +31,7 @@
   <select id="findconditionorderWithid" resultMap="BaseResultMap">
     SELECT *
     FROM condition_order
-    where conditionid = #{conditionid}
+    where subconditionid = #{subconditionid} and conditiontype= #{conditiontype}
     order by conditionorder  asc
   </select>
 
@@ -50,6 +51,22 @@
       (#{item.conditionid}, #{item.subconditionid}, #{item.subconditiontype}, #{item.subconditionname}, #{item.conditionorder}, #{item.creator}, #{item.conditionname},#{item.orderstatus},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
     </foreach>
   </insert>
+
+
+
+  <update id="updateBatchconditionOrderList"  parameterType="java.util.List">
+    <foreach collection="conditionOrderList" item="item" index="index"  separator=";">
+      update condition_order
+      <set>
+        conditionorder=${item.conditionorder},
+        orderstatus='已排序',
+        lastmodify_time=DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+      </set>
+      where id = ${item.id}
+    </foreach>
+  </update>
+
+
 
   <delete id="deleteconditionorderbyconid">
     DELETE from condition_order where conditionid = #{conditionid}

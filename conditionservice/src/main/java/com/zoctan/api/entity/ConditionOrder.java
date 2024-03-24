@@ -12,6 +12,16 @@ public class ConditionOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    public String getConditiontype() {
+        return conditiontype;
+    }
+
+    public void setConditiontype(String conditiontype) {
+        this.conditiontype = conditiontype;
+    }
+
+    private String conditiontype;
     /**
      * 父条件id
      */

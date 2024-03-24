@@ -145,7 +145,7 @@ public class TestconditionController {
         int ScriptConditionNUms = conditionScriptList.size();
         List<ConditionDelay> conditionDelayList = conditionDelayService.GetCaseListByConditionID(Planid, "execplan");
         int DelayConditionNUms = conditionDelayList.size();
-        int SubConditionNums = ApiConditionNums + DelayConditionNUms + DBConditionNUms+ScriptConditionNUms;
+        int SubConditionNums = ApiConditionNums + DelayConditionNUms + DBConditionNUms + ScriptConditionNUms;
         if (SubConditionNums > 0) {
             Condition condition = new Condition(TestconditionReport.class);
             condition.createCriteria().andCondition("testplanid = " + Planid)
@@ -193,54 +193,38 @@ public class TestconditionController {
     public Result exec(@RequestBody Dispatch dispatch) {
         Long Planid = dispatch.getExecplanid();
         Executeplan executeplan = executeplanService.getBy("id", Planid);
-        TestconditionController.log.info("开始处理计划前置条件-接口条件-=====================================：");
-        APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
-        TestconditionController.log.info("完成处理计划前置条件-接口条件-========================================：");
-        TestconditionController.log.info("开始处理计划前置条件-数据库条件-=====================================：");
-        DBCondition(Planid, dispatch);
-        TestconditionController.log.info("开始处理计划前置条件-脚本条件-=====================================：");
-        ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
+//        TestconditionController.log.info("开始处理计划前置条件-接口条件-=====================================：");
+//        APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
+//        TestconditionController.log.info("完成处理计划前置条件-接口条件-========================================：");
+//        TestconditionController.log.info("开始处理计划前置条件-数据库条件-=====================================：");
+//        DBCondition(Planid, dispatch);
+//        TestconditionController.log.info("开始处理计划前置条件-脚本条件-=====================================：");
+//        ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
 
-//        List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Planid, "前置条件", "测试集合");
-//        if (testconditionList.size() > 0) {
-//            long ConditionID = testconditionList.get(0).getId();
-//            Map<String, Object> conditionmap = new HashMap<>();
-//            conditionmap.put("conditionid", ConditionID);
-//            List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
-//            //条件排序的按照顺序执行
-//            if (conditionOrderList.size() > 0) {
-//                for (ConditionOrder conditionOrder : conditionOrderList) {
-//                    long subconditionid=conditionOrder.getSubconditionid();
-//                    if (conditionOrder.getSubconditiontype().equals("接口")) {
-//                        ConditionApi conditionApi= conditionApiService.getBy("id",subconditionid);
-//                        TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
-//                        conditionApi(conditionApi,ConditionID, dispatch, executeplan, Planid);
-//                        TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
-//                    }
-//                    if (conditionOrder.getSubconditiontype().equals("数据库")) {
-//                        ConditionDb conditionDb= conditionDbService.getBy("id",subconditionid);
-//                        TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
-//                        conditionDb(conditionDb,ConditionID, dispatch);
-//                        TestconditionController.log.info("完成顺序处理计划前置条件-数据库子条件-============：");
-//                    }
-//                    if (conditionOrder.getSubconditiontype().equals("脚本")) {
-//                        TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
-//                        ScriptCondition(Caseid, dispatch, ConditionID);
-//                        TestconditionController.log.info("完成顺序处理用例前置条件-脚本子条件-============：");
-//                    }
-//                }
-//            } else {
-//                TestconditionController.log.info("开始处理计划前置条件-数据库子条件-============：");
-//                DBCondition(ConditionID, dispatch);
-//                TestconditionController.log.info("完成处理计划前置条件-数据库子条件-============：");
-//                TestconditionController.log.info("开始处理计划前置条件-接口子条件-============：");
-//                APICondition(ConditionID, dispatch, executeplan, Planid);
-//                TestconditionController.log.info("完成处理计划前置条件-接口子条件-============：");
-//                TestconditionController.log.info("开始处理用例前置条件-脚本子条件-============：");
-//                ScriptCondition(Caseid, dispatch, ConditionID);
-//                TestconditionController.log.info("完成处理用例前置条件-脚本子条件-============：");
-//            }
-//        }
+        Map<String, Object> conditionmap = new HashMap<>();
+        conditionmap.put("conditionid", Planid);
+        conditionmap.put("conditiontype", "execplan");
+        List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
+        //条件排序的按照顺序执行
+        if (conditionOrderList.size() > 0) {
+            for (ConditionOrder conditionOrder : conditionOrderList) {
+                if (conditionOrder.getSubconditiontype().equals("前置接口条件")) {
+                    TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
+                    APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
+                    TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
+                }
+                if (conditionOrder.getSubconditiontype().equals("前置数据库条件")) {
+                    TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
+                    DBCondition(Planid, dispatch);
+                    TestconditionController.log.info("完成顺序处理计划前置条件-数据库子条件-============：");
+                }
+                if (conditionOrder.getSubconditiontype().equals("前置脚本条件")) {
+                    TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
+                    ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
+                    TestconditionController.log.info("完成顺序处理用例前置条件-脚本子条件-============：");
+                }
+            }
+        }
         return ResultGenerator.genOkResult();
     }
 
@@ -691,145 +675,67 @@ public class TestconditionController {
         Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
         Long ApiCaseID = Long.parseLong(param.get("apicaseid").toString());
         TestconditionController.log.info("用例调试条件。。。。。用例id-==================：" + ApiCaseID);
+
+
+        Map<String, Object> conditionmap = new HashMap<>();
+        conditionmap.put("conditionid", ApiCaseID);
+        conditionmap.put("conditiontype", "case");
+        List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
+        //条件排序的按照顺序执行
+        if (conditionOrderList.size() > 0) {
+            for (ConditionOrder conditionOrder : conditionOrderList) {
+                if (conditionOrder.getSubconditiontype().equals("前置接口条件")) {
+                    TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
+                    try {
+                        Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
+                    } catch (Exception ex) {
+                        return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
+                    }
+                    TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
+                }
+                if (conditionOrder.getSubconditiontype().equals("前置数据库条件")) {
+                    TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
+                    try {
+                        Resutl = GetCaseDBConditionResult(Resutl, ApiCaseID);
+                    } catch (Exception ex) {
+                        return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
+                    }
+                    TestconditionController.log.info("完成顺序处理计划前置条件-数据库子条件-============：");
+                }
+                if (conditionOrder.getSubconditiontype().equals("前置脚本条件")) {
+                    TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
+                    try {
+                        Resutl = GetCaseScriptConditionResult(Resutl, ApiCaseID);
+                    } catch (Exception ex) {
+                        return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
+                    }
+                    TestconditionController.log.info("完成顺序处理用例前置条件-脚本子条件-============：");
+                }
+            }
+        }
         //db条件
-        try {
-            Resutl = GetCaseDBConditionResult(Resutl, ApiCaseID);
-            TestconditionController.log.info("用例调试条件db条件完成-==================：");
-
-        } catch (Exception ex) {
-            return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
-        }
-        //脚本条件
-        try {
-            Resutl = GetCaseScriptConditionResult(Resutl, ApiCaseID);
-            TestconditionController.log.info("用例调试条件脚本条件完成-==================：");
-
-        } catch (Exception ex) {
-            return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
-        }
-        //接口条件
-        try {
-            Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
-            TestconditionController.log.info("用例调试条件接口条件完成-==================：");
-
-        } catch (Exception ex) {
-            return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
-        }
-//        String DBVariablesValue = param.get("dbvariablesvalue").toString();
-//        String APIVariablesValue = param.get("apivariablesvalues").toString();
-//        TestconditionController.log.info("调试接口子条件接口变量值-==================：" + APIVariablesValue);
+//        try {
+//            Resutl = GetCaseDBConditionResult(Resutl, ApiCaseID);
+//            TestconditionController.log.info("用例调试条件db条件完成-==================：");
 //
-        //准备数据库变量
-//        HashMap<String, String> DBVariableNameValueMap = new HashMap<>();
-//        if (!DBVariablesValue.isEmpty()) {
-//            try {
-//                JSONObject jsonObject = JSON.parseObject(DBVariablesValue);
-//                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
-//                    String key = objectEntry.getKey();
-//                    String value = objectEntry.getValue().toString();
-//                    DBVariableNameValueMap.put(key, value);
-//                }
-//            } catch (Exception ex) {
-//                return ResultGenerator.genFailedResult("执行前置数据库条件结果异常：" + DBVariablesValue);
-//            }
+//        } catch (Exception ex) {
+//            return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
 //        }
+//        //脚本条件
+//        try {
+//            Resutl = GetCaseScriptConditionResult(Resutl, ApiCaseID);
+//            TestconditionController.log.info("用例调试条件脚本条件完成-==================：");
 //
-//        //准备前置测试集合的接口产生的变量值
-//        HashMap<String, String> InterfaceNameValueMap = new HashMap<>();
-//        if (!APIVariablesValue.isEmpty()) {
-//            try {
-//                JSONObject jsonObject = JSON.parseObject(APIVariablesValue);
-//                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
-//                    String key = objectEntry.getKey();
-//                    String value = objectEntry.getValue().toString();
-//                    InterfaceNameValueMap.put(key, value);
-//                }
-//            } catch (Exception ex) {
-//                return ResultGenerator.genFailedResult("执行前置接口条件结果异常：" + APIVariablesValue);
-//            }
+//        } catch (Exception ex) {
+//            return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
 //        }
-//        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ApiCaseID, "case");
-//        TestconditionController.log.info("用例调试接口条件数量-============：" + conditionApiList.size());
-//        for (ConditionApi conditionApi : conditionApiList) {
-//            Long CaseID = conditionApi.getCaseid(); //conditionApi.getCaseid();
-//            //增加判断case是否有前置条件
-//            Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
-//            if (apicases == null) {
-//                return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口用例，请检查是否存在或已被删除！");
-//            }
-//            Long ApiID = apicases.getApiid();
-//            Api api = apiService.getBy("id", ApiID);
-//            if (api == null) {
-//                return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口的API，请检查是否存在或已被删除！");
-//            }
-//            Long Deployunitid = api.getDeployunitid();
-//            Deployunit deployunit = deployunitService.getBy("id", Deployunitid);
-//            if (deployunit == null) {
-//                return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行接口API所在的微服务，请检查是否存在或已被删除！");
-//            }
-//            List<ApiCasedata> apiCasedataList = apiCasedataService.GetCaseDatasByCaseID(CaseID);
-//            //区分环境类型
-//            Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(EnviromentID, deployunit.getId());
-//            if (macdepunit == null) {
-//                return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件所在的微服务：" + deployunit.getDeployunitname() + " 未在运行环境中部署，请检查是否部署或已被删除！");
-//            }
-//            Machine machine = machineService.getBy("id", macdepunit.getMachineid());
-//            if (machine == null) {
-//                return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到环境组件部署的服务器：" + macdepunit.getMachinename() + " ，请检查是否存在或已被删除！");
-//            }
-//            TestCaseHelp testCaseHelp = new TestCaseHelp();
-//            RequestObject requestObject = new RequestObject();
-//            try {
-//                requestObject = testCaseHelp.GetCaseRequestDataForDebug(Resutl.get("db"), Resutl.get("api"), apiCasedataList, api, apicases, deployunit, macdepunit, machine);
-//            } catch (Exception ex) {
-//                return ResultGenerator.genFailedResult(ex.getMessage());
-//            }
-//            TestResponeData testResponeData = testCaseHelp.request(requestObject);
-//            String Respone = testResponeData.getResponeContent();
-//            String ResponeContentType = "application/json;charset=utf-8";
-//            List<Header> responeheaderlist = testResponeData.getHeaderList();
-//            for (Header head : responeheaderlist) {
-//                if (head.getName().equalsIgnoreCase("Content-Type")) {
-//                    ResponeContentType = head.getValue();
-//                }
-//            }
-//            requestObject.setResponecontenttype(ResponeContentType);
-//            //根据用例是否有中间变量，如果有变量，解析（json，xml，html）保存变量值表，没有变量直接保存条件结果表
-//            Condition con = new Condition(Testvariables.class);
-//            con.createCriteria().andCondition("caseid = " + apicases.getId());
-//            List<Testvariables> apicasesVariablesList = testvariablesService.listByCondition(con);
-//            for (Testvariables testvariables : apicasesVariablesList) {
-//                ParseResponeHelp parseResponeHelp = new ParseResponeHelp();
-//                if (testvariables != null) {
-//                    try {
-//                        String VariablesResoruce = testvariables.getTestvariablestype();
-//                        String ParseValue = "";
-//                        String VariablesPath = testvariables.getVariablesexpress();
-//                        TestconditionController.log.info("调试接口子条件响应ResponeContentType-============：" + requestObject.getResponecontenttype());
-//                        TestconditionController.log.info("调试接口子条件响应Respone-============：" + Respone);
-//                        TestconditionController.log.info("调试接口子条件响应变量表达式-============：" + testvariables.getVariablesexpress());
+//        //接口条件
+//        try {
+//            Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
+//            TestconditionController.log.info("用例调试条件接口条件完成-==================：");
 //
-//                        switch (VariablesResoruce) {
-//                            case "Body":
-//                                ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-//                                break;
-//                            case "Header":
-//                                ParseValue = parseResponeHelp.ParseHeader(testResponeData, VariablesPath);
-//                                break;
-//                            case "Cookies":
-//                                ParseValue = parseResponeHelp.ParseCookies(testResponeData, VariablesPath);
-//                                break;
-//                            default:
-//                                ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-//                        }
-//                        VariableNameValueMap.put(testvariables.getTestvariablesname(), ParseValue);
-//                    } catch (Exception ex) {
-//                        return ResultGenerator.genFailedResult("前置接口子条件执行异常，变量:" + testvariables.getTestvariablesname() + " 获取值异常,原因为：" + ex.getMessage());
-//                    }
-//                } else {
-//                    return ResultGenerator.genFailedResult("前置接口子条件执行异常:接口子条件未找到变量:" + testvariables.getTestvariablesname() + "，请检查变量管理-变量管理中是否存在！");
-//                }
-//            }
+//        } catch (Exception ex) {
+//            return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
 //        }
         return ResultGenerator.genOkResult(Resutl);
     }
@@ -1122,8 +1028,7 @@ public class TestconditionController {
                 }
             }
         }
-        if(Result==null)
-        {
+        if (Result == null) {
             throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否正确");
         }
         return Result;
@@ -1137,8 +1042,7 @@ public class TestconditionController {
                 Result = row.getStr(columnname);
             }
         }
-        if(Result==null)
-        {
+        if (Result == null) {
             throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否正确");
         }
         return Result;

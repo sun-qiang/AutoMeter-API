@@ -4,6 +4,7 @@ import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDb;
+import com.zoctan.api.entity.ConditionOrder;
 import com.zoctan.api.entity.ConditionScript;
 import com.zoctan.api.service.ConditionOrderService;
 import com.zoctan.api.service.ConditionScriptService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,22 @@ public class ConditionScriptController {
         }
         else {
             conditionScriptService.save(conditionScript);
+
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(conditionScript.getConditiontype());
+            conditionOrder.setConditionid(conditionScript.getId());
+            conditionOrder.setConditionname(conditionScript.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(conditionScript.getConditionid());
+            conditionOrder.setSubconditionname(conditionScript.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置脚本条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(conditionScript.getCreator());
+            conditionOrderService.save(conditionOrder);
         }
         return ResultGenerator.genOkResult();
     }
