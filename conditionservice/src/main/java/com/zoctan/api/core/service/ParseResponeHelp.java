@@ -24,7 +24,7 @@ public class ParseResponeHelp {
     public String ParseRespone(String ResponeResultType,String Respone,String Path) throws Exception {
         ParseResponeHelp.log.info("接口子条件解析json内容-============：" + Respone + " 响应数据类型" + ResponeResultType+" JsonPath is:"+Path);
         String Result="";
-        if (ResponeResultType.trim().equalsIgnoreCase("json")||ResponeResultType.trim().equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.trim().equalsIgnoreCase("application/json")) {
+        if (ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("json")||ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("application/json")) {
             ParseResponeHelp.log.info("接口子条件开始解析json内容-================================：" );
             Result = ParseJsonRespone(Path, Respone);
             ParseResponeHelp.log.info("接口子条件完成解析json内容-================================："+" 结果为："+Result );

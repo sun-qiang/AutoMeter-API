@@ -109,7 +109,7 @@ public class TestAssert {
     public String ParseRespone(String ResponeResultType,String Path ,String Respone)
     {
         String Result="";
-        if (ResponeResultType.trim().equalsIgnoreCase("json")||ResponeResultType.trim().equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.trim().equalsIgnoreCase("application/json")) {
+        if (ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("json")||ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("application/json;charset=utf-8")||ResponeResultType.replaceAll(" ", "").equalsIgnoreCase("application/json")) {
             Result = ParseJson(Path, Respone);
         }
         if (ResponeResultType.equalsIgnoreCase("xml")||ResponeResultType.equalsIgnoreCase("application/xml;charset=utf-8")||ResponeResultType.equalsIgnoreCase("application/xml")) {
