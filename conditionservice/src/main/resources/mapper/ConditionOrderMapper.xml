@@ -31,7 +31,7 @@
   <select id="findconditionorderWithid" resultMap="BaseResultMap">
     SELECT *
     FROM condition_order
-    where conditionid = #{conditionid} and conditiontype= #{conditiontype}
+    where subconditionid = #{subconditionid} and conditiontype= #{conditiontype}
     order by conditionorder  asc
   </select>
 

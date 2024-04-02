@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.ScenecasesDebugReportMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.ScenecasesDebugReport">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="caseid" jdbcType="BIGINT" property="caseid" />
+    <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
+    <result column="batchname" jdbcType="VARCHAR" property="batchname" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="runtime" jdbcType="BIGINT" property="runtime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="requestmethod" jdbcType="VARCHAR" property="requestmethod" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="respone" jdbcType="LONGVARCHAR" property="respone" />
+    <result column="assertvalue" jdbcType="LONGVARCHAR" property="assertvalue" />
+    <result column="expect" jdbcType="LONGVARCHAR" property="expect" />
+    <result column="errorinfo" jdbcType="LONGVARCHAR" property="errorinfo" />
+    <result column="requestheader" jdbcType="LONGVARCHAR" property="requestheader" />
+    <result column="requestdatas" jdbcType="LONGVARCHAR" property="requestdatas" />
+  </resultMap>
+
+  <select id="findscenecasedebugreportWithName" resultMap="BaseResultMap">
+    SELECT b.casename,c.deployunitname,d.apiname,a.*
+    FROM scenecases_debug_report a inner join apicases b inner join deployunit c inner join api d
+    on a.caseid=b.id and b.apiid=d.id and b.deployunitid=c.id
+    <where>
+      <if test="batchname != null  and batchname != ''">a.batchname like CONCAT('%',#{batchname},'%')</if>
+      <if test="casename != null  and casename != ''">and a.casename like CONCAT('%',#{casename},'%')</if>
+      <if test="status != null  and status != ''">and a.status =#{status}</if>
+      and a.projectid =#{projectid} and  a.sceneid =#{sceneid}
+    </where>
+    order by a.create_time desc
+  </select>
+</mapper>

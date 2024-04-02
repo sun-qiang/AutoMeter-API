@@ -2,6 +2,8 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
+import com.zoctan.api.dto.SceneCaseTreeData;
+import com.zoctan.api.dto.SceneTreeData;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.service.*;
 import com.github.pagehelper.PageHelper;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +121,33 @@ public class TestsceneController {
         final List<Testscene> list = this.testsceneService.findtestsceneWithName(param);
         final PageInfo<Testscene> pageInfo = new PageInfo<>(list);
         return ResultGenerator.genOkResult(pageInfo);
+    }
+
+    @PostMapping("/searchscenetreedata")
+    public Result searchscenetreedata(@RequestBody final Map<String, Object> param) {
+        Long sceneid = Long.parseLong(param.get("sceneid").toString());
+        String scenename = param.get("scenename").toString();
+        Condition con = new Condition(Testscene.class);
+        con.createCriteria().andCondition("testscenenid = " + sceneid);
+        con.setOrderByClause("caseorder ASC");
+        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(con);
+        List<SceneCaseTreeData> sceneCaseTreeDataList=new ArrayList<>();
+
+        for (TestsceneTestcase estc:testsceneTestcaseList) {
+            SceneCaseTreeData sceneCaseTreeData=new SceneCaseTreeData();
+            sceneCaseTreeData.setCaseid(estc.getTestcaseid());
+            sceneCaseTreeData.setId(estc.getTestcaseid());
+            sceneCaseTreeData.setLabel(estc.getCasename());
+            sceneCaseTreeData.setApiid(estc.getApiid());
+            sceneCaseTreeDataList.add(sceneCaseTreeData);
+        }
+        SceneTreeData sceneTreeData=new SceneTreeData();
+        sceneTreeData.setId(sceneid);
+        sceneTreeData.setLabel(scenename);
+        sceneTreeData.setChildren(sceneCaseTreeDataList);
+        List<SceneTreeData>sceneTreeDataList=new ArrayList<>();
+        sceneTreeDataList.add(sceneTreeData);
+        return ResultGenerator.genOkResult(sceneTreeDataList);
     }
 
     @PostMapping("/copyscene")

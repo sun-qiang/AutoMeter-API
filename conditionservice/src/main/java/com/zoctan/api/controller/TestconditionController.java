@@ -202,7 +202,7 @@ public class TestconditionController {
 //        ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
 
         Map<String, Object> conditionmap = new HashMap<>();
-        conditionmap.put("conditionid", Planid);
+        conditionmap.put("subconditionid", Planid);
         conditionmap.put("conditiontype", "execplan");
         List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
         //条件排序的按照顺序执行
@@ -678,7 +678,7 @@ public class TestconditionController {
 
 
         Map<String, Object> conditionmap = new HashMap<>();
-        conditionmap.put("conditionid", ApiCaseID);
+        conditionmap.put("subconditionid", ApiCaseID);
         conditionmap.put("conditiontype", "case");
         List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
         //条件排序的按照顺序执行
@@ -713,30 +713,6 @@ public class TestconditionController {
                 }
             }
         }
-        //db条件
-//        try {
-//            Resutl = GetCaseDBConditionResult(Resutl, ApiCaseID);
-//            TestconditionController.log.info("用例调试条件db条件完成-==================：");
-//
-//        } catch (Exception ex) {
-//            return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
-//        }
-//        //脚本条件
-//        try {
-//            Resutl = GetCaseScriptConditionResult(Resutl, ApiCaseID);
-//            TestconditionController.log.info("用例调试条件脚本条件完成-==================：");
-//
-//        } catch (Exception ex) {
-//            return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
-//        }
-//        //接口条件
-//        try {
-//            Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
-//            TestconditionController.log.info("用例调试条件接口条件完成-==================：");
-//
-//        } catch (Exception ex) {
-//            return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
-//        }
         return ResultGenerator.genOkResult(Resutl);
     }
 

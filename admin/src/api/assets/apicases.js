@@ -64,6 +64,22 @@ export function runtest(apicasesForm) {
   })
 }
 
+export function runscenecasetest(apicasesForm) {
+  return request({
+    url: '/apicases/runscenecasetest',
+    method: 'post',
+    data: apicasesForm
+  })
+}
+
+export function runscenetest(apicasesForm) {
+  return request({
+    url: '/apicases/runscenetest',
+    method: 'post',
+    data: apicasesForm
+  })
+}
+
 export function getcasebydeployunitid(apicasesForm) {
   return request({
     url: '/apicases/getcasebydeployunitid',

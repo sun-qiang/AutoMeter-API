@@ -11,6 +11,10 @@ import { hasPermission } from './utils/hasPermission'
 import lang from 'element-ui/lib/locale/lang/zh-CN'
 import locale from 'element-ui/lib/locale'
 import VueClipboard from 'vue-clipboard2'
+import Treeselect from '@riophae/vue-treeselect'
+
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+Vue.component('Treeselect', Treeselect)
 Vue.use(VueClipboard)
 
 // 设置语言

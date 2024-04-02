@@ -22,6 +22,7 @@ import tk.mybatis.mapper.entity.Condition;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -87,6 +88,12 @@ public class ApicasesController {
 
     @Autowired(required = false)
     private GlobalvariablesService globalvariablesService;
+
+    @Autowired(required = false)
+    private ScenecasesDebugReportService scenecasesDebugReportService;
+
+    @Autowired(required = false)
+    private TestsceneTestcaseService testsceneTestcaseService;
 
     @PostMapping
     public Result add(@RequestBody Apicases apicases) {
@@ -265,9 +272,9 @@ public class ApicasesController {
 
                     Condition desapicon = new Condition(Api.class);
                     desapicon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
-                    .andCondition("apiname='"+SourceApi.getApiname()+"'");
+                            .andCondition("apiname='" + SourceApi.getApiname() + "'");
                     if (apiService.ifexist(desapicon) != 0) {
-                        DestinationApi.setApiname(SourceApi.getApiname()+"-复制");
+                        DestinationApi.setApiname(SourceApi.getApiname() + "-复制");
                     }
                     apiService.save(DestinationApi);
                     long DestinationApiid = DestinationApi.getId();
@@ -303,9 +310,9 @@ public class ApicasesController {
 
                         Condition desapicasecon = new Condition(Apicases.class);
                         desapicasecon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
-                                .andCondition("casename='"+SourceCase.getCasename()+"'");
+                                .andCondition("casename='" + SourceCase.getCasename() + "'");
                         if (apicasesService.ifexist(desapicon) != 0) {
-                            DesitionApicase.setCasename(SourceCase.getCasename()+"-复制");
+                            DesitionApicase.setCasename(SourceCase.getCasename() + "-复制");
                         }
                         apicasesService.save(DesitionApicase);
                         long DestinationCaseID = DesitionApicase.getId();
@@ -352,7 +359,7 @@ public class ApicasesController {
         }
     }
 
-    private void SubCondition(long SourceCaseID,long DesCaseid,String DesCaseName) {
+    private void SubCondition(long SourceCaseID, long DesCaseid, String DesCaseName) {
         long subconditiondbid = 0;
         long subconditionscriptid = 0;
 //        long subconditiondelayid = 0;
@@ -360,29 +367,29 @@ public class ApicasesController {
         //复制前置接口条件
         Condition APISubCondition = new Condition(ConditionApi.class);
         APISubCondition.createCriteria().andCondition("conditionid = " + SourceCaseID)
-        .andCondition("conditiontype='case'");
+                .andCondition("conditiontype='case'");
         List<ConditionApi> conditionApiList = conditionApiService.listByCondition(APISubCondition);
         for (ConditionApi SourceConditionApi : conditionApiList) {
             SourceConditionApi.setId(null);
             SourceConditionApi.setConditionid(DesCaseid);
             SourceConditionApi.setConditionname(DesCaseName);
-            SourceConditionApi.setSubconditionname(SourceConditionApi.getSubconditionname()+"-复制");
+            SourceConditionApi.setSubconditionname(SourceConditionApi.getSubconditionname() + "-复制");
             conditionApiService.save(SourceConditionApi);
         }
 
         //复制前置数据库条件
         Condition DBSubCondition = new Condition(ConditionDb.class);
         DBSubCondition.createCriteria().andCondition("conditionid = " + SourceCaseID)
-        .andCondition("conditiontype='case'");
+                .andCondition("conditiontype='case'");
         List<ConditionDb> conditionDbList = conditionDbService.listByCondition(DBSubCondition);
         for (ConditionDb SourceConditionDB : conditionDbList) {
             SourceConditionDB.setId(null);
             SourceConditionDB.setConditionid(DesCaseid);
             SourceConditionDB.setConditionname(DesCaseName);
-            SourceConditionDB.setSubconditionname(SourceConditionDB.getSubconditionname()+"-复制");
+            SourceConditionDB.setSubconditionname(SourceConditionDB.getSubconditionname() + "-复制");
             conditionDbService.save(SourceConditionDB);
             subconditiondbid = SourceConditionDB.getId();
-            String SubConditionname=SourceConditionDB.getSubconditionname();
+            String SubConditionname = SourceConditionDB.getSubconditionname();
 
             //复制数据库变量
             Condition DbvariablesCondition = new Condition(Dbvariables.class);
@@ -406,10 +413,10 @@ public class ApicasesController {
             SourceConditionScript.setId(null);
             SourceConditionScript.setConditionid(DesCaseid);
             SourceConditionScript.setConditionname(DesCaseName);
-            SourceConditionScript.setSubconditionname(SourceConditionScript.getSubconditionname()+"-复制");
+            SourceConditionScript.setSubconditionname(SourceConditionScript.getSubconditionname() + "-复制");
             conditionScriptService.save(SourceConditionScript);
             subconditionscriptid = SourceConditionScript.getId();
-            String SubConditionname=SourceConditionScript.getSubconditionname();
+            String SubConditionname = SourceConditionScript.getSubconditionname();
 
             //复制脚本变量
             Condition ScriptvariablesCondition = new Condition(Scriptvariables.class);
@@ -833,14 +840,342 @@ public class ApicasesController {
     /**
      * 运行测试
      */
-    @PostMapping("/runtest")
-    public Result runtest(@RequestBody final Map<String, Object> param) throws Exception {
+    @PostMapping("/runscenetest")
+    public Result runscenetest(@RequestBody final Map<String, Object> param) throws Exception {
         String enviromentid = param.get("enviromentid").toString();
-        Long Caseid = Long.parseLong(param.get("caseid").toString());
-        //Long conditionid = Long.parseLong(param.get("conditionid").toString());
-        Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
+        Long sceneid = Long.parseLong(param.get("sceneid").toString());
+        String scenename = param.get("scenename").toString();
+
         Long projectid = Long.parseLong(param.get("projectid").toString());
-        boolean prixflag = Boolean.parseBoolean(param.get("prixflag").toString());
+        Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
+
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String batchname = scenename + "-" + dateFormat.format(date);
+
+        Condition scenecon = new Condition(Apicases.class);
+        scenecon.createCriteria().andCondition("projectid = " + projectid)
+                .andCondition("testscenenid = " + sceneid);
+        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
+
+        for (TestsceneTestcase te : testsceneTestcaseList) {
+            Long Caseid = te.getTestcaseid();
+            String Casename = te.getCasename();
+            ScenecasesDebugReport scenecasesDebugReport = new ScenecasesDebugReport();
+            String Status = "运行完成";
+            HashMap<String, String> ParamsValuesMap = new HashMap<>();
+            HashMap<String, String> DBParamsValuesMap = new HashMap<>();
+            HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
+
+            String Respone = "";
+            HashMap<String, Long> debugmap = new HashMap<>();
+            debugmap.put("apicaseid", Caseid);
+            debugmap.put("enviromentid", Long.parseLong(enviromentid));
+
+            String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+            HttpHeader header1 = new HttpHeader();
+            String debugparams = JSON.toJSONString(debugmap);
+            try {
+                Respone = getSubConditionRespone(ConditionServerurl, debugparams, header1);
+            } catch (Exception ex) {
+                return ResultGenerator.genFailedResult("前置条件处理异常：！" + ex.getMessage());
+            }
+            ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
+            DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
+            ScriptParamsValuesMap = GetResponeMap(Respone, ScriptParamsValuesMap, "script");
+
+            Apicases apicases = apicasesService.getBy("id", Caseid);
+            if (apicases == null) {
+                return ResultGenerator.genFailedResult("当前用例不存在，请检查是否被删除！");
+            }
+            Long Apiid = apicases.getApiid();
+            Api api = apiService.getBy("id", Apiid);
+            if (api == null) {
+                return ResultGenerator.genFailedResult("当前用例的API不存在，请检查是否被删除！");
+            }
+            String Method = api.getVisittype();
+            String ApiStyle = api.getApistyle();
+            Deployunit deployunit = deployunitService.getBy("id", api.getDeployunitid());
+            if (deployunit == null) {
+                return ResultGenerator.genFailedResult("当前用例的API所在的微服务不存在，请检查是否被删除！");
+            }
+            String Protocal = deployunit.getProtocal();
+            String BaseUrl = deployunit.getBaseurl();
+            Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(Long.parseLong(enviromentid), deployunit.getId());
+            if (macdepunit != null) {
+                String testserver = "";
+                String resource = "";
+                String ApiUrl = api.getPath();
+                if (!ApiUrl.startsWith("/")) {
+                    ApiUrl = "/" + ApiUrl;
+                }
+                if (macdepunit.getVisittype().equals("ip")) {
+                    Long MachineID = macdepunit.getMachineid();
+                    Machine machine = machineService.getBy("id", MachineID);
+                    if (machine == null) {
+                        return ResultGenerator.genFailedResult("当前环境中的服务器不存在，请检查是否被删除！");
+                    }
+                    Enviroment enviroment = enviromentService.getBy("id", Long.parseLong(enviromentid));
+                    if (enviroment == null) {
+                        return ResultGenerator.genFailedResult("当前用例调试的环境不存在，请检查是否被删除！");
+                    }
+                    testserver = machine.getIp();
+
+                    if (BaseUrl == null || BaseUrl.isEmpty()) {
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + ApiUrl;
+                    } else {
+                        if (BaseUrl.startsWith("/")) {
+                            resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + ApiUrl;
+                        } else {
+                            resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + ApiUrl;
+                        }
+                    }
+                } else {
+                    testserver = macdepunit.getDomain();
+                    if (BaseUrl == null || BaseUrl.isEmpty()) {
+                        resource = deployunit.getProtocal() + "://" + testserver + ApiUrl;
+                    } else {
+                        if (BaseUrl.startsWith("/")) {
+                            resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + ApiUrl;
+                        } else {
+                            resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + ApiUrl;
+                        }
+                    }
+                }
+
+                Condition rdcon = new Condition(Variables.class);
+                rdcon.createCriteria().andCondition("projectid = " + projectid);
+                List<Variables> variablesList = variablesService.listByCondition(rdcon);
+                HashMap<String, String> RadomHashMap = new HashMap<>();
+                for (Variables va : variablesList) {
+                    RadomHashMap.put(va.getVariablesname(), va.getVariablestype());
+                }
+                ApicasesController.log.info("。。。。。。。。处理前的resource Url：" + resource);
+
+                //url中的变量替换
+                //1.随机变量替换
+                for (Variables variables : variablesList) {
+                    String VariableName = "[" + variables.getVariablesname() + "]";
+                    if (resource.contains(VariableName)) {
+                        Object VariableValue = GetRadomValue(variables.getVariablesname());
+                        resource = resource.replace(VariableName, VariableValue.toString());
+                    }
+                }
+                //2.接口变量替换
+                for (String Interfacevariables : ParamsValuesMap.keySet()) {
+                    String UseInterfacevariables = "<" + Interfacevariables + ">";
+                    if (resource.contains(UseInterfacevariables)) {
+                        String VariableValue = ParamsValuesMap.get(Interfacevariables);// GetVariablesObjectValues("$" +Interfacevariables, ParamsValuesMap);
+                        int index = VariableValue.indexOf(",");
+                        resource = resource.replace(UseInterfacevariables, VariableValue.substring(index + 1));
+                    }
+                }
+
+                //3.数据库变量替换
+                for (String DBvariables : DBParamsValuesMap.keySet()) {
+                    String UseDBvariables = "<<" + DBvariables + ">>";
+                    if (resource.contains(UseDBvariables)) {
+                        String VariableValue = DBParamsValuesMap.get(DBvariables);
+                        int index = VariableValue.indexOf(",");
+                        resource = resource.replace(UseDBvariables, VariableValue.substring(index + 1));
+                    }
+                }
+
+                //4.全局变量替换
+                Condition gvcon = new Condition(Globalvariables.class);
+                gvcon.createCriteria().andCondition("projectid = " + projectid);
+                List<Globalvariables> globalvariablesList = globalvariablesService.listByCondition(gvcon);
+
+                HashMap<String, String> GlobalVariablesHashMap = new HashMap<>();
+                for (Globalvariables va : globalvariablesList) {
+                    GlobalVariablesHashMap.put(va.getKeyname(), va.getKeyvalue());
+                }
+                for (Globalvariables variables : globalvariablesList) {
+                    String VariableName = "$" + variables.getKeyname() + "$";
+                    if (resource.contains(VariableName)) {
+                        Object VariableValue = variables.getKeyvalue();
+                        resource = resource.replace(VariableName, VariableValue.toString());
+                    }
+                }
+
+                //5.脚本变量替换
+                for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                    String UseScriptvariables = "{" + Scriptvariables + "}";
+                    if (resource.contains(UseScriptvariables)) {
+                        String VariableValue = ScriptParamsValuesMap.get(UseScriptvariables);
+                        int index = VariableValue.indexOf(",");
+                        resource = resource.replace(UseScriptvariables, VariableValue.substring(index + 1));
+                    }
+                }
+                ApicasesController.log.info("。。。。。。。。处理后的resource Url：" + resource);
+
+                List<ApiCasedata> HeaderApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Header");
+                List<ApiCasedata> ParamsApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Params");
+                List<ApiCasedata> BodyApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Body");
+
+                //获取全局Header
+                Condition con = new Condition(GlobalheaderParams.class);
+                con.createCriteria().andCondition("globalheaderid = " + globalheaderid);
+                List<GlobalheaderParams> globalheaderParamsList = globalheaderParamsService.listByCondition(con);
+                String requestcontenttype = api.getRequestcontenttype();
+
+                //Header用例值
+                HttpHeader header = new HttpHeader();
+                try {
+                    header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                } catch (Exception exception) {
+                    //return ResultGenerator.genFailedResult(exception.getMessage());
+                }
+                header = AddHeaderByRequestContentType(header, requestcontenttype);
+
+                //参数用例值
+                HttpParamers paramers = new HttpParamers();
+                try {
+                    paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                } catch (Exception exception) {
+                    //return ResultGenerator.genFailedResult(exception.getMessage());
+                }
+
+                //Body用例值
+                String PostData = "";
+                HttpParamers Bodyparamers = new HttpParamers();
+                if (requestcontenttype.equalsIgnoreCase("Form表单")) {
+                    try {
+                        Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                    } catch (Exception exception) {
+                        return ResultGenerator.genFailedResult(exception.getMessage());
+                    }
+                    if (Bodyparamers.getParams().size() > 0) {
+                        PostData = Bodyparamers.getQueryString();
+                    }
+                } else {
+                    for (ApiCasedata Paramdata : BodyApiCasedataList) {
+                        //Body文本内容变量替换
+                        PostData = Paramdata.getApiparamvalue();
+                        //1.替换随机变量
+                        for (Variables variables : variablesList) {
+                            String VariableName = "[" + variables.getVariablesname() + "]";
+                            if (PostData.contains(VariableName)) {
+                                Object VariableValue = GetRadomValue(variables.getVariablesname());
+                                PostData = PostData.replace(VariableName, VariableValue.toString());
+                            }
+                        }
+                        //2.替换接口变量
+                        for (String Interfacevariables : ParamsValuesMap.keySet()) {
+                            String UseInterfacevariables = "<" + Interfacevariables + ">";
+                            if (PostData.contains(UseInterfacevariables)) {
+                                String VariableValue = ParamsValuesMap.get(Interfacevariables);// GetVariablesObjectValues("$" +Interfacevariables, ParamsValuesMap);
+                                int index = VariableValue.indexOf(",");
+                                PostData = PostData.replace(UseInterfacevariables, VariableValue.substring(index + 1));
+                            }
+                        }
+                        //3.替换数据库变量
+                        for (String DBvariables : DBParamsValuesMap.keySet()) {
+                            String UseDBvariables = "<<" + DBvariables + ">>";
+                            if (PostData.contains(UseDBvariables)) {
+                                String VariableValue = DBParamsValuesMap.get(DBvariables);
+                                int index = VariableValue.indexOf(",");
+                                PostData = PostData.replace(UseDBvariables, VariableValue.substring(index + 1));
+                            }
+                        }
+                        //4.替换全局变量
+                        for (Globalvariables variables : globalvariablesList) {
+                            String VariableName = "$" + variables.getKeyname() + "$";
+                            if (PostData.contains(VariableName)) {
+                                Object VariableValue = GlobalVariablesHashMap.get(variables.getKeyname());
+                                PostData = PostData.replace(VariableName, VariableValue.toString());
+                            }
+                        }
+
+                        //5.替换脚本变量
+                        for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                            String UseScriptvariables = "{" + Scriptvariables + "}";
+                            if (PostData.contains(UseScriptvariables)) {
+                                String VariableValue = ScriptParamsValuesMap.get(Scriptvariables);
+                                int index = VariableValue.indexOf(",");
+                                PostData = PostData.replace(UseScriptvariables, VariableValue.substring(index + 1));
+                            }
+                        }
+                    }
+                }
+                try {
+                    long Start = new Date().getTime();
+                    TestHttp testHttp = new TestHttp();
+                    String VisitType = api.getVisittype();
+                    TestResponeData respon = testHttp.doService(Protocal, ApiStyle, resource, header, paramers, PostData, VisitType, requestcontenttype, 2000);
+                    long End = new Date().getTime();
+                    long CostTime = End - Start;
+
+                    //断言
+
+
+                    String headervalue = "";
+                    for (String Key : header.getParams().keySet()) {
+                        headervalue = headervalue + Key + ":" + header.getParams().get(Key).toString() + " ";
+                    }
+                    String paramervalue = "";
+                    for (String Key : paramers.getParams().keySet()) {
+                        paramervalue = paramervalue + Key + ":" + paramers.getParams().get(Key).toString() + " ";
+
+                    }
+                    scenecasesDebugReport.setCaseid(Caseid);
+                    scenecasesDebugReport.setBatchname(batchname);
+                    scenecasesDebugReport.setCasename(Casename);
+                    scenecasesDebugReport.setCreateTime(new Date());
+                    scenecasesDebugReport.setLastmodifyTime(new Date());
+                    scenecasesDebugReport.setProjectid(projectid);
+                    scenecasesDebugReport.setRespone(respon.getResponeContent());
+                    scenecasesDebugReport.setUrl(respon.getRequestUrl());
+                    scenecasesDebugReport.setRequestdatas(PostData);
+                    scenecasesDebugReport.setRequestmethod(VisitType);
+                    scenecasesDebugReport.setAssertvalue("");
+                    scenecasesDebugReport.setCreator("");
+                    scenecasesDebugReport.setErrorinfo("");
+                    scenecasesDebugReport.setRequestheader(headervalue);
+                    scenecasesDebugReport.setExpect("");
+                    scenecasesDebugReport.setSceneid(sceneid);
+                    scenecasesDebugReport.setScenename(scenename);
+                    scenecasesDebugReport.setStatus(Status);
+                    scenecasesDebugReport.setRuntime(CostTime);
+                    scenecasesDebugReport.setTestplanid(new Long(0));
+
+                } catch (Exception exception) {
+                    Status = "失败";
+                    String ExceptionMess = exception.getMessage();
+                    scenecasesDebugReport.setErrorinfo(ExceptionMess);
+                } finally {
+                    scenecasesDebugReportService.save(scenecasesDebugReport);
+                }
+            } else {
+                return ResultGenerator.genFailedResult("当前环境未配置用例:" + Casename + " 所属的微服务，请先完成环境下的配置！");
+            }
+        }
+        return ResultGenerator.genOkResult();
+    }
+
+
+    /**
+     * 运行测试
+     */
+    @PostMapping("/runscenecasetest")
+    public Result runscenecasetest(@RequestBody final Map<String, Object> param) throws Exception {
+        String enviromentid = param.get("enviromentid").toString();
+        Long sceneid = Long.parseLong(param.get("sceneid").toString());
+        String scenename = param.get("scenename").toString();
+
+        Long projectid = Long.parseLong(param.get("projectid").toString());
+        Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
+        Long Caseid = Long.parseLong(param.get("caseid").toString());
+        String Casename = param.get("casename").toString();
+
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        String batchname = scenename + "-" + Casename + "-" + dateFormat.format(date);
+
+        List<ScenecasesDebugReport> scenecasesDebugReportList = new ArrayList<>();
+        ScenecasesDebugReport scenecasesDebugReport = new ScenecasesDebugReport();
+        String Status = "运行完成";
         HashMap<String, String> ParamsValuesMap = new HashMap<>();
         HashMap<String, String> DBParamsValuesMap = new HashMap<>();
         HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
@@ -861,53 +1196,6 @@ public class ApicasesController {
         ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
         DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
         ScriptParamsValuesMap = GetResponeMap(Respone, ScriptParamsValuesMap, "script");
-
-
-//        Condition parecon = new Condition(Testcondition.class);
-//        parecon.createCriteria().andCondition("id = " + conditionid);
-//        List<Testcondition> testconditionList = testconditionService.listByCondition(parecon);
-//        if (testconditionList.size() > 0) {
-//            Testcondition testcondition = testconditionList.get(0);
-//            if (testcondition.getObjecttype().equalsIgnoreCase("测试集合")) {
-//                //处理测试集合前置父条件
-//                ConditionResult conditionResult = new ConditionResult();
-//                try {
-//                    param.put("apivariablesvalues", APIRespone);
-//                    conditionResult = FixCondition(testconditionList, param, Caseid, "调试用例");
-//                    APIRespone = conditionResult.getAPIRespone();
-//                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + APIRespone);
-//                    ParamsValuesMap = GetResponeMap(APIRespone, ParamsValuesMap);
-//                    DBRespone = conditionResult.getDBRespone();
-//                    ApicasesController.log.info("。。。。。。。。接口前置测试集合子条件响应数据：" + DBRespone);
-//                    DBParamsValuesMap = GetResponeMap(DBRespone, DBParamsValuesMap);
-//                } catch (Exception exception) {
-//                    return ResultGenerator.genFailedResult(exception.getMessage());
-//                }
-//            } else {
-//                //用例前置条件
-//                long conditioncaseid = testcondition.getObjectid();
-//                if (conditioncaseid != Caseid) {
-//                    return ResultGenerator.genFailedResult("当前用例选择的前置条件是用例父条件，但是用例父条件绑定的用例不是当前用例，调试取消");
-//                } else {
-//                    ConditionResult CaseconditionResult = new ConditionResult();
-//                    String CaseAPIRespone = "";
-//                    String CaseDBRespone = "";
-//                    try {
-//                        //List<Testcondition> testconditionList = testconditionService.GetConditionByPlanIDAndConditionType(Caseid, "前置条件", "测试用例");
-//                        param.put("apivariablesvalues", APIRespone);
-//                        CaseconditionResult = FixCondition(testconditionList, param, Caseid, "测试用例");
-//                        CaseAPIRespone = CaseconditionResult.getAPIRespone();
-//                        ApicasesController.log.info("。。。。。。。。接口前置用例子条件响应数据：" + CaseAPIRespone);
-//                        ParamsValuesMap = GetResponeMap(CaseAPIRespone, ParamsValuesMap);
-//                        CaseDBRespone = CaseconditionResult.getDBRespone();
-//                        ApicasesController.log.info("。。。。。。。。数据库前置用例子条件响应数据：" + CaseDBRespone);
-//                        DBParamsValuesMap = GetResponeMap(CaseDBRespone, DBParamsValuesMap);
-//                    } catch (Exception exception) {
-//                        return ResultGenerator.genFailedResult(exception.getMessage());
-//                    }
-//                }
-//            }
-//        }
 
         Apicases apicases = apicasesService.getBy("id", Caseid);
         if (apicases == null) {
@@ -1032,8 +1320,304 @@ public class ApicasesController {
                     resource = resource.replace(UseScriptvariables, VariableValue.substring(index + 1));
                 }
             }
+            ApicasesController.log.info("。。。。。。。。处理后的resource Url：" + resource);
 
+            List<ApiCasedata> HeaderApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Header");
+            List<ApiCasedata> ParamsApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Params");
+            List<ApiCasedata> BodyApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Body");
 
+            //获取全局Header
+            Condition con = new Condition(GlobalheaderParams.class);
+            con.createCriteria().andCondition("globalheaderid = " + globalheaderid);
+            List<GlobalheaderParams> globalheaderParamsList = globalheaderParamsService.listByCondition(con);
+            String requestcontenttype = api.getRequestcontenttype();
+
+            //Header用例值
+            HttpHeader header = new HttpHeader();
+            try {
+                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+            } catch (Exception exception) {
+                return ResultGenerator.genFailedResult(exception.getMessage());
+            }
+            header = AddHeaderByRequestContentType(header, requestcontenttype);
+
+            //参数用例值
+            HttpParamers paramers = new HttpParamers();
+            try {
+                paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+            } catch (Exception exception) {
+                return ResultGenerator.genFailedResult(exception.getMessage());
+            }
+
+            //Body用例值
+            String PostData = "";
+            HttpParamers Bodyparamers = new HttpParamers();
+            if (requestcontenttype.equalsIgnoreCase("Form表单")) {
+                try {
+                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, projectid);
+                } catch (Exception exception) {
+                    return ResultGenerator.genFailedResult(exception.getMessage());
+                }
+                if (Bodyparamers.getParams().size() > 0) {
+                    PostData = Bodyparamers.getQueryString();
+                }
+            } else {
+                for (ApiCasedata Paramdata : BodyApiCasedataList) {
+                    //Body文本内容变量替换
+                    PostData = Paramdata.getApiparamvalue();
+                    //1.替换随机变量
+                    for (Variables variables : variablesList) {
+                        String VariableName = "[" + variables.getVariablesname() + "]";
+                        if (PostData.contains(VariableName)) {
+                            Object VariableValue = GetRadomValue(variables.getVariablesname());
+                            PostData = PostData.replace(VariableName, VariableValue.toString());
+                        }
+                    }
+                    //2.替换接口变量
+                    for (String Interfacevariables : ParamsValuesMap.keySet()) {
+                        String UseInterfacevariables = "<" + Interfacevariables + ">";
+                        if (PostData.contains(UseInterfacevariables)) {
+                            String VariableValue = ParamsValuesMap.get(Interfacevariables);// GetVariablesObjectValues("$" +Interfacevariables, ParamsValuesMap);
+                            int index = VariableValue.indexOf(",");
+                            PostData = PostData.replace(UseInterfacevariables, VariableValue.substring(index + 1));
+                        }
+                    }
+                    //3.替换数据库变量
+                    for (String DBvariables : DBParamsValuesMap.keySet()) {
+                        String UseDBvariables = "<<" + DBvariables + ">>";
+                        if (PostData.contains(UseDBvariables)) {
+                            String VariableValue = DBParamsValuesMap.get(DBvariables);
+                            int index = VariableValue.indexOf(",");
+                            PostData = PostData.replace(UseDBvariables, VariableValue.substring(index + 1));
+                        }
+                    }
+                    //4.替换全局变量
+                    for (Globalvariables variables : globalvariablesList) {
+                        String VariableName = "$" + variables.getKeyname() + "$";
+                        if (PostData.contains(VariableName)) {
+                            Object VariableValue = GlobalVariablesHashMap.get(variables.getKeyname());
+                            PostData = PostData.replace(VariableName, VariableValue.toString());
+                        }
+                    }
+
+                    //5.替换脚本变量
+                    for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                        String UseScriptvariables = "{" + Scriptvariables + "}";
+                        if (PostData.contains(UseScriptvariables)) {
+                            String VariableValue = ScriptParamsValuesMap.get(Scriptvariables);
+                            int index = VariableValue.indexOf(",");
+                            PostData = PostData.replace(UseScriptvariables, VariableValue.substring(index + 1));
+                        }
+                    }
+                }
+            }
+            try {
+                long Start = new Date().getTime();
+                TestHttp testHttp = new TestHttp();
+                String VisitType = api.getVisittype();
+                TestResponeData respon = testHttp.doService(Protocal, ApiStyle, resource, header, paramers, PostData, VisitType, requestcontenttype, 2000);
+                long End = new Date().getTime();
+                long CostTime = End - Start;
+
+                //断言
+
+                String headervalue = "";
+                for (String Key : header.getParams().keySet()) {
+                    headervalue = headervalue + Key + ":" + header.getParams().get(Key).toString() + " ";
+                }
+                String paramervalue = "";
+                for (String Key : paramers.getParams().keySet()) {
+                    paramervalue = paramervalue + Key + ":" + paramers.getParams().get(Key).toString() + " ";
+
+                }
+                scenecasesDebugReport.setCaseid(Caseid);
+                scenecasesDebugReport.setCasename(Casename);
+                scenecasesDebugReport.setBatchname(batchname);
+                scenecasesDebugReport.setCreateTime(new Date());
+                scenecasesDebugReport.setLastmodifyTime(new Date());
+                scenecasesDebugReport.setProjectid(projectid);
+                scenecasesDebugReport.setRespone(respon.getResponeContent());
+                scenecasesDebugReport.setUrl(respon.getRequestUrl());
+                scenecasesDebugReport.setRequestdatas(PostData);
+                scenecasesDebugReport.setRequestmethod(VisitType);
+                scenecasesDebugReport.setAssertvalue("");
+                scenecasesDebugReport.setCreator("");
+                scenecasesDebugReport.setErrorinfo("");
+                scenecasesDebugReport.setRequestheader(headervalue);
+                scenecasesDebugReport.setExpect("");
+                scenecasesDebugReport.setSceneid(sceneid);
+                scenecasesDebugReport.setScenename(scenename);
+                scenecasesDebugReport.setStatus(Status);
+                scenecasesDebugReport.setRuntime(CostTime);
+                scenecasesDebugReport.setTestplanid(new Long(0));
+
+            } catch (Exception exception) {
+                Status = "失败";
+                String ExceptionMess = exception.getMessage();
+                scenecasesDebugReport.setErrorinfo(ExceptionMess);
+            } finally {
+                scenecasesDebugReportList.add(scenecasesDebugReport);
+                scenecasesDebugReportService.save(scenecasesDebugReport);
+                return ResultGenerator.genOkResult(scenecasesDebugReportList);
+            }
+        } else {
+            return ResultGenerator.genFailedResult("当前环境未配置用例:" + Casename + " 所属的微服务，请先完成环境下的配置！");
+        }
+    }
+
+    /**
+     * 运行测试
+     */
+    @PostMapping("/runtest")
+    public Result runtest(@RequestBody final Map<String, Object> param) throws Exception {
+        String enviromentid = param.get("enviromentid").toString();
+        Long Caseid = Long.parseLong(param.get("caseid").toString());
+        Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
+        Long projectid = Long.parseLong(param.get("projectid").toString());
+        HashMap<String, String> ParamsValuesMap = new HashMap<>();
+        HashMap<String, String> DBParamsValuesMap = new HashMap<>();
+        HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
+
+        String Respone = "";
+        HashMap<String, Long> debugmap = new HashMap<>();
+        debugmap.put("apicaseid", Caseid);
+        debugmap.put("enviromentid", Long.parseLong(enviromentid));
+
+        String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+        HttpHeader header1 = new HttpHeader();
+        String debugparams = JSON.toJSONString(debugmap);
+        try {
+            Respone = getSubConditionRespone(ConditionServerurl, debugparams, header1);
+        } catch (Exception ex) {
+            return ResultGenerator.genFailedResult("前置条件处理异常：！" + ex.getMessage());
+        }
+        ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
+        DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
+        ScriptParamsValuesMap = GetResponeMap(Respone, ScriptParamsValuesMap, "script");
+
+        Apicases apicases = apicasesService.getBy("id", Caseid);
+        if (apicases == null) {
+            return ResultGenerator.genFailedResult("当前用例不存在，请检查是否被删除！");
+        }
+        Long Apiid = apicases.getApiid();
+        Api api = apiService.getBy("id", Apiid);
+        if (api == null) {
+            return ResultGenerator.genFailedResult("当前用例的API不存在，请检查是否被删除！");
+        }
+        String Method = api.getVisittype();
+        String ApiStyle = api.getApistyle();
+        Deployunit deployunit = deployunitService.getBy("id", api.getDeployunitid());
+        if (deployunit == null) {
+            return ResultGenerator.genFailedResult("当前用例的API所在的微服务不存在，请检查是否被删除！");
+        }
+        String Protocal = deployunit.getProtocal();
+        String BaseUrl = deployunit.getBaseurl();
+        Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(Long.parseLong(enviromentid), deployunit.getId());
+        if (macdepunit != null) {
+            String testserver = "";
+            String resource = "";
+            String ApiUrl = api.getPath();
+            if (!ApiUrl.startsWith("/")) {
+                ApiUrl = "/" + ApiUrl;
+            }
+            if (macdepunit.getVisittype().equals("ip")) {
+                Long MachineID = macdepunit.getMachineid();
+                Machine machine = machineService.getBy("id", MachineID);
+                if (machine == null) {
+                    return ResultGenerator.genFailedResult("当前环境中的服务器不存在，请检查是否被删除！");
+                }
+                Enviroment enviroment = enviromentService.getBy("id", Long.parseLong(enviromentid));
+                if (enviroment == null) {
+                    return ResultGenerator.genFailedResult("当前用例调试的环境不存在，请检查是否被删除！");
+                }
+                testserver = machine.getIp();
+
+                if (BaseUrl == null || BaseUrl.isEmpty()) {
+                    resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + ApiUrl;
+                } else {
+                    if (BaseUrl.startsWith("/")) {
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + BaseUrl + ApiUrl;
+                    } else {
+                        resource = deployunit.getProtocal() + "://" + testserver + ":" + deployunit.getPort() + "/" + BaseUrl + ApiUrl;
+                    }
+                }
+            } else {
+                testserver = macdepunit.getDomain();
+                if (BaseUrl == null || BaseUrl.isEmpty()) {
+                    resource = deployunit.getProtocal() + "://" + testserver + ApiUrl;
+                } else {
+                    if (BaseUrl.startsWith("/")) {
+                        resource = deployunit.getProtocal() + "://" + testserver + BaseUrl + ApiUrl;
+                    } else {
+                        resource = deployunit.getProtocal() + "://" + testserver + "/" + BaseUrl + ApiUrl;
+                    }
+                }
+            }
+
+            Condition rdcon = new Condition(Variables.class);
+            rdcon.createCriteria().andCondition("projectid = " + projectid);
+            List<Variables> variablesList = variablesService.listByCondition(rdcon);
+            HashMap<String, String> RadomHashMap = new HashMap<>();
+            for (Variables va : variablesList) {
+                RadomHashMap.put(va.getVariablesname(), va.getVariablestype());
+            }
+            ApicasesController.log.info("。。。。。。。。处理前的resource Url：" + resource);
+
+            //url中的变量替换
+            //1.随机变量替换
+            for (Variables variables : variablesList) {
+                String VariableName = "[" + variables.getVariablesname() + "]";
+                if (resource.contains(VariableName)) {
+                    Object VariableValue = GetRadomValue(variables.getVariablesname());
+                    resource = resource.replace(VariableName, VariableValue.toString());
+                }
+            }
+            //2.接口变量替换
+            for (String Interfacevariables : ParamsValuesMap.keySet()) {
+                String UseInterfacevariables = "<" + Interfacevariables + ">";
+                if (resource.contains(UseInterfacevariables)) {
+                    String VariableValue = ParamsValuesMap.get(Interfacevariables);// GetVariablesObjectValues("$" +Interfacevariables, ParamsValuesMap);
+                    int index = VariableValue.indexOf(",");
+                    resource = resource.replace(UseInterfacevariables, VariableValue.substring(index + 1));
+                }
+            }
+
+            //3.数据库变量替换
+            for (String DBvariables : DBParamsValuesMap.keySet()) {
+                String UseDBvariables = "<<" + DBvariables + ">>";
+                if (resource.contains(UseDBvariables)) {
+                    String VariableValue = DBParamsValuesMap.get(DBvariables);
+                    int index = VariableValue.indexOf(",");
+                    resource = resource.replace(UseDBvariables, VariableValue.substring(index + 1));
+                }
+            }
+
+            //4.全局变量替换
+            Condition gvcon = new Condition(Globalvariables.class);
+            gvcon.createCriteria().andCondition("projectid = " + projectid);
+            List<Globalvariables> globalvariablesList = globalvariablesService.listByCondition(gvcon);
+
+            HashMap<String, String> GlobalVariablesHashMap = new HashMap<>();
+            for (Globalvariables va : globalvariablesList) {
+                GlobalVariablesHashMap.put(va.getKeyname(), va.getKeyvalue());
+            }
+            for (Globalvariables variables : globalvariablesList) {
+                String VariableName = "$" + variables.getKeyname() + "$";
+                if (resource.contains(VariableName)) {
+                    Object VariableValue = variables.getKeyvalue();
+                    resource = resource.replace(VariableName, VariableValue.toString());
+                }
+            }
+
+            //5.脚本变量替换
+            for (String Scriptvariables : ScriptParamsValuesMap.keySet()) {
+                String UseScriptvariables = "{" + Scriptvariables + "}";
+                if (resource.contains(UseScriptvariables)) {
+                    String VariableValue = ScriptParamsValuesMap.get(UseScriptvariables);
+                    int index = VariableValue.indexOf(",");
+                    resource = resource.replace(UseScriptvariables, VariableValue.substring(index + 1));
+                }
+            }
             ApicasesController.log.info("。。。。。。。。处理后的resource Url：" + resource);
 
             List<ApiCasedata> HeaderApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Header");
@@ -1191,7 +1775,8 @@ public class ApicasesController {
                 try {
                     Result = GetVaraibaleValue(HeaderValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
                 } catch (Exception ex) {
-                    throw new Exception("当前用例的Header中参数名：" + HeaderName + "-对应的参数值：" + ex.getMessage());
+                    Result = ex.getMessage();
+                    //throw new Exception("当前用例的Header中参数名：" + HeaderName + "-对应的参数值：" + ex.getMessage());
                 }
             }
             header.addParam(HeaderName, Result);
@@ -1211,7 +1796,8 @@ public class ApicasesController {
                 try {
                     ObjectResult = GetVaraibaleValue(ParamValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, projectid);
                 } catch (Exception ex) {
-                    throw new Exception("当前用例的Params或者Body中参数名：" + ParamName + "-对应的参数值：" + ex.getMessage());
+                    ObjectResult = ex.getMessage();
+                    //throw new Exception("当前用例的Params或者Body中参数名：" + ParamName + "-对应的参数值：" + ex.getMessage());
                 }
             }
             Object Result = GetDataByType(ObjectResult.toString(), DataType);
@@ -1226,7 +1812,7 @@ public class ApicasesController {
         //参数值替换脚本变量
         for (String scriptvariablesName : ScriptMap.keySet()) {
             boolean flag = GetSubOrNot(ScriptMap, Value, "{", "}");
-            if (Value.contains("{" + ScriptMap + "}")) {
+            if (Value.contains("{" + scriptvariablesName + "}")) {
                 exist = true;
                 String ActualValueCom = ScriptMap.get(scriptvariablesName);
                 int index = ActualValueCom.indexOf(",");
@@ -1335,7 +1921,7 @@ public class ApicasesController {
             }
         }
         if (!exist) {
-            throw new Exception(Value + " 未能获取该变量实际值，请检查是否配置对应的前置条件来提取此变量值");
+            throw new Exception(Value + " 未能成功获取该变量实际值，请检查是否配置对应的前置条件来提取此变量值");
         }
         return ObjectValue;
     }

@@ -89,7 +89,7 @@
             type="primary"
             size="mini"
             v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
-            @click.native.prevent="showtestsceneCaseDialog(scope.$index)"
+            @click.native.prevent="showDebugSceneDialog(scope.$index)"
           >调试场景</el-button>
         </template>
       </el-table-column>
@@ -1756,7 +1756,6 @@
       </div>
     </el-dialog>
 
-
     <el-dialog title="前置条件顺序" width="840px" :visible.sync="ConditionOrderdialogFormVisible">
       <el-form
         status-icon
@@ -1804,6 +1803,545 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="调试测试场景" width="1340px" :visible.sync="DebugScenedialogFormVisible">
+      <div class="container">
+        <div class="left-component">
+          <div class="tree-scroll">
+            <el-input style="width: 300px"
+                      placeholder="输入关键字进行过滤"
+                      v-model="filterText">
+            </el-input>
+            <el-tree
+              class="flow-tree"
+              :data="SeceneDebugdata"
+              :props="defaultProps"
+              default-expand-all
+              :expand-on-click-node ="false"
+              :filter-node-method="filterNode"
+              @node-click="clickNode"
+              ref="tree">
+            </el-tree>
+          </div>
+        </div>
+        <div class="right-component">
+          <el-form inline="true"
+            status-icon
+            class="small-space"
+            label-position="left"
+            label-width="80px"
+            style="width: 950px; margin-left:50px;"
+            :model="tmpapicasesdata"
+            ref="tmpapicasesdata"
+          >
+            <el-form :inline="true" :model="tmptest" ref="tmptest">
+              <el-form-item label="调试目标：" required>
+                <el-input style="width:250px" placeholder="未选择"  readonly="true" v-model="tmptest.casename"/>
+              </el-form-item>
+            <el-form-item label="环境：" prop="enviromentname"  required>
+              <el-select style="width:250px" v-model="tmptest.enviromentname"  placeholder="环境" @change="EnviromentselectChanged($event)" >
+                <el-option label="请选择"  value=""  />
+                <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+                  <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+                </div>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button
+                type="success"
+                size="mini"
+                v-if="hasPermission('testscene:list')"
+                @click.native.prevent="addnewapicasesdata"
+              >保存用例数据</el-button>
+              <el-button
+                type="success"
+                size="mini"
+                v-if="hasPermission('testscene:list')"
+                @click.native.prevent="runtest"
+              >调试</el-button>
+            </el-form-item>
+            <el-tabs v-model="activebbbName" type="card" >
+              <el-tab-pane label="用例数据" name="xxx">
+                <el-tabs v-model="activeaaaName" type="card" ref="tabs">
+                  <el-tab-pane label="Header" name="zero">
+                    <template>
+                      <el-table :data="Headertabledatas" fit
+                                highlight-current-row border>
+                        <el-table-column label="参数" prop="apiparam" align="center" width="450">
+                          <template slot-scope="scope">
+                            <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="值" prop="apiparamvalue" align="center" width="500">
+                          <template slot-scope="scope">
+                            <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </template>
+                  </el-tab-pane>
+                  <el-tab-pane label="Params" name="first">
+                    <template>
+                      <el-table :data="Paramstabledatas" border>
+                        <el-table-column label="参数"  align="center" width="450">
+                          <template slot-scope="scope">
+                            <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="值类型"  align="center" width="250">
+                          <template slot-scope="scope">
+                            <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="值"  align="center" width="250">
+                          <template slot-scope="scope">
+                            <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </template>
+                  </el-tab-pane>
+                  <el-tab-pane label="Body" name="second">
+
+                    <template>
+                      <div v-if="BodyParamDataVisible">
+                        <el-table :data="Bodytabledatas" border>
+                          <el-table-column label="参数"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" placeholder="参数名" v-model="scope.row.apiparam"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="值类型"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="默认值"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                      </div>
+                      <div v-if="BodyDataVisible">
+                        <el-form-item  prop="apiparamvalue" >
+                        <el-input style="width: 950px"
+                            type="textarea"
+                            rows="15" cols="10"
+                            prefix-icon="el-icon-message"
+                            auto-complete="off"
+                            v-model.trim="tmpapicasesbodydata.apiparamvalue"
+                          />
+                        </el-form-item>
+                      </div>
+                    </template>
+
+                  </el-tab-pane>
+                  <el-tab-pane label="使用变量" name="third">
+                    <uservariables style="width: 950px"></uservariables>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-tab-pane>
+              <el-tab-pane label="前置条件" name="xxx1">
+                <div class="filter-container">
+                  <el-form :inline="true">
+                    <el-form-item>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        icon="el-icon-plus"
+                        v-if="hasPermission('testscene:scenecasecondition')"
+                        @click.native.prevent="ShowAddcasecaseconditionDialog"
+                      >添加前置接口</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        icon="el-icon-plus"
+                        v-if="hasPermission('testscene:scenecasecondition')"
+                        @click.native.prevent="AddcasedbconditionDialog"
+                      >添加前置数据库</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        icon="el-icon-plus"
+                        v-if="hasPermission('testscene:scenecasecondition')"
+                        @click.native.prevent="showAddSceneCasedelayconditionDialog"
+                      >添加前置延时</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        icon="el-icon-plus"
+                        v-if="hasPermission('testscene:scenecasecondition')"
+                        @click.native.prevent="showAddscriptDialog"
+                      >添加前置脚本</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        v-if="hasPermission('testscene:scenecasecondition')"
+                        @click.native.prevent="showscenecaseconditionorderDialog"
+                      >设置前置条件顺序</el-button>
+                    </el-form-item>
+                  </el-form>
+                </div>
+
+                1.接口前置条件：
+                <el-table
+                  :data="apiconditioncaseList"
+                  v-loading.body="listLoading"
+                  element-loading-text="loading"
+                  border
+                  fit
+                  highlight-current-row
+                >
+                  <el-table-column label="编号" align="center" width="45">
+                    <template slot-scope="scope">
+                      <span v-text="apiconditioncaseIndex(scope.$index)"></span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="前置条件名" :show-overflow-tooltip="true"  align="center" prop="subconditionname" width="110"/>
+                  <el-table-column label="所属用例" :show-overflow-tooltip="true"  align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="前置接口" :show-overflow-tooltip="true"  align="center" prop="casename" width="110"/>
+                  <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+                  </el-table-column>
+                  <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="管理" align="center"
+                                   v-if="hasPermission('testscene:caseupdateapicondition')  || hasPermission('testscene:casedeleteapicondition')">
+                    <template slot-scope="scope">
+                      <el-button
+                        type="warning"
+                        size="mini"
+                        v-if="hasPermission('testscene:caseupdateapicondition') && scope.row.id !== id"
+                        @click.native.prevent="showUpdateapiconditionDialog(scope.$index)"
+                      >修改</el-button>
+                      <el-button
+                        type="danger"
+                        size="mini"
+                        v-if="hasPermission('testscene:casedeleteapicondition') && scope.row.id !== id"
+                        @click.native.prevent="removecaseapicondition(scope.$index)"
+                      >删除</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        v-if="hasPermission('apicases:params') && scope.row.id !== id"
+                        @click.native.prevent="showCaseVariablesforConditionDialog(scope.$index)"
+                      >提取变量
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                2.延时前置条件：
+                <el-table
+                  :data="delayconditionList"
+                  :key="itemKey"
+                  v-loading.body="listLoading"
+                  element-loading-text="loading"
+                  border
+                  fit
+                  highlight-current-row
+                >
+                  <el-table-column label="编号" align="center" width="60">
+                    <template slot-scope="scope">
+                      <span v-text="delaycasegetIndex(scope.$index)"></span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="前置条件名" align="center" prop="subconditionname" width="110"/>
+                  <el-table-column label="所属用例" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="等待时间(秒)" align="center" prop="delaytime" width="110">
+                  </el-table-column>
+                  <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+                  </el-table-column>
+                  <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="管理" align="center"
+                                   v-if="hasPermission('delaycondition:update')  || hasPermission('delaycondition:delete')">
+                    <template slot-scope="scope">
+                      <el-button
+                        type="warning"
+                        size="mini"
+                        v-if="hasPermission('delaycondition:update') && scope.row.id !== id"
+                        @click.native.prevent="showUpdatedelayconditionDialog(scope.$index)"
+                      >修改</el-button>
+                      <el-button
+                        type="danger"
+                        size="mini"
+                        v-if="hasPermission('delaycondition:delete') && scope.row.id !== id"
+                        @click.native.prevent="removedelaycondition(scope.$index)"
+                      >删除</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                3.数据库前置条件：
+                <el-table
+                  :data="dbconditioncaseList"
+                  table-layout='auto'
+                  class="tableAuto"
+                  element-loading-text="loading"
+                  border
+                  fit
+                  highlight-current-row
+                >
+                  <el-table-column label="编号" align="center" width="50">
+                    <template slot-scope="scope">
+                      <span v-text="dbconditioncaseIndex(scope.$index)"></span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
+                  <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
+                  <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
+                  <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
+                  <el-table-column label="Sql内容" align="center" prop="dbcontent" width="80">
+                    <template slot-scope="scope">
+                      <el-popover trigger="hover" placement="top">
+                        <p>{{ scope.row.dbcontent }}</p>
+                        <div slot="reference" class="name-wrapper">
+                          <el-tag size="medium">...</el-tag>
+                        </div>
+                      </el-popover>
+                    </template>
+                  </el-table-column>>
+                  <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="120">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+                  </el-table-column>
+                  <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="120">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="管理" align="center"  width="250"
+                                   v-if="hasPermission('dbcondition:update')  || hasPermission('dbcondition:delete')">
+                    <template slot-scope="scope">
+                      <el-button
+                        type="warning"
+                        size="mini"
+                        v-if="hasPermission('dbcondition:update') && scope.row.id !== id"
+                        @click.native.prevent="showUpdatedbconditionDialog(scope.$index)"
+                      >修改</el-button>
+                      <el-button
+                        type="danger"
+                        size="mini"
+                        v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
+                        @click.native.prevent="removedbcondition(scope.$index)"
+                      >删除</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        v-if="hasPermission('dbvariables:delete') && scope.row.id !== id"
+                        @click.native.prevent="showdbvariablesDialog(scope.$index)"
+                      >提取变量</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                4.脚本前置条件
+                <el-table
+                  :data="scriptconditionList"
+                  element-loading-text="loading"
+                  border
+                  fit
+                  highlight-current-row
+                >
+                  <el-table-column label="编号" align="center" width="60">
+                    <template slot-scope="scope">
+                      <span v-text="scriptcasegetIndex(scope.$index)"></span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="110"/>
+                  <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="脚本" align="center" prop="script" width="110">
+                    <template slot-scope="scope">
+                      <el-popover trigger="hover" placement="top">
+                        <p>{{ scope.row.script }}</p>
+                        <div slot="reference" class="name-wrapper">
+                          <el-tag size="medium">...</el-tag>
+                        </div>
+                      </el-popover>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作人" align="center" prop="creator" width="70"/>
+                  <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+                  </el-table-column>
+                  <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="110">
+                    <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="管理" width="250" align="center"
+                                   v-if="hasPermission('scriptcondition:update')  || hasPermission('scriptcondition:delete')">
+                    <template slot-scope="scope">
+                      <el-button
+                        type="warning"
+                        size="mini"
+                        v-if="hasPermission('scriptcondition:update') && scope.row.id !== id"
+                        @click.native.prevent="showUpdatescriptconditionDialog(scope.$index)"
+                      >修改</el-button>
+                      <el-button
+                        type="danger"
+                        size="mini"
+                        v-if="hasPermission('scriptcondition:delete') && scope.row.id !== id"
+                        @click.native.prevent="removescriptcondition(scope.$index)"
+                      >删除</el-button>
+                      <el-button
+                        type="primary"
+                        size="mini"
+                        v-if="hasPermission('dbcondition:delete') && scope.row.id !== id"
+                        @click.native.prevent="showscriptvariablesDialog(scope.$index)"
+                      >提取变量</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-tab-pane>
+            </el-tabs>
+            </el-form>
+          </el-form>
+        </div>
+      </div>
+
+      <div style="height: 350px">
+        <el-form :inline="true">
+          <el-form-item label="状态:" prop="status" >
+            <el-select v-model="debugsearch.status" style="width:100%" placeholder="状态">
+              <el-option label="成功" value="成功"></el-option>
+              <el-option label="失败" value="失败"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-input clearable maxlength="40" v-model="debugsearch.batchname" @keyup.enter.native="searchcaseReportBy" placeholder="调试批次"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input clearable maxlength="40" v-model="debugsearch.casename" @keyup.enter.native="searchcaseReportBy" placeholder="用例名"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchcaseReportBy" :loading="btnLoading">查询</el-button>
+          </el-form-item>
+        </el-form>
+          <el-table
+            :data="apireportList"
+            :key="itemKey"
+            v-loading.body="listLoading"
+            element-loading-text="loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="编号" align="center" width="50">
+              <template slot-scope="scope">
+                <span v-text="debuggetIndex(scope.$index)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column :show-overflow-tooltip="true"  label="调试批次" align="center" prop="batchname" width="80"/>
+            <el-table-column label="测试场景" align="center" prop="scenename" width="80"/>
+            <el-table-column label="用例名" align="center" prop="casename" width="120"/>
+<!--            <el-table-column label="API" align="center" prop="apiname" width="80"/>-->
+            <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>
+
+<!--            <el-table-column label="状态" align="center" prop="status" width="50">-->
+<!--              <template slot-scope="scope">-->
+<!--                <span v-if="scope.row.status === '失败'" style="color:red">{{ scope.row.status }}</span>-->
+<!--                <span v-else style="color: #37B328">{{ scope.row.status }}</span>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+<!--            <el-table-column label="微服务" align="center" prop="deployunitname" width="120"/>-->
+
+
+            <el-table-column :show-overflow-tooltip="true"  label="请求地址" align="center" prop="url" width="180">
+            </el-table-column>
+
+            <el-table-column label="请求头" align="center" prop="requestheader" width="80">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.requestheader }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="请求数据" align="center" prop="requestdatas" width="80">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top-start">
+                  <p>{{ scope.row.requestdatas }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="响应" align="center" prop="respone" width="80">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.respone }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="断言" align="center" prop="expect" width="80">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.expect }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <el-tag size="medium">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+
+<!--            <el-table-column label="断言结果" align="center" prop="assertvalue" width="80">-->
+<!--              <template slot-scope="scope">-->
+<!--                <el-popover trigger="hover" placement="top">-->
+<!--                  <p>{{ scope.row.assertvalue }}</p>-->
+<!--                  <div slot="reference" class="name-wrapper">-->
+<!--                    <el-tag size="medium" >...</el-tag>-->
+<!--                  </div>-->
+<!--                </el-popover>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+
+            <el-table-column label="运行时间(ms)" align="center" prop="runtime" width="100"/>
+            <el-table-column label="异常信息" align="center" prop="errorinfo" width="80">
+              <template slot-scope="scope">
+                <el-popover trigger="hover" placement="top">
+                  <p>{{ scope.row.errorinfo }}</p>
+                  <div v-if="scope.row.errorinfo !== ''" slot="reference" class="name-wrapper">
+                    <el-tag size="medium" style="color:red">异常...</el-tag>
+                  </div>
+                  <div v-if="scope.row.errorinfo === ''" slot="reference" class="name-wrapper">
+                    <el-tag size="medium" style="color:green">...</el-tag>
+                  </div>
+                </el-popover>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="创建时间" align="center" prop="createTime" width="220">
+              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+            </el-table-column>
+          </el-table>
+
+        <el-pagination
+          @size-change="debughandleSizeChange"
+          @current-change="debughandleCurrentChange"
+          :current-page="debugsearch.page"
+          :page-size="debugsearch.size"
+          :total="debugtotal"
+          :page-sizes="[5]"
+          layout="total, sizes, prev, pager, next, jumper"
+        ></el-pagination>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -1814,7 +2352,7 @@ import { search as searchscriptvariables, addscriptvariables, updatescriptvariab
 import { search as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
 import { getapiListbydeploy as getapiListbydeploy } from '@/api/deployunit/api'
 import { getdepunitLists as getdepunitLists } from '@/api/deployunit/depunit'
-import { search, addtestscene, updatetestscene, removetestscene, getsceneallList, copyscene } from '@/api/executecenter/testscene'
+import { search, addtestscene, updatetestscene, removetestscene, getsceneallList, copyscene, searchscenetreedata } from '@/api/executecenter/testscene'
 import { findcasebyscenenid, findscenecasebyid, addtestscenetestcase, updatescenenCaseorder, updatescenecaselogic, removetestscenecase } from '@/api/executecenter/testscenetestcase'
 import { unix2CurrentTime } from '@/utils'
 import { findcasesbyname as findcasesbyname } from '@/api/assets/apicases'
@@ -1832,6 +2370,8 @@ import { getparamvaluebycaseidandtype as getparamvaluebycaseidandtype, casevalue
 import { getapi } from '@/api/deployunit/api'
 import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
 import { searchconditionorder, addconditionorder } from '@/api/condition/conditionorder'
+import { runscenecasetest, runscenetest } from '@/api/assets/apicases'
+import { findscenecasedebugreportWithName } from '@/api/reportcenter/scenecases_debug_report'
 
 export default {
   name: '测试场景',
@@ -1846,8 +2386,80 @@ export default {
       return statusMap[status]
     }
   },
+
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
   data() {
     return {
+      tmpstatus: '',
+      tmpcasename: '',
+      tmpbatchname: '',
+      debugsearch: {
+        page: 1,
+        size: 5,
+        batchname: '',
+        casename: '',
+        status: '',
+        sceneid: '',
+        projectid: ''
+      },
+      debugtotal: 0,
+      apireportList: [],
+      tmpnode: null,
+      tmptestdata: {
+        conditionid: 0,
+        globalheaderid: 0,
+        caseid: '',
+        sceneid: '',
+        scenename: '',
+        casename: '',
+        enviromentid: '',
+        prixflag: '',
+        projectid: '',
+        batchname: 'test111'
+      },
+      tmptest: {
+        casename: '',
+        enviromentid: '',
+        enviromentname: '',
+        respone: '',
+        code: '',
+        responeTime: '',
+        size: '',
+        general: '',
+        requestdata: ''
+      },
+      activeinfoName: 'zero',
+      searchtree: {
+        scenename: null,
+        sceneid: ''
+      },
+      activebbbName: 'xxx',
+      activeaaaName: 'zero',
+      filterText: '',
+      SeceneDebugdatatest: null,
+      SeceneDebugdata: [{
+        id: 1,
+        label: '测试场景',
+        children: [{
+          id: 4,
+          label: '用例1'
+        }, {
+          id: 4,
+          label: '用例2'
+        }
+        ]
+      }
+      ],
+      defaultProps: {
+        children: 'children',
+        label: 'label'
+      },
+      value: null,
+      DebugScenedialogFormVisible: false,
       tmpsubconditionid: '',
       conditionorderList: [], // 条件顺序显示列表
       saveconditionorderList: [], // 条件顺序保存列表
@@ -1860,6 +2472,7 @@ export default {
       activeName: 'zero',
       ApicasesVariablesList: [],
       Headertabledatas: [],
+      xxxHeadertabledatas: [],
       Paramstabledatas: [],
       Bodytabledatas: [],
       BodyVisible: false,
@@ -2236,6 +2849,8 @@ export default {
   },
 
   created() {
+    this.tmptestdata.projectid = window.localStorage.getItem('pid')
+    this.debugsearch.projectid = window.localStorage.getItem('pid')
     this.search.projectid = window.localStorage.getItem('pid')
     this.getdepunitLists()
     this.searchapicondition.projectid = window.localStorage.getItem('pid')
@@ -2262,6 +2877,134 @@ export default {
   },
 
   methods: {
+    getscenedebugreportList() {
+      this.debugsearch.status = this.tmpstatus
+      this.debugsearch.batchname = this.tmpbatchname
+      this.debugsearch.casename = this.tmpcasename
+      findscenecasedebugreportWithName(this.debugsearch).then(response => {
+        this.apireportList = response.data.list
+        this.debugtotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载用例列表失败')
+      })
+    },
+
+    searchcaseReportBy() {
+      findscenecasedebugreportWithName(this.debugsearch).then(response => {
+        this.apireportList = response.data.list
+        this.debugtotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载用例结果报告列表失败')
+      })
+      this.tmpstatus = this.debugsearch.status
+      this.tmpbatchname = this.debugsearch.batchname
+      this.tmpcasename = this.debugsearch.casename
+    },
+
+    EnviromentselectChanged(e) {
+      this.tmptest.respone = ''
+      for (let i = 0; i < this.enviromentnameList.length; i++) {
+        if (this.enviromentnameList[i].enviromentname === e) {
+          this.tmptestdata.enviromentid = this.enviromentnameList[i].id
+        }
+      }
+    },
+    /**
+     * 调试
+     */
+    runtest() {
+      if (this.tmptest.casename === '') {
+        this.$message.error('请选择需要调试的目标')
+        return
+      }
+      this.$refs.tmptest.validate(valid => {
+        if (valid) {
+          if (this.tmpnode.level === 1) {
+            this.tmptestdata.sceneid = this.tmpnode.data.id
+            this.tmptestdata.scenename = this.tmpnode.data.label
+            runscenetest(this.tmptestdata).then(response => {
+              // this.apireportList = response.data.list
+            }).catch(res => {
+              this.$message.error('调试失败')
+            })
+            this.$message.success('调试进行中，可到调试报告中查询结果')
+            console.log('测试场景')
+          } else {
+            console.log('测试用例-----------------------------------------------')
+            this.tmptestdata.sceneid = this.tmpnode.parent.data.id
+            this.tmptestdata.scenename = this.tmpnode.parent.data.label
+            this.tmptestdata.caseid = this.tmpnode.data.caseid
+            this.tmptestdata.casename = this.tmpnode.data.label
+            console.log(this.tmptestdata)
+            runscenecasetest(this.tmptestdata).then(response => {
+              this.apireportList = response.data
+              console.log(response.data)
+              this.$message.error(response.data)
+            }).catch(res => {
+              this.$message.error('调试失败')
+            })
+          }
+        }
+      })
+    },
+
+    async clickNode(data, node, obj) {
+      this.tmpnode = node
+      this.tmptest.casename = node.data.label
+      if (node.level === 1) {
+        console.log('测试场景')
+      } else {
+        console.log('测试场景用例')
+        this.tmptestdata.caseid = node.data.id
+        this.activeaaaName = 'zero'
+        this.tmpapicase.caseid = node.data.id
+        this.tmpapicase.casename = node.data.label
+        this.tmpapicase.apiid = node.data.apiid
+        this.tmpapicasesbodydata.caseid = node.data.id
+        this.tmpapicasesbodydata.casename = node.data.label
+        this.getheaderdatabycaseidandtype()
+        this.getparamdatabycaseidandtype()
+        await this.getapi()
+        this.getbodytextdatabycaseidandtype()
+        if (this.tmpapi.requestcontenttype === 'Form表单') {
+          this.BodyParamDataVisible = true
+          this.BodyDataVisible = false
+          // 获取Body参数数据
+          this.getbodydatabycaseidandtype()
+        } else {
+          // 获取body文本数据
+          this.BodyDataVisible = true
+          this.BodyParamDataVisible = false
+          this.getbodytextdatabycaseidandtype()
+        }
+        // 获取前置条件
+        this.tmpsubconditionid = node.data.id
+        this.tmpapicondition.conditionid = node.data.id
+        this.tmpapicondition.conditionname = node.data.label
+        this.tmpapicondition.conditiontype = 'scencecase'
+        this.searchapicondition.conditiontype = 'scencecase'
+        this.searchapicondition.conditionid = node.data.id
+        this.searchdbcondition.conditiontype = 'scencecase'
+        this.searchdbcondition.conditionid = node.data.id
+        this.tmpdbcondition.conditionid = node.data.id
+        this.tmpdbcondition.conditionname = node.data.label
+        this.tmpdbcondition.conditiontype = 'scencecase'
+        this.Scenedelaysearch.conditionid = node.data.id
+        this.tmpscriptcondition.conditionid = node.data.id
+        this.tmpscriptcondition.conditionname = node.data.label
+        this.tmpscriptcondition.conditiontype = 'scencecase'
+        this.searchscriptcondition.conditiontype = 'scencecase'
+        this.searchscriptcondition.conditionid = node.data.id
+        this.getapiconditionList()
+        this.getdelayconditionList()
+        this.getdbconditionList()
+        this.getscriptconditionList()
+      }
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
     unix2CurrentTime,
     showscenecaseconditionorderDialog() {
       // 显示新增对话框
@@ -2274,6 +3017,16 @@ export default {
     searchConditionorder() {
       searchconditionorder(this.searchconditionorder).then(response => {
         this.conditionorderList = response.data
+      }).catch(res => {
+        this.$message.error('查询条件顺序失败')
+      })
+    },
+
+    searchscenetreedata() {
+      searchscenetreedata(this.searchtree).then(response => {
+        this.SeceneDebugdata = response.data
+        console.log(11111111111111)
+        console.log(this.SeceneDebugdata)
       }).catch(res => {
         this.$message.error('查询条件顺序失败')
       })
@@ -2617,6 +3370,7 @@ export default {
         console.log(response.data.list)
         if (response.data.list.length > 0) {
           this.tmpapicasesbodydata = response.data.list[0]
+          console.log(666666666666666)
           console.log(this.tmpapicasesbodydata)
         } else {
           this.tmpapicasesbodydata.id = ''
@@ -3203,6 +3957,12 @@ export default {
       this.gettestsceneList()
     },
 
+    debughandleSizeChange(size) {
+      this.debugsearch.page = 1
+      this.debugsearch.size = size
+      this.getscenedebugreportList()
+    },
+
     casehandleSizeChange(size) {
       this.searchcase.page = 1
       this.searchcase.size = size
@@ -3222,6 +3982,12 @@ export default {
       this.search.page = page
       this.gettestsceneList()
     },
+
+    debughandleCurrentChange(page) {
+      this.debugsearch.page = page
+      this.getscenedebugreportList()
+    },
+
     /**
      * 改变页码
      * @param page 页号
@@ -3249,6 +4015,10 @@ export default {
      */
     getIndex(index) {
       return (this.search.page - 1) * this.search.size + index + 1
+    },
+
+    debuggetIndex(index) {
+      return (this.debugsearch.page - 1) * this.debugsearch.size + index + 1
     },
 
     delaycasegetIndex(index) {
@@ -3430,6 +4200,29 @@ export default {
       this.tmpdbcondition.dbcontent = ''
       this.tmpdbcondition.creator = this.name
       this.tmpdbcondition.projectid = window.localStorage.getItem('pid')
+    },
+    async showDebugSceneDialog(index) {
+      this.apireportList = null
+      this.tmptest.casename = ''
+      this.tmptestdata.enviromentid = ''
+      this.tmptest.enviromentname = ''
+      this.Headertabledatas = null
+      this.Paramstabledatas = null
+      this.Bodytabledatas = null
+      this.tmpapicasesbodydata.apiparamvalue = null
+      this.apiconditioncaseList = null
+      this.delayconditionList = null
+      this.dbconditioncaseList = null
+      this.scriptconditionList = null
+      this.debugsearch.sceneid = this.testsceneList[index].id
+      this.searchtree.sceneid = this.testsceneList[index].id
+      this.searchtree.scenename = this.testsceneList[index].scenename
+      this.searchscenetreedata()
+      this.searchcase.testscenenid = this.testsceneList[index].id
+      this.gettestscenecaseList()
+      this.activebbbName = 'xxx'
+      this.activeaaaName = 'zero'
+      this.DebugScenedialogFormVisible = true
     },
     /**
      * 显示用例对话框
@@ -3818,6 +4611,38 @@ export default {
 
 
 <style>
+.container {
+  display: flex;
+  justify-content: space-between; /* 水平间隔地分布每个元素 */
+}
+
+.left-component {
+  /* 左边组件的样式 */
+}
+
+.right-component {
+  /* 右边组件的样式 */
+}
+.tree-scroll {
+  width: 300px;
+  border: 1px solid #E7E7E7;
+  height: 100%
+}
+.flow-tree{
+  overflow: auto;
+  height: 200px;
+  margin:  10px;
+
+  >>>.el-tree-node{
+> .el-tree-node__children{
+  overflow: visible !important
+}
+}
+}
+.custom-tree {
+  width: 300px; /* 设置宽度 */
+  /* 其他样式 */
+}
 .tableAuto.el-table .cell {
   white-space: nowrap;
 }

@@ -48,6 +48,14 @@ export function search(testsceneForm) {
   })
 }
 
+export function searchscenetreedata(testsceneForm) {
+  return request({
+    url: '/testscene/searchscenetreedata',
+    method: 'post',
+    data: testsceneForm
+  })
+}
+
 export function addtestscene(testsceneForm) {
   return request({
     url: '/testscene',
