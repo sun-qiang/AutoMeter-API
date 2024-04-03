@@ -3359,6 +3359,33 @@
         this.tmpapicondition.memo = this.apiconditioncaseList[index].memo
         this.tmpapicondition.creator = this.name
         this.tmpapicondition.projectid = window.localStorage.getItem('pid')
+
+        for (let i = 0; i < this.deployunitList.length; i++) {
+          if (this.deployunitList[i].deployunitname === this.apiconditioncaseList[index].deployunitname) {
+            this.tmpapicondition.deployunitid = this.deployunitList[i].id
+          }
+        }
+        searchdeployunitmodel(this.tmpapicondition).then(response => {
+          this.apiconditionmodelList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载服务模块列表失败')
+        })
+        this.apiconditionapiList = null
+        getapiListbydeploy(this.tmpapicondition).then(response => {
+          this.apiconditionapiList = response.data
+        }).catch(res => {
+          this.$message.error('加载api列表失败')
+        })
+        for (let i = 0; i < this.apiconditionapiList.length; i++) {
+          if (this.apiconditionapiList[i].apiname === this.apiconditioncaseList[index].apiname) {
+            this.tmpapicondition.apiid = this.apiconditionapiList[i].id
+          }
+        }
+        findcasesbyname(this.tmpapicondition).then(response => {
+          this.conditionapicaseList = response.data
+        }).catch(res => {
+          this.$message.error('加载apicase列表失败')
+        })
       },
 
       updateapicondition() {

@@ -193,13 +193,6 @@ public class TestconditionController {
     public Result exec(@RequestBody Dispatch dispatch) {
         Long Planid = dispatch.getExecplanid();
         Executeplan executeplan = executeplanService.getBy("id", Planid);
-//        TestconditionController.log.info("开始处理计划前置条件-接口条件-=====================================：");
-//        APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
-//        TestconditionController.log.info("完成处理计划前置条件-接口条件-========================================：");
-//        TestconditionController.log.info("开始处理计划前置条件-数据库条件-=====================================：");
-//        DBCondition(Planid, dispatch);
-//        TestconditionController.log.info("开始处理计划前置条件-脚本条件-=====================================：");
-//        ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
 
         Map<String, Object> conditionmap = new HashMap<>();
         conditionmap.put("subconditionid", Planid);
@@ -208,19 +201,26 @@ public class TestconditionController {
         //条件排序的按照顺序执行
         if (conditionOrderList.size() > 0) {
             for (ConditionOrder conditionOrder : conditionOrderList) {
+                long conditionid=conditionOrder.getConditionid();
                 if (conditionOrder.getSubconditiontype().equals("前置接口条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
-                    APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
+                    ConditionApi conditionApi= conditionApiService.getBy("id",conditionid);
+                    conditionApi(conditionApi, executeplan, dispatch.getBatchname(), dispatch.getSlaverid());
+//                    APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
                     TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
                 }
                 if (conditionOrder.getSubconditiontype().equals("前置数据库条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
-                    DBCondition(Planid, dispatch);
+                    ConditionDb conditionDb= conditionDbService.getBy("id",conditionid);
+                    conditionDb(conditionDb, dispatch);
+//                    DBCondition(Planid, dispatch);
                     TestconditionController.log.info("完成顺序处理计划前置条件-数据库子条件-============：");
                 }
                 if (conditionOrder.getSubconditiontype().equals("前置脚本条件")) {
                     TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
-                    ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
+                    ConditionScript conditionScript= conditionScriptService.getBy("id",conditionid);
+                    conditionScript(conditionScript,dispatch,Planid);
+//                    ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
                     TestconditionController.log.info("完成顺序处理用例前置条件-脚本子条件-============：");
                 }
             }
@@ -245,7 +245,7 @@ public class TestconditionController {
             DBCondition(ConditionID, dispatch);
             //处理脚本条件
             TestconditionController.log.info("开始处理用例前置条件-脚本子条件-============：");
-            ScriptCondition(Caseid, dispatch, ConditionID);
+            ScriptCondition(dispatch, ConditionID);
             TestconditionController.log.info("完成处理用例前置条件-脚本子条件-============：");
 
         }
@@ -687,7 +687,8 @@ public class TestconditionController {
                 if (conditionOrder.getSubconditiontype().equals("前置接口条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
                     try {
-                        Resutl = GetCaseApiConditionResult(Resutl, ApiCaseID, EnviromentID);
+                        ConditionApi conditionApi = conditionApiService.getBy("id",conditionOrder.getConditionid());
+                        Resutl = GetCaseApiConditionResult(Resutl,conditionApi, ApiCaseID, EnviromentID);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
                     }
@@ -696,7 +697,8 @@ public class TestconditionController {
                 if (conditionOrder.getSubconditiontype().equals("前置数据库条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
                     try {
-                        Resutl = GetCaseDBConditionResult(Resutl, ApiCaseID);
+                        ConditionDb conditionDb = conditionDbService.getBy("id",conditionOrder.getConditionid());
+                        Resutl = GetCaseDBConditionResult(Resutl,conditionDb, ApiCaseID);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
                     }
@@ -705,7 +707,8 @@ public class TestconditionController {
                 if (conditionOrder.getSubconditiontype().equals("前置脚本条件")) {
                     TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
                     try {
-                        Resutl = GetCaseScriptConditionResult(Resutl, ApiCaseID);
+                        ConditionScript conditionScript = conditionScriptService.getBy("id",conditionOrder.getConditionid());
+                        Resutl = GetCaseScriptConditionResult(Resutl,conditionScript, ApiCaseID);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
                     }
@@ -717,9 +720,9 @@ public class TestconditionController {
     }
 
 
-    private HashMap<String, HashMap<String, String>> GetCaseScriptConditionResult(HashMap<String, HashMap<String, String>> Result, Long Caseid) throws Exception {
-        List<ConditionScript> conditionScriptList = conditionScriptService.GetCaseListByConditionID(Caseid, "case");
-        for (ConditionScript conditionScript : conditionScriptList) {
+    private HashMap<String, HashMap<String, String>> GetCaseScriptConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionScript conditionScript, Long Caseid) throws Exception {
+//        List<ConditionScript> conditionScriptList = conditionScriptService.GetCaseListByConditionID(Caseid, "case");
+//        for (ConditionScript conditionScript : conditionScriptList) {
             String Respone = "";
             try {
                 DnamicCompilerHelp dnamicCompilerHelp = new DnamicCompilerHelp();
@@ -740,14 +743,14 @@ public class TestconditionController {
                 throw new Exception("脚本条件执行异常:" + Respone);
             }
             TestconditionController.log.info("调试脚本报告更新子条件结果-============：");
-        }
+        //}
         return Result;
     }
 
-    private HashMap<String, HashMap<String, String>> GetCaseDBConditionResult(HashMap<String, HashMap<String, String>> Result, Long Caseid) throws Exception {
+    private HashMap<String, HashMap<String, String>> GetCaseDBConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionDb conditionDb, Long Caseid) throws Exception {
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
-        List<ConditionDb> conditionDbListList = conditionDbService.GetCaseListByConditionID(Caseid, "case");
-        for (ConditionDb conditionDb : conditionDbListList) {
+//        List<ConditionDb> conditionDbListList = conditionDbService.GetCaseListByConditionID(Caseid, "case");
+//        for (ConditionDb conditionDb : conditionDbListList) {
             Long Assembleid = conditionDb.getAssembleid();
             EnviromentAssemble enviromentAssemble = enviromentAssembleService.getBy("id", Assembleid);
             if (enviromentAssemble == null) {
@@ -780,18 +783,18 @@ public class TestconditionController {
             } catch (Exception ex) {
                 throw new Exception("数据库条件执行异常：" + ex.getMessage());
             }
-        }
+        //}
         TestconditionController.log.info("调试数据库条件条件报告子条件完成-============：");
         return Result;
     }
 
-    private HashMap<String, HashMap<String, String>> GetCaseApiConditionResult(HashMap<String, HashMap<String, String>> Result, Long Caseid, Long Enviromentid) throws Exception {
+    private HashMap<String, HashMap<String, String>> GetCaseApiConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionApi conditionApi , Long Caseid, Long Enviromentid) throws Exception {
         Long EnviromentID = Enviromentid;
         Long ApiCaseID = Caseid;
         TestconditionController.log.info("用例调试条件。。。。。用例id-==================：" + ApiCaseID);
-        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ApiCaseID, "case");
-        TestconditionController.log.info("用例调试接口条件数量-============：" + conditionApiList.size());
-        for (ConditionApi conditionApi : conditionApiList) {
+//        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ApiCaseID, "case");
+//        TestconditionController.log.info("用例调试接口条件数量-============：" + conditionApiList.size());
+        //for (ConditionApi conditionApi : conditionApiList) {
             Long CaseID = conditionApi.getCaseid(); //conditionApi.getCaseid();
             //增加判断case是否有前置条件
             Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
@@ -871,7 +874,7 @@ public class TestconditionController {
                     throw new Exception("前置接口条件执行异常:接口子条件未找到变量:" + testvariables.getTestvariablesname() + "，请检查变量管理-变量管理中是否存在！");
                 }
             }
-        }
+        //}
         return Result;
     }
 
@@ -1328,75 +1331,81 @@ public class TestconditionController {
 //        }
     }
 
-    public void ScriptCondition(Long Caseid, Dispatch dispatch, Long ConditionID) {
+
+    public void conditionScript(ConditionScript conditionScript,Dispatch dispatch,Long ConditionID)
+    {
+        if (conditionScript != null) {
+            TestconditionController.log.info("脚本条件id：-============：" + conditionScript.getId());
+            TestconditionReport testconditionReport = new TestconditionReport();
+            testconditionReport.setTestplanid(dispatch.getExecplanid());
+            testconditionReport.setPlanname(dispatch.getExecplanname());
+            testconditionReport.setBatchname(dispatch.getBatchname());
+            testconditionReport.setConditiontype("前置条件");
+            testconditionReport.setConditionresult("");
+            testconditionReport.setConditionstatus("");
+            testconditionReport.setRuntime(new Long(0));
+            testconditionReport.setSubconditionid(conditionScript.getId());
+            testconditionReport.setSubconditionname(conditionScript.getSubconditionname());
+            testconditionReport.setSubconditiontype("脚本");
+            testconditionReport.setStatus("进行中");
+            TestconditionController.log.info("脚本报告保存子条件进行中状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname());
+            testconditionReportService.save(testconditionReport);
+            long Start = 0;
+            long End = 0;
+            long CostTime = 0;
+            String Respone = "";
+            String ConditionResultStatus = "成功";
+            try {
+                Start = new Date().getTime();
+                DnamicCompilerHelp dnamicCompilerHelp = new DnamicCompilerHelp();
+                //数据库中获取脚本
+                String Script = conditionScript.getScript();
+                TestconditionController.log.info("脚本报告脚本子条件:-============：" + conditionScript.getScript());
+                String Source = dnamicCompilerHelp.GetCompeleteClass(Script, new Long(0));
+                Object ScriptResult = dnamicCompilerHelp.CallDynamicScript(Source);
+                Respone = ScriptResult.toString();
+                List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getId());
+
+                for (Scriptvariables scriptvariables : scriptvariablesList) {
+
+                    TestvariablesValue testvariablesValue = new TestvariablesValue();
+                    testvariablesValue.setPlanid(dispatch.getExecplanid());
+                    testvariablesValue.setPlanname(dispatch.getExecplanname());
+                    testvariablesValue.setBatchname(dispatch.getBatchname());
+                    testvariablesValue.setCaseid(ConditionID);
+                    testvariablesValue.setSlaverid(new Long(0));
+                    testvariablesValue.setConditionid(conditionScript.getId());
+                    testvariablesValue.setConditiontype(conditionScript.getConditiontype());
+                    testvariablesValue.setVariablestype("脚本");
+                    testvariablesValue.setCasename(conditionScript.getConditionname());
+                    testvariablesValue.setVariablesid(scriptvariables.getId());
+                    testvariablesValue.setVariablesname(scriptvariables.getScriptvariablesname());
+                    testvariablesValue.setVariablesvalue(Respone);
+                    testvariablesValue.setMemo("test");
+                    testvariablesValueService.save(testvariablesValue);
+                }
+
+            } catch (Exception ex) {
+                ConditionResultStatus = "失败";
+                Respone = ex.getMessage();
+            } finally {
+                End = new Date().getTime();
+                CostTime = End - Start;
+                //更新条件结果表
+                testconditionReport.setConditionresult(Respone);
+                testconditionReport.setConditionstatus(ConditionResultStatus);
+                testconditionReport.setRuntime(CostTime);
+                testconditionReport.setStatus("已完成");
+                TestconditionController.log.info("脚本报告更新子条件结果-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname());
+                testconditionReportService.update(testconditionReport);
+            }
+        }
+    }
+
+    public void ScriptCondition(Dispatch dispatch, Long ConditionID) {
         List<ConditionScript> conditionScriptList = conditionScriptService.findtestconditionscriptwithid(ConditionID, "execplan");
         for (ConditionScript conditionScript : conditionScriptList) {
-            if (conditionScript != null) {
-                TestconditionController.log.info("脚本条件id：-============：" + conditionScript.getId());
-                TestconditionReport testconditionReport = new TestconditionReport();
-                testconditionReport.setTestplanid(dispatch.getExecplanid());
-                testconditionReport.setPlanname(dispatch.getExecplanname());
-                testconditionReport.setBatchname(dispatch.getBatchname());
-                testconditionReport.setConditiontype("前置条件");
-                testconditionReport.setConditionresult("");
-                testconditionReport.setConditionstatus("");
-                testconditionReport.setRuntime(new Long(0));
-                testconditionReport.setSubconditionid(conditionScript.getId());
-                testconditionReport.setSubconditionname(conditionScript.getSubconditionname());
-                testconditionReport.setSubconditiontype("脚本");
-                testconditionReport.setStatus("进行中");
-                TestconditionController.log.info("脚本报告保存子条件进行中状态-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname());
-                testconditionReportService.save(testconditionReport);
-                long Start = 0;
-                long End = 0;
-                long CostTime = 0;
-                String Respone = "";
-                String ConditionResultStatus = "成功";
-                try {
-                    Start = new Date().getTime();
-                    DnamicCompilerHelp dnamicCompilerHelp = new DnamicCompilerHelp();
-                    //数据库中获取脚本
-                    String Script = conditionScript.getScript();
-                    TestconditionController.log.info("脚本报告脚本子条件:-============：" + conditionScript.getScript());
-                    String Source = dnamicCompilerHelp.GetCompeleteClass(Script, new Long(0));
-                    Object ScriptResult = dnamicCompilerHelp.CallDynamicScript(Source);
-                    Respone = ScriptResult.toString();
-                    List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getId());
-
-                    for (Scriptvariables scriptvariables : scriptvariablesList) {
-
-                        TestvariablesValue testvariablesValue = new TestvariablesValue();
-                        testvariablesValue.setPlanid(dispatch.getExecplanid());
-                        testvariablesValue.setPlanname(dispatch.getExecplanname());
-                        testvariablesValue.setBatchname(dispatch.getBatchname());
-                        testvariablesValue.setCaseid(ConditionID);
-                        testvariablesValue.setSlaverid(new Long(0));
-                        testvariablesValue.setConditionid(conditionScript.getId());
-                        testvariablesValue.setConditiontype(conditionScript.getConditiontype());
-                        testvariablesValue.setVariablestype("脚本");
-                        testvariablesValue.setCasename(conditionScript.getConditionname());
-                        testvariablesValue.setVariablesid(scriptvariables.getId());
-                        testvariablesValue.setVariablesname(scriptvariables.getScriptvariablesname());
-                        testvariablesValue.setVariablesvalue(Respone);
-                        testvariablesValue.setMemo("test");
-                        testvariablesValueService.save(testvariablesValue);
-                    }
-
-                } catch (Exception ex) {
-                    ConditionResultStatus = "失败";
-                    Respone = ex.getMessage();
-                } finally {
-                    End = new Date().getTime();
-                    CostTime = End - Start;
-                    //更新条件结果表
-                    testconditionReport.setConditionresult(Respone);
-                    testconditionReport.setConditionstatus(ConditionResultStatus);
-                    testconditionReport.setRuntime(CostTime);
-                    testconditionReport.setStatus("已完成");
-                    TestconditionController.log.info("脚本报告更新子条件结果-============：" + testconditionReport.getPlanname() + "|" + testconditionReport.getBatchname());
-                    testconditionReportService.update(testconditionReport);
-                }
-            }
+            conditionScript(conditionScript,dispatch,ConditionID);
         }
     }
 

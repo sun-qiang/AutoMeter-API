@@ -859,7 +859,6 @@
 
         <el-form-item label="微服务" prop="deployunitname" required >
           <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务" style="width:100%" @change="apiconditiondeployunitselectChanged($event)">
-            <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
             </div>
@@ -868,7 +867,6 @@
 
         <el-form-item  label="模块:" prop="modelname" >
           <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块" style="width:100%"  @change="apiconditionmodelselectChanged($event)">
-            <el-option label="请选择" value />
             <div v-for="(model, index) in apiconditionmodelList" :key="index">
               <el-option :label="model.modelname" :value="model.modelname" />
             </div>
@@ -877,7 +875,6 @@
 
         <el-form-item label="API" prop="apiname" required >
           <el-select v-model="tmpapicondition.apiname" filterable placeholder="API" style="width:100%" @change="apiconditionapiselectChanged($event)">
-            <el-option label="请选择" value />
             <div v-for="(api, index) in apiconditionapiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
             </div>
@@ -886,7 +883,6 @@
 
         <el-form-item label="接口" prop="casename" required >
           <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
-            <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(testcase, index) in conditionapicaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
@@ -2978,23 +2974,23 @@ export default {
           this.getbodytextdatabycaseidandtype()
         }
         // 获取前置条件
-        this.tmpsubconditionid = node.data.id
-        this.tmpapicondition.conditionid = node.data.id
+        this.tmpsubconditionid = node.data.caseid
+        this.tmpapicondition.conditionid = node.data.caseid
         this.tmpapicondition.conditionname = node.data.label
-        this.tmpapicondition.conditiontype = 'scencecase'
-        this.searchapicondition.conditiontype = 'scencecase'
-        this.searchapicondition.conditionid = node.data.id
-        this.searchdbcondition.conditiontype = 'scencecase'
-        this.searchdbcondition.conditionid = node.data.id
-        this.tmpdbcondition.conditionid = node.data.id
+        this.tmpapicondition.conditiontype = 'case'
+        this.searchapicondition.conditiontype = 'case'
+        this.searchapicondition.conditionid = node.data.caseid
+        this.searchdbcondition.conditiontype = 'case'
+        this.searchdbcondition.conditionid = node.data.caseid
+        this.tmpdbcondition.conditionid = node.data.caseid
         this.tmpdbcondition.conditionname = node.data.label
-        this.tmpdbcondition.conditiontype = 'scencecase'
-        this.Scenedelaysearch.conditionid = node.data.id
-        this.tmpscriptcondition.conditionid = node.data.id
+        this.tmpdbcondition.conditiontype = 'case'
+        this.Scenedelaysearch.conditionid = node.data.caseid
+        this.tmpscriptcondition.conditionid = node.data.caseid
         this.tmpscriptcondition.conditionname = node.data.label
-        this.tmpscriptcondition.conditiontype = 'scencecase'
-        this.searchscriptcondition.conditiontype = 'scencecase'
-        this.searchscriptcondition.conditionid = node.data.id
+        this.tmpscriptcondition.conditiontype = 'case'
+        this.searchscriptcondition.conditiontype = 'case'
+        this.searchscriptcondition.conditionid = node.data.caseid
         this.getapiconditionList()
         this.getdelayconditionList()
         this.getdbconditionList()
@@ -3010,7 +3006,7 @@ export default {
       // 显示新增对话框
       this.ConditionOrderdialogFormVisible = true
       this.searchconditionorder.subconditionid = this.tmpsubconditionid
-      this.searchconditionorder.conditiontype = 'scencecase'
+      this.searchconditionorder.conditiontype = 'case'
       this.searchConditionorder()
     },
 
@@ -4150,23 +4146,23 @@ export default {
 
     showtestscenecaseConditionDialog(index) {
       this.scenecaseConditionFormVisible = true
-      this.tmpsubconditionid = this.testscenecaseList[index].id
-      this.tmpapicondition.conditionid = this.testscenecaseList[index].id
+      this.tmpsubconditionid = this.testscenecaseList[index].testcaseid
+      this.tmpapicondition.conditionid = this.testscenecaseList[index].testcaseid
       this.tmpapicondition.conditionname = this.testscenecaseList[index].casename
-      this.tmpapicondition.conditiontype = 'scencecase'
-      this.searchapicondition.conditiontype = 'scencecase'
-      this.searchapicondition.conditionid = this.testscenecaseList[index].id
-      this.searchdbcondition.conditiontype = 'scencecase'
-      this.searchdbcondition.conditionid = this.testscenecaseList[index].id
-      this.tmpdbcondition.conditionid = this.testscenecaseList[index].id
+      this.tmpapicondition.conditiontype = 'case'
+      this.searchapicondition.conditiontype = 'case'
+      this.searchapicondition.conditionid = this.testscenecaseList[index].testcaseid
+      this.searchdbcondition.conditiontype = 'case'
+      this.searchdbcondition.conditionid = this.testscenecaseList[index].testcaseid
+      this.tmpdbcondition.conditionid = this.testscenecaseList[index].testcaseid
       this.tmpdbcondition.conditionname = this.testscenecaseList[index].casename
-      this.tmpdbcondition.conditiontype = 'scencecase'
-      this.Scenedelaysearch.conditionid = this.testscenecaseList[index].id
-      this.tmpscriptcondition.conditionid = this.testscenecaseList[index].id
+      this.tmpdbcondition.conditiontype = 'case'
+      this.Scenedelaysearch.conditionid = this.testscenecaseList[index].testcaseid
+      this.tmpscriptcondition.conditionid = this.testscenecaseList[index].testcaseid
       this.tmpscriptcondition.conditionname = this.testscenecaseList[index].casename
-      this.tmpscriptcondition.conditiontype = 'scencecase'
-      this.searchscriptcondition.conditiontype = 'scencecase'
-      this.searchscriptcondition.conditionid = this.testscenecaseList[index].id
+      this.tmpscriptcondition.conditiontype = 'case'
+      this.searchscriptcondition.conditiontype = 'case'
+      this.searchscriptcondition.conditionid = this.testscenecaseList[index].testcaseid
       this.getapiconditionList()
       this.getdelayconditionList()
       this.getdbconditionList()
