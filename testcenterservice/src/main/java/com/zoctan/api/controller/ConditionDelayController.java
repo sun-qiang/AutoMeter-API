@@ -5,6 +5,7 @@ import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.entity.ConditionApi;
 import com.zoctan.api.entity.ConditionDelay;
 import com.zoctan.api.entity.ConditionOrder;
+import com.zoctan.api.entity.ConditionScript;
 import com.zoctan.api.service.ConditionDelayService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -62,6 +63,8 @@ public class ConditionDelayController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
+        ConditionDelay conditionDelay=conditionDelayService.getBy("id",id);
+        conditionOrderService.deleteconditionorderbysubconid(conditionDelay.getId(),conditionDelay.getConditiontype(),"前置延时条件");
         conditionDelayService.deleteById(id);
         return ResultGenerator.genOkResult();
     }

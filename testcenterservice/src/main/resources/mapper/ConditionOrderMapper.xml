@@ -74,6 +74,6 @@
 
 
   <delete id="deleteconditionorderbysubconid">
-    DELETE from condition_order where conditionid = #{conditionid} and subconditionid = #{subconditionid} and subconditiontype=#{subconditiontype}
+    DELETE from condition_order where conditionid = #{conditionid} and conditiontype = #{conditiontype} and subconditiontype=#{subconditiontype}
   </delete>
 </mapper>

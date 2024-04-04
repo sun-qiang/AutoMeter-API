@@ -21,5 +21,5 @@ public interface ConditionOrderMapper extends MyMapper<ConditionOrder> {
 
     void deleteconditionorderbyconid(@Param("conditionid") Long conditionid);
 
-    void deleteconditionorderbysubconid(@Param("conditionid") Long conditionid, @Param("subconditionid") Long subconditionid, @Param("subconditiontype") String subconditiontype);
+    void deleteconditionorderbysubconid(@Param("conditionid") Long conditionid, @Param("conditiontype") String conditiontype, @Param("subconditiontype") String subconditiontype);
 }

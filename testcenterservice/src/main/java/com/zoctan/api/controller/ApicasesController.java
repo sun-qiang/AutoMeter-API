@@ -204,35 +204,8 @@ public class ApicasesController {
                     apicasesAssert.setId(null);
                     apicasesAssertService.save(apicasesAssert);
                 }
-
                 //复制前置条件
                 SubCondition(Long.parseLong(sourcecaseid), NewCaseId, newcasename);
-
-//                Condition ParentCondition = new Condition(Testcondition.class);
-//                ParentCondition.createCriteria().andCondition("objectid = " + sourcecaseid)
-//                        .andCondition("objecttype='" + "测试用例'");
-//                List<Testcondition> testconditionList = testconditionService.listByCondition(ParentCondition);
-//                for (Testcondition SourceParentCondition : testconditionList) {
-//                    long SourceConditionID = SourceParentCondition.getId();
-//                    String DestinationConditionName = SourceParentCondition.getConditionname() + "-用例复制";
-//                    SourceParentCondition.setObjectid(NewCaseId);
-//                    SourceParentCondition.setConditionname(DestinationConditionName);
-//                    SourceParentCondition.setObjectname(newcasename);
-//                    SourceParentCondition.setApiid(Apiid);
-//                    SourceParentCondition.setDeployunitid(Long.parseLong(sourcedeployunitid));
-//                    SourceParentCondition.setDeployunitname(sourcedeployunitname);
-//                    SourceParentCondition.setId(null);
-//                    testconditionService.save(SourceParentCondition);
-//                    long DestinationConditionID = SourceParentCondition.getId();
-//                }
-                //复制前置调试条件
-//                ApicasesDebugCondition apicasesDebugCondition = apicasesDebugConditionService.getBy("caseid", Long.parseLong(sourcecaseid));
-//                if (apicasesDebugCondition != null) {
-//                    apicasesDebugCondition.setId(null);
-//                    apicasesDebugCondition.setCaseid(NewCaseId);
-//                    apicasesDebugCondition.setCasename(newcasename);
-//                    apicasesDebugConditionService.save(apicasesDebugCondition);
-//                }
                 //api用例数加1
                 Api api = apiService.getById(Apiid);
                 long casecount = api.getCasecounts();
@@ -375,6 +348,23 @@ public class ApicasesController {
             SourceConditionApi.setConditionname(DesCaseName);
             SourceConditionApi.setSubconditionname(SourceConditionApi.getSubconditionname() + "-复制");
             conditionApiService.save(SourceConditionApi);
+
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(SourceConditionApi.getConditiontype());
+            conditionOrder.setConditionid(SourceConditionApi.getId());
+            conditionOrder.setConditionname(SourceConditionApi.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(SourceConditionApi.getConditionid());
+            conditionOrder.setSubconditionname(SourceConditionApi.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置接口条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(SourceConditionApi.getCreator());
+            conditionOrderService.save(conditionOrder);
+
         }
 
         //复制前置数据库条件
@@ -402,6 +392,22 @@ public class ApicasesController {
                 dbvariables.setConditionname(SubConditionname);
                 dbvariablesService.save(dbvariables);
             }
+
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(SourceConditionDB.getConditiontype());
+            conditionOrder.setConditionid(SourceConditionDB.getId());
+            conditionOrder.setConditionname(SourceConditionDB.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(SourceConditionDB.getConditionid());
+            conditionOrder.setSubconditionname(SourceConditionDB.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置数据库条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(SourceConditionDB.getCreator());
+            conditionOrderService.save(conditionOrder);
         }
 
         //复制前置脚本条件
@@ -428,20 +434,51 @@ public class ApicasesController {
                 scriptvariables.setConditionname(SubConditionname);
                 scriptvariablesService.save(scriptvariables);
             }
+
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(SourceConditionScript.getConditiontype());
+            conditionOrder.setConditionid(SourceConditionScript.getId());
+            conditionOrder.setConditionname(SourceConditionScript.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(SourceConditionScript.getConditionid());
+            conditionOrder.setSubconditionname(SourceConditionScript.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置脚本条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(SourceConditionScript.getCreator());
+            conditionOrderService.save(conditionOrder);
         }
 
         //复制前置延时条件
-//        Condition DelaySubCondition = new Condition(ConditionDelay.class);
-//        DelaySubCondition.createCriteria().andCondition("conditionid = " + SourceCaseID)
-//                .andCondition("conditiontype='case'");
-//        List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(DelaySubCondition);
-//        for (ConditionDelay SourceConditionDelay : conditionDelayList) {
-//            SourceConditionDelay.setId(null);
-//            SourceConditionDelay.setConditionid(DesCaseid);
-//            SourceConditionDelay.setConditionname(DesCaseName);
-//            conditionDelayService.save(SourceConditionDelay);
-//            subconditiondelayid = SourceConditionDelay.getId();
-//        }
+        Condition DelaySubCondition = new Condition(ConditionDelay.class);
+        DelaySubCondition.createCriteria().andCondition("conditionid = " + SourceCaseID)
+                .andCondition("conditiontype='case'");
+        List<ConditionDelay> conditionDelayList = conditionDelayService.listByCondition(DelaySubCondition);
+        for (ConditionDelay SourceConditionDelay : conditionDelayList) {
+            SourceConditionDelay.setId(null);
+            SourceConditionDelay.setConditionid(DesCaseid);
+            SourceConditionDelay.setConditionname(DesCaseName);
+            conditionDelayService.save(SourceConditionDelay);
+
+            ConditionOrder conditionOrder=new ConditionOrder();
+            conditionOrder.setId(null);
+            conditionOrder.setConditiontype(SourceConditionDelay.getConditiontype());
+            conditionOrder.setConditionid(SourceConditionDelay.getId());
+            conditionOrder.setConditionname(SourceConditionDelay.getConditionname());
+            //条件来源id和name
+            conditionOrder.setSubconditionid(SourceConditionDelay.getConditionid());
+            conditionOrder.setSubconditionname(SourceConditionDelay.getSubconditionname());
+            conditionOrder.setConditionorder(new Long(1));
+            conditionOrder.setOrderstatus("未排序");
+            conditionOrder.setSubconditiontype("前置延时条件");
+            conditionOrder.setCreateTime(new Date());
+            conditionOrder.setLastmodifyTime(new Date());
+            conditionOrder.setCreator(SourceConditionDelay.getCreator());
+            conditionOrderService.save(conditionOrder);
+        }
 
 //        Condition OrderCondition = new Condition(ConditionOrder.class);
 //        OrderCondition.createCriteria().andCondition("conditionid = " + SourceConditionID);

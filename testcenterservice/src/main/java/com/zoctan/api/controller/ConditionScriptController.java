@@ -66,7 +66,7 @@ public class ConditionScriptController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         ConditionScript conditionScript=conditionScriptService.getBy("id",id);
-        conditionOrderService.deleteconditionorderbysubconid(conditionScript.getConditionid(),id,"脚本");
+        conditionOrderService.deleteconditionorderbysubconid(conditionScript.getId(),conditionScript.getConditiontype(),"前置脚本条件");
         conditionScriptService.deleteById(id);
         return ResultGenerator.genOkResult();
     }

@@ -21,5 +21,5 @@ public interface ConditionOrderService extends Service<ConditionOrder> {
     void updateBatchconditionOrderList(final List<ConditionOrder> conditionOrderList);
 
     void deleteconditionorderbyconid(Long conditionid);
-    void deleteconditionorderbysubconid(Long conditionid,Long subconditionid,String subconditiontype);
+    void deleteconditionorderbysubconid(Long conditionid,String conditiontype,String subconditiontype);
 }

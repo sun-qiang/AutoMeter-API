@@ -559,12 +559,6 @@
               v-if="hasPermission('testscene:scenecasecondition')"
               @click.native.prevent="showscenecaseconditionorderDialog"
             >设置前置条件顺序</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="hasPermission('testscene:scenecasecondition')"
-              @click.native.prevent="ShowAddcasecaseconditionDialog"
-            >同步用例调试前置条件</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -1994,7 +1988,7 @@
                     </template>
                   </el-table-column>
                   <el-table-column label="前置条件名" :show-overflow-tooltip="true"  align="center" prop="subconditionname" width="110"/>
-                  <el-table-column label="所属用例" :show-overflow-tooltip="true"  align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="前置所属" :show-overflow-tooltip="true"  align="center" prop="conditionname" width="110"/>
                   <el-table-column label="前置接口" :show-overflow-tooltip="true"  align="center" prop="casename" width="110"/>
                   <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="110">
                     <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
@@ -2045,7 +2039,7 @@
                   </el-table-column>
 
                   <el-table-column label="前置条件名" align="center" prop="subconditionname" width="110"/>
-                  <el-table-column label="所属用例" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="前置所属" align="center" prop="conditionname" width="110"/>
                   <el-table-column label="等待时间(秒)" align="center" prop="delaytime" width="110">
                   </el-table-column>
                   <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="110">
@@ -2089,7 +2083,7 @@
                     </template>
                   </el-table-column>
                   <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="100"/>
-                  <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="前置所属" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
                   <el-table-column label="环境" align="center" prop="enviromentname" width="100"/>
                   <el-table-column label="组件名" align="center" prop="assemblename" width="100"/>
                   <el-table-column label="Sql类型" align="center" prop="dbtype" width="70"/>
@@ -2150,7 +2144,7 @@
                   </el-table-column>
 
                   <el-table-column label="前置条件名" :show-overflow-tooltip="true" align="center" prop="subconditionname" width="110"/>
-                  <el-table-column label="所属用例" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
+                  <el-table-column label="前置所属" :show-overflow-tooltip="true" align="center" prop="conditionname" width="110"/>
                   <el-table-column label="脚本" align="center" prop="script" width="110">
                     <template slot-scope="scope">
                       <el-popover trigger="hover" placement="top">
@@ -2949,8 +2943,35 @@ export default {
       this.tmptest.casename = node.data.label
       if (node.level === 1) {
         console.log('测试场景')
+        this.searchconditionorder.conditiontype = 'scene'
+        this.Headertabledatas = []
+        this.Paramstabledatas = []
+        this.tmpapicasesbodydata.apiparamvalue = null
+        this.Bodytabledatas = []
+        this.tmpsubconditionid = node.data.id
+        this.tmpapicondition.conditionid = node.data.id
+        this.tmpapicondition.conditionname = node.data.label
+        this.tmpapicondition.conditiontype = 'scene'
+        this.searchapicondition.conditiontype = 'scene'
+        this.searchapicondition.conditionid = node.data.id
+        this.searchdbcondition.conditiontype = 'scene'
+        this.searchdbcondition.conditionid = node.data.id
+        this.tmpdbcondition.conditionid = node.data.id
+        this.tmpdbcondition.conditionname = node.data.label
+        this.tmpdbcondition.conditiontype = 'scene'
+        this.Scenedelaysearch.conditionid = node.data.id
+        this.Scenedelaysearch.conditiontype = 'scene'
+        this.tmpdelaycondition.conditionid = node.data.id
+        this.tmpdelaycondition.conditionname = node.data.label
+        this.tmpdelaycondition.conditiontype = 'scene'
+        this.tmpscriptcondition.conditionid = node.data.id
+        this.tmpscriptcondition.conditionname = node.data.label
+        this.tmpscriptcondition.conditiontype = 'scene'
+        this.searchscriptcondition.conditiontype = 'scene'
+        this.searchscriptcondition.conditionid = node.data.id
       } else {
         console.log('测试场景用例')
+        this.searchconditionorder.conditiontype = 'case'
         this.tmptestdata.caseid = node.data.id
         this.activeaaaName = 'zero'
         this.tmpapicase.caseid = node.data.id
@@ -2986,16 +3007,20 @@ export default {
         this.tmpdbcondition.conditionname = node.data.label
         this.tmpdbcondition.conditiontype = 'case'
         this.Scenedelaysearch.conditionid = node.data.caseid
+        this.Scenedelaysearch.conditiontype = 'case'
+        this.tmpdelaycondition.conditionid = node.data.caseid
+        this.tmpdelaycondition.conditionname = node.data.label
+        this.tmpdelaycondition.conditiontype = 'case'
         this.tmpscriptcondition.conditionid = node.data.caseid
         this.tmpscriptcondition.conditionname = node.data.label
         this.tmpscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditionid = node.data.caseid
-        this.getapiconditionList()
-        this.getdelayconditionList()
-        this.getdbconditionList()
-        this.getscriptconditionList()
       }
+      this.getapiconditionList()
+      this.getdelayconditionList()
+      this.getdbconditionList()
+      this.getscriptconditionList()
     },
     filterNode(value, data) {
       if (!value) return true
@@ -3006,7 +3031,6 @@ export default {
       // 显示新增对话框
       this.ConditionOrderdialogFormVisible = true
       this.searchconditionorder.subconditionid = this.tmpsubconditionid
-      this.searchconditionorder.conditiontype = 'case'
       this.searchConditionorder()
     },
 
@@ -3705,9 +3729,9 @@ export default {
       this.DelaydialogStatus = 'add'
       this.tmpdelaycondition.id = ''
       this.tmpdelaycondition.subconditionname = ''
-      this.tmpdelaycondition.conditionid = this.tmpapicondition.conditionid
-      this.tmpdelaycondition.conditionname = this.tmpapicondition.conditionname
-      this.tmpdelaycondition.conditiontype = 'scencecase'
+      // this.tmpdelaycondition.conditionid = this.tmpapicondition.conditionid
+      // this.tmpdelaycondition.conditionname = this.tmpapicondition.conditionname
+      // this.tmpdelaycondition.conditiontype = 'scencecase'
       this.tmpdelaycondition.delaytime = ''
       this.tmpdelaycondition.creator = this.name
       this.tmpdelaycondition.projectid = window.localStorage.getItem('pid')
@@ -3716,7 +3740,6 @@ export default {
      * 获取延时条件列表
      */
     getdelayconditionList() {
-      this.Scenedelaysearch.conditiontype = 'scencecase'
       searchbytype(this.Scenedelaysearch).then(response => {
         this.delayconditionList = response.data.list
       }).catch(res => {
@@ -4158,6 +4181,10 @@ export default {
       this.tmpdbcondition.conditionname = this.testscenecaseList[index].casename
       this.tmpdbcondition.conditiontype = 'case'
       this.Scenedelaysearch.conditionid = this.testscenecaseList[index].testcaseid
+      this.Scenedelaysearch.conditiontype = 'case'
+      this.tmpdelaycondition.conditionid = this.testscenecaseList[index].testcaseid
+      this.tmpdelaycondition.conditionname = this.testscenecaseList[index].casename
+      this.tmpdelaycondition.conditiontype = 'case'
       this.tmpscriptcondition.conditionid = this.testscenecaseList[index].testcaseid
       this.tmpscriptcondition.conditionname = this.testscenecaseList[index].casename
       this.tmpscriptcondition.conditiontype = 'case'

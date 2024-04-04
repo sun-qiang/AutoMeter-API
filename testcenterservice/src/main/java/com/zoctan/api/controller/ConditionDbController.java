@@ -66,7 +66,7 @@ public class ConditionDbController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         ConditionDb conditionDb=conditionDbService.getBy("id",id);
-        conditionOrderService.deleteconditionorderbysubconid(conditionDb.getConditionid(),id,"数据库");
+        conditionOrderService.deleteconditionorderbysubconid(conditionDb.getId(),conditionDb.getConditiontype(),"前置数据库条件");
         conditionDbService.deleteById(id);
         return ResultGenerator.genOkResult();
     }

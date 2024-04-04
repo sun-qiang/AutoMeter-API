@@ -68,7 +68,7 @@ public class ConditionApiController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         ConditionApi conditionApi=conditionApiService.getBy("id",id);
-        conditionOrderService.deleteconditionorderbysubconid(conditionApi.getConditionid(),id,"接口");
+        conditionOrderService.deleteconditionorderbysubconid(conditionApi.getId(),conditionApi.getConditiontype(),"前置接口条件");
         conditionApiService.deleteBy("id",id);
         return ResultGenerator.genOkResult();
     }
