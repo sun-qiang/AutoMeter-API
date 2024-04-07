@@ -479,33 +479,6 @@ public class ApicasesController {
             conditionOrder.setCreator(SourceConditionDelay.getCreator());
             conditionOrderService.save(conditionOrder);
         }
-
-//        Condition OrderCondition = new Condition(ConditionOrder.class);
-//        OrderCondition.createCriteria().andCondition("conditionid = " + SourceConditionID);
-//        List<ConditionOrder> conditionOrderList = conditionOrderService.listByCondition(OrderCondition);
-//        for (ConditionOrder SourceConditionOrder : conditionOrderList) {
-//            SourceConditionOrder.setId(null);
-//            SourceConditionOrder.setConditionname(DestinationConditionName);
-//            SourceConditionOrder.setConditionid(DestinationConditionID);
-//            if (SourceConditionOrder.getSubconditiontype().equalsIgnoreCase("接口")) {
-//                SourceConditionOrder.setSubconditionid(subconditionapiid);
-//            }
-//            if (SourceConditionOrder.getSubconditiontype().equalsIgnoreCase("数据库")) {
-//                SourceConditionOrder.setSubconditionid(subconditiondbid);
-//            }
-//            if (SourceConditionOrder.getSubconditiontype().equalsIgnoreCase("脚本")) {
-//                SourceConditionOrder.setSubconditionid(subconditionscriptid);
-//            }
-//            if (SourceConditionOrder.getSubconditiontype().equalsIgnoreCase("延时")) {
-//                SourceConditionOrder.setSubconditionid(subconditiondelayid);
-//            }
-//            if (CopyType.equalsIgnoreCase("case")) {
-//                SourceConditionOrder.setSubconditionname(SourceConditionOrder.getSubconditionname() + "-用例复制");
-//            } else {
-//                SourceConditionOrder.setSubconditionname(SourceConditionOrder.getSubconditionname() + "-微服务复制");
-//            }
-//            conditionOrderService.save(SourceConditionOrder);
-//        }
     }
 
     @DeleteMapping("/{id}")
@@ -886,6 +859,30 @@ public class ApicasesController {
         Long projectid = Long.parseLong(param.get("projectid").toString());
         Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
 
+        //先获取场景的前置结果
+        HashMap<String, String> SceneParamsValuesMap = new HashMap<>();
+        HashMap<String, String> SceneDBParamsValuesMap = new HashMap<>();
+        HashMap<String, String> SceneScriptParamsValuesMap = new HashMap<>();
+
+        String SceneRespone = "";
+        HashMap<String, Object> scenedebugmap = new HashMap<>();
+        scenedebugmap.put("conditionid", sceneid);
+        scenedebugmap.put("enviromentid", Long.parseLong(enviromentid));
+        scenedebugmap.put("conditiontype", "scene");
+
+        String SceneConditionServerurl = conditionserver + "/testcondition/execdebugcondition";
+        HttpHeader sceneheader1 = new HttpHeader();
+        String scenedebugparams = JSON.toJSONString(scenedebugmap);
+        try {
+            SceneRespone = getSubConditionRespone(SceneConditionServerurl, scenedebugparams, sceneheader1);
+        } catch (Exception ex) {
+            return ResultGenerator.genFailedResult("前置条件处理异常：！" + ex.getMessage());
+        }
+        SceneParamsValuesMap = GetResponeMap(SceneRespone, SceneParamsValuesMap, "api");
+        SceneDBParamsValuesMap = GetResponeMap(SceneRespone, SceneDBParamsValuesMap, "db");
+        SceneScriptParamsValuesMap = GetResponeMap(SceneRespone, SceneScriptParamsValuesMap, "script");
+
+        /////////////////////////////////////////////////////////////////////////////////////////
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String batchname = scenename + "-" + dateFormat.format(date);
@@ -905,11 +902,12 @@ public class ApicasesController {
             HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
 
             String Respone = "";
-            HashMap<String, Long> debugmap = new HashMap<>();
-            debugmap.put("apicaseid", Caseid);
+            HashMap<String, Object> debugmap = new HashMap<>();
+            debugmap.put("conditionid", Caseid);
+            debugmap.put("conditiontype", "case");
             debugmap.put("enviromentid", Long.parseLong(enviromentid));
 
-            String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+            String ConditionServerurl = conditionserver + "/testcondition/execdebugcondition";
             HttpHeader header1 = new HttpHeader();
             String debugparams = JSON.toJSONString(debugmap);
             try {
@@ -920,6 +918,11 @@ public class ApicasesController {
             ParamsValuesMap = GetResponeMap(Respone, ParamsValuesMap, "api");
             DBParamsValuesMap = GetResponeMap(Respone, DBParamsValuesMap, "db");
             ScriptParamsValuesMap = GetResponeMap(Respone, ScriptParamsValuesMap, "script");
+
+
+            ParamsValuesMap.putAll(SceneParamsValuesMap);
+            DBParamsValuesMap.putAll(SceneDBParamsValuesMap);
+            ScriptParamsValuesMap.putAll(SceneScriptParamsValuesMap);
 
             Apicases apicases = apicasesService.getBy("id", Caseid);
             if (apicases == null) {

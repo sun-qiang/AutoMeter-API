@@ -34,6 +34,7 @@ import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.awt.font.ShapeGraphicAttribute;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -661,7 +662,7 @@ public class TestconditionController {
     }
 
 
-    @PostMapping("/execcasedebugcondition")
+    @PostMapping("/execdebugcondition")
     public Result ConditionForCase(@RequestBody final Map<String, Object> param) throws Exception {
         HashMap<String, HashMap<String, String>> Resutl = new HashMap<>();
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
@@ -673,13 +674,14 @@ public class TestconditionController {
         Resutl.put("script", ScriptVariableNameValueMap);
 
         Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
-        Long ApiCaseID = Long.parseLong(param.get("apicaseid").toString());
-        TestconditionController.log.info("用例调试条件。。。。。用例id-==================：" + ApiCaseID);
+        Long conditionid = Long.parseLong(param.get("conditionid").toString());
+        String conditiontype = param.get("conditiontype").toString();
 
+        TestconditionController.log.info("用例调试条件。。。。。subconditionidid-==================：" + conditionid);
 
         Map<String, Object> conditionmap = new HashMap<>();
-        conditionmap.put("subconditionid", ApiCaseID);
-        conditionmap.put("conditiontype", "case");
+        conditionmap.put("subconditionid", conditionid);
+        conditionmap.put("conditiontype", conditiontype);
         List<ConditionOrder> conditionOrderList = conditionOrderService.findconditionorderWithid(conditionmap);
         //条件排序的按照顺序执行
         if (conditionOrderList.size() > 0) {
@@ -688,7 +690,7 @@ public class TestconditionController {
                     TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
                     try {
                         ConditionApi conditionApi = conditionApiService.getBy("id",conditionOrder.getConditionid());
-                        Resutl = GetCaseApiConditionResult(Resutl,conditionApi, ApiCaseID, EnviromentID);
+                        Resutl = GetCaseApiConditionResult(Resutl,conditionApi, EnviromentID);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置接口条件执行异常:" + ex.getMessage());
                     }
@@ -698,7 +700,7 @@ public class TestconditionController {
                     TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
                     try {
                         ConditionDb conditionDb = conditionDbService.getBy("id",conditionOrder.getConditionid());
-                        Resutl = GetCaseDBConditionResult(Resutl,conditionDb, ApiCaseID);
+                        Resutl = GetCaseDBConditionResult(Resutl,conditionDb);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置数据库条件执行异常:" + ex.getMessage());
                     }
@@ -708,7 +710,7 @@ public class TestconditionController {
                     TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
                     try {
                         ConditionScript conditionScript = conditionScriptService.getBy("id",conditionOrder.getConditionid());
-                        Resutl = GetCaseScriptConditionResult(Resutl,conditionScript, ApiCaseID);
+                        Resutl = GetCaseScriptConditionResult(Resutl,conditionScript, conditionid);
                     } catch (Exception ex) {
                         return ResultGenerator.genFailedResult("前置脚本条件执行异常:" + ex.getMessage());
                     }
@@ -747,7 +749,7 @@ public class TestconditionController {
         return Result;
     }
 
-    private HashMap<String, HashMap<String, String>> GetCaseDBConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionDb conditionDb, Long Caseid) throws Exception {
+    private HashMap<String, HashMap<String, String>> GetCaseDBConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionDb conditionDb) throws Exception {
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
 //        List<ConditionDb> conditionDbListList = conditionDbService.GetCaseListByConditionID(Caseid, "case");
 //        for (ConditionDb conditionDb : conditionDbListList) {
@@ -788,10 +790,10 @@ public class TestconditionController {
         return Result;
     }
 
-    private HashMap<String, HashMap<String, String>> GetCaseApiConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionApi conditionApi , Long Caseid, Long Enviromentid) throws Exception {
+    private HashMap<String, HashMap<String, String>> GetCaseApiConditionResult(HashMap<String, HashMap<String, String>> Result,ConditionApi conditionApi, Long Enviromentid) throws Exception {
         Long EnviromentID = Enviromentid;
-        Long ApiCaseID = Caseid;
-        TestconditionController.log.info("用例调试条件。。。。。用例id-==================：" + ApiCaseID);
+//        Long ApiCaseID = Caseid;
+//        TestconditionController.log.info("用例调试条件。。。。。用例id-==================：" + ApiCaseID);
 //        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ApiCaseID, "case");
 //        TestconditionController.log.info("用例调试接口条件数量-============：" + conditionApiList.size());
         //for (ConditionApi conditionApi : conditionApiList) {
