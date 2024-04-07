@@ -95,6 +95,9 @@ public class ApicasesController {
     @Autowired(required = false)
     private TestsceneTestcaseService testsceneTestcaseService;
 
+    @Autowired(required = false)
+    private TestsceneService testsceneService;
+
     @PostMapping
     public Result add(@RequestBody Apicases apicases) {
         Condition con = new Condition(Apicases.class);
@@ -349,7 +352,7 @@ public class ApicasesController {
             SourceConditionApi.setSubconditionname(SourceConditionApi.getSubconditionname() + "-复制");
             conditionApiService.save(SourceConditionApi);
 
-            ConditionOrder conditionOrder=new ConditionOrder();
+            ConditionOrder conditionOrder = new ConditionOrder();
             conditionOrder.setId(null);
             conditionOrder.setConditiontype(SourceConditionApi.getConditiontype());
             conditionOrder.setConditionid(SourceConditionApi.getId());
@@ -393,7 +396,7 @@ public class ApicasesController {
                 dbvariablesService.save(dbvariables);
             }
 
-            ConditionOrder conditionOrder=new ConditionOrder();
+            ConditionOrder conditionOrder = new ConditionOrder();
             conditionOrder.setId(null);
             conditionOrder.setConditiontype(SourceConditionDB.getConditiontype());
             conditionOrder.setConditionid(SourceConditionDB.getId());
@@ -435,7 +438,7 @@ public class ApicasesController {
                 scriptvariablesService.save(scriptvariables);
             }
 
-            ConditionOrder conditionOrder=new ConditionOrder();
+            ConditionOrder conditionOrder = new ConditionOrder();
             conditionOrder.setId(null);
             conditionOrder.setConditiontype(SourceConditionScript.getConditiontype());
             conditionOrder.setConditionid(SourceConditionScript.getId());
@@ -463,7 +466,7 @@ public class ApicasesController {
             SourceConditionDelay.setConditionname(DesCaseName);
             conditionDelayService.save(SourceConditionDelay);
 
-            ConditionOrder conditionOrder=new ConditionOrder();
+            ConditionOrder conditionOrder = new ConditionOrder();
             conditionOrder.setId(null);
             conditionOrder.setConditiontype(SourceConditionDelay.getConditiontype());
             conditionOrder.setConditionid(SourceConditionDelay.getId());
@@ -657,11 +660,43 @@ public class ApicasesController {
         if (apicasesService.forupdateifexist(apicases).size() > 0) {
             return ResultGenerator.genFailedResult("用例名已存在");
         } else {
-            this.apicasesService.updateApicase(apicases);
-            //增加更新条件管理，子条件管理中的用例名
-            testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
-            conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
-            return ResultGenerator.genOkResult();
+            //限制下类型变化，如果已经在对应类型的场景中，就不能改变类型
+            Apicases existapicases = apicasesService.getBy("id", apicases.getId());
+            if (existapicases != null) {
+                if (!apicases.getCasetype().equalsIgnoreCase(existapicases.getCasetype())) {
+                    Condition con = new Condition(TestsceneTestcase.class);
+                    con.createCriteria().andCondition("projectid = " + apicases.getProjectid())
+                            .andCondition("testcaseid = " + apicases.getId());
+                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(con);
+                    boolean flag = false;
+                    String SceneName="";
+                    for (TestsceneTestcase testcase : testsceneTestcaseList) {
+                        Long Sceneid = testcase.getTestscenenid();
+                        Testscene testscene = testsceneService.getBy("id", Sceneid);
+                        if (testscene.getUsetype().equalsIgnoreCase(existapicases.getCasetype())) {
+                            SceneName = testscene.getScenename();
+                            flag = true;
+                        }
+                    }
+                    if (!flag) {
+                        this.apicasesService.updateApicase(apicases);
+                        //增加更新条件管理，子条件管理中的用例名
+                        testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
+                        conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
+                        return ResultGenerator.genOkResult();
+                    } else {
+                        return ResultGenerator.genFailedResult("当前用例类型为：" + existapicases.getCasetype() + ",已在相同类型的测试场景:"+SceneName+" 中存在，请先到测试场景中移除该用例后再尝试修改类型");
+                    }
+                } else {
+                    this.apicasesService.updateApicase(apicases);
+                    //增加更新条件管理，子条件管理中的用例名
+                    testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
+                    conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
+                    return ResultGenerator.genOkResult();
+                }
+            } else {
+                return ResultGenerator.genFailedResult("当前用例已被删除");
+            }
         }
     }
 

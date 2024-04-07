@@ -163,10 +163,13 @@ public class TestPlanCaseController {
                     TestPlanCaseController.log.info("getdispatch获取调度slaverid。。。。。。。。。。。。。。。。：" +slaverid);
                     dispatchList.add(dis);
                 }
-                dispatchMapper.insertBatchDispatch(dispatchList);
-                epb.setSlaverid(slaverid);
-                executeplanbatchService.update(epb);
-                TestPlanCaseController.log.info("测试集合：" + epb.getExecuteplanname() + " 计划：" + epb.getBatchname() + " 成功保存测试场景：" + testscene.getScenename() + " 调度用例条数：" + dispatchList.size());
+                if(dispatchList.size()>0)
+                {
+                    dispatchMapper.insertBatchDispatch(dispatchList);
+                    epb.setSlaverid(slaverid);
+                    executeplanbatchService.update(epb);
+                    TestPlanCaseController.log.info("测试集合：" + epb.getExecuteplanname() + " 计划：" + epb.getBatchname() + " 成功保存测试场景：" + testscene.getScenename() + " 调度用例条数：" + dispatchList.size());
+                }
             }
         }
     }

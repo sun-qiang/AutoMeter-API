@@ -1041,9 +1041,10 @@
         <el-table-column type="selection" prop="status" width="50"/>
         <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="120"/>
         <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="120"/>
-        <el-table-column label="用例名" align="center" prop="casename" width="280"/>
+        <el-table-column label="用例名" align="center" prop="casename" width="250"/>
         <el-table-column label="微服务" align="center" prop="deployunitname" width="180"/>
-        <el-table-column label="API" align="center" prop="apiname" width="280"/>
+        <el-table-column label="API" align="center" prop="apiname" width="250"/>
+        <el-table-column label="类型" align="center" prop="casetype" width="70"/>
       </el-table>
       <el-pagination
         @size-change="addcasehandleSizeChange"
@@ -2227,7 +2228,7 @@
                 <span v-text="debuggetIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column :show-overflow-tooltip="true"  label="调试批次" align="center" prop="batchname" width="80"/>
+            <el-table-column :show-overflow-tooltip="true"  label="调试批次" align="center" prop="batchname" width="210"/>
             <el-table-column label="测试场景" align="center" prop="scenename" width="80"/>
             <el-table-column label="用例名" align="center" prop="casename" width="120"/>
 <!--            <el-table-column label="API" align="center" prop="apiname" width="80"/>-->
@@ -2242,7 +2243,7 @@
 <!--            <el-table-column label="微服务" align="center" prop="deployunitname" width="120"/>-->
 
 
-            <el-table-column :show-overflow-tooltip="true"  label="请求地址" align="center" prop="url" width="180">
+            <el-table-column :show-overflow-tooltip="true"  label="请求地址" align="center" prop="url" width="190">
             </el-table-column>
 
             <el-table-column label="请求头" align="center" prop="requestheader" width="80">
@@ -2301,21 +2302,22 @@
 <!--            </el-table-column>-->
 
             <el-table-column label="运行时间(ms)" align="center" prop="runtime" width="100"/>
-            <el-table-column label="异常信息" align="center" prop="errorinfo" width="80">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>{{ scope.row.errorinfo }}</p>
-                  <div v-if="scope.row.errorinfo !== ''" slot="reference" class="name-wrapper">
-                    <el-tag size="medium" style="color:red">异常...</el-tag>
-                  </div>
-                  <div v-if="scope.row.errorinfo === ''" slot="reference" class="name-wrapper">
-                    <el-tag size="medium" style="color:green">...</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
 
-            <el-table-column label="创建时间" align="center" prop="createTime" width="220">
+<!--            <el-table-column label="异常信息" align="center" prop="errorinfo" width="80">-->
+<!--              <template slot-scope="scope">-->
+<!--                <el-popover trigger="hover" placement="top">-->
+<!--                  <p>{{ scope.row.errorinfo }}</p>-->
+<!--                  <div v-if="scope.row.errorinfo !== ''" slot="reference" class="name-wrapper">-->
+<!--                    <el-tag size="medium" style="color:red">异常...</el-tag>-->
+<!--                  </div>-->
+<!--                  <div v-if="scope.row.errorinfo === ''" slot="reference" class="name-wrapper">-->
+<!--                    <el-tag size="medium" style="color:green">...</el-tag>-->
+<!--                  </div>-->
+<!--                </el-popover>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+
+            <el-table-column label="创建时间" align="center" prop="createTime" width="150">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
             </el-table-column>
           </el-table>
@@ -4115,6 +4117,8 @@ export default {
     },
 
     searchaddcaseBy() {
+      this.addsearchcase.casetype = this.searchcase.casetype
+      this.addsearchcase.creator = this.name
       searchcase(this.addsearchcase).then(response => {
         this.itemaddcaseKey = Math.random()
         this.addtestcaselastList = response.data.list
@@ -4127,7 +4131,7 @@ export default {
       this.tmpaddcaseapiid = this.addsearchcase.apiid
       this.listLoading = false
       this.btnLoading = false
-      this.getaddcasesList()
+      // this.getaddcasesList()
     },
     /**
      * 显示添加测试场景对话框
@@ -4252,6 +4256,7 @@ export default {
      * @param index 测试集合下标
      */
     showtestsceneCaseDialog(index) {
+      this.addtestcaselastList = null
       this.testscenecasedialogFormVisible = true
       this.searchcase.testscenenid = this.testsceneList[index].id
       this.searchcase.testscenenname = this.testsceneList[index].scenename
