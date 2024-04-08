@@ -45,4 +45,9 @@ private TestsceneTestcaseMapper testsceneTestcaseMapper;
     public List<TestsceneTestcase> finddeployunitbyscenenid(long sceneid) {
         return testsceneTestcaseMapper.finddeployunitbyscenenid(sceneid);
     }
+
+    @Override
+    public List<TestsceneTestcase> findcasebyscenenid(long sceneid) {
+        return testsceneTestcaseMapper.findcasebyscenenid(sceneid);
+    }
 }

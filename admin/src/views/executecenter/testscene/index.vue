@@ -2916,10 +2916,10 @@ export default {
             this.tmptestdata.scenename = this.tmpnode.data.label
             runscenetest(this.tmptestdata).then(response => {
               // this.apireportList = response.data.list
+              this.$message.success('调试进行中，可到调试报告中查询结果')
             }).catch(res => {
               this.$message.error('调试失败')
             })
-            this.$message.success('调试进行中，可到调试报告中查询结果')
             console.log('测试场景')
           } else {
             console.log('测试用例-----------------------------------------------')
@@ -2930,6 +2930,7 @@ export default {
             console.log(this.tmptestdata)
             runscenecasetest(this.tmptestdata).then(response => {
               this.apireportList = response.data
+              this.$message.success('调试进行中，可到调试报告中查询结果')
               console.log(response.data)
               this.$message.error(response.data)
             }).catch(res => {
@@ -3047,8 +3048,7 @@ export default {
     searchscenetreedata() {
       searchscenetreedata(this.searchtree).then(response => {
         this.SeceneDebugdata = response.data
-        console.log(11111111111111)
-        console.log(this.SeceneDebugdata)
+        console.log(response.data)
       }).catch(res => {
         this.$message.error('查询条件顺序失败')
       })
@@ -4229,6 +4229,7 @@ export default {
       this.tmpdbcondition.projectid = window.localStorage.getItem('pid')
     },
     async showDebugSceneDialog(index) {
+      this.debugtotal = 0
       this.apireportList = null
       this.tmptest.casename = ''
       this.tmptestdata.enviromentid = ''
@@ -4246,7 +4247,7 @@ export default {
       this.searchtree.scenename = this.testsceneList[index].scenename
       this.searchscenetreedata()
       this.searchcase.testscenenid = this.testsceneList[index].id
-      this.gettestscenecaseList()
+      // this.gettestscenecaseList()
       this.activebbbName = 'xxx'
       this.activeaaaName = 'zero'
       this.DebugScenedialogFormVisible = true

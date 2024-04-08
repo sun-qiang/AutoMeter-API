@@ -18,4 +18,7 @@ public interface TestsceneTestcaseService extends Service<TestsceneTestcase> {
     void updatescenenCaseorder(final long id,long caseorder);
     void updatescenecaselogic(final long id,long loopnums,String stopflag);
     List<TestsceneTestcase> finddeployunitbyscenenid(long sceneid);
+    List<TestsceneTestcase> findcasebyscenenid(long sceneid);
+
+
 }

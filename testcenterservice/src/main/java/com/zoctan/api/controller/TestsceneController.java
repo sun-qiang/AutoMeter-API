@@ -127,10 +127,7 @@ public class TestsceneController {
     public Result searchscenetreedata(@RequestBody final Map<String, Object> param) {
         Long sceneid = Long.parseLong(param.get("sceneid").toString());
         String scenename = param.get("scenename").toString();
-        Condition con = new Condition(Testscene.class);
-        con.createCriteria().andCondition("testscenenid = " + sceneid);
-        con.setOrderByClause("caseorder ASC");
-        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(con);
+        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.findcasebyscenenid(sceneid);
         List<SceneCaseTreeData> sceneCaseTreeDataList=new ArrayList<>();
 
         for (TestsceneTestcase estc:testsceneTestcaseList) {

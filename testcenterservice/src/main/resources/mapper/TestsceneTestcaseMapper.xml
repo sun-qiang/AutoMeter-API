@@ -27,8 +27,8 @@
   </resultMap>
 
   <select id="findCasebyscenenid" resultMap="BaseResultMap">
-    SELECT a.*
-    FROM testscene_testcase a
+    SELECT b.deployunitname,c.casename, a.*
+    FROM testscene_testcase a inner join  deployunit b  inner join apicases c on a.deployunitid=b.id and a.testcaseid=c.id
     <where>
       <if test="deployunitid != null  and deployunitid != ''">and a.deployunitid =#{deployunitid}</if>
       <if test="modelid != null  and modelid != ''">and a.modelid =#{modelid}</if>
@@ -47,6 +47,12 @@
   <select id="finddeployunitbyscenenid" resultMap="BaseResultMap">
     SELECT distinct (deployunitid),deployunitname
     FROM testscene_testcase a where a.testscenenid=#{testscenenid}
+  </select>
+
+  <select id="findcasebyscenenid" resultMap="BaseResultMap">
+    SELECT b.casename,a.*
+    FROM testscene_testcase a INNER JOIN apicases b on a.testcaseid=b.id
+    where a.testscenenid=#{testscenenid} order by a.caseorder ASC
   </select>
 
 

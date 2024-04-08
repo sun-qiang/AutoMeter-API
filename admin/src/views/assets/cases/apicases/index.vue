@@ -2910,6 +2910,7 @@
     },
 
     activated() {
+      this.getapicasesList()
       this.getdepunitLists()
       this.getalltestcondition()
       this.getglobalheaderallList()

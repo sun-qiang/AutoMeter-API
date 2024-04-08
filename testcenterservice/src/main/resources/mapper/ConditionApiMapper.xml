@@ -25,8 +25,8 @@
   </resultMap>
 
   <select id="findtestconditionapiWithName" resultMap="BaseResultMap">
-    SELECT a.*
-    FROM condition_api a
+    SELECT b.deployunitname,c.casename,a.*
+    FROM condition_api a inner join  deployunit b  inner join apicases c on a.deployunitid=b.id and a.caseid=c.id
     <where>
       <if test="conditionname != null and conditionname != ''">a.conditionname like CONCAT('%',#{conditionname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>

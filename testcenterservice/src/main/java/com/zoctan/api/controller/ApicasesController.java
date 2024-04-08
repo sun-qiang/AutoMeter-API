@@ -894,6 +894,17 @@ public class ApicasesController {
         Long projectid = Long.parseLong(param.get("projectid").toString());
         Long globalheaderid = Long.parseLong(param.get("globalheaderid").toString());
 
+
+        Condition scenecon = new Condition(Apicases.class);
+        scenecon.createCriteria().andCondition("projectid = " + projectid)
+                .andCondition("testscenenid = " + sceneid);
+        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
+
+        if(testsceneTestcaseList.size()==0)
+        {
+            return ResultGenerator.genFailedResult("当前测试场景下无测试用例，请先装载用例后再调试！");
+        }
+
         //先获取场景的前置结果
         HashMap<String, String> SceneParamsValuesMap = new HashMap<>();
         HashMap<String, String> SceneDBParamsValuesMap = new HashMap<>();
@@ -922,10 +933,6 @@ public class ApicasesController {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         String batchname = scenename + "-" + dateFormat.format(date);
 
-        Condition scenecon = new Condition(Apicases.class);
-        scenecon.createCriteria().andCondition("projectid = " + projectid)
-                .andCondition("testscenenid = " + sceneid);
-        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
 
         for (TestsceneTestcase te : testsceneTestcaseList) {
             Long Caseid = te.getTestcaseid();
