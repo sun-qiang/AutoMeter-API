@@ -1256,11 +1256,13 @@ public class ApicasesController {
         HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
 
         String Respone = "";
-        HashMap<String, Long> debugmap = new HashMap<>();
-        debugmap.put("apicaseid", Caseid);
+        HashMap<String, Object> debugmap = new HashMap<>();
+        debugmap.put("conditionid", Caseid);
         debugmap.put("enviromentid", Long.parseLong(enviromentid));
+        debugmap.put("conditiontype", "case");
 
-        String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+
+        String ConditionServerurl = conditionserver + "/testcondition/execdebugcondition";
         HttpHeader header1 = new HttpHeader();
         String debugparams = JSON.toJSONString(debugmap);
         try {
@@ -1554,11 +1556,13 @@ public class ApicasesController {
         HashMap<String, String> ScriptParamsValuesMap = new HashMap<>();
 
         String Respone = "";
-        HashMap<String, Long> debugmap = new HashMap<>();
-        debugmap.put("apicaseid", Caseid);
+        HashMap<String, Object> debugmap = new HashMap<>();
+        debugmap.put("conditionid", Caseid);
         debugmap.put("enviromentid", Long.parseLong(enviromentid));
+        debugmap.put("conditiontype", "case");
 
-        String ConditionServerurl = conditionserver + "/testcondition/execcasedebugcondition";
+
+        String ConditionServerurl = conditionserver + "/testcondition/execdebugcondition";
         HttpHeader header1 = new HttpHeader();
         String debugparams = JSON.toJSONString(debugmap);
         try {
