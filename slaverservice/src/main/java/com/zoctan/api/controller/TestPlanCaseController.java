@@ -375,51 +375,6 @@ public class TestPlanCaseController {
             TestPlanCaseController.log.info("调用JmeterCMD异常：。。。。。。。。" + ex.getMessage());
             return ResultGenerator.genFailedResult(ex.getMessage());
         }
-//            TestPlanCaseController.log.info("功能任务-获取待执行的功能用例数：。。。。。。。。。。。。。。。。。。。。。。。。" + dispatchList.size());
-//            int FunctionJmeter = 1;// GetJmeterProcess("FunctionJmeterProcess", "功能");
-//            HashMap<String, List<Dispatch>> ProtocolDispatchRun = GetProtocolDispatch(dispatchList);
-//            for (String Protocol : ProtocolDispatchRun.keySet()) {
-//                int ProtocolJmeterNum = 0;
-//                if (FunctionJmeter == 1) {
-//                    ProtocolJmeterNum = 1;
-//                } else {
-//                    ProtocolJmeterNum = FunctionJmeter / ProtocolDispatchRun.size();
-//                }
-//                TestPlanCaseController.log.info("功能任务-ProtocolJmeterNum：。。。。。。。。" + ProtocolJmeterNum);
-//                List<List<Dispatch>> last = FunctionDispatch(ProtocolJmeterNum, ProtocolDispatchRun.get(Protocol));
-//                if (Protocol.equalsIgnoreCase("http") || Protocol.equalsIgnoreCase("https")) {
-//                    for (int i = 0; i < last.size(); i++) {
-//                        List<Dispatch> JmeterList = last.get(i);
-//                        String DispatchIDs = "";
-//                        for (Dispatch dis : JmeterList) {
-//                            DispatchIDs = DispatchIDs + dis.getId() + ",";
-//                        }
-//                        if (!DispatchIDs.isEmpty()) {
-//                            DispatchIDs = DispatchIDs.substring(0, DispatchIDs.length() - 1);
-//                            TestPlanCaseController.log.info("功能任务-DispatchIDs:=======================" + DispatchIDs);
-//                            try {
-//                                tpcservice.ExecuteHttpPlanFunctionCase(SlaverId, JmeterPath, JmxPath, DispatchIDs, url, username, password, i);
-//                                for (Dispatch dis : JmeterList) {
-//                                    dispatchMapper.updatedispatchstatus("已分配", dis.getSlaverid(), dis.getExecplanid(), dis.getBatchid(), dis.getTestcaseid());
-//                                    TestPlanCaseController.log.info("功能任务-更新调度状态为已分配：。。。。。。。。" + dis.getId());
-//                                }
-//                                slaverMapper.updateSlaverStaus(SlaverId, "运行中");
-//                            } catch (Exception ex) {
-//                                TestPlanCaseController.log.info("调用JmeterCMD异常：。。。。。。。。" + ex.getMessage());
-//                            }
-//                        }
-//                    }
-//                }
-//                if (Protocol.equals(new String("rpc"))) {
-//                    String JmeterClassName = "";
-//                    String DeployUnitNameForJmeter = "";
-//                }
-//            }
-//        } catch (Exception ex) {
-//            slaverMapper.updateSlaverStaus(SlaverId, "空闲");
-//            TestPlanCaseController.log.error("功能任务-execfunctiontest 异常:=======================" + ex.getMessage());
-//            return ResultGenerator.genFailedResult(ex.getMessage());
-//        }
         return ResultGenerator.genOkResult();
     }
 

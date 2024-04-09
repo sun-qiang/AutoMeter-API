@@ -71,44 +71,45 @@ public class TestPlanCaseController {
         String batchname = planbatch.getBatchname();
         Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
         if (ep == null) {
-            return ResultGenerator.genOkResult("未找到此测试集合：" + execplanid);
+            throw new Exception("未找到此测试集合：" + execplanid);
         }
-        HashMap<String, Object> sceneparams = new HashMap<>();
-        sceneparams.put("testplanid", execplanid);
-        List<TestplanTestscene> testplanTestsceneList = testplanTestsceneMapper.findscenebyexecplanid(sceneparams);
-        List<Executeplanbatch> executeplanbatchList = new ArrayList<>();
-        for (TestplanTestscene testscene : testplanTestsceneList) {
-            Executeplanbatch newplanbatch = new Executeplanbatch();
-            newplanbatch.setId(null);
-            long testsceneid = testscene.getTestscenenid();
-            String testscenename = testscene.getScenename();
-            newplanbatch.setStatus("初始");
-            newplanbatch.setSource("平台");
-            newplanbatch.setSceneid(testsceneid);
-            newplanbatch.setScenename(testscenename);
-            newplanbatch.setExectype(planbatch.getExectype());
-            newplanbatch.setExecdate(planbatch.getExecdate());
-            newplanbatch.setSlaverid(planbatch.getSlaverid());
-            newplanbatch.setProjectid(planbatch.getProjectid());
-            newplanbatch.setCreator(planbatch.getCreator());
-            newplanbatch.setBatchname(planbatch.getBatchname());
-            newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
-            newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
-            newplanbatch.setCreateTime(new Date());
-            newplanbatch.setLastmodifyTime(new Date());
-            executeplanbatchList.add(newplanbatch);
-        }
-        executeplanbatchService.save(executeplanbatchList);
         //如果有空闲更佳，可以优化
         List<Slaver> slaverlist = slaverMapper.findslaveralive(ep.getUsetype(), "已下线");
-
         //增加检测slaver是否正常，在salver的control做个检测的请求返回
         //slaverlist=GetAliveSlaver(slaverlist);
         if (slaverlist.size() == 0) {
             TestPlanCaseController.log.info("没有类型" + ep.getUsetype() + "的可用的执行机，请检查slaverservice是否在运行");
-            return ResultGenerator.genOkResult("没有类型" + ep.getUsetype() + "的可用的执行机，请检查slaverservice是否在运行");
+            throw new Exception("没有类型" + ep.getUsetype() + "的可用的执行机，请检查slaverservice是否在运行");
         } else {
+            //save batch
+            HashMap<String, Object> sceneparams = new HashMap<>();
+            sceneparams.put("testplanid", execplanid);
+            List<TestplanTestscene> testplanTestsceneList = testplanTestsceneMapper.findscenebyexecplanid(sceneparams);
+            List<Executeplanbatch> executeplanbatchList = new ArrayList<>();
+            for (TestplanTestscene testscene : testplanTestsceneList) {
+                Executeplanbatch newplanbatch = new Executeplanbatch();
+                newplanbatch.setId(null);
+                long testsceneid = testscene.getTestscenenid();
+                String testscenename = testscene.getScenename();
+                newplanbatch.setStatus("初始");
+                newplanbatch.setSource(planbatch.getSource());
+                newplanbatch.setSceneid(testsceneid);
+                newplanbatch.setScenename(testscenename);
+                newplanbatch.setExectype(planbatch.getExectype());
+                newplanbatch.setExecdate(planbatch.getExecdate());
+                newplanbatch.setSlaverid(planbatch.getSlaverid());
+                newplanbatch.setProjectid(planbatch.getProjectid());
+                newplanbatch.setCreator(planbatch.getCreator());
+                newplanbatch.setBatchname(planbatch.getBatchname());
+                newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
+                newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
+                newplanbatch.setCreateTime(new Date());
+                newplanbatch.setLastmodifyTime(new Date());
+                executeplanbatchList.add(newplanbatch);
+            }
+            executeplanbatchService.save(executeplanbatchList);
 
+            //save dispatch
             if (ep.getUsetype().equals("功能")) {
                 if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
                     List<Slaver> singleslaverlist = new ArrayList<>();

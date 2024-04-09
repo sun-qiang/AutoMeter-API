@@ -136,30 +136,31 @@ public class FunctionDispatchScheduleTask {
                                                 FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
                                                 HttpHeader header = new HttpHeader();
                                                 String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
-                                                String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                                String respon="";
+                                                try
+                                                {
+                                                    respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    //补偿
+                                                    FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============请求slaver地址: "+ServerUrl+" 响应结果异常：" + respon+" 开始补偿。。。");
+                                                    //CompensateAfterFail(dispatch, PlanID, SlaverDispathcList);
+                                                }
                                                 FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============请求slaver响应结果：" + respon);
-//                                                if (respon.contains("未找到IP为")) {
-//                                                    throw new Exception(respon);
-//                                                }
-//                                                if (!respon.contains("\"code\":200")) {
-//                                                    //更新batch异常信息
+//
+//                                                if (respon.contains("\"code\":200")) {
+//                                                    //更新batch状态为待执行
+//                                                    for (Executeplanbatch exp : tmpmap.get(Slaverid)) {
+//                                                        exp.setStatus("待执行");
+//                                                        executeplanbatchService.update(exp);
+//                                                    }
+//                                                } else {
 //                                                    for (Executeplanbatch exp : tmpmap.get(Slaverid)) {
 //                                                        exp.setMemo("执行机" + slaver.getSlavername() + "异常:" + respon);
 //                                                        executeplanbatchService.update(exp);
 //                                                    }
 //                                                }
-                                                if (respon.contains("\"code\":200")) {
-                                                    //更新batch状态为待执行
-                                                    for (Executeplanbatch exp : tmpmap.get(Slaverid)) {
-                                                        exp.setStatus("待执行");
-                                                        executeplanbatchService.update(exp);
-                                                    }
-                                                } else {
-                                                    for (Executeplanbatch exp : tmpmap.get(Slaverid)) {
-                                                        exp.setMemo("执行机" + slaver.getSlavername() + "异常:" + respon);
-                                                        executeplanbatchService.update(exp);
-                                                    }
-                                                }
                                             }
                                         } else {
                                             //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败

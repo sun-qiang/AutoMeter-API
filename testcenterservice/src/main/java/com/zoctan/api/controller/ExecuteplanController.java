@@ -45,6 +45,10 @@ public class ExecuteplanController {
     @Autowired
     private TestsceneTestcaseService testsceneTestcaseService;
 
+
+    @Autowired
+    private ExecuteplanbatchService executeplanbatchService;
+
     @PostMapping
     public Result add(@RequestBody Executeplan executeplan) {
         Condition con = new Condition(Executeplan.class);
@@ -73,8 +77,18 @@ public class ExecuteplanController {
     public Result execcases(@RequestBody final List<Executeplanbatch> planbatchList) {
         //暂时支持单计划执行
         try {
-            executeplanService.executeplancase(planbatchList, "立即执行");
-            return ResultGenerator.genOkResult();
+            Condition con=new Condition(Executeplanbatch.class);
+            con.createCriteria().andCondition("projectid = "+planbatchList.get(0).getProjectid())
+                    .andCondition("batchname = '" + planbatchList.get(0).getBatchname() + "'")
+                    .andCondition("executeplanid = " + planbatchList.get(0).getExecuteplanid());
+            if(executeplanbatchService.ifexist(con)>0)
+            {
+                return ResultGenerator.genFailedResult("该测试集合已存在此执行计划");
+            } else
+            {
+                executeplanService.executeplancase(planbatchList, "立即执行");
+                return ResultGenerator.genOkResult();
+            }
         } catch (ServiceException se) {
             return ResultGenerator.genFailedResult(se.getMessage());
         }

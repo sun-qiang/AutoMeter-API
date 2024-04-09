@@ -134,22 +134,17 @@ public class ExecuteplanbatchController {
                 return ResultGenerator.genFailedResult("该执行计划下已经存在此批次");
             }
             else {
-                executeplanbatch.setStatus("待执行");
-                executeplanbatch.setSource(Source);
-                executeplanbatch.setBatchname(BatchName);
-                executeplanbatch.setExecuteplanid(PlanID);
-                executeplanbatch.setExecuteplanname(TestPlanName);
-                executeplanbatch.setProjectid(ProjectId);
-                executeplanbatch.setExectype("立即执行");
-                executeplanbatch.setExecdate(":00");
-                executeplanbatch.setCreator("CI");
-                executeplanbatchService.save(executeplanbatch);
-
-                List<Testplanandbatch> list=new ArrayList<>();
                 Testplanandbatch testplanandbatch = new Testplanandbatch();
                 testplanandbatch.setBatchname(BatchName);
                 testplanandbatch.setPlanid(PlanID);
-                list.add(testplanandbatch);
+                testplanandbatch.setSource(Source);
+                testplanandbatch.setBatchname(BatchName);
+                testplanandbatch.setExecuteplanid(PlanID);
+                testplanandbatch.setExecuteplanname(TestPlanName);
+                testplanandbatch.setProjectid(ProjectId);
+                testplanandbatch.setExectype("立即执行");
+                testplanandbatch.setExecdate(":00");
+                testplanandbatch.setCreator("CI");
                 executeplanService.execcase(testplanandbatch);
                 return ResultGenerator.genOkResult();
             }

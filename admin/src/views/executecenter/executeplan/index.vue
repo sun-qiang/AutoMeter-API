@@ -4607,7 +4607,6 @@
               this.tmpplanbatch.execdate = this.tmpplanbatch.exectime + ':00'
             }
             this.executeplancase()
-            this.batchdialogFormVisible = false
             // addexecuteplanbatch(this.tmpplanbatch).then(() => {
             //   this.executeplancase()
             //   this.batchdialogFormVisible = false
@@ -4656,17 +4655,20 @@
                     'projectid': this.tmpplanbatch.projectid,
                     'exectime': this.tmpplanbatch.exectime,
                     'executeplanid': this.tmpplanbatch.executeplanid,
-                    'exectmpdate': this.tmpplanbatch.exectmpdate
+                    'exectmpdate': this.tmpplanbatch.exectmpdate,
+                    'source': '平台'
                   })
                 }
                 executeplan(this.tmpplanbatchList).then(() => {
                   this.$message.success('测试集合已经提交，即将开始执行')
+                  this.batchdialogFormVisible = false
+                  this.getexecuteplanList()
                 }).catch(res => {
+                  this.batchdialogFormVisible = true
                   this.$message.error('执行测试集合失败')
                 })
               }
             }
-            this.getexecuteplanList()
           }
         })
       },
