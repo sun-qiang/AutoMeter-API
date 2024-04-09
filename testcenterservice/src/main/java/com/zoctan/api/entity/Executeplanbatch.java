@@ -70,6 +70,17 @@ public class Executeplanbatch {
      */
     private String status;
 
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    private String memo;
+
+
     private String source;
 
     public String getExecuteplanname() {

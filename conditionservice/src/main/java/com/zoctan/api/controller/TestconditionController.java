@@ -178,6 +178,7 @@ public class TestconditionController {
         int DelayConditionNUms = conditionDelayList.size();
         int SubConditionNums = ApiConditionNums + DelayConditionNUms + DBConditionNUms + ScriptConditionNUms;
 
+        //条件报告中生成总数既可，不再要求全部是成功
         List<TestconditionReport> successtestconditionReportList = testconditionReportService.getsubconditionnumswithstatus(Planid, Batchname, "已完成", "成功");
         if (successtestconditionReportList.size() == SubConditionNums) {
             TestconditionController.log.info("调度服务【功能】条件报告已成功完成成功的数量: " + successtestconditionReportList.size() + "  条件总条数：" + SubConditionNums);

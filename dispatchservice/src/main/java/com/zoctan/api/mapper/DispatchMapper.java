@@ -33,11 +33,15 @@ public interface DispatchMapper extends MyMapper<Dispatch> {
 
 
     List<Dispatch> getdispatchsbyslaverid(@Param("slaverid") Long slaverid, @Param("status") String status, @Param("plantype") String plantype);
+    List<Dispatch> getdispatchsbypbssid( @Param("slaverid") Long slaverid, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
 
 
     void updatedispatchstatusandmemo(@Param("status") String status, @Param("memo") String memo, @Param("slaverid") Long slaverid, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid, @Param("testcaseid") Long testcaseid);
 
-    void updatedispatchfail(@Param("status") String status, @Param("memo") String memo, @Param("slaverid") Long slaverid, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid);
+    void updatedispatchfail(@Param("status") String status, @Param("memo") String memo, @Param("slaverid") Long slaverid, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
+
+    void updatedispatchnewslaver( @Param("memo") String memo,@Param("slaverid") Long slaverid, @Param("slaverid") Long newslaverid,@Param("slavername") String slavername, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
+
 
 
     void updatedispatchstatusbyplanandbatch(@Param("status") String status, @Param("execplanid") Long execplanid, @Param("batchname") String batchname);

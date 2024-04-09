@@ -48,32 +48,33 @@ public class ExecuteplanbatchController {
 
     @PostMapping
     public Result add(@RequestBody Executeplanbatch executeplanbatch) {
-        Condition con=new Condition(Executeplanbatch.class);
-        con.createCriteria().andCondition("projectid = "+executeplanbatch.getProjectid())
-                .andCondition("batchname = '" + executeplanbatch.getBatchname().replace("'","''") + "'")
-                .andCondition("executeplanid = " + executeplanbatch.getExecuteplanid());
-        if(executeplanbatchService.ifexist(con)>0)
-        {
-            return ResultGenerator.genFailedResult("该测试集合下已经存在此执行计划");
-        }
-        else {
-            Long execplanid = executeplanbatch.getExecuteplanid();
-            Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
-            String plantype=ep.getUsetype();
-            List<Slaver> slaverlist=slaverMapper.findslaveralive(plantype,"已下线");
-            //slaverlist=GetAliveSlaver(slaverlist);
-            if(slaverlist.size()>0)
-            {
-                executeplanbatch.setStatus("待执行");
-                executeplanbatch.setSource("平台");
-                executeplanbatchService.save(executeplanbatch);
-                return ResultGenerator.genOkResult();
-            }
-            else
-            {
-                return ResultGenerator.genFailedResult("未找到可用的"+plantype+"类型的执行机，请到调度中心-测试执行机查看是否有类型为"+plantype+"的执行机，并且不是已下线状态");
-            }
-        }
+        return ResultGenerator.genOkResult();
+//        Condition con=new Condition(Executeplanbatch.class);
+//        con.createCriteria().andCondition("projectid = "+executeplanbatch.getProjectid())
+//                .andCondition("batchname = '" + executeplanbatch.getBatchname().replace("'","''") + "'")
+//                .andCondition("executeplanid = " + executeplanbatch.getExecuteplanid());
+//        if(executeplanbatchService.ifexist(con)>0)
+//        {
+//            return ResultGenerator.genFailedResult("该测试集合下已经存在此执行计划");
+//        }
+//        else {
+//            Long execplanid = executeplanbatch.getExecuteplanid();
+//            Executeplan ep = executeplanMapper.findexplanWithid(execplanid);
+//            String plantype=ep.getUsetype();
+//            List<Slaver> slaverlist=slaverMapper.findslaveralive(plantype,"已下线");
+//            //slaverlist=GetAliveSlaver(slaverlist);
+//            if(slaverlist.size()>0)
+//            {
+//                executeplanbatch.setStatus("待执行");
+//                executeplanbatch.setSource("平台");
+//                executeplanbatchService.save(executeplanbatch);
+//                return ResultGenerator.genOkResult();
+//            }
+//            else
+//            {
+//                return ResultGenerator.genFailedResult("未找到可用的"+plantype+"类型的执行机，请到调度中心-测试执行机查看是否有类型为"+plantype+"的执行机，并且不是已下线状态");
+//            }
+//        }
     }
 
     public List<Slaver> GetAliveSlaver(List<Slaver> SlaverList)

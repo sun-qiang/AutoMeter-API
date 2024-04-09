@@ -19,6 +19,7 @@
     <result column="execdate" jdbcType="VARCHAR" property="execdate" />
     <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
   </resultMap>
 
   <select id="getbatchbyplan" resultMap="BaseResultMap">

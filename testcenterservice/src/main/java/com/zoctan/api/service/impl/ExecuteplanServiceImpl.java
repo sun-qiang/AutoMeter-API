@@ -94,7 +94,6 @@ public class ExecuteplanServiceImpl extends AbstractService<Executeplan> impleme
         HttpHeader header = new HttpHeader();
         String DispatchServerurl = dispatchserver + "/exectestplancase/exec";
         String plantype = ep.getUsetype();
-        //List<Slaver> slaverlist = slaverMapper.findslaverWithType(plantype);
         List<Slaver> slaverlist = slaverMapper.findslaveralive(plantype, "已下线");
         //slaverlist = GetAliveSlaver(slaverlist);
         if (slaverlist.size() == 0) {

@@ -101,6 +101,7 @@ public class TestPlanCaseController {
                 newplanbatch.setProjectid(planbatch.getProjectid());
                 newplanbatch.setCreator(planbatch.getCreator());
                 newplanbatch.setBatchname(planbatch.getBatchname());
+                newplanbatch.setMemo("");
                 newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
                 newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
                 newplanbatch.setCreateTime(new Date());
