@@ -115,7 +115,7 @@ public class CheckPerformanceSlaverAliveScheduleTask {
     private void CompensateAfterFail(String ErrorMessage, Dispatch dispatch, Long PlanID, List<Dispatch> SlaverDispathcList) {
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
-            dispatchMapper.updatedispatchfail("调度失败", ErrorMessage, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid());
+            //dispatchMapper.updatedispatchfail("调度失败", ErrorMessage, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid());
         } else {
             Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
             if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
