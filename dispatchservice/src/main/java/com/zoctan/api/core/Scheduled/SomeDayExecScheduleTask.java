@@ -156,15 +156,15 @@ public class SomeDayExecScheduleTask {
                                                 }
                                             } else {
                                                 //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                                retry(PlanID,tmpmap.get(slaverid));
+                                                retry(PlanID, tmpmap.get(slaverid));
                                             }
                                         } else {
                                             //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                            retry(PlanID,tmpmap.get(slaverid));
+                                            retry(PlanID, tmpmap.get(slaverid));
                                         }
                                     } catch (Exception ex) {
                                         //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                        retry(PlanID,tmpmap.get(slaverid));
+                                        retry(PlanID, tmpmap.get(slaverid));
                                         SomeDayExecScheduleTask.log.info("【某天定时执行任务】请求执行服务异常：" + ex.getMessage());
                                     }
                                 }
@@ -212,24 +212,22 @@ public class SomeDayExecScheduleTask {
         return respone;
     }
 
-    private void retry(long PlanID,List<Executeplanbatch> executeplanbatchList) throws InterruptedException {
+    private void retry(long PlanID, List<Executeplanbatch> executeplanbatchList) throws InterruptedException {
         int trynums = 0;
-        boolean flag=CompensateAfterFail(PlanID, executeplanbatchList);
-        while (!flag)
-        {
+        boolean flag = CompensateAfterFail(PlanID, executeplanbatchList);
+        while (!flag) {
             trynums++;
-            SomeDayExecScheduleTask.log.info("【某天定时执行任务】测试定时器-============retry CompensateAfterFail 次数："+ trynums);
-            flag=CompensateAfterFail(PlanID, executeplanbatchList);
+            SomeDayExecScheduleTask.log.info("【某天定时执行任务】测试定时器-============retry CompensateAfterFail 次数：" + trynums);
+            flag = CompensateAfterFail(PlanID, executeplanbatchList);
             Thread.sleep(30000);
-            if(trynums==10)
-            {
-                flag=true;
+            if (trynums == 10) {
+                flag = true;
             }
         }
     }
 
     private boolean CompensateAfterFail(Long PlanID, List<Executeplanbatch> executeplanbatchList) {
-        boolean fixflag=true;
+        boolean fixflag = true;
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
             for (Executeplanbatch ex : executeplanbatchList) {
@@ -240,9 +238,8 @@ public class SomeDayExecScheduleTask {
             }
             SomeDayExecScheduleTask.log.info("【某天定时执行任务】补偿处理，未找到任何可访问的功能执行机，已将执行计划，调度用例都更新为失败状态，请检查slaverservice是否启动。。。。。。。。。。。。。。。。。。。。");
         } else {
-            for (Slaver slaveridel:allliveslaver) {
-                if(slaveridel.getStatus().equalsIgnoreCase("空闲"))
-                {
+            for (Slaver slaveridel : allliveslaver) {
+                if (slaveridel.getStatus().equalsIgnoreCase("空闲")) {
                     SomeDayExecScheduleTask.log.info("【某天定时执行任务】补偿处理，发现有可用的slaver，开始重新分配待下一轮尝试执行。。。。。。。。。。。");
                     Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
                     if (ep != null) {
@@ -279,11 +276,10 @@ public class SomeDayExecScheduleTask {
                             }
                         }
                     }
-                    fixflag=true;
+                    fixflag = true;
                     break;
-                }else
-                {
-                    fixflag=false;
+                } else {
+                    fixflag = false;
                 }
             }
         }

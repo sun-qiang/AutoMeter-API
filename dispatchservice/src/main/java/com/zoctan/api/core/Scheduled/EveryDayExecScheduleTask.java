@@ -149,7 +149,7 @@ public class EveryDayExecScheduleTask {
                                                 String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
                                                 EveryDayExecScheduleTask.log.info("【每天定时执行任务】测试定时器-============请求slaver响应结果：" + respon);
                                                 if (respon.contains("\"code\":200")) {
-                                                    generaltomorow(tmpmap.get(Slaverid),MonthData,HourData,MinitesData);
+                                                    generaltomorow(tmpmap.get(Slaverid), MonthData, HourData, MinitesData);
                                                 } else {
                                                     for (Executeplanbatch ex : tmpmap.get(Slaverid)) {
                                                         ex.setStatus("已停止");
@@ -160,15 +160,15 @@ public class EveryDayExecScheduleTask {
                                                 }
                                             } else {
                                                 //slaver已下线或者进行中尝试补偿到其他的slaver并且执行
-                                                retry(PlanID,tmpmap.get(slaverid),MonthData,HourData,MinitesData);
+                                                retry(PlanID, tmpmap.get(slaverid), MonthData, HourData, MinitesData);
                                             }
                                         } else {
                                             //slaver被删除尝试补偿到其他的slaver并且执行
-                                            retry(PlanID,tmpmap.get(slaverid),MonthData,HourData,MinitesData);
+                                            retry(PlanID, tmpmap.get(slaverid), MonthData, HourData, MinitesData);
                                         }
                                     } catch (Exception ex) {
                                         //请求slaverservice异常，尝试补偿到其他的slaver并且执行
-                                        retry(PlanID,tmpmap.get(slaverid),MonthData,HourData,MinitesData);
+                                        retry(PlanID, tmpmap.get(slaverid), MonthData, HourData, MinitesData);
                                         EveryDayExecScheduleTask.log.info("【每天定时执行任务】测试定时器请求执行服务异常：" + ex.getMessage());
                                     }
                                 }
@@ -198,8 +198,7 @@ public class EveryDayExecScheduleTask {
     }
 
 
-    private void generaltomorow(List<Executeplanbatch>executeplanbatchList,String MonthData,String HourData,String MinitesData)
-    {
+    private void generaltomorow(List<Executeplanbatch> executeplanbatchList, String MonthData, String HourData, String MinitesData) {
         for (Executeplanbatch exp : executeplanbatchList) {
             //复制生成明天的exeplanbatch
             Executeplanbatch executeplanbatch1 = new Executeplanbatch();
@@ -217,18 +216,16 @@ public class EveryDayExecScheduleTask {
         }
     }
 
-    private void retry(long PlanID,List<Executeplanbatch> executeplanbatchList,String MonthData,String HourData,String MinitesData) throws InterruptedException {
+    private void retry(long PlanID, List<Executeplanbatch> executeplanbatchList, String MonthData, String HourData, String MinitesData) throws InterruptedException {
         int trynums = 0;
-        boolean flag=CompensateAfterFail(PlanID, executeplanbatchList,MonthData,HourData,MinitesData);
-        while (!flag)
-        {
+        boolean flag = CompensateAfterFail(PlanID, executeplanbatchList, MonthData, HourData, MinitesData);
+        while (!flag) {
             trynums++;
-            EveryDayExecScheduleTask.log.info("【每天定时执行任务】测试定时器-============retry CompensateAfterFail 次数："+ trynums);
-            flag=CompensateAfterFail(PlanID, executeplanbatchList,MonthData,HourData,MinitesData);
+            EveryDayExecScheduleTask.log.info("【每天定时执行任务】测试定时器-============retry CompensateAfterFail 次数：" + trynums);
+            flag = CompensateAfterFail(PlanID, executeplanbatchList, MonthData, HourData, MinitesData);
             Thread.sleep(30000);
-            if(trynums==10)
-            {
-                flag=true;
+            if (trynums == 10) {
+                flag = true;
             }
         }
     }
@@ -251,8 +248,8 @@ public class EveryDayExecScheduleTask {
         return respone;
     }
 
-    private boolean CompensateAfterFail(Long PlanID, List<Executeplanbatch> executeplanbatchList,String MonthData,String HourData,String MinitesData) {
-        boolean fixflag=true;
+    private boolean CompensateAfterFail(Long PlanID, List<Executeplanbatch> executeplanbatchList, String MonthData, String HourData, String MinitesData) {
+        boolean fixflag = true;
         List<Slaver> allliveslaver = GetAllAliveSlaver();
         if (allliveslaver.size() == 0) {
             for (Executeplanbatch ex : executeplanbatchList) {
@@ -263,9 +260,8 @@ public class EveryDayExecScheduleTask {
             }
             EveryDayExecScheduleTask.log.info("【立即执行功能】补偿处理，未找到任何可访问的功能执行机，已将执行计划，调度用例都更新为失败状态，请检查slaverservice是否启动。。。。。。。。。。。。。。。。。。。。");
         } else {
-            for (Slaver slaveridel:allliveslaver) {
-                if(slaveridel.getStatus().equalsIgnoreCase("空闲"))
-                {
+            for (Slaver slaveridel : allliveslaver) {
+                if (slaveridel.getStatus().equalsIgnoreCase("空闲")) {
                     EveryDayExecScheduleTask.log.info("【每天定时执行任务】补偿处理，发现有可用的slaver，开始重新分配待下一轮尝试执行。。。。。。。。。。。");
                     Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
                     if (ep != null) {
@@ -285,7 +281,7 @@ public class EveryDayExecScheduleTask {
                         try {
                             String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
                             if (respon.contains("\"code\":200")) {
-                               generaltomorow(executeplanbatchList,MonthData,HourData,MinitesData);
+                                generaltomorow(executeplanbatchList, MonthData, HourData, MinitesData);
                             } else {
                                 for (Executeplanbatch ex : executeplanbatchList) {
                                     ex.setStatus("已停止");
@@ -304,11 +300,10 @@ public class EveryDayExecScheduleTask {
                             }
                         }
                     }
-                    fixflag=true;
+                    fixflag = true;
                     break;
-                }else
-                {
-                    fixflag=false;
+                } else {
+                    fixflag = false;
                 }
             }
         }

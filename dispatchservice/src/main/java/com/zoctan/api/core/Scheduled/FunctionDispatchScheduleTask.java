@@ -142,9 +142,9 @@ public class FunctionDispatchScheduleTask {
                                                     if (!respon.contains("\"code\":200")) {
                                                         for (Executeplanbatch ex : tmpmap.get(Slaverid)) {
                                                             ex.setStatus("已停止");
-                                                            ex.setMemo("请求slaverservice执行任务异常："+respon);
+                                                            ex.setMemo("请求slaverservice执行任务异常：" + respon);
                                                             executeplanbatchService.update(ex);
-                                                            dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常："+respon, ex.getSlaverid(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                                                            dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常：" + respon, ex.getSlaverid(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
                                                         }
                                                     }
                                                 } catch (Exception ex) {
@@ -210,11 +210,29 @@ public class FunctionDispatchScheduleTask {
             if (ep != null) {
                 //if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
                 FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，发现有可用的slaver，开始重新分配，。。。。。。。。。。。分配到新的slaver：" + allliveslaver.get(0).getSlavername());
-                for (Executeplanbatch ex : executeplanbatchList) {
-                    ex.setSlaverid(allliveslaver.get(0).getId());
-                    ex.setMemo("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行");
-                    executeplanbatchService.update(ex);
-                    dispatchMapper.updatedispatchnewslaver("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行", ex.getSlaverid(), allliveslaver.get(0).getId(), allliveslaver.get(0).getSlavername(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                boolean idelflag = false;
+                //优先找空闲的slaver
+                for (Slaver slaveridel : allliveslaver) {
+                    if (!idelflag) {
+                        if (slaveridel.getStatus().equalsIgnoreCase("空闲")) {
+                            for (Executeplanbatch ex : executeplanbatchList) {
+                                ex.setSlaverid(slaveridel.getId());
+                                ex.setMemo("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + slaveridel.getSlavername() + "，待下一次运行");
+                                executeplanbatchService.update(ex);
+                                dispatchMapper.updatedispatchnewslaver("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + slaveridel.getSlavername() + "，待下一次运行", ex.getSlaverid(), slaveridel.getId(), slaveridel.getSlavername(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                            }
+                            idelflag = true;
+                        }
+                    }
+                }
+                //没有空闲的slaver，只能给一个在线的slaver
+                if (!idelflag) {
+                    for (Executeplanbatch ex : executeplanbatchList) {
+                        ex.setSlaverid(allliveslaver.get(0).getId());
+                        ex.setMemo("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行");
+                        executeplanbatchService.update(ex);
+                        dispatchMapper.updatedispatchnewslaver("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行", ex.getSlaverid(), allliveslaver.get(0).getId(), allliveslaver.get(0).getSlavername(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                    }
                 }
                 FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，重新分配完成。。。。。。。。。。。" + allliveslaver.get(0).getSlavername());
                 //}
