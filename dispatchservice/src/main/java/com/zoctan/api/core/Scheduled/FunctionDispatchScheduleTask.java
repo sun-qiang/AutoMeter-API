@@ -139,6 +139,14 @@ public class FunctionDispatchScheduleTask {
                                                 String respon = "";
                                                 try {
                                                     respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                                    if (!respon.contains("\"code\":200")) {
+                                                        for (Executeplanbatch ex : tmpmap.get(Slaverid)) {
+                                                            ex.setStatus("已停止");
+                                                            ex.setMemo("请求slaverservice执行任务异常："+respon);
+                                                            executeplanbatchService.update(ex);
+                                                            dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常："+respon, ex.getSlaverid(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                                                        }
+                                                    }
                                                 } catch (Exception ex) {
                                                     //slaver不可用，补偿到其他slaver
                                                     FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============请求slaver地址: " + ServerUrl + " 响应结果异常：" + respon + " 开始补偿。。。");
@@ -151,7 +159,7 @@ public class FunctionDispatchScheduleTask {
                                                 CompensateAfterFail(PlanID, tmpmap.get(slaverid));
                                             }
                                             if (slaver.getStatus().equals("运行中")) {
-                                                FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============请求的slaver在运行中，待下一次尝试请求此slaver" );
+                                                FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器-============请求的slaver在运行中，待下一次尝试请求此slaver");
                                             }
                                         } else {
                                             //可能slaver已被删除，自动更换到可用的slaver上，如果没有可用的slaver则把execplanbatch,dispatch状态更新为失败
@@ -201,14 +209,14 @@ public class FunctionDispatchScheduleTask {
             Executeplan ep = executeplanMapper.findexplanWithid(PlanID);
             if (ep != null) {
                 //if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
-                    FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，发现有可用的slaver，开始重新分配，。。。。。。。。。。。分配到新的slaver：" + allliveslaver.get(0).getSlavername());
-                    for (Executeplanbatch ex : executeplanbatchList) {
-                        ex.setSlaverid(allliveslaver.get(0).getId());
-                        ex.setMemo("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行");
-                        executeplanbatchService.update(ex);
-                        dispatchMapper.updatedispatchnewslaver("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行", ex.getSlaverid(), allliveslaver.get(0).getId(), allliveslaver.get(0).getSlavername(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
-                    }
-                    FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，重新分配完成。。。。。。。。。。。" + allliveslaver.get(0).getSlavername());
+                FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，发现有可用的slaver，开始重新分配，。。。。。。。。。。。分配到新的slaver：" + allliveslaver.get(0).getSlavername());
+                for (Executeplanbatch ex : executeplanbatchList) {
+                    ex.setSlaverid(allliveslaver.get(0).getId());
+                    ex.setMemo("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行");
+                    executeplanbatchService.update(ex);
+                    dispatchMapper.updatedispatchnewslaver("初次分配的slaver不可用，补偿处理，重新分配到可用的slaver：" + allliveslaver.get(0).getSlavername() + "，待下一次运行", ex.getSlaverid(), allliveslaver.get(0).getId(), allliveslaver.get(0).getSlavername(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                }
+                FunctionDispatchScheduleTask.log.info("【立即执行功能】补偿处理，重新分配完成。。。。。。。。。。。" + allliveslaver.get(0).getSlavername());
                 //}
                 //多机平均分配
 //                else {
