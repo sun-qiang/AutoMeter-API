@@ -258,17 +258,6 @@ public class TestconditionController {
     private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname, Long Slaverid) {
         TestconditionController.log.info("接口条件名Subconditionname-============：" + conditionApi.getSubconditionname() + " 执行用例名:" + conditionApi.getCasename());
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
-
-//        Condition condition = new Condition(TestconditionReport.class);
-//        condition.createCriteria().andCondition("testplanid = " + executeplan.getId())
-//                .andCondition("subconditionid = " + conditionApi.getId())
-//                .andCondition("batchname = '" + Batchname + "'");
-//
-//        List<TestconditionReport> testconditionReportList = testconditionReportService.listByCondition(condition);
-//
-//        if (testconditionReportList.size() > 0) {
-//            return VariableNameValueMap;
-//        }
         TestconditionReport testconditionReport = new TestconditionReport();
         testconditionReport.setTestplanid(executeplan.getId());
         testconditionReport.setPlanname(executeplan.getExecuteplanname());
@@ -488,137 +477,137 @@ public class TestconditionController {
         return ResultGenerator.genOkResult("数据库条件执行完成");
     }
 
-    @PostMapping("/execcasecondition/api")
-    public Result ConditionForAPI(@RequestBody final Map<String, Object> param) throws Exception {
-        HashMap<String, String> VariableNameValueMap = new HashMap<>();
-        Long ConditionID = Long.parseLong(param.get("ConditionID").toString());
-        Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
-        Long ApiCaseID = Long.parseLong(param.get("apicaseid").toString());
-        TestconditionController.log.info("调试接口子条件接口用例id-==================：" + ApiCaseID);
-
-        String DBVariablesValue = param.get("dbvariablesvalue").toString();
-        String APIVariablesValue = param.get("apivariablesvalues").toString();
-        TestconditionController.log.info("调试接口子条件接口变量值-==================：" + APIVariablesValue);
-
-
-        //准备数据库变量
-        HashMap<String, String> DBVariableNameValueMap = new HashMap<>();
-        if (!DBVariablesValue.isEmpty()) {
-            try {
-                JSONObject jsonObject = JSON.parseObject(DBVariablesValue);
-                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
-                    String key = objectEntry.getKey();
-                    String value = objectEntry.getValue().toString();
-                    DBVariableNameValueMap.put(key, value);
-                }
-            } catch (Exception ex) {
-                return ResultGenerator.genFailedResult("执行前置数据库条件结果异常：" + DBVariablesValue);
-            }
-        }
-
-        //准备前置测试集合的接口产生的变量值
-        HashMap<String, String> InterfaceNameValueMap = new HashMap<>();
-        if (!APIVariablesValue.isEmpty()) {
-            try {
-                JSONObject jsonObject = JSON.parseObject(APIVariablesValue);
-                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
-                    String key = objectEntry.getKey();
-                    String value = objectEntry.getValue().toString();
-                    InterfaceNameValueMap.put(key, value);
-                }
-            } catch (Exception ex) {
-                return ResultGenerator.genFailedResult("执行前置接口条件结果异常：" + APIVariablesValue);
-            }
-        }
-
-        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID, "");
-        TestconditionController.log.info("调试接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
-        //for (ConditionApi conditionApi : conditionApiList) {
-        Long CaseID = ApiCaseID; //conditionApi.getCaseid();
-        //增加判断case是否有前置条件
-        Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
-        if (apicases == null) {
-            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口用例，请检查是否存在或已被删除！");
-        }
-        Long ApiID = apicases.getApiid();
-        Api api = apiService.getBy("id", ApiID);
-        if (api == null) {
-            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口的API，请检查是否存在或已被删除！");
-        }
-        Long Deployunitid = api.getDeployunitid();
-        Deployunit deployunit = deployunitService.getBy("id", Deployunitid);
-        if (deployunit == null) {
-            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行接口API所在的微服务，请检查是否存在或已被删除！");
-        }
-        List<ApiCasedata> apiCasedataList = apiCasedataService.GetCaseDatasByCaseID(CaseID);
-        //区分环境类型
-        Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(EnviromentID, deployunit.getId());
-        if (macdepunit == null) {
-            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件所在的微服务：" + deployunit.getDeployunitname() + " 未在运行环境中部署，请检查是否部署或已被删除！");
-        }
-        Machine machine = machineService.getBy("id", macdepunit.getMachineid());
-        if (machine == null) {
-            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到环境组件部署的服务器：" + macdepunit.getMachinename() + " ，请检查是否存在或已被删除！");
-        }
-        TestCaseHelp testCaseHelp = new TestCaseHelp();
-        RequestObject requestObject = new RequestObject();
-        try {
-            requestObject = testCaseHelp.GetCaseRequestDataForDebug(DBVariableNameValueMap, InterfaceNameValueMap, apiCasedataList, api, apicases, deployunit, macdepunit, machine);
-        } catch (Exception ex) {
-            return ResultGenerator.genFailedResult(ex.getMessage());
-        }
-        TestResponeData testResponeData = testCaseHelp.request(requestObject);
-        String Respone = testResponeData.getResponeContent();
-        String ResponeContentType = "application/json;charset=utf-8";
-        List<Header> responeheaderlist = testResponeData.getHeaderList();
-        for (Header head : responeheaderlist) {
-            if (head.getName().equalsIgnoreCase("Content-Type")) {
-                ResponeContentType = head.getValue();
-            }
-        }
-        requestObject.setResponecontenttype(ResponeContentType);
-        //根据用例是否有中间变量，如果有变量，解析（json，xml，html）保存变量值表，没有变量直接保存条件结果表
-        Condition con = new Condition(ApicasesVariables.class);
-        con.createCriteria().andCondition("caseid = " + apicases.getId());
-        List<ApicasesVariables> apicasesVariablesList = apicasesVariablesService.listByCondition(con);
-        for (ApicasesVariables apicasesVariables : apicasesVariablesList) {
-            ParseResponeHelp parseResponeHelp = new ParseResponeHelp();
-            Testvariables testvariables = testvariablesService.getById(apicasesVariables.getVariablesid());
-            if (testvariables != null) {
-                try {
-                    String VariablesResoruce = testvariables.getTestvariablestype();
-                    String ParseValue = "";
-                    String VariablesPath = testvariables.getVariablesexpress();
-                    TestconditionController.log.info("调试接口子条件响应ResponeContentType-============：" + requestObject.getResponecontenttype());
-                    TestconditionController.log.info("调试接口子条件响应Respone-============：" + Respone);
-                    TestconditionController.log.info("调试接口子条件响应变量表达式-============：" + testvariables.getVariablesexpress());
-
-                    switch (VariablesResoruce) {
-                        case "Body":
-                            ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-                            break;
-                        case "Header":
-                            ParseValue = parseResponeHelp.ParseHeader(testResponeData, VariablesPath);
-                            break;
-                        case "Cookies":
-                            ParseValue = parseResponeHelp.ParseCookies(testResponeData, VariablesPath);
-                            break;
-                        default:
-                            ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
-                    }
-//                        String ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, testvariables.getVariablesexpress());
-                    VariableNameValueMap.put(testvariables.getTestvariablesname(), ParseValue);
-                } catch (Exception ex) {
-                    return ResultGenerator.genFailedResult("前置接口子条件执行异常，变量:" + apicasesVariables.getVariablesname() + " 获取值异常,原因为：" + ex.getMessage());
-                    //throw new Exception("前置接口子条件执行异常，变量:" + apicasesVariables.getVariablesname() + " 获取值异常,原因为：" + ex.getMessage());
-                }
-            } else {
-                return ResultGenerator.genFailedResult("前置接口子条件执行异常:接口子条件未找到变量:" + apicasesVariables.getVariablesname() + "，请检查变量管理-变量管理中是否存在！");
-            }
-        }
-        //}
-        return ResultGenerator.genOkResult(VariableNameValueMap);
-    }
+//    @PostMapping("/execcasecondition/api")
+//    public Result ConditionForAPI(@RequestBody final Map<String, Object> param) throws Exception {
+//        HashMap<String, String> VariableNameValueMap = new HashMap<>();
+//        Long ConditionID = Long.parseLong(param.get("ConditionID").toString());
+//        Long EnviromentID = Long.parseLong(param.get("enviromentid").toString());
+//        Long ApiCaseID = Long.parseLong(param.get("apicaseid").toString());
+//        TestconditionController.log.info("调试接口子条件接口用例id-==================：" + ApiCaseID);
+//
+//        String DBVariablesValue = param.get("dbvariablesvalue").toString();
+//        String APIVariablesValue = param.get("apivariablesvalues").toString();
+//        TestconditionController.log.info("调试接口子条件接口变量值-==================：" + APIVariablesValue);
+//
+//
+//        //准备数据库变量
+//        HashMap<String, String> DBVariableNameValueMap = new HashMap<>();
+//        if (!DBVariablesValue.isEmpty()) {
+//            try {
+//                JSONObject jsonObject = JSON.parseObject(DBVariablesValue);
+//                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
+//                    String key = objectEntry.getKey();
+//                    String value = objectEntry.getValue().toString();
+//                    DBVariableNameValueMap.put(key, value);
+//                }
+//            } catch (Exception ex) {
+//                return ResultGenerator.genFailedResult("执行前置数据库条件结果异常：" + DBVariablesValue);
+//            }
+//        }
+//
+//        //准备前置测试集合的接口产生的变量值
+//        HashMap<String, String> InterfaceNameValueMap = new HashMap<>();
+//        if (!APIVariablesValue.isEmpty()) {
+//            try {
+//                JSONObject jsonObject = JSON.parseObject(APIVariablesValue);
+//                for (Map.Entry<String, Object> objectEntry : jsonObject.getJSONObject("data").entrySet()) {
+//                    String key = objectEntry.getKey();
+//                    String value = objectEntry.getValue().toString();
+//                    InterfaceNameValueMap.put(key, value);
+//                }
+//            } catch (Exception ex) {
+//                return ResultGenerator.genFailedResult("执行前置接口条件结果异常：" + APIVariablesValue);
+//            }
+//        }
+//
+//        List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID, "");
+//        TestconditionController.log.info("调试接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
+//        //for (ConditionApi conditionApi : conditionApiList) {
+//        Long CaseID = ApiCaseID; //conditionApi.getCaseid();
+//        //增加判断case是否有前置条件
+//        Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
+//        if (apicases == null) {
+//            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口用例，请检查是否存在或已被删除！");
+//        }
+//        Long ApiID = apicases.getApiid();
+//        Api api = apiService.getBy("id", ApiID);
+//        if (api == null) {
+//            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行的接口的API，请检查是否存在或已被删除！");
+//        }
+//        Long Deployunitid = api.getDeployunitid();
+//        Deployunit deployunit = deployunitService.getBy("id", Deployunitid);
+//        if (deployunit == null) {
+//            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到条件运行接口API所在的微服务，请检查是否存在或已被删除！");
+//        }
+//        List<ApiCasedata> apiCasedataList = apiCasedataService.GetCaseDatasByCaseID(CaseID);
+//        //区分环境类型
+//        Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(EnviromentID, deployunit.getId());
+//        if (macdepunit == null) {
+//            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件所在的微服务：" + deployunit.getDeployunitname() + " 未在运行环境中部署，请检查是否部署或已被删除！");
+//        }
+//        Machine machine = machineService.getBy("id", macdepunit.getMachineid());
+//        if (machine == null) {
+//            return ResultGenerator.genFailedResult("接口子条件执行异常:接口子条件未找到环境组件部署的服务器：" + macdepunit.getMachinename() + " ，请检查是否存在或已被删除！");
+//        }
+//        TestCaseHelp testCaseHelp = new TestCaseHelp();
+//        RequestObject requestObject = new RequestObject();
+//        try {
+//            requestObject = testCaseHelp.GetCaseRequestDataForDebug(DBVariableNameValueMap, InterfaceNameValueMap, apiCasedataList, api, apicases, deployunit, macdepunit, machine);
+//        } catch (Exception ex) {
+//            return ResultGenerator.genFailedResult(ex.getMessage());
+//        }
+//        TestResponeData testResponeData = testCaseHelp.request(requestObject);
+//        String Respone = testResponeData.getResponeContent();
+//        String ResponeContentType = "application/json;charset=utf-8";
+//        List<Header> responeheaderlist = testResponeData.getHeaderList();
+//        for (Header head : responeheaderlist) {
+//            if (head.getName().equalsIgnoreCase("Content-Type")) {
+//                ResponeContentType = head.getValue();
+//            }
+//        }
+//        requestObject.setResponecontenttype(ResponeContentType);
+//        //根据用例是否有中间变量，如果有变量，解析（json，xml，html）保存变量值表，没有变量直接保存条件结果表
+//        Condition con = new Condition(ApicasesVariables.class);
+//        con.createCriteria().andCondition("caseid = " + apicases.getId());
+//        List<ApicasesVariables> apicasesVariablesList = apicasesVariablesService.listByCondition(con);
+//        for (ApicasesVariables apicasesVariables : apicasesVariablesList) {
+//            ParseResponeHelp parseResponeHelp = new ParseResponeHelp();
+//            Testvariables testvariables = testvariablesService.getById(apicasesVariables.getVariablesid());
+//            if (testvariables != null) {
+//                try {
+//                    String VariablesResoruce = testvariables.getTestvariablestype();
+//                    String ParseValue = "";
+//                    String VariablesPath = testvariables.getVariablesexpress();
+//                    TestconditionController.log.info("调试接口子条件响应ResponeContentType-============：" + requestObject.getResponecontenttype());
+//                    TestconditionController.log.info("调试接口子条件响应Respone-============：" + Respone);
+//                    TestconditionController.log.info("调试接口子条件响应变量表达式-============：" + testvariables.getVariablesexpress());
+//
+//                    switch (VariablesResoruce) {
+//                        case "Body":
+//                            ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
+//                            break;
+//                        case "Header":
+//                            ParseValue = parseResponeHelp.ParseHeader(testResponeData, VariablesPath);
+//                            break;
+//                        case "Cookies":
+//                            ParseValue = parseResponeHelp.ParseCookies(testResponeData, VariablesPath);
+//                            break;
+//                        default:
+//                            ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, VariablesPath);
+//                    }
+////                        String ParseValue = parseResponeHelp.ParseRespone(requestObject.getResponecontenttype(), Respone, testvariables.getVariablesexpress());
+//                    VariableNameValueMap.put(testvariables.getTestvariablesname(), ParseValue);
+//                } catch (Exception ex) {
+//                    return ResultGenerator.genFailedResult("前置接口子条件执行异常，变量:" + apicasesVariables.getVariablesname() + " 获取值异常,原因为：" + ex.getMessage());
+//                    //throw new Exception("前置接口子条件执行异常，变量:" + apicasesVariables.getVariablesname() + " 获取值异常,原因为：" + ex.getMessage());
+//                }
+//            } else {
+//                return ResultGenerator.genFailedResult("前置接口子条件执行异常:接口子条件未找到变量:" + apicasesVariables.getVariablesname() + "，请检查变量管理-变量管理中是否存在！");
+//            }
+//        }
+//        //}
+//        return ResultGenerator.genOkResult(VariableNameValueMap);
+//    }
 
     @PostMapping("/execcasecondition/db")
     public Result ConditionForDB(@RequestBody final Map<String, Object> param) throws Exception {
@@ -827,7 +816,7 @@ public class TestconditionController {
             TestCaseHelp testCaseHelp = new TestCaseHelp();
             RequestObject requestObject = new RequestObject();
             try {
-                requestObject = testCaseHelp.GetCaseRequestDataForDebug(Result.get("db"), Result.get("api"), apiCasedataList, api, apicases, deployunit, macdepunit, machine);
+                requestObject = testCaseHelp.GetCaseRequestDataForDebug(Result.get("db"), Result.get("api"), Result.get("script"), apiCasedataList, api, apicases, deployunit, macdepunit, machine);
             } catch (Exception ex) {
                 throw new Exception(ex.getMessage());
             }
