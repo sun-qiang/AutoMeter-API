@@ -330,7 +330,7 @@ public class TestconditionController {
         TestCaseHelp testCaseHelp = new TestCaseHelp();
         RequestObject requestObject = new RequestObject();
         try {
-            requestObject = testCaseHelp.GetCaseRequestData(executeplan.getId(), Batchname, apiCasedataList, api, apicases, deployunit, macdepunit, machine);
+            requestObject = testCaseHelp.GetCaseRequestData(executeplan.getId(), Batchname, apiCasedataList, api, apicases, deployunit, macdepunit, machine,executeplan.getEnvid());
             requestObject.setSlaverid(Slaverid.toString());
             requestObject.setTestplanname(executeplan.getExecuteplanname());
             requestObject.setBatchname(Batchname);
@@ -816,7 +816,7 @@ public class TestconditionController {
             TestCaseHelp testCaseHelp = new TestCaseHelp();
             RequestObject requestObject = new RequestObject();
             try {
-                requestObject = testCaseHelp.GetCaseRequestDataForDebug(Result.get("db"), Result.get("api"), Result.get("script"), apiCasedataList, api, apicases, deployunit, macdepunit, machine);
+                requestObject = testCaseHelp.GetCaseRequestDataForDebug(Result.get("db"), Result.get("api"), Result.get("script"), apiCasedataList, api, apicases, deployunit, macdepunit, machine,Enviromentid);
             } catch (Exception ex) {
                 throw new Exception(ex.getMessage());
             }

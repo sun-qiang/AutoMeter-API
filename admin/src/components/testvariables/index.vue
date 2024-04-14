@@ -5,7 +5,7 @@
         <div class="filter-container">
           <el-form :inline="true">
             <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchtestvaraibles.testvariablesname" clearable @keyup.enter.native="searchTestVariablesBy" placeholder="变量名"></el-input>
+              <el-input style="width: 230px" v-model="searchtestvaraibles.testvariablesname" clearable @keyup.enter.native="searchTestVariablesBy" placeholder="变量名"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchTestVariablesBy" :loading="btnLoading">查询</el-button>
@@ -58,7 +58,7 @@
         <div class="filter-container">
           <el-form :inline="true">
             <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchdbvaraibles.dbvariablesname" clearable @keyup.enter.native="searchDbVariablesBy" placeholder="变量名"></el-input>
+              <el-input style="width: 230px" v-model="searchdbvaraibles.dbvariablesname" clearable @keyup.enter.native="searchDbVariablesBy" placeholder="变量名"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchDbVariablesBy" :loading="btnLoading">查询</el-button>
@@ -110,7 +110,7 @@
         <div class="filter-container">
           <el-form :inline="true">
             <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchscriptvaraibles.scriptvariablesname" clearable @keyup.enter.native="searchScriptVariablesBy" placeholder="变量名"></el-input>
+              <el-input style="width: 230px" v-model="searchscriptvaraibles.scriptvariablesname" clearable @keyup.enter.native="searchScriptVariablesBy" placeholder="变量名"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchScriptVariablesBy" :loading="btnLoading">查询</el-button>
@@ -161,7 +161,7 @@
         <div class="filter-container">
           <el-form :inline="true">
             <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchglobalvaraibles.keyname" clearable @keyup.enter.native="searchGlobalVariablesBy" placeholder="变量名"></el-input>
+              <el-input style="width: 230px" v-model="searchglobalvaraibles.keyname" clearable @keyup.enter.native="searchGlobalVariablesBy" placeholder="变量名"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchGlobalVariablesBy" :loading="btnLoading">查询</el-button>
@@ -211,7 +211,7 @@
         <div class="filter-container">
           <el-form :inline="true">
             <el-form-item  label="变量名:">
-              <el-input style="width: 130px" v-model="searchvaraibles.variablesname" clearable @keyup.enter.native="searchVariablesBy" placeholder="变量名"></el-input>
+              <el-input style="width: 230px" v-model="searchvaraibles.variablesname" clearable @keyup.enter.native="searchVariablesBy" placeholder="变量名"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="searchVariablesBy" :loading="btnLoading">查询</el-button>
@@ -257,64 +257,61 @@
         ></el-pagination>
       </template>
     </el-tab-pane>
-<!--    <el-tab-pane label="环境变量" name="five">-->
-<!--      <template>-->
-<!--        <div class="filter-container">-->
-<!--          <el-form :inline="true">-->
-<!--            <el-form-item  label="变量名:">-->
-<!--              <el-input style="width: 130px" v-model="searchtestvaraibles.testvariablesname" clearable @keyup.enter.native="searchTestVariablesBy" placeholder="变量名"></el-input>-->
-<!--            </el-form-item>-->
-<!--            <el-form-item>-->
-<!--              <el-button type="primary" @click="searchTestVariablesBy" :loading="btnLoading">查询</el-button>-->
-<!--            </el-form-item>-->
-<!--          </el-form>-->
-<!--        </div>-->
-<!--        <el-table-->
-<!--          :data="TestVariablesList"-->
-<!--          :key="TestvariablesitemKey"-->
-<!--          element-loading-text="loading"-->
-<!--          border-->
-<!--          fit-->
-<!--          highlight-current-row-->
-<!--        >-->
-<!--          <el-table-column label="编号" align="center" width="45">-->
-<!--            <template slot-scope="scope">-->
-<!--              <span v-text="TestVariablesIndex(scope.$index)"></span>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
-<!--          <el-table-column label="变量名" align="center" prop="testvariablesname" width="100"/>-->
-<!--          <el-table-column label="变量类型" align="center" prop="valuetype" width="80"/>-->
-<!--          <el-table-column label="来源用例" align="center" prop="casename" width="100"/>-->
-<!--          <el-table-column label="来源微服务" align="center" prop="deployunitname" width="120"/>-->
-<!--          <el-table-column label="来源类型" align="center" prop="testvariablestype" width="80"/>-->
-<!--          <el-table-column :show-overflow-tooltip="true"  label="变量表达式" align="center" prop="variablesexpress" width="90"/>-->
-<!--          <el-table-column :show-overflow-tooltip="true"  label="变量描述" align="center" prop="variablesdes" width="120"/>-->
-<!--          <el-table-column label="操作" align="center"-->
-<!--                           v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">-->
-<!--            <template slot-scope="scope">-->
-<!--              <el-button-->
-<!--                type="primary"-->
-<!--                size="mini"-->
-<!--                @click="clickCopy(scope.$index)"-->
-<!--              >复制变量</el-button>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
-<!--        </el-table>-->
-<!--        <el-pagination-->
-<!--          @size-change="handleSizeChange"-->
-<!--          @current-change="handleCurrentChange"-->
-<!--          :current-page="searchtestvaraibles.page"-->
-<!--          :page-size="searchtestvaraibles.size"-->
-<!--          :total="Testvariablestotal"-->
-<!--          :page-sizes="[10, 20, 30, 40]"-->
-<!--          layout="total, sizes, prev, pager, next, jumper"-->
-<!--        ></el-pagination>-->
-<!--      </template>-->
-<!--    </el-tab-pane>-->
+    <el-tab-pane label="环境变量" name="five">
+      <template>
+        <div class="filter-container">
+          <el-form :inline="true">
+            <el-form-item  label="变量名:">
+              <el-input style="width: 230px" v-model="searchenvvaraibles.variablesname" clearable @keyup.enter.native="searchEnvVariablesBy" placeholder="变量名"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="searchEnvVariablesBy" :loading="btnLoading">查询</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+        <el-table
+          :data="EnvVariablesList"
+          :key="EnvvariablesitemKey"
+          element-loading-text="loading"
+          border
+          fit
+          highlight-current-row
+        >
+          <el-table-column label="编号" align="center" width="45">
+            <template slot-scope="scope">
+              <span v-text="EnvVariablesIndex(scope.$index)"></span>
+            </template>
+          </el-table-column>
+          <el-table-column label="环境变量名" align="center" prop="variablesname" width="180"/>
+          <el-table-column label="环境名" align="center" prop="envname" width="120"/>
+          <el-table-column :show-overflow-tooltip="true" label="变量值" align="center" prop="variablesvalue" width="350"/>
+          <el-table-column label="操作" align="center"
+                           v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                size="mini"
+                @click="clickEnvCopy(scope.$index)"
+              >复制变量</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          @size-change="EnvhandleSizeChange"
+          @current-change="EnvhandleCurrentChange"
+          :current-page="searchenvvaraibles.page"
+          :page-size="searchenvvaraibles.size"
+          :total="Envvariablestotal"
+          :page-sizes="[10, 20, 30, 40]"
+          layout="total, sizes, prev, pager, next, jumper"
+        ></el-pagination>
+      </template>
+    </el-tab-pane>
   </el-tabs>
 </template>
 
 <script>
+import { search as searchenvvariables } from '@/api/testvariables/enviromentvariables'
 import { search as searchtestvariables } from '@/api/testvariables/testvariables'
 import { search as searchdbvariables } from '@/api/testvariables/dbvariables'
 import { search as searchscriptvariables } from '@/api/testvariables/scriptvariables'
@@ -324,6 +321,12 @@ import { search as searchvariables } from '@/api/testvariables/variables'
 export default {
   name: 'uservariables',
   created() {
+    this.searchEnvVariablesBy()
+    this.searchVariablesBy()
+    this.searchGlobalVariablesBy()
+    this.searchScriptVariablesBy()
+    this.searchDbVariablesBy()
+    this.searchTestVariablesBy()
   },
   data() {
     return {
@@ -332,11 +335,14 @@ export default {
       tmptestvariablesname: '',
       tmpdbvariablesname: '',
       tmpscriptvariablesname: '',
+      tmpenvvariablesname: '',
+      tmpenvname: '',
       TestvariablesitemKey: null,
       DbvariablesitemKey: null,
       ScriptvariablesitemKey: null,
       GlobalvariablesitemKey: null,
       variablesitemKey: null,
+      EnvvariablesitemKey: null,
       variablesactiveName: 'zero',
       TestVariablesList: [], // 变量列表
       Testvariablestotal: 0, // 数据总数
@@ -348,6 +354,8 @@ export default {
       Globalvariablestotal: 0, // 数据总数
       VariablesList: [], // 变量列表
       variablestotal: 0, // 数据总数
+      EnvVariablesList: 0, // 数据总数
+      Envvariablestotal: 0, // 数据总数
       searchtestvaraibles: {
         page: 1,
         size: 10,
@@ -372,6 +380,12 @@ export default {
         page: 1,
         size: 10,
         variablesname: ''
+      },
+      searchenvvaraibles: {
+        page: 1,
+        size: 10,
+        variablesname: '',
+        envname: ''
       }
     }
   },
@@ -415,6 +429,25 @@ export default {
         console.log('【复制失败】', e)
       })
       this.$message.success('变量已复制到剪切板！' + '[' + this.VariablesList[index].variablesname + ']')
+    },
+    clickEnvCopy(index) {
+      this.$copyText('#' + this.EnvVariablesList[index].variablesname + '#').then(function(e) {
+        console.log('【复制成功】', e)
+      }, function(e) {
+        console.log('【复制失败】', e)
+      })
+      this.$message.success('变量已复制到剪切板！' + '#' + this.EnvVariablesList[index].variablesname + '#')
+    },
+
+    getenvvariablesList() {
+      this.searchenvvaraibles.variablesname = this.tmpenvvariablesname
+      this.searchenvvaraibles.envname = this.tmpenvname
+      searchenvvariables(this.searchenvvaraibles).then(response => {
+        this.EnvVariablesList = response.data.list
+        this.Envvariablestotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载列表失败')
+      })
     },
     getvariablesList() {
       this.searchvaraibles.variablesname = this.tmpvariablesname
@@ -511,6 +544,16 @@ export default {
       })
       this.tmptestvariablesname = this.searchtestvaraibles.testvariablesname
     },
+    searchEnvVariablesBy() {
+      this.EnvvariablesitemKey = Math.random()
+      searchenvvariables(this.searchenvvaraibles).then(response => {
+        this.EnvVariablesList = response.data.list
+        this.Envvariablestotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载列表失败')
+      })
+      this.tmpenvvariablesname = this.searchenvvaraibles.variablesname
+    },
     VariablesIndex(index) {
       return (this.searchvaraibles.page - 1) * this.searchvaraibles.size + index + 1
     },
@@ -526,10 +569,18 @@ export default {
     GlobalVariablesIndex(index) {
       return (this.searchglobalvaraibles.page - 1) * this.searchglobalvaraibles.size + index + 1
     },
+    EnvVariablesIndex(index) {
+      return (this.searchenvvaraibles.page - 1) * this.searchenvvaraibles.size + index + 1
+    },
     RadomhandleSizeChange(size) {
       this.searchvaraibles.page = 1
       this.searchvaraibles.size = size
       this.getvariablesList()
+    },
+    EnvhandleSizeChange(size) {
+      this.searchenvvaraibles.page = 1
+      this.searchenvvaraibles.size = size
+      this.getenvvariablesList()
     },
     handleSizeChange(size) {
       this.searchtestvaraibles.page = 1
@@ -570,6 +621,10 @@ export default {
     RadomhandleCurrentChange(page) {
       this.searchvaraibles.page = page
       this.getvariablesList()
+    },
+    EnvhandleCurrentChange(page) {
+      this.searchenvvaraibles.page = page
+      this.getenvvariablesList()
     }
   }
 }

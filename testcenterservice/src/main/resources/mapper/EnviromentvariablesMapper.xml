@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.EnviromentvariablesMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Enviromentvariables">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="variablesname" jdbcType="VARCHAR" property="variablesname" />
+    <result column="envid" jdbcType="BIGINT" property="envid" />
+    <result column="envname" jdbcType="VARCHAR" property="envname" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="variablesvalue" jdbcType="LONGVARCHAR" property="variablesvalue" />
+  </resultMap>
+
+  <select id="findEnviromentvariablesWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM enviromentvariables a
+    <where>
+      <if test="variablesname != null and variablesname != ''">a.variablesname like CONCAT('%',#{variablesname},'%')</if>
+      <if test="envname != null  and envname != ''">and a.envname =#{envname}</if>
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+  <update id="updateEnviromentvariables" parameterType="com.zoctan.api.entity.Globalvariables">
+    update enviromentvariables set variablesname = #{variablesname},variablesvalue = #{variablesvalue}, envid = #{envid},
+       envname = #{envname}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+</mapper>

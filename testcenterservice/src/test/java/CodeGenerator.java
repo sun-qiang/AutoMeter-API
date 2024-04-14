@@ -59,7 +59,7 @@ class CodeGenerator {
 //    }
     System.out.print("start!!!");
 
-    CodeGenerator.genCode("scenecases_debug_report");
+    CodeGenerator.genCode("enviromentvariables");
     System.out.print("finish!!!");
 
     // genCodeByCustomModelName("输入表名","输入自定义Model名称");
