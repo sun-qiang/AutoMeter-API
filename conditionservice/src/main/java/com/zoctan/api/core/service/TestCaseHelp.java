@@ -151,7 +151,7 @@ public class TestCaseHelp {
 
             Condition envcon = new Condition(Enviromentvariables.class);
             rdcon.createCriteria().andCondition("projectid = " + projectid);
-            List<Enviromentvariables> envvariablesList = enviromentvariablesService.listByCondition(envcon);
+            List<Enviromentvariables> envvariablesList = tch.enviromentvariablesService.listByCondition(envcon);
             HashMap<String, HashMap<Long,String>> EnvVariablesHashMap = new HashMap<>();
             for (Enviromentvariables va : envvariablesList) {
                 HashMap<Long,String> envidvaluemap=new HashMap<>();
