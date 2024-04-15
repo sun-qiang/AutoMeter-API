@@ -76,7 +76,7 @@
       <el-table-column :show-overflow-tooltip="true"  label="集合名" align="center" prop="executeplanname" width="100"/>
       <el-table-column label="envid" align="center" v-if="show" prop="envid" width="50"/>
       <el-table-column label="状态" align="center" prop="status" v-if="show" width="50"/>
-      <el-table-column label="业务类型" align="center" prop="businesstype" width="70"/>
+      <el-table-column :show-overflow-tooltip="true" label="业务类型" align="center" prop="businesstype" width="70"/>
       <el-table-column :show-overflow-tooltip="true" label="执行环境" align="center" prop="enviromentname" width="80"/>
       <el-table-column label="类型" align="center" prop="usetype" width="50"/>
       <el-table-column label="运行模式" align="center" prop="runmode" width="70"/>
@@ -591,7 +591,8 @@
 
         <el-table-column type="selection" prop="status" width="50"/>
         <el-table-column label="场景名" align="center" prop="scenename" width="370"/>
-        <el-table-column label="场景类型" align="center" prop="usetype" width="280"/>
+        <el-table-column label="场景类型" align="center" prop="usetype" width="140"/>
+        <el-table-column label="用例数" align="center" prop="casenums" width="140"/>
       </el-table>
       <el-pagination
         @size-change="addscenehandleSizeChange"
@@ -3007,6 +3008,7 @@
 
     activated() {
       // this.getapiList()
+      this.getexecuteplanList()
       this.getdepunitList()
       this.getenviromentallList()
       this.getdatabydiccodeList()
@@ -4132,6 +4134,7 @@
           removetestplanscene(id).then(() => {
             this.$message.success('删除成功')
             this.findscenebyexecplanid()
+            this.getexecuteplanList()
           })
         }).catch(() => {
           this.$message.info('已取消删除')
@@ -5233,6 +5236,7 @@
             this.$message.success('装载成功')
             this.addtestscenedialogFormVisible = false
             this.findscenebyexecplanid()
+            this.getexecuteplanList()
           }).catch(res => {
             this.$message.error('装载失败')
           })

@@ -251,16 +251,40 @@ public class ExecuteplanController {
      */
     @PutMapping("/detail")
     public Result updateExecuteplan(@RequestBody final Executeplan executeplan) {
-        Condition con = new Condition(Executeplan.class);
-        con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
+        Condition epcon = new Condition(Executeplan.class);
+        epcon.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
                 .andCondition("executeplanname = '" + executeplan.getExecuteplanname().replace("'", "''") + "'")
-                .andCondition("id <> " + executeplan.getId())
-                .andCondition("enviromentname = '" + executeplan.getEnviromentname() + "'");
-        if (executeplanService.ifexist(con) > 0) {
-            return ResultGenerator.genFailedResult("此环境下执行计划已经存在");
+                .andCondition("id <> " + executeplan.getId());
+        if (executeplanService.ifexist(epcon) > 0) {
+            return ResultGenerator.genFailedResult("已存在相同的测试集合");
         } else {
-            this.executeplanService.updateexecuteplanname(executeplan);
-            return ResultGenerator.genOkResult();
+            Condition con = new Condition(Executeplanbatch.class);
+            con.createCriteria().andCondition("executeplanid = " + executeplan.getId())
+                    .andCondition("status != '已完成'");
+            List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
+            if (executeplanbatchList.size() > 0) {
+                return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
+            } else
+            {
+                Executeplan existexecuteplan=executeplanService.getBy("id",executeplan.getId());
+                if(!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype()))
+                {
+                    Condition pscon = new Condition(TestplanTestscene.class);
+                    pscon.createCriteria().andCondition("testplanid = " + executeplan.getId());
+                    List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(pscon);
+                    if(testplanTestsceneList.size()>0)
+                    {
+                        return ResultGenerator.genFailedResult("此测试集合中存在类型为："+existexecuteplan.getUsetype()+"的测试场景，若需要修改集合为："+executeplan.getUsetype()+" 类型，请先删除集合下的测试场景");
+                    } else
+                    {
+                        executeplanService.update(executeplan);
+                        return ResultGenerator.genOkResult();
+                    }
+                }else {
+                    executeplanService.update(executeplan);
+                    return ResultGenerator.genOkResult();
+                }
+            }
         }
     }
 

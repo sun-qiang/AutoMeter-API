@@ -321,6 +321,12 @@ import { search as searchvariables } from '@/api/testvariables/variables'
 export default {
   name: 'uservariables',
   created() {
+    this.searchtestvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchdbvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchscriptvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchglobalvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchenvvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchvaraibles.projectid = window.localStorage.getItem('pid')
     this.searchEnvVariablesBy()
     this.searchVariablesBy()
     this.searchGlobalVariablesBy()
@@ -359,33 +365,39 @@ export default {
       searchtestvaraibles: {
         page: 1,
         size: 10,
-        testvariablesname: ''
+        testvariablesname: '',
+        projectid: null
       },
       searchdbvaraibles: {
         page: 1,
         size: 10,
-        dbvariablesname: ''
+        dbvariablesname: '',
+        projectid: null
       },
       searchscriptvaraibles: {
         page: 1,
         size: 10,
-        scriptvariablesname: ''
+        scriptvariablesname: '',
+        projectid: null
       },
       searchglobalvaraibles: {
         page: 1,
         size: 10,
-        keyname: ''
+        keyname: '',
+        projectid: null
       },
       searchvaraibles: {
         page: 1,
         size: 10,
-        variablesname: ''
+        variablesname: '',
+        projectid: null
       },
       searchenvvaraibles: {
         page: 1,
         size: 10,
         variablesname: '',
-        envname: ''
+        envname: '',
+        projectid: null
       }
     }
   },

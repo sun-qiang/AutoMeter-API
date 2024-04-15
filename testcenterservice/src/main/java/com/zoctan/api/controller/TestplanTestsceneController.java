@@ -110,19 +110,28 @@ public class TestplanTestsceneController {
         if (testsceneTestcaseList.size() > 0) {
             long planid = testsceneTestcaseList.get(0).getTestplanid();
             Executeplan executeplan = executeplanService.getById(planid);
-            executeplan.setScenenums(executeplan.getScenenums() + testsceneTestcaseList.size());
-            long casetotal = executeplan.getCasecounts();
-            for (TestplanTestscene tesp : testsceneTestcaseList) {
-
-                long sceneid = tesp.getTestscenenid();
+            long plancasenums = executeplan.getCasecounts();
+            long planscenenums = executeplan.getScenenums();
+            for (TestplanTestscene tsc : testsceneTestcaseList) {
+                long sceneid = tsc.getTestscenenid();
                 Testscene testscene = testsceneService.getById(sceneid);
-                casetotal = casetotal + testscene.getCasenums();
+                if (testscene.getCasenums() == 0) {
+                    return ResultGenerator.genFailedResult("添加失败，测试场景: "+testscene.getScenename()+" 中还没有用例，请先加载用例");
+                } else {
+                    plancasenums = plancasenums + testscene.getCasenums();
+                    planscenenums = planscenenums + 1;
+                }
             }
-            executeplan.setCasecounts(casetotal);
+            executeplan.setCasecounts(plancasenums);
+            executeplan.setScenenums(planscenenums);
             executeplanService.update(executeplan);
+            testplanTestsceneService.savetestplanscenen(testsceneTestcaseList);
+            return ResultGenerator.genOkResult();
+
+        } else {
+            return ResultGenerator.genFailedResult("添加失败，测试场景为空");
+
         }
-        testplanTestsceneService.savetestplanscenen(testsceneTestcaseList);
-        return ResultGenerator.genOkResult();
     }
 
     @PostMapping("/updateplanscenenorder")

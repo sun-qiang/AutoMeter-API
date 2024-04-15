@@ -2541,9 +2541,9 @@ export default {
         add: '添加数据库变量'
       },
       textMap: {
-        updateRole: '修改环境',
-        update: '修改环境',
-        add: '添加环境'
+        updateRole: '修改场景',
+        update: '修改场景',
+        add: '添加场景'
       },
       scripttextMap: {
         updateRole: '修改环境',
@@ -2702,7 +2702,8 @@ export default {
         apiid: null,
         apiname: null,
         creator: '',
-        casetype: null
+        casetype: null,
+        projectid: ''
       },
       search: {
         page: 1,
@@ -2841,6 +2842,7 @@ export default {
   },
 
   created() {
+    this.addsearchcase.projectid = window.localStorage.getItem('pid')
     this.tmptestdata.projectid = window.localStorage.getItem('pid')
     this.debugsearch.projectid = window.localStorage.getItem('pid')
     this.search.projectid = window.localStorage.getItem('pid')
@@ -4331,6 +4333,7 @@ export default {
         addtestscenetestcase(this.testcaseList).then(() => {
           this.addtestscenecasedialogFormVisible = false
           this.gettestscenecaseList()
+          this.gettestsceneList()
           this.$message.success('装载成功')
         }).catch(res => {
           this.$message.error('装载失败')
@@ -4448,6 +4451,7 @@ export default {
         removetestscenecase(id).then(() => {
           this.$message.success('删除成功')
           this.gettestscenecaseList()
+          this.gettestsceneList()
         })
       }).catch(() => {
         this.$message.info('已取消删除')

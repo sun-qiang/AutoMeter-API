@@ -108,9 +108,37 @@ public class TestsceneController {
         if (testsceneService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("测试场景名已经存在");
         } else {
-            testsceneService.updatescene(testscene);
-            testplanTestsceneService.updateplanscenename(testscene.getId(),testscene.getScenename());
-            return ResultGenerator.genOkResult();
+            long sceneid = testscene.getId();
+            Testscene existscene = testsceneService.getBy("id", sceneid);
+            if (!testscene.getUsetype().equalsIgnoreCase(existscene.getUsetype()))
+            {
+                Condition pscon = new Condition(TestplanTestscene.class);
+                pscon.createCriteria().andCondition("testscenenid = " + sceneid);
+                List<TestplanTestscene> testplanTestsceneList= testplanTestsceneService.listByCondition(pscon);
+                if(testplanTestsceneList.size()>0)
+                {
+                    return ResultGenerator.genFailedResult("当前测试场景已经在测试集合："+testplanTestsceneList.get(0).getPlanname()+" 中，如需改变类型，请先到测试集合将此场景删除");
+                }else
+                {
+                    Condition testscenecasecon = new Condition(TestsceneTestcase.class);
+                    testscenecasecon.createCriteria().andCondition("testscenenid = " + sceneid);
+                    List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(testscenecasecon);
+                    if(testsceneTestcaseList.size()>0)
+                    {
+                        return ResultGenerator.genFailedResult("当前测试场景中已存在类型："+existscene.getUsetype()+"的用例，如需改变类型，请先将场景内的用例删除");
+                    }else
+                    {
+                        testsceneService.updatescene(testscene);
+                        testplanTestsceneService.updateplanscenename(testscene.getId(),testscene.getScenename());
+                        return ResultGenerator.genOkResult();
+                    }
+                }
+            }else
+            {
+                testsceneService.updatescene(testscene);
+                testplanTestsceneService.updateplanscenename(testscene.getId(),testscene.getScenename());
+                return ResultGenerator.genOkResult();
+            }
         }
     }
 

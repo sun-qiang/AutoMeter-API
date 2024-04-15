@@ -716,6 +716,11 @@ export default {
     this.getdepunitLists()
   },
 
+  activated() {
+    this.getmachineLists()
+    this.getdepunitLists()
+  },
+
   computed: {
     ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
   },
