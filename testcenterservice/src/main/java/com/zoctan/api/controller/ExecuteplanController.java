@@ -77,15 +77,13 @@ public class ExecuteplanController {
     public Result execcases(@RequestBody final List<Executeplanbatch> planbatchList) {
         //暂时支持单计划执行
         try {
-            Condition con=new Condition(Executeplanbatch.class);
-            con.createCriteria().andCondition("projectid = "+planbatchList.get(0).getProjectid())
+            Condition con = new Condition(Executeplanbatch.class);
+            con.createCriteria().andCondition("projectid = " + planbatchList.get(0).getProjectid())
                     .andCondition("batchname = '" + planbatchList.get(0).getBatchname() + "'")
                     .andCondition("executeplanid = " + planbatchList.get(0).getExecuteplanid());
-            if(executeplanbatchService.ifexist(con)>0)
-            {
+            if (executeplanbatchService.ifexist(con) > 0) {
                 return ResultGenerator.genFailedResult("该测试集合已存在此执行计划");
-            } else
-            {
+            } else {
                 executeplanService.executeplancase(planbatchList, "立即执行");
                 return ResultGenerator.genOkResult();
             }
@@ -153,18 +151,51 @@ public class ExecuteplanController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        executeplanService.deleteById(id);
-        //删除集合场景
-        testplanTestsceneService.removeexecuteplanalltestscene(id);
-        //删除集合全局参数
-        executeplanParamsService.removeplanparams(id);
-        return ResultGenerator.genOkResult();
+        Condition con = new Condition(Executeplanbatch.class);
+        con.createCriteria().andCondition("executeplanid = " + id)
+                .andCondition("status != '已完成'");
+        List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
+        if (executeplanbatchList.size() > 0) {
+            return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法删除！！");
+        } else {
+            executeplanService.deleteById(id);
+            //删除集合场景
+            testplanTestsceneService.removeexecuteplanalltestscene(id);
+            //删除集合全局参数
+            executeplanParamsService.removeplanparams(id);
+            return ResultGenerator.genOkResult();
+        }
     }
 
     @PatchMapping
     public Result update(@RequestBody Executeplan executeplan) {
-        executeplanService.update(executeplan);
-        return ResultGenerator.genOkResult();
+        Condition con = new Condition(Executeplanbatch.class);
+        con.createCriteria().andCondition("executeplanid = " + executeplan.getId())
+                .andCondition("status != '已完成'");
+        List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
+        if (executeplanbatchList.size() > 0) {
+            return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
+        } else
+        {
+            Executeplan existexecuteplan=executeplanService.getBy("id",executeplan.getId());
+            if(!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype()))
+            {
+                Condition pscon = new Condition(TestplanTestscene.class);
+                pscon.createCriteria().andCondition("testplanid = " + executeplan.getId());
+                List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(pscon);
+                if(testplanTestsceneList.size()>0)
+                {
+                    return ResultGenerator.genFailedResult("请先删除当前测试集合下的测试场景再修改集合类型！！");
+                } else
+                {
+                    executeplanService.update(executeplan);
+                    return ResultGenerator.genOkResult();
+                }
+            }else {
+                executeplanService.update(executeplan);
+                return ResultGenerator.genOkResult();
+            }
+        }
     }
 
     @PostMapping("/updatestatus")

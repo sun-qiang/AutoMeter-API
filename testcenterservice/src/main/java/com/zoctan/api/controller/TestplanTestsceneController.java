@@ -2,16 +2,16 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
-import com.zoctan.api.entity.Executeplan;
-import com.zoctan.api.entity.TestplanTestscene;
-import com.zoctan.api.entity.Testscene;
-import com.zoctan.api.entity.TestsceneTestcase;
+import com.zoctan.api.entity.*;
 import com.zoctan.api.service.ExecuteplanService;
+import com.zoctan.api.service.ExecuteplanbatchService;
 import com.zoctan.api.service.TestplanTestsceneService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zoctan.api.service.TestsceneService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -33,6 +33,10 @@ public class TestplanTestsceneController {
     @Resource
     private TestsceneService testsceneService;
 
+
+    @Autowired
+    private ExecuteplanbatchService executeplanbatchService;
+
     @PostMapping
     public Result add(@RequestBody TestplanTestscene testplanTestscene) {
         testplanTestsceneService.save(testplanTestscene);
@@ -41,19 +45,33 @@ public class TestplanTestsceneController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        TestplanTestscene testplanTestscene= testplanTestsceneService.getById(id);
-        if(testplanTestscene!=null)
-        {
-            long planid=testplanTestscene.getTestplanid();
-            Executeplan executeplan= executeplanService.getById(planid);
-            long sceneid=testplanTestscene.getTestscenenid();
-            Testscene testscene= testsceneService.getById(sceneid);
-            testplanTestsceneService.deleteById(id);
-            executeplan.setScenenums(executeplan.getScenenums()-1);
-            executeplan.setCasecounts(executeplan.getCasecounts()-testscene.getCasenums());
-            executeplanService.update(executeplan);
+        TestplanTestscene testplanTestscene = testplanTestsceneService.getById(id);
+        if (testplanTestscene != null) {
+            long planid = testplanTestscene.getTestplanid();
+            long sceneid = testplanTestscene.getTestscenenid();
+            Condition con = new Condition(Executeplanbatch.class);
+            con.createCriteria().andCondition("executeplanid = " + planid)
+                    .andCondition("sceneid = " + sceneid)
+                    .andCondition("status != '已完成'");
+            List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
+            if (executeplanbatchList.size() > 0) {
+                return ResultGenerator.genFailedResult("当前测试场景有正在运行的执行计划，无法删除！！");
+            } else {
+                Executeplan executeplan = executeplanService.getById(planid);
+                if (executeplan != null) {
+                    Testscene testscene = testsceneService.getById(sceneid);
+                    testplanTestsceneService.deleteById(id);
+                    executeplan.setScenenums(executeplan.getScenenums() - 1);
+                    executeplan.setCasecounts(executeplan.getCasecounts() - testscene.getCasenums());
+                    executeplanService.update(executeplan);
+                    return ResultGenerator.genOkResult();
+                } else {
+                    return ResultGenerator.genFailedResult("当前集合已经删除！！");
+                }
+            }
+        } else {
+            return ResultGenerator.genFailedResult("当前集合下的测试场景已经删除！！");
         }
-        return ResultGenerator.genOkResult();
     }
 
     @PatchMapping
@@ -79,8 +97,8 @@ public class TestplanTestsceneController {
 
     @PostMapping("/findscenebyexecplanid")
     public Result findscenebyexecplanid(@RequestBody final Map<String, Object> param) {
-        Integer page= Integer.parseInt(param.get("page").toString());
-        Integer size= Integer.parseInt(param.get("size").toString());
+        Integer page = Integer.parseInt(param.get("page").toString());
+        Integer size = Integer.parseInt(param.get("size").toString());
         PageHelper.startPage(page, size);
         final List<TestplanTestscene> list = this.testplanTestsceneService.findscenebyexecplanid(param);
         final PageInfo<TestplanTestscene> pageInfo = new PageInfo<>(list);
@@ -89,17 +107,16 @@ public class TestplanTestsceneController {
 
     @PostMapping("/addplanscene")
     public Result addcase(@RequestBody final List<TestplanTestscene> testsceneTestcaseList) {
-        if(testsceneTestcaseList.size()>0)
-        {
-            long planid=testsceneTestcaseList.get(0).getTestplanid();
-            Executeplan executeplan =  executeplanService.getById(planid);
-            executeplan.setScenenums(executeplan.getScenenums()+testsceneTestcaseList.size());
-            long casetotal=executeplan.getCasecounts();
-            for (TestplanTestscene tesp:testsceneTestcaseList) {
+        if (testsceneTestcaseList.size() > 0) {
+            long planid = testsceneTestcaseList.get(0).getTestplanid();
+            Executeplan executeplan = executeplanService.getById(planid);
+            executeplan.setScenenums(executeplan.getScenenums() + testsceneTestcaseList.size());
+            long casetotal = executeplan.getCasecounts();
+            for (TestplanTestscene tesp : testsceneTestcaseList) {
 
-                long sceneid=tesp.getTestscenenid();
-                Testscene testscene= testsceneService.getById(sceneid);
-                casetotal=casetotal+testscene.getCasenums();
+                long sceneid = tesp.getTestscenenid();
+                Testscene testscene = testsceneService.getById(sceneid);
+                casetotal = casetotal + testscene.getCasenums();
             }
             executeplan.setCasecounts(casetotal);
             executeplanService.update(executeplan);
@@ -110,18 +127,18 @@ public class TestplanTestsceneController {
 
     @PostMapping("/updateplanscenenorder")
     public Result updatePlanCaseorder(@RequestBody final Map<String, Object> param) {
-        long id= Long.parseLong(param.get("id").toString());
-        long caseorder= Long.parseLong(param.get("ordernum").toString());
-        this.testplanTestsceneService.updateplanscenenorder(id,caseorder);
+        long id = Long.parseLong(param.get("id").toString());
+        long caseorder = Long.parseLong(param.get("ordernum").toString());
+        this.testplanTestsceneService.updateplanscenenorder(id, caseorder);
         return ResultGenerator.genOkResult();
     }
 
 
     @PostMapping("/deletescene")
     public Result deletescene(@RequestBody final Map<String, Object> param) {
-        long planid= Long.parseLong(param.get("testplanid").toString());
-        long testscenenid= Long.parseLong(param.get("testscenenid").toString());
-        this.testplanTestsceneService.removeexecuteplantestscene(planid,testscenenid);
+        long planid = Long.parseLong(param.get("testplanid").toString());
+        long testscenenid = Long.parseLong(param.get("testscenenid").toString());
+        this.testplanTestsceneService.removeexecuteplantestscene(planid, testscenenid);
         return ResultGenerator.genOkResult();
     }
 }

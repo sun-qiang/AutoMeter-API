@@ -2495,7 +2495,7 @@
         addsearchscene: {
           page: 1,
           size: 10,
-          casetype: null,
+          usetype: null,
           projectid: ''
         },
         searchscene: {
@@ -5022,6 +5022,7 @@
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname
         this.searchscene.testplanid = this.executeplanList[index].id
+        this.addsearchscene.usetype = this.executeplanList[index].usetype
         this.findscenebyexecplanid()
       },
 

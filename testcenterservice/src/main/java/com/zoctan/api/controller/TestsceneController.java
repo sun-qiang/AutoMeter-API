@@ -65,6 +65,10 @@ public class TestsceneController {
 
         } else
         {
+            //删除场景下的用例
+            Condition decon = new Condition(TestsceneTestcase.class);
+            decon.createCriteria().andCondition("testscenenid = " + id);
+            testsceneTestcaseService.deleteByCondition(decon);
             testsceneService.deleteById(id);
             return ResultGenerator.genOkResult();
         }
