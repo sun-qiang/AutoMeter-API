@@ -24,6 +24,11 @@
     order by a.ordernum
   </select>
 
+  <select id="getstaticsplancases" resultMap="BaseResultMap">
+    SELECT a.planname ,count(*) as id
+    FROM testplan_testscene a where a.projectid=#{projectid}  group by a.planname
+  </select>
+
   <insert id="savetestplanscenen">
     INSERT INTO testplan_testscene (testscenenid,scenename,testplanid,planname,create_time,lastmodify_time,
     ordernum,creator,projectid)

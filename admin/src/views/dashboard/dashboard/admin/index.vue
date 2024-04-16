@@ -20,7 +20,7 @@
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <PieChart BusinessName="测试集合:用例" :typeData="pieplancasetypedata"  :typeValueData="pieplancaseValueData"/>
+          <PieChart BusinessName="测试集合:场景" :typeData="pieplancasetypedata"  :typeValueData="pieplancaseValueData"/>
         </div>
       </el-col>
     </el-row>
@@ -57,7 +57,7 @@ import PieChart from './components/PieChart'
 import { getstaticsdeployapi as getstaticsdeployapi } from '@/api/deployunit/api'
 import { getstaticsdeployunitcases as getstaticsdeployunitcases } from '@/api/assets/apicases'
 import { getstaticsdeploynames as getstaticsdeploynames } from '@/api/deployunit/depunit'
-import { getstaticsplancases as getstaticsplancases } from '@/api/executecenter/executeplantestcase'
+import { getstaticsplancases as getstaticsplancases } from '@/api/executecenter/testplantestscene'
 import { getstaticsplan as getstaticsplan } from '@/api/executecenter/executeplan'
 import { getStaticsPlanCasesList as getStaticsPlanCasesList, getStaticsgetlastdays, getStaticsDeployUnitCasesList } from '@/api/dashboard/StaticsPlanandcases'
 import { mapGetters } from 'vuex'

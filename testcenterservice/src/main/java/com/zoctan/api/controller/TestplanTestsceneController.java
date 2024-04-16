@@ -2,6 +2,7 @@ package com.zoctan.api.controller;
 
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
+import com.zoctan.api.dto.StaticsDataForPie;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.service.ExecuteplanService;
 import com.zoctan.api.service.ExecuteplanbatchService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -149,5 +151,18 @@ public class TestplanTestsceneController {
         long testscenenid = Long.parseLong(param.get("testscenenid").toString());
         this.testplanTestsceneService.removeexecuteplantestscene(planid, testscenenid);
         return ResultGenerator.genOkResult();
+    }
+
+    @GetMapping("/getstaticsplancases")
+    public Result getstaticsplancases(@RequestParam long projectid) {
+        List<TestplanTestscene> list = testplanTestsceneService.getstaticsplancases(projectid);
+        List<StaticsDataForPie> result=new ArrayList<>();
+        for (TestplanTestscene executeplanTestcase: list) {
+            StaticsDataForPie staticsDataForPie =new StaticsDataForPie();
+            staticsDataForPie.setValue(executeplanTestcase.getId());
+            staticsDataForPie.setName(executeplanTestcase.getPlanname());
+            result.add(staticsDataForPie);
+        }
+        return ResultGenerator.genOkResult(result);
     }
 }

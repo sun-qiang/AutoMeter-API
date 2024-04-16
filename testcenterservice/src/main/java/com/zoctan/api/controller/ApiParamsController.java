@@ -203,9 +203,9 @@ public class ApiParamsController {
                 String OldParamName=oldparam.getKeyname();
                 apiParamsService.updateApiParams(apiparam);
                 //更新所有用例值的参数名，（参数值先不刷新成默认值）
-//                for (Apicases apicase : apicasesList) {
-//                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
-//                }
+                for (Apicases apicase : apicasesList) {
+                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
+                }
             }
         }
     }

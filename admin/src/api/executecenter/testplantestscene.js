@@ -8,6 +8,14 @@ export function gettestplanList(params) {
   })
 }
 
+export function getstaticsplancases(params) {
+  return request({
+    url: '/testplan/testscene/getstaticsplancases',
+    method: 'get',
+    params
+  })
+}
+
 export function addtestplantestscene(sceneForm) {
   return request({
     url: '/testplan/testscene/addplanscene',

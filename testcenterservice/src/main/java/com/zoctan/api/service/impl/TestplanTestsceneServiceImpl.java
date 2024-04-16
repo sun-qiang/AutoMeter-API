@@ -50,4 +50,9 @@ private TestplanTestsceneMapper testplanTestsceneMapper;
     public void removeexecuteplanalltestscene(long planid) {
         testplanTestsceneMapper.removeexecuteplanalltestscene(planid);
     }
+
+    @Override
+    public List<TestplanTestscene> getstaticsplancases(long projectid) {
+        return testplanTestsceneMapper.getstaticsplancases(projectid);
+    }
 }
