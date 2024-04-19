@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.ApicasesDbassertMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.ApicasesDbassert">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="caseid" jdbcType="BIGINT" property="caseid" />
+    <result column="asserttype" jdbcType="VARCHAR" property="asserttype" />
+    <result column="envid" jdbcType="BIGINT" property="envid" />
+    <result column="enviroment" jdbcType="VARCHAR" property="enviroment" />
+    <result column="assembleid" jdbcType="BIGINT" property="assembleid" />
+    <result column="assemblename" jdbcType="VARCHAR" property="assemblename" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="expression" jdbcType="LONGVARCHAR" property="expression" />
+    <result column="expectrecordsnums" jdbcType="BIGINT" property="expectrecordsnums" />
+  </resultMap>
+
+
+  <select id="findDbAssertWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM apicases_dbassert a
+    <where>
+      <if test="enviroment != null  and enviroment != ''">and a.enviroment =#{enviroment}</if>
+      <if test="asserttype != null  and asserttype != ''">and a.asserttype =#{asserttype}</if>
+      <if test="caseid != null  and caseid != ''">and a.caseid =#{caseid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+
+  <update id="updateDbAssert" parameterType="com.zoctan.api.entity.ApicasesDbassert">
+    update apicases_dbassert set enviroment = #{enviroment},assemblename=#{assemblename},expression=#{expression},
+       assembleid = #{assembleid}, envid = #{envid},expectrecordsnums = #{expectrecordsnums},creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+</mapper>

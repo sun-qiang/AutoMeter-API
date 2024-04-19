@@ -269,6 +269,7 @@ public class TestCore {
             ActualResult = responeData.getResponeContent();
             //断言
             AssertInfo = FixAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
+            //加数据库断言 AssertInfo = FixDBAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
         } catch (Exception ex) {
             logger.error("CaseException start。。。。。。。。。。。。。!" + ex.getMessage());
             String ExceptionMess = ex.getMessage();

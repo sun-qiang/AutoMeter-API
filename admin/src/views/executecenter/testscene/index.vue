@@ -263,7 +263,7 @@
         <el-table-column label="微服务" align="center" prop="deployunitname" width="110"/>
         <el-table-column label="API" align="center" prop="apiname" width="110"/>
 
-        <el-table-column width="90" align="center" label="用例顺序">
+        <el-table-column width="90" align="center" label="执行步骤">
           <template slot-scope="{row}">
             <template v-if="row.edit">
               <el-input v-model="row.caseorder" class="edit-input"
@@ -300,7 +300,7 @@
               size="small"
               @click="row.edit=!row.edit"
             >
-              设置顺序
+              设置步骤
             </el-button>
           </template>
         </el-table-column>
