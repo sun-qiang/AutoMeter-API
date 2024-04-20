@@ -7,7 +7,6 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
-    <result column="asserttype" jdbcType="VARCHAR" property="asserttype" />
     <result column="envid" jdbcType="BIGINT" property="envid" />
     <result column="enviroment" jdbcType="VARCHAR" property="enviroment" />
     <result column="assembleid" jdbcType="BIGINT" property="assembleid" />
@@ -25,7 +24,7 @@
     FROM apicases_dbassert a
     <where>
       <if test="enviroment != null  and enviroment != ''">and a.enviroment =#{enviroment}</if>
-      <if test="asserttype != null  and asserttype != ''">and a.asserttype =#{asserttype}</if>
+      <if test="assemblename != null  and assemblename != ''">and a.assemblename =#{assemblename}</if>
       <if test="caseid != null  and caseid != ''">and a.caseid =#{caseid}</if>
     </where>
     order by lastmodify_time  DESC

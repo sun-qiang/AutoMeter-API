@@ -1,6 +1,9 @@
 package com.api.autotest.core;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.db.Db;
+import cn.hutool.db.Entity;
+import cn.hutool.db.ds.simple.SimpleDataSource;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.http.HttpRequest;
@@ -14,7 +17,10 @@ import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.log.Logger;
 
+import javax.sql.DataSource;
 import java.util.*;
+
+import static com.api.autotest.core.TestCaseData.logplannameandcasename;
 
 /**
  * Created by fanseasn on 2020/10/17.
@@ -269,7 +275,7 @@ public class TestCore {
             ActualResult = responeData.getResponeContent();
             //断言
             AssertInfo = FixAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
-            //加数据库断言 AssertInfo = FixDBAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
+            AssertInfo = FixDBAssert(AssertInfo, TestAssert, requestObject.getApicasesDBAssertList());
         } catch (Exception ex) {
             logger.error("CaseException start。。。。。。。。。。。。。!" + ex.getMessage());
             String ExceptionMess = ex.getMessage();
@@ -290,14 +296,15 @@ public class TestCore {
     public void FixSceneCondition(RequestObject requestObject) throws Exception {
         Long Sceneid = requestObject.getSceneid();
         logger.info("TestCore 开始处理场景前置条件-============：");
-        FixConditionOrder(Sceneid,"scene",requestObject);
+        FixConditionOrder(Sceneid, "scene", requestObject);
         logger.info("TestCore 完成处理场景前置条件============：");
     }
+
     //处理用例条件入口
     public void FixCaseCondition(RequestObject requestObject) throws Exception {
         Long testcaseid = Long.parseLong(requestObject.getCaseid());
         logger.info("TestCore 开始处理用例前置条件-============：");
-        FixConditionOrder(testcaseid,"case",requestObject);
+        FixConditionOrder(testcaseid, "case", requestObject);
         logger.info("TestCore 完成处理用例前置条件-============：");
 
 //        Long secneid = requestObject.getSceneid();
@@ -305,7 +312,7 @@ public class TestCore {
 //        if (testscenecaseList.size() > 0) {
 //            long SceneCaseID = Long.parseLong(testscenecaseList.get(0).get("id"));
 //            ArrayList<HashMap<String, String>> conditionorderList = GetConditionOrderByID(testcaseid, "case");
-            //接口条件
+        //接口条件
 //            ArrayList<HashMap<String, String>> ConditionApiList = GetConditionApiByObjectIDAndType(SceneCaseID, "scencecase");
 //            //延时条件
 //            ArrayList<HashMap<String, String>> ConditionDelayList = GetConditionDelayByObjectIDAndType(SceneCaseID, "scencecase");
@@ -350,16 +357,16 @@ public class TestCore {
 //            }
         //}
     }
-    public void FixConditionOrder(Long ConditionId,String ConditionType,RequestObject requestObject) throws Exception {
+
+    public void FixConditionOrder(Long ConditionId, String ConditionType, RequestObject requestObject) throws Exception {
         ArrayList<HashMap<String, String>> conditionorderList = GetConditionOrderByID(ConditionId, ConditionType);
         if (conditionorderList.size() > 0) {
             for (HashMap<String, String> conditionorder : conditionorderList) {
                 long conditionid = Long.parseLong(conditionorder.get("conditionid"));
-                ArrayList<HashMap<String, String>> apiresult =GetApiConditionByID(conditionid);
+                ArrayList<HashMap<String, String>> apiresult = GetApiConditionByID(conditionid);
                 if (conditionorder.get("subconditiontype").equals("前置接口条件")) {
                     logger.info("开始顺序处理场景接口前置条件-============================================================：" + conditionorder.get("subconditionname"));
-                    if(apiresult.size()>0)
-                    {
+                    if (apiresult.size() > 0) {
                         HashMap<String, String> hs = apiresult.get(0);
                         testCondition.conditionapi(hs, requestObject);
                     }
@@ -367,9 +374,8 @@ public class TestCore {
                 }
                 if (conditionorder.get("subconditiontype").equals("前置数据库条件")) {
                     logger.info("开始顺序处理场景数据库前置条件-============================================================：" + conditionorder.get("subconditionname"));
-                    ArrayList<HashMap<String, String>> dbresult =GetDBConditionByID(conditionid);
-                    if(dbresult.size()>0)
-                    {
+                    ArrayList<HashMap<String, String>> dbresult = GetDBConditionByID(conditionid);
+                    if (dbresult.size() > 0) {
                         HashMap<String, String> hs = dbresult.get(0);
                         testCondition.conditiondb(hs, requestObject);
                     }
@@ -377,9 +383,8 @@ public class TestCore {
                 }
                 if (conditionorder.get("subconditiontype").equals("前置脚本条件")) {
                     logger.info("开始顺序处理场景脚本前置条件-============================================================：" + conditionorder.get("subconditionname"));
-                    ArrayList<HashMap<String, String>> scriptresult =GetScriptConditionByID(conditionid);
-                    if(scriptresult.size()>0)
-                    {
+                    ArrayList<HashMap<String, String>> scriptresult = GetScriptConditionByID(conditionid);
+                    if (scriptresult.size() > 0) {
                         HashMap<String, String> hs = scriptresult.get(0);
                         testCondition.conditionscript(hs, requestObject);
                     }
@@ -387,9 +392,8 @@ public class TestCore {
                 }
                 if (conditionorder.get("subconditiontype").equals("前置延时条件")) {
                     logger.info("开始顺序处理场景延时前置条件-============================================================：" + conditionorder.get("subconditionname"));
-                    ArrayList<HashMap<String, String>> delayresult =GetDelayConditionByID(conditionid);
-                    if(delayresult.size()>0)
-                    {
+                    ArrayList<HashMap<String, String>> delayresult = GetDelayConditionByID(conditionid);
+                    if (delayresult.size() > 0) {
                         HashMap<String, String> hs = delayresult.get(0);
                         testCondition.conditiondelay(hs, requestObject);
                     }
@@ -435,6 +439,204 @@ public class TestCore {
         }
         return AssertInfo;
     }
+
+    public String FixDBAssert(String AssertInfo, TestAssert TestAssert, List<ApicasesDBAssert> apicasesDBAssertList) throws Exception {
+        try
+        {
+            for (ApicasesDBAssert apicasesDBAssert : apicasesDBAssertList) {
+                Long dbassertid = apicasesDBAssert.getId();
+                Long expectrecordsnums = apicasesDBAssert.getExpectrecordsnums();
+                String Sql = apicasesDBAssert.getExpression();
+                long envid = apicasesDBAssert.getEnvid();
+                long assembleid = apicasesDBAssert.getAssembleid();
+                String assemblename = apicasesDBAssert.getAssemblename();
+                String enviromentname = apicasesDBAssert.getEnviroment();
+                ArrayList<HashMap<String, String>> macdeplist = testMysqlHelp.getcaseData("select * from macdepunit where assembleid=" + assembleid + " and envid=" + envid);
+                if (macdeplist.size() > 0) {
+                    String visittype = "";
+                    long machineid = 0;
+                    for (HashMap<String, String> map : macdeplist) {
+                        for (String Key : map.keySet()) {
+                            if (Key.equals("visittype")) {
+                                visittype = map.get("visittype");
+                            }
+                            if (Key.equals("machineid")) {
+                                machineid = Long.parseLong(map.get("machineid"));
+                            }
+                        }
+                    }
+                    ArrayList<HashMap<String, String>> enviromentAssemblelist = testMysqlHelp.getcaseData("select * from enviroment_assemble where id=" + assembleid);
+                    String ConnnectStr = "";
+                    String AssembleType = "";
+                    String[] ConnetcArray = null;
+                    if (enviromentAssemblelist.size() > 0) {
+                        AssembleType = enviromentAssemblelist.get(0).get("assembletype");
+                        ConnnectStr = enviromentAssemblelist.get(0).get("connectstr");
+                        ConnetcArray = ConnnectStr.split(",");
+                        if (ConnetcArray.length < 4) {
+                            TestAssert.setCaseresult(false);
+                            AssertInfo = AssertInfo + "环境：" + enviromentname + "中的组件：" + "数据库连接字填写不规范，请按规则填写";
+                            return AssertInfo;
+                        }
+                    } else {
+                        TestAssert.setCaseresult(false);
+                        AssertInfo = AssertInfo + "环境：" + enviromentname + "中的组件：" + assemblename + "不存在";
+                        return AssertInfo;
+                    }
+                    ArrayList<HashMap<String, String>> machinelist = testMysqlHelp.getcaseData("select * from machine where id=" + machineid);
+                    if (machinelist.size() == 0) {
+                        TestAssert.setCaseresult(false);
+                        AssertInfo = AssertInfo + "环境：" + enviromentname + "中的组件：" + assemblename + " 所部署的服务器不存在";
+                        return AssertInfo;
+                    } else {
+                        String username = ConnetcArray[0];
+                        String pass = ConnetcArray[1];
+                        String port = ConnetcArray[2];
+                        String dbname = ConnetcArray[3];
+                        String DBUrl = GetDbUrl(AssembleType, macdeplist, visittype, machinelist, dbname, port);
+                        ArrayList<HashMap<String, String>> casedbassertvaluelist = testMysqlHelp.getcaseData("select * from apicases_dbassert_value where dbassertid=" + dbassertid);
+                        String fieldname = "";
+                        String valuetype = "";
+                        String assertcondition = "";
+                        String expectvalue = "";
+                        long roworder = 0;
+                        for (HashMap<String, String> map : casedbassertvaluelist) {
+                            for (String Key : map.keySet()) {
+                                if (Key.equals(new String("fieldname"))) {
+                                    fieldname = map.get(Key);
+                                }
+                                if (Key.equals(new String("valuetype"))) {
+                                    valuetype = map.get(Key);
+                                }
+                                if (Key.equals(new String("assertcondition"))) {
+                                    assertcondition = map.get(Key);
+                                }
+                                if (Key.equals(new String("expectvalue"))) {
+                                    expectvalue = map.get(Key);
+                                }
+                                if (Key.equals(new String("roworder"))) {
+                                    roworder = Long.parseLong(map.get(Key));
+                                }
+                            }
+                        }
+                        if (roworder > 0) {
+                            roworder = roworder - 1;
+                        }
+                        ApicasesDBAssertValue apicasesDBAssertValue=new ApicasesDBAssertValue();
+                        apicasesDBAssertValue.setAssertcondition(assertcondition);
+                        apicasesDBAssertValue.setFieldname(fieldname);
+                        apicasesDBAssertValue.setExpectvalue(expectvalue);
+                        apicasesDBAssertValue.setValuetype(valuetype);
+                        if (AssembleType.equalsIgnoreCase("pgsql")) {
+                            PgsqlConnectionUtils.initDbResource(DBUrl, username, pass);
+                            List<HashMap<String, String>> result = PgsqlConnectionUtils.query(Sql);
+                            if(result.size()!=expectrecordsnums)
+                            {
+                                TestAssert.setCaseresult(false);
+                                AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数："+result.size()+" 期望结果条数为："+expectrecordsnums;
+                                return AssertInfo;
+                            }
+                            String VariablesValue = GetDBResultValueByMap(result, fieldname, roworder);
+                            AssertInfo=TestAssert.AssertDBCondition(apicasesDBAssertValue,expectvalue,VariablesValue);
+
+                        } else {
+                            DataSource ds = new SimpleDataSource(DBUrl, username, pass);
+                            List<Entity> result = Db.use(ds).query(Sql);
+                            if(result.size()!=expectrecordsnums)
+                            {
+                                TestAssert.setCaseresult(false);
+                                AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数："+result.size()+" 期望结果条数为："+expectrecordsnums;
+                                return AssertInfo;
+                            }
+                            String VariablesValue = GetDBResultValueByEntity(result, fieldname, roworder);
+                            AssertInfo=TestAssert.AssertDBCondition(apicasesDBAssertValue,expectvalue,VariablesValue);
+                        }
+                    }
+                } else {
+                    TestAssert.setCaseresult(false);
+                    AssertInfo = AssertInfo + "环境：" + enviromentname + "中的组件：" + assemblename + "不存在";
+                    return AssertInfo;
+                }
+            }
+
+        }catch (Exception ex)
+        {
+            TestAssert.setCaseresult(false);
+            throw new Exception("数据库断言异常:"+ex.getMessage());
+        }
+        return AssertInfo;
+    }
+
+    private String GetDbUrl(String AssembleType, ArrayList<HashMap<String, String>> macdepunitlist, String deployunitvisittype, ArrayList<HashMap<String, String>> machinelist, String dbname, String port) {
+        String DBUrl = "";
+        if (AssembleType.equalsIgnoreCase("pgsql")) {
+            DBUrl = "jdbc:postgresql://";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machinelist.get(0).get("ip");
+                DBUrl = DBUrl + IP + ":" + port + "/" + dbname;
+            } else {
+                String Domain = macdepunitlist.get(0).get("domain");
+                DBUrl = DBUrl + Domain + "/" + dbname;
+            }
+        }
+        if (AssembleType.equalsIgnoreCase("mysql")) {
+            DBUrl = "jdbc:mysql://";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machinelist.get(0).get("ip");
+                DBUrl = DBUrl + IP + ":" + port + "/" + dbname + "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+            } else {
+                String Domain = macdepunitlist.get(0).get("domain");
+                DBUrl = DBUrl + Domain + "/" + dbname + "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+            }
+        }
+        if (AssembleType.equalsIgnoreCase("oracle")) {
+            DBUrl = "jdbc:oracle:thin:@";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machinelist.get(0).get("ip");
+                DBUrl = DBUrl + IP + ":" + port + ":" + dbname;
+            } else {
+                String Domain = macdepunitlist.get(0).get("domain");
+                DBUrl = DBUrl + Domain + ":" + dbname;
+            }
+        }
+        return DBUrl;
+    }
+
+    private String GetDBResultValueByMap(List<HashMap<String, String>> DbResult, String columnname, long rownum) throws Exception {
+        String Result = null;
+        for (int i = 0; i < DbResult.size(); i++) {
+            if (i == rownum) {
+                HashMap<String, String> rowdata = DbResult.get(i);
+                for (String Cloumn : rowdata.keySet()) {
+                    if (Cloumn.equalsIgnoreCase(columnname)) {
+                        Result = rowdata.get(Cloumn);
+                    }
+                }
+            }
+        }
+        if (Result == null) {
+            throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配");
+        }
+        return Result;
+    }
+
+    private String GetDBResultValueByEntity(List<Entity> DbResult, String columnname, long rownum) throws Exception {
+        String Result = null;
+        for (int i = 0; i < DbResult.size(); i++) {
+            if (i == rownum) {
+                Entity row = DbResult.get(i);
+                Result = row.getStr(columnname);
+            }
+        }
+        if (Result == null) {
+            throw new Exception("未获得数据库变量值，请确认查询sql是否能正常获取数据，或者列名是否和Sql中匹配");
+        }
+        return Result;
+    }
+
 
     //发送邮件
     public void SendMailByFinishPlanCase(String PlanID, String BatchName) {
@@ -661,7 +863,8 @@ public class TestCore {
 
 
     //获取条件
-    private ArrayList<HashMap<String, String>> GetConditionByPlanIDAndConditionType(Long Caseid, String ConditionType, String ObjectType) {
+    private ArrayList<HashMap<String, String>> GetConditionByPlanIDAndConditionType(Long Caseid, String
+            ConditionType, String ObjectType) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetConditionByPlanIDAndConditionType(Caseid, ConditionType, ObjectType);
         return result;
     }
@@ -721,14 +924,17 @@ public class TestCore {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetApiConditionByID(ID);
         return result;
     }
+
     private ArrayList<HashMap<String, String>> GetDBConditionByID(Long ID) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetDBConditionByID(ID);
         return result;
     }
+
     private ArrayList<HashMap<String, String>> GetScriptConditionByID(Long ID) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetScriptConditionByID(ID);
         return result;
     }
+
     private ArrayList<HashMap<String, String>> GetDelayConditionByID(Long ID) {
         ArrayList<HashMap<String, String>> result = testMysqlHelp.GetDelayConditionByID(ID);
         return result;
@@ -777,18 +983,21 @@ public class TestCore {
     }
 
     // 获取用例Header，params，Body，Dubbo数据
-    public HashMap<String, String> fixhttprequestdatas(String MapType, ArrayList<HashMap<String, String>> casedatalist) {
+    public HashMap<String, String> fixhttprequestdatas(String
+                                                               MapType, ArrayList<HashMap<String, String>> casedatalist) {
         HashMap<String, String> DataMap = testMysqlHelp.fixhttprequestdatas(MapType, casedatalist);
         return DataMap;
     }
 
-    public HashMap<String, String> getparamsdatabytype(String MapType, ArrayList<HashMap<String, String>> casedatalist) {
+    public HashMap<String, String> getparamsdatabytype(String
+                                                               MapType, ArrayList<HashMap<String, String>> casedatalist) {
         HashMap<String, String> DataMap = testMysqlHelp.getparamsdatabytype(MapType, casedatalist);
         return DataMap;
     }
 
     // 记录用例测试结果
-    public int savetestcaseresult(boolean status, long time, String respone, String assertvalue, String errorinfo, RequestObject requestObject, JavaSamplerContext context) {
+    public int savetestcaseresult(boolean status, long time, String respone, String assertvalue, String
+            errorinfo, RequestObject requestObject, JavaSamplerContext context) {
         int key = testMysqlHelp.savetestcaseresult(status, time, respone, assertvalue, errorinfo, requestObject, context);
         return key;
     }
@@ -844,21 +1053,26 @@ public class TestCore {
     }
 
     // 更新用例调度结果
-    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String batchname, String status) {
+    public void updatedispatchcasestatus(String testplanid, String caseid, String slaverid, String sceneid, String
+            batchname, String status) {
         testMysqlHelp.updatedispatchcasestatus(testplanid, caseid, slaverid, sceneid, batchname, status);
     }
 
-    public void updatebatchdispatchcasestatus(String testplanid, String slaverid, String sceneid, String batchname, String status) {
+    public void updatebatchdispatchcasestatus(String testplanid, String slaverid, String sceneid, String
+            batchname, String status) {
         testMysqlHelp.updatebatchdispatchcasestatus(testplanid, slaverid, sceneid, batchname, status);
     }
 
     // 更新用例调度结果
-    public void generalperformancelogfile(String testplanid, String caseid, String slaverid, String batchid, String Filename, String status) {
+    public void generalperformancelogfile(String testplanid, String caseid, String slaverid, String batchid, String
+            Filename, String status) {
         testMysqlHelp.generalperformancelogfile(testplanid, caseid, slaverid, batchid, Filename, status);
     }
 
     //生成性能报告目录
-    public void genealperformacestaticsreport(String testclass, String batchname, String testplanid, String batchid, String slaverid, String caseid, String casereportfolder, double costtime, String Creator) throws Exception {
+    public void genealperformacestaticsreport(String testclass, String batchname, String testplanid, String
+            batchid, String slaverid, String caseid, String casereportfolder, double costtime, String Creator) throws
+            Exception {
         testMysqlHelp.genealperformacestaticsreport(testclass, batchname, testplanid, batchid, slaverid, caseid, casereportfolder, costtime, Creator);
     }
 }

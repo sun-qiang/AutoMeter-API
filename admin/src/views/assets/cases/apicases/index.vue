@@ -872,8 +872,7 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <el-dialog width="900px" title='数据库断言值列表' :visible.sync="dbassertvaluelistDialogFormVisible">
+    <el-dialog width="1000px" title='数据库断言值列表' :visible.sync="dbassertvaluelistDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -900,9 +899,10 @@
           </template>
         </el-table-column>
         <el-table-column :show-overflow-tooltip="true" label="列名" align="center" prop="fieldname" width="90"/>
-        <el-table-column :show-overflow-tooltip="true" label="行号" align="center" prop="roworder" width="80"/>
-        <el-table-column :show-overflow-tooltip="true" label="期望值" align="center" prop="expectvalue" width="80"/>
-        <el-table-column :show-overflow-tooltip="true" label="值类型" align="center" prop="valuetype" width="90"/>
+        <el-table-column :show-overflow-tooltip="true" label="行号" align="center" prop="roworder" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="期望值" align="center" prop="expectvalue" width="130"/>
+        <el-table-column :show-overflow-tooltip="true" label="值类型" align="center" prop="valuetype" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="条件" align="center" prop="assertcondition" width="70"/>
         <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="140">
           <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
         </el-table-column>
@@ -985,6 +985,16 @@
             <el-option label="String" value="String"></el-option>
             <el-option label="Array" value="Array"></el-option>
             <el-option label="Bool" value="Bool"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="条件" prop="assertcondition" required >
+          <el-select v-model="tmpdbassertvalue.assertcondition" style="width:500px" placeholder="条件">
+            <el-option label="等于" value="="></el-option>
+            <el-option label="大于" value=">"></el-option>
+            <el-option label="小于" value="<"></el-option>
+            <el-option label="包含" value="Contain"></el-option>
+            <el-option label="不包含" value="NoContain"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -2670,6 +2680,7 @@
           fieldname: '',
           roworder: '',
           valuetype: '',
+          assertcondition: '',
           expectvalue: '',
           memo: '',
           creator: ''
@@ -4766,7 +4777,8 @@
         this.tmpdbassertvalue.expectvalue = ''
         this.tmpdbassertvalue.valuetype = ''
         this.tmpdbassertvalue.roworder = ''
-        this.tmpdbassertvalue.fieldname = null
+        this.tmpdbassertvalue.fieldname = ''
+        this.tmpdbassertvalue.assertcondition = ''
         this.tmpdbassertvalue.creator = this.name
       },
 
@@ -5196,6 +5208,7 @@
         this.tmpdbassertvalue.fieldname = this.ApicasesdbassertvalueList[index].fieldname
         this.tmpdbassertvalue.roworder = this.ApicasesdbassertvalueList[index].roworder
         this.tmpdbassertvalue.valuetype = this.ApicasesdbassertvalueList[index].valuetype
+        this.tmpdbassertvalue.assertcondition = this.ApicasesdbassertvalueList[index].assertcondition
         this.tmpdbassertvalue.expectvalue = this.ApicasesdbassertvalueList[index].expectvalue
         this.tmpdbassertvalue.memo = this.ApicasesdbassertvalueList[index].memo
         this.tmpdbassertvalue.creator = this.name

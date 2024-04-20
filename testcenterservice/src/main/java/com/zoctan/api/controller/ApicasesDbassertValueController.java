@@ -28,7 +28,7 @@ public class ApicasesDbassertValueController {
     public Result add(@RequestBody ApicasesDbassertValue apicasesDbassertValue) {
         Condition con=new Condition(ApicasesDbassertValue.class);
         con.createCriteria().andCondition("dbassertid = "+apicasesDbassertValue.getDbassertid())
-                .andCondition("enviroment = '" + apicasesDbassertValue.getFieldname().replace("'","''") + "'")
+                .andCondition("fieldname = '" + apicasesDbassertValue.getFieldname().replace("'","''") + "'")
                 .andCondition("roworder = " + apicasesDbassertValue.getRoworder());
         if(apicasesDbassertValueService.ifexist(con)>0)
         {
@@ -74,7 +74,7 @@ public class ApicasesDbassertValueController {
     public Result updateDeploy(@RequestBody final ApicasesDbassertValue apicasesDbassertValue) {
         Condition con=new Condition(ApicasesDbassertValue.class);
         con.createCriteria().andCondition("dbassertid = "+apicasesDbassertValue.getDbassertid())
-                .andCondition("enviroment = '" + apicasesDbassertValue.getFieldname().replace("'","''") + "'")
+                .andCondition("fieldname = '" + apicasesDbassertValue.getFieldname().replace("'","''") + "'")
                 .andCondition("roworder = " + apicasesDbassertValue.getRoworder())
                 .andCondition("id <> " + apicasesDbassertValue.getId());
         if(apicasesDbassertValueService.ifexist(con)>0)

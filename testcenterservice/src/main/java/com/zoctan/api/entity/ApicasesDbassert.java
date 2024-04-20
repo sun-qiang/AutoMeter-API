@@ -31,7 +31,6 @@ public class ApicasesDbassert {
     /**
      * 断言类型
      */
-    private String asserttype;
 
     public Long getEnvid() {
         return envid;
@@ -132,29 +131,6 @@ public class ApicasesDbassert {
         this.caseid = caseid;
     }
 
-    /**
-     * 获取断言类型
-     *
-     * @return asserttype - 断言类型
-     */
-    public String getAsserttype() {
-        return asserttype;
-    }
-
-    /**
-     * 设置断言类型
-     *
-     * @param asserttype 断言类型
-     */
-    public void setAsserttype(String asserttype) {
-        this.asserttype = asserttype;
-    }
-
-    /**
-     * 获取断言子类型
-     *
-     * @return envid - 断言子类型
-     */
     /**
      * 获取断言值
      *

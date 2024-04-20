@@ -54,6 +54,17 @@ public class RequestObject {
 
     private List<ApicasesAssert> apicasesAssertList;
 
+    public List<ApicasesDBAssert> getApicasesDBAssertList() {
+        return apicasesDBAssertList;
+    }
+
+    public void setApicasesDBAssertList(List<ApicasesDBAssert> apicasesDBAssertList) {
+        this.apicasesDBAssertList = apicasesDBAssertList;
+    }
+
+    private List<ApicasesDBAssert> apicasesDBAssertList;
+
+
     public String getTestplanid() {
         return testplanid;
     }

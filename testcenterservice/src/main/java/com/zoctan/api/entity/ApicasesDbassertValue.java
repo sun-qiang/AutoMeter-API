@@ -22,6 +22,16 @@ public class ApicasesDbassertValue {
      */
     private String fieldname;
 
+    public String getAssertcondition() {
+        return assertcondition;
+    }
+
+    public void setAssertcondition(String assertcondition) {
+        this.assertcondition = assertcondition;
+    }
+
+    private String assertcondition;
+    
     /**
      * 行号
      */

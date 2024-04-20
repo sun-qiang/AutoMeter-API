@@ -2,9 +2,7 @@ package com.api.autotest.core;
 
 import cn.hutool.Hutool.*;
 import cn.hutool.core.util.XmlUtil;
-import com.api.autotest.dto.ApicasesAssert;
-import com.api.autotest.dto.ResponeData;
-import com.api.autotest.dto.TestResponeData;
+import com.api.autotest.dto.*;
 import com.jayway.jsonpath.JsonPath;
 import net.didion.jwnl.data.Exc;
 import org.apache.http.Header;
@@ -205,7 +203,26 @@ public class TestAssert {
         if (apicasesAssert.getAssertcondition().equals("NoContain")) {
             AssertInfo = AssertNoContains(ExpectValue, ActualResult);
         }
+        return AssertInfo;
+    }
 
+    public String AssertDBCondition(ApicasesDBAssertValue apicasesDBAssertValue, String ExpectValue, String ActualResult) {
+        String AssertInfo = "";
+        if (apicasesDBAssertValue.getAssertcondition().equals("=")) {
+            AssertInfo = CallAssertEqualFun(apicasesDBAssertValue.getValuetype(), ExpectValue, ActualResult);
+        }
+        if (apicasesDBAssertValue.getAssertcondition().equals(">")) {
+            AssertInfo = CallAssertMoreFun(apicasesDBAssertValue.getValuetype(), ExpectValue, ActualResult);
+        }
+        if (apicasesDBAssertValue.getAssertcondition().equals("<")) {
+            AssertInfo = CallAssertLessFun(apicasesDBAssertValue.getValuetype(), ExpectValue, ActualResult);
+        }
+        if (apicasesDBAssertValue.getAssertcondition().equals("Contain")) {
+            AssertInfo = AssertContains(ExpectValue, ActualResult);
+        }
+        if (apicasesDBAssertValue.getAssertcondition().equals("NoContain")) {
+            AssertInfo = AssertNoContains(ExpectValue, ActualResult);
+        }
         return AssertInfo;
     }
 
@@ -316,6 +333,43 @@ public class TestAssert {
             }
         }
         return apicasesAssertList;
+    }
+
+    public List<ApicasesDBAssert> GetApicasesdbAssertList(ArrayList<HashMap<String, String>> list) {
+        List<ApicasesDBAssert> apicasesdbAssertList = new ArrayList<>();
+        if (list.size() > 0) {
+            for (HashMap<String, String> map : list) {
+                ApicasesDBAssert apicasesAssert = new ApicasesDBAssert();
+                for (String Key : map.keySet()) {
+                    if (Key.equals(new String("caseid"))) {
+                        apicasesAssert.setCaseid(Long.parseLong(map.get(Key)));
+                    }
+                    if (Key.equals(new String("id"))) {
+                        apicasesAssert.setId(Long.parseLong(map.get(Key)));
+                    }
+                    if (Key.equals(new String("assembleid"))) {
+                        apicasesAssert.setAssembleid(Long.parseLong(map.get(Key)));
+                    }
+                    if (Key.equals(new String("assemblename"))) {
+                        apicasesAssert.setAssemblename(map.get(Key));
+                    }
+                    if (Key.equals(new String("envid"))) {
+                        apicasesAssert.setEnvid(Long.parseLong(map.get(Key)));
+                    }
+                    if (Key.equals(new String("enviroment"))) {
+                        apicasesAssert.setEnviroment(map.get(Key));
+                    }
+                    if (Key.equals(new String("expression"))) {
+                        apicasesAssert.setExpression(map.get(Key));
+                    }
+                    if (Key.equals(new String("expectrecordsnums"))) {
+                        apicasesAssert.setExpectrecordsnums(Long.parseLong(map.get(Key)));
+                    }
+                }
+                apicasesdbAssertList.add(apicasesAssert);
+            }
+        }
+        return apicasesdbAssertList;
     }
 
     private boolean flag = true;

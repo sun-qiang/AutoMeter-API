@@ -10,6 +10,7 @@
     <result column="fieldname" jdbcType="VARCHAR" property="fieldname" />
     <result column="roworder" jdbcType="BIGINT" property="roworder" />
     <result column="valuetype" jdbcType="VARCHAR" property="valuetype" />
+    <result column="assertcondition" jdbcType="VARCHAR" property="assertcondition" />
     <result column="expectvalue" jdbcType="LONGVARCHAR" property="expectvalue" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
@@ -31,7 +32,7 @@
 
   <update id="updateDbAssertValue" parameterType="com.zoctan.api.entity.ApicasesDbassert">
     update apicases_dbassert_value set fieldname = #{fieldname},roworder=#{roworder},valuetype=#{valuetype},
-    creator = #{creator}, expectvalue = #{expectvalue}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    creator = #{creator}, expectvalue = #{expectvalue}, assertcondition = #{assertcondition} lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 </mapper>

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.api.autotest.common.utils.HttpHeader;
 import com.api.autotest.common.utils.HttpParamers;
 import com.api.autotest.dto.ApicasesAssert;
+import com.api.autotest.dto.ApicasesDBAssert;
 import com.api.autotest.dto.RequestObject;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.log.Logger;
@@ -125,6 +126,7 @@ public class TestCaseData {
             ArrayList<HashMap<String, String>> deployunitmachineiplist = testMysqlHelp.getcaseData("select m.ip,a.domain,a.visittype from macdepunit a INNER JOIN apicases b INNER JOIN executeplan c JOIN machine m on a.depunitid=b.deployunitid and  a.envid=c.envid and  m.id=a.machineid where b.id=" + TestCaseId + " and c.id=" + PlanId);
             ArrayList<HashMap<String, String>> caselist = testMysqlHelp.getcaseData("select * from apicases where id=" + TestCaseId);
             ArrayList<HashMap<String, String>> caseassertlist = testMysqlHelp.getcaseData("select * from apicases_assert where caseid=" + TestCaseId);
+            ArrayList<HashMap<String, String>> casedbassertlist = testMysqlHelp.getcaseData("select * from apicases_dbassert where caseid=" + TestCaseId);
 
             // url请求资源路径
             String path = testMysqlHelp.getcaseValue("path", apilist);
@@ -180,18 +182,21 @@ public class TestCaseData {
                 }
                 logger.info(logplannameandcasename + "resource domain is " + resource);
             }
-
-
             //获取断言记录
             TestAssert testAssert = new TestAssert(logger);
             List<ApicasesAssert> apicasesAssertList = testAssert.GetApicasesAssertList(caseassertlist);
             ro.setApicasesAssertList(apicasesAssertList);
+            //获取数据库断言记录
+            List<ApicasesDBAssert> apicasesDBAssertList = testAssert.GetApicasesdbAssertList(casedbassertlist);
+            ro.setApicasesDBAssertList(apicasesDBAssertList);
+            String expect = GetAssertInfo(apicasesAssertList);
+            logger.info(logplannameandcasename + "用例数据 接口断言期望 is :  " + expect );
+            expect=GetDBAssertInfo(expect,apicasesDBAssertList);
+            logger.info(logplannameandcasename + "用例数据 断言期望 is :  " + expect );
 
             String casetype = testMysqlHelp.getcaseValue("casetype", caselist);
             String CaseName = testMysqlHelp.getcaseValue("casename", caselist);
             String ProjectID = testMysqlHelp.getcaseValue("projectid", caselist);
-
-            String expect = GetAssertInfo(apicasesAssertList);
             logger.info(logplannameandcasename + "用例数据 resource is :  " + resource + "   protocal  is:   " + protocal + "  expect is :      " + expect + "  visittype is: " + method + "   path is: " + path + " casetype is: " + casetype);
 
             ro.setProjectid(ProjectID);
@@ -231,6 +236,42 @@ public class TestCaseData {
                     expectValue = expectValue + "【断言类型：" + apicasesAssert.getAsserttype() + "， 断言子类型：" + apicasesAssert.getAssertsubtype() + "， 断言条件：" + apicasesAssert.getAssertcondition() + "， 断言值：" + apicasesAssert.getAssertvalues() + "， 断言值类型：" + apicasesAssert.getAssertvaluetype() + "】";
                 } else {
                     expectValue = expectValue + "【断言类型：" + apicasesAssert.getAsserttype() + "， 断言表达式：" + apicasesAssert.getExpression() + "， 断言条件：" + apicasesAssert.getAssertcondition() + "， 断言值：" + apicasesAssert.getAssertvalues() + "， 断言值类型：" + apicasesAssert.getAssertvaluetype() + "】";
+                }
+            }
+        }
+        return expectValue;
+    }
+
+    //获取数据库断言信息
+    private String GetDBAssertInfo(String expectValue,List<ApicasesDBAssert> apicasesDBAssertList) {
+        if (apicasesDBAssertList.size() > 0) {
+            for (ApicasesDBAssert apicasesDBAssert : apicasesDBAssertList) {
+               long dbassertid= apicasesDBAssert.getId();
+                ArrayList<HashMap<String, String>> casedbassertvaluelist = testMysqlHelp.getcaseData("select * from apicases_dbassert_value where dbassertid=" + dbassertid);
+                String fieldname = "";
+                String valuetype = "";
+                String assertcondition = "";
+                String expectvalue = "";
+                long roworder = 0;
+                for (HashMap<String, String> map : casedbassertvaluelist) {
+                    for (String Key : map.keySet()) {
+                        if (Key.equals(new String("fieldname"))) {
+                            fieldname = map.get(Key);
+                        }
+                        if (Key.equals(new String("valuetype"))) {
+                            valuetype = map.get(Key);
+                        }
+                        if (Key.equals(new String("assertcondition"))) {
+                            assertcondition = map.get(Key);
+                        }
+                        if (Key.equals(new String("expectvalue"))) {
+                            expectvalue = map.get(Key);
+                        }
+                        if (Key.equals(new String("roworder"))) {
+                            roworder = Long.parseLong(map.get(Key));
+                        }
+                    }
+                    expectValue = expectValue + "【数据库断言字段名：" + fieldname + "， 行号：" + roworder+ "， 断言条件：" + assertcondition + "， 断言期望值：" + expectvalue + "， 断言值类型：" + valuetype + "】";
                 }
             }
         }
