@@ -818,7 +818,6 @@
       >
         <el-form-item label="环境：" prop="enviroment"  required>
           <el-select clearable style="width:500px" v-model="tmpdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)" >
-            <el-option label="请选择"  value=""  />
             <div v-for="(enviroment, index) in enviromentnameList" :key="index">
               <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
             </div>
@@ -827,7 +826,6 @@
 
         <el-form-item label="数据库组件：" prop="assemblename" required >
           <el-select clearable style="width:500px" v-model="tmpdbassert.assemblename" filterable placeholder="数据库组件"  @change="dbassertselectChangedAS($event)">
-            <el-option label="请选择" value="''"  />
             <div v-for="(macname, index) in enviroment_assembleList" :key="index">
               <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
             </div>
