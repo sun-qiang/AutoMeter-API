@@ -300,6 +300,7 @@
         search: {
           page: 1,
           size: 10,
+          accountId: null,
           globalheadername: null,
           projectid: ''
         }
@@ -307,12 +308,13 @@
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getglobalheaderList()
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     methods: {

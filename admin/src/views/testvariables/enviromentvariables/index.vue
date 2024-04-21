@@ -196,6 +196,7 @@
         search: {
           page: 1,
           size: 10,
+          accountId: null,
           variablesname: null,
           envname: null,
           projectid: ''
@@ -204,6 +205,7 @@
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getenviromentvariablesList()
       this.getenviromentallList()
@@ -214,7 +216,7 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     methods: {

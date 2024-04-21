@@ -19,6 +19,18 @@ public class Dispatch {
      */
     private Long execplanid;
 
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
+
+
     public Long getCaseorder() {
         return caseorder;
     }

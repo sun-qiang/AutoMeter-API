@@ -356,6 +356,7 @@ public class TestPlanCaseController {
         dis.setPlantype(ep.getUsetype());
         dis.setThreadnum(ThreadNum);
         dis.setLoops(Loops);
+        dis.setProjectid(ep.getProjectid());
         return dis;
     }
 

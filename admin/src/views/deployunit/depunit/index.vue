@@ -345,7 +345,8 @@
           size: 10,
           deployunitname: null,
           protocal: null,
-          creator: '',
+          accountId: this.accountId,
+          creator: this.name,
           projectid: ''
         },
         createRules: {
@@ -355,10 +356,13 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     created() {
+      console.log(111111111111111)
+      console.log(this.accountId)
+      this.search.accountId = this.accountId
       this.getdepunitList()
       this.search.projectid = window.localStorage.getItem('pid')
       console.log(window.localStorage.getItem('pid'))

@@ -24,6 +24,17 @@ public class Dispatch {
 
     private String stopflag;
 
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    private Long projectid;
+
+
     /**
      * 执行计划Id
      */

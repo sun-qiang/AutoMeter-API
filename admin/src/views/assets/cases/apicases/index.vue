@@ -3057,6 +3057,7 @@
           casename: null,
           projectid: '',
           nickname: '',
+          accountId: this.accountId,
           creator: this.name
         },
         searchassert: {
@@ -3255,6 +3256,7 @@
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpconditionquery.projectid = window.localStorage.getItem('pid')
       this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3279,7 +3281,7 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     methods: {

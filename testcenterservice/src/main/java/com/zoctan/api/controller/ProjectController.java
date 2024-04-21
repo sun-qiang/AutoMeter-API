@@ -90,6 +90,11 @@ public class ProjectController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page= Integer.parseInt(param.get("page").toString());
         Integer size= Integer.parseInt(param.get("size").toString());
+        long accountid = Long.parseLong(param.get("accountId").toString());
+        if (accountid == 1) {
+            param.put("creator", null);
+            param.put("projectid", null);
+        }
         PageHelper.startPage(page, size);
         final List<Project> list = this.projectService.findProjectWithName(param);
         final PageInfo<Project> pageInfo = new PageInfo<>(list);

@@ -342,6 +342,7 @@
           page: 1,
           size: 10,
           projectname: null,
+          accountId: null,
           status: null
         },
         searchprojectaccount: {
@@ -360,11 +361,12 @@
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.getprojectList()
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'avatar'])
+      ...mapGetters(['name', 'sidebar', 'avatar', 'accountId'])
     },
 
     methods: {

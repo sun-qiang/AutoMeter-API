@@ -2709,6 +2709,7 @@ export default {
         page: 1,
         size: 10,
         scenename: null,
+        accountId: null,
         projectid: ''
       },
       searchapicondition: {
@@ -2842,6 +2843,7 @@ export default {
   },
 
   created() {
+    this.search.accountId = this.accountId
     this.addsearchcase.projectid = window.localStorage.getItem('pid')
     this.tmptestdata.projectid = window.localStorage.getItem('pid')
     this.debugsearch.projectid = window.localStorage.getItem('pid')
@@ -2867,7 +2869,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+    ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
 
   methods: {

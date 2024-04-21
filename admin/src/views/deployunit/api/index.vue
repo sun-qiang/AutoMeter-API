@@ -875,7 +875,8 @@ export default {
         path: null,
         projectid: '',
         nickname: '',
-        creator: ''
+        accountId: this.accountId,
+        creator: this.name
       },
       searchvaraibles: {
         page: 1,
@@ -896,9 +897,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
+    ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
   created() {
+    this.search.accountId = this.accountId
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
       { id: '', keyname: '', keytype: '', keydefaultvalue: '', propertytype: 'Header', creator: '' }

@@ -668,6 +668,7 @@ export default {
         size: 10,
         enviromentname: null,
         creator: '',
+        accountId: null,
         projectid: ''
       },
       servicesearch: {
@@ -705,6 +706,7 @@ export default {
   },
 
   created() {
+    this.search.accountId = this.accountId
     this.search.projectid = window.localStorage.getItem('pid')
     this.searchproject.projectid = window.localStorage.getItem('pid')
     this.servicesearch.projectid = window.localStorage.getItem('pid')
@@ -722,7 +724,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+    ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
 
   methods: {

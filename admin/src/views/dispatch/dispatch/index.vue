@@ -216,6 +216,7 @@
           page: 1,
           size: 10,
           execplanname: null,
+          accountId: null,
           batchname: null,
           projectid: ''
         }
@@ -223,10 +224,11 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getallexplan()
       this.getdispatchList()

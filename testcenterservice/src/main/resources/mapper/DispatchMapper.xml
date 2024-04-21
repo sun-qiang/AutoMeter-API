@@ -25,6 +25,7 @@
     <result column="threadnum" jdbcType="BIGINT" property="threadnum" />
     <result column="stopflag" jdbcType="VARCHAR" property="stopflag" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
   </resultMap>
@@ -35,7 +36,8 @@
     <where>
       <if test="execplanname != null and execplanname != ''">a.execplanname like CONCAT('%',#{execplanname},'%')</if>
       <if test="batchname != null  and batchname != ''">and a.batchname like CONCAT('%',#{batchname},'%')</if>
-    and b.projectid =#{projectid}
+      <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
+      and b.projectid =#{projectid}
     </where>
     order by create_time  DESC
   </select>

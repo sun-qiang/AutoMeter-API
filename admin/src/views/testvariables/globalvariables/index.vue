@@ -188,18 +188,20 @@
           page: 1,
           size: 10,
           keyname: null,
+          accountId: null,
           projectid: ''
         }
       }
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getglobalvariablesList()
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     methods: {

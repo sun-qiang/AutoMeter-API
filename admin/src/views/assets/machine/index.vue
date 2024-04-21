@@ -225,6 +225,7 @@
         search: {
           page: 1,
           size: 10,
+          accountId: null,
           machinename: null,
           ip: null,
           projectid: '',
@@ -234,10 +235,11 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getmachineList()
     },

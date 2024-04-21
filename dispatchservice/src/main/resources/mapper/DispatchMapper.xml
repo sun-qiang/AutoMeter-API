@@ -28,6 +28,7 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="plantype" jdbcType="VARCHAR" property="plantype" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
   </resultMap>
 

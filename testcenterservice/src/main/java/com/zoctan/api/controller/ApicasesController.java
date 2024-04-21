@@ -672,7 +672,7 @@ public class ApicasesController {
                             .andCondition("testcaseid = " + apicases.getId());
                     List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(con);
                     boolean flag = false;
-                    String SceneName="";
+                    String SceneName = "";
                     for (TestsceneTestcase testcase : testsceneTestcaseList) {
                         Long Sceneid = testcase.getTestscenenid();
                         Testscene testscene = testsceneService.getBy("id", Sceneid);
@@ -688,7 +688,7 @@ public class ApicasesController {
                         conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
                         return ResultGenerator.genOkResult();
                     } else {
-                        return ResultGenerator.genFailedResult("当前用例类型为：" + existapicases.getCasetype() + ",已在相同类型的测试场景:"+SceneName+" 中存在，请先到测试场景中移除该用例后再尝试修改类型");
+                        return ResultGenerator.genFailedResult("当前用例类型为：" + existapicases.getCasetype() + ",已在相同类型的测试场景:" + SceneName + " 中存在，请先到测试场景中移除该用例后再尝试修改类型");
                     }
                 } else {
                     this.apicasesService.updateApicase(apicases);
@@ -710,9 +710,10 @@ public class ApicasesController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
-        String creator = param.get("creator").toString();
-        if (creator.equalsIgnoreCase("admin")) {
+        long accountid = Long.parseLong(param.get("accountId").toString());
+        if (accountid == 1) {
             param.put("creator", null);
+            param.put("projectid", null);
         }
         PageHelper.startPage(page, size);
         final List<Apicases> list = this.apicasesService.findApiCaseWithName(param);
@@ -903,8 +904,7 @@ public class ApicasesController {
                 .andCondition("testscenenid = " + sceneid);
         List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
 
-        if(testsceneTestcaseList.size()==0)
-        {
+        if (testsceneTestcaseList.size() == 0) {
             return ResultGenerator.genFailedResult("当前测试场景下无测试用例，请先装载用例后再调试！");
         }
 
@@ -1038,16 +1038,14 @@ public class ApicasesController {
                 Condition envcon = new Condition(Enviromentvariables.class);
                 rdcon.createCriteria().andCondition("projectid = " + projectid);
                 List<Enviromentvariables> envvariablesList = enviromentvariablesService.listByCondition(envcon);
-                HashMap<String, HashMap<Long,String>> EnvVariablesHashMap = new HashMap<>();
+                HashMap<String, HashMap<Long, String>> EnvVariablesHashMap = new HashMap<>();
                 for (Enviromentvariables va : envvariablesList) {
-                    HashMap<Long,String> envidvaluemap=new HashMap<>();
-                    if(!EnvVariablesHashMap.containsKey(va.getVariablesname()))
-                    {
-                        envidvaluemap.put(va.getEnvid(),va.getVariablesvalue());
-                        EnvVariablesHashMap.put(va.getVariablesname(),envidvaluemap);
-                    } else
-                    {
-                        EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(),va.getVariablesvalue());
+                    HashMap<Long, String> envidvaluemap = new HashMap<>();
+                    if (!EnvVariablesHashMap.containsKey(va.getVariablesname())) {
+                        envidvaluemap.put(va.getEnvid(), va.getVariablesvalue());
+                        EnvVariablesHashMap.put(va.getVariablesname(), envidvaluemap);
+                    } else {
+                        EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(), va.getVariablesvalue());
                     }
                 }
                 ApicasesController.log.info("。。。。。。。。处理前的resource Url：" + resource);
@@ -1055,8 +1053,7 @@ public class ApicasesController {
                 for (Enviromentvariables envvariables : envvariablesList) {
                     String VariableName = "#" + envvariables.getVariablesname() + "#";
                     if (resource.contains(VariableName)) {
-                        if(envvariables.getEnvid().equals(Long.parseLong(enviromentid)))
-                        {
+                        if (envvariables.getEnvid().equals(Long.parseLong(enviromentid))) {
                             Object VariableValue = envvariables.getVariablesvalue();
                             resource = resource.replace(VariableName, VariableValue.toString());
                         }
@@ -1130,7 +1127,7 @@ public class ApicasesController {
                 //Header用例值
                 HttpHeader header = new HttpHeader();
                 try {
-                    header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                    header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
                 } catch (Exception exception) {
                     //return ResultGenerator.genFailedResult(exception.getMessage());
                 }
@@ -1138,7 +1135,7 @@ public class ApicasesController {
                 //参数用例值
                 HttpParamers paramers = new HttpParamers();
                 try {
-                    paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                    paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
                 } catch (Exception exception) {
                     //return ResultGenerator.genFailedResult(exception.getMessage());
                 }
@@ -1147,7 +1144,7 @@ public class ApicasesController {
                 HttpParamers Bodyparamers = new HttpParamers();
                 if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                     try {
-                        Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                        Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
                     } catch (Exception exception) {
                         return ResultGenerator.genFailedResult(exception.getMessage());
                     }
@@ -1205,8 +1202,7 @@ public class ApicasesController {
                         for (Enviromentvariables variables : envvariablesList) {
                             String VariableName = "#" + variables.getVariablesname() + "#";
                             if (PostData.contains(VariableName)) {
-                                if(variables.getEnvid().equals(Long.parseLong(enviromentid)))
-                                {
+                                if (variables.getEnvid().equals(Long.parseLong(enviromentid))) {
                                     Object VariableValue = variables.getVariablesvalue();
                                     PostData = PostData.replace(VariableName, VariableValue.toString());
                                 }
@@ -1385,16 +1381,14 @@ public class ApicasesController {
             Condition envcon = new Condition(Enviromentvariables.class);
             rdcon.createCriteria().andCondition("projectid = " + projectid);
             List<Enviromentvariables> envvariablesList = enviromentvariablesService.listByCondition(envcon);
-            HashMap<String, HashMap<Long,String>> EnvVariablesHashMap = new HashMap<>();
+            HashMap<String, HashMap<Long, String>> EnvVariablesHashMap = new HashMap<>();
             for (Enviromentvariables va : envvariablesList) {
-                HashMap<Long,String> envidvaluemap=new HashMap<>();
-                if(!EnvVariablesHashMap.containsKey(va.getVariablesname()))
-                {
-                    envidvaluemap.put(va.getEnvid(),va.getVariablesvalue());
-                    EnvVariablesHashMap.put(va.getVariablesname(),envidvaluemap);
-                } else
-                {
-                    EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(),va.getVariablesvalue());
+                HashMap<Long, String> envidvaluemap = new HashMap<>();
+                if (!EnvVariablesHashMap.containsKey(va.getVariablesname())) {
+                    envidvaluemap.put(va.getEnvid(), va.getVariablesvalue());
+                    EnvVariablesHashMap.put(va.getVariablesname(), envidvaluemap);
+                } else {
+                    EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(), va.getVariablesvalue());
                 }
             }
             ApicasesController.log.info("。。。。。。。。处理前的resource Url：" + resource);
@@ -1402,8 +1396,7 @@ public class ApicasesController {
             for (Enviromentvariables envvariables : envvariablesList) {
                 String VariableName = "#" + envvariables.getVariablesname() + "#";
                 if (resource.contains(VariableName)) {
-                    if(envvariables.getEnvid().equals(Long.parseLong(enviromentid)))
-                    {
+                    if (envvariables.getEnvid().equals(Long.parseLong(enviromentid))) {
                         Object VariableValue = envvariables.getVariablesvalue();
                         resource = resource.replace(VariableName, VariableValue.toString());
                     }
@@ -1477,7 +1470,7 @@ public class ApicasesController {
             //Header用例值
             HttpHeader header = new HttpHeader();
             try {
-                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1486,7 +1479,7 @@ public class ApicasesController {
             //参数用例值
             HttpParamers paramers = new HttpParamers();
             try {
-                paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1496,7 +1489,7 @@ public class ApicasesController {
             HttpParamers Bodyparamers = new HttpParamers();
             if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                 try {
-                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
                 } catch (Exception exception) {
                     return ResultGenerator.genFailedResult(exception.getMessage());
                 }
@@ -1554,8 +1547,7 @@ public class ApicasesController {
                     for (Enviromentvariables variables : envvariablesList) {
                         String VariableName = "#" + variables.getVariablesname() + "#";
                         if (PostData.contains(VariableName)) {
-                            if(variables.getEnvid().equals(Long.parseLong(enviromentid)))
-                            {
+                            if (variables.getEnvid().equals(Long.parseLong(enviromentid))) {
                                 Object VariableValue = variables.getVariablesvalue();
                                 PostData = PostData.replace(VariableName, VariableValue.toString());
                             }
@@ -1719,16 +1711,14 @@ public class ApicasesController {
             Condition envcon = new Condition(Enviromentvariables.class);
             rdcon.createCriteria().andCondition("projectid = " + projectid);
             List<Enviromentvariables> envvariablesList = enviromentvariablesService.listByCondition(envcon);
-            HashMap<String, HashMap<Long,String>> EnvVariablesHashMap = new HashMap<>();
+            HashMap<String, HashMap<Long, String>> EnvVariablesHashMap = new HashMap<>();
             for (Enviromentvariables va : envvariablesList) {
-                HashMap<Long,String> envidvaluemap=new HashMap<>();
-                if(!EnvVariablesHashMap.containsKey(va.getVariablesname()))
-                {
-                    envidvaluemap.put(va.getEnvid(),va.getVariablesvalue());
-                    EnvVariablesHashMap.put(va.getVariablesname(),envidvaluemap);
-                } else
-                {
-                    EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(),va.getVariablesvalue());
+                HashMap<Long, String> envidvaluemap = new HashMap<>();
+                if (!EnvVariablesHashMap.containsKey(va.getVariablesname())) {
+                    envidvaluemap.put(va.getEnvid(), va.getVariablesvalue());
+                    EnvVariablesHashMap.put(va.getVariablesname(), envidvaluemap);
+                } else {
+                    EnvVariablesHashMap.get(va.getVariablesname()).put(va.getEnvid(), va.getVariablesvalue());
                 }
             }
 
@@ -1737,8 +1727,7 @@ public class ApicasesController {
             for (Enviromentvariables envvariables : envvariablesList) {
                 String VariableName = "#" + envvariables.getVariablesname() + "#";
                 if (resource.contains(VariableName)) {
-                    if(envvariables.getEnvid().equals(Long.parseLong(enviromentid)))
-                    {
+                    if (envvariables.getEnvid().equals(Long.parseLong(enviromentid))) {
                         Object VariableValue = envvariables.getVariablesvalue();
                         resource = resource.replace(VariableName, VariableValue.toString());
                     }
@@ -1812,7 +1801,7 @@ public class ApicasesController {
             //Header用例值
             HttpHeader header = new HttpHeader();
             try {
-                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                header = GetHttpHeader(globalheaderParamsList, HeaderApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1821,7 +1810,7 @@ public class ApicasesController {
             //参数用例值
             HttpParamers paramers = new HttpParamers();
             try {
-                paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                paramers = GetHttpParamers(ParamsApiCasedataList, ScriptParamsValuesMap, ParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
             } catch (Exception exception) {
                 return ResultGenerator.genFailedResult(exception.getMessage());
             }
@@ -1831,7 +1820,7 @@ public class ApicasesController {
             HttpParamers Bodyparamers = new HttpParamers();
             if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                 try {
-                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), projectid);
+                    Bodyparamers = GetHttpParamers(BodyApiCasedataList, ParamsValuesMap, ScriptParamsValuesMap, RadomHashMap, DBParamsValuesMap, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), projectid);
                 } catch (Exception exception) {
                     return ResultGenerator.genFailedResult(exception.getMessage());
                 }
@@ -1889,8 +1878,7 @@ public class ApicasesController {
                     for (Enviromentvariables variables : envvariablesList) {
                         String VariableName = "#" + variables.getVariablesname() + "#";
                         if (PostData.contains(VariableName)) {
-                            if(variables.getEnvid().equals(Long.parseLong(enviromentid)))
-                            {
+                            if (variables.getEnvid().equals(Long.parseLong(enviromentid))) {
                                 Object VariableValue = variables.getVariablesvalue();
                                 PostData = PostData.replace(VariableName, VariableValue.toString());
                             }
@@ -1945,7 +1933,7 @@ public class ApicasesController {
 
 
     //获取HttpHeader
-    private HttpHeader GetHttpHeader(List<GlobalheaderParams> globalheaderParamsList, List<ApiCasedata> HeaderApiCasedataList, HashMap<String, String> ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap,HashMap<String, HashMap<Long,String>> EnvVariablesHashMap,Long envid, long projectid) throws Exception {
+    private HttpHeader GetHttpHeader(List<GlobalheaderParams> globalheaderParamsList, List<ApiCasedata> HeaderApiCasedataList, HashMap<String, String> ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> EnvVariablesHashMap, Long envid, long projectid) throws Exception {
         HashMap<String, String> globalheaderParamsHashMap = new HashMap<>();
         for (ApiCasedata Headdata : HeaderApiCasedataList) {
             if (!globalheaderParamsHashMap.containsKey(Headdata.getApiparam())) {
@@ -1960,9 +1948,9 @@ public class ApicasesController {
         for (String HeaderName : globalheaderParamsHashMap.keySet()) {
             String HeaderValue = globalheaderParamsHashMap.get(HeaderName);
             Object Result = HeaderValue;
-            if ((HeaderValue.contains("#") && HeaderValue.contains("#")) ||(HeaderValue.contains("{") && HeaderValue.contains("}")) || (HeaderValue.contains("<") && HeaderValue.contains(">")) || (HeaderValue.contains("<<") && HeaderValue.contains(">>")) || (HeaderValue.contains("[") && HeaderValue.contains("]")) || (HeaderValue.contains("$") && HeaderValue.contains("$"))) {
+            if ((HeaderValue.contains("#") && HeaderValue.contains("#")) || (HeaderValue.contains("{") && HeaderValue.contains("}")) || (HeaderValue.contains("<") && HeaderValue.contains(">")) || (HeaderValue.contains("<<") && HeaderValue.contains(">>")) || (HeaderValue.contains("[") && HeaderValue.contains("]")) || (HeaderValue.contains("$") && HeaderValue.contains("$"))) {
                 try {
-                    Result = GetVaraibaleValue(HeaderValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap,EnvVariablesHashMap,envid, projectid);
+                    Result = GetVaraibaleValue(HeaderValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, EnvVariablesHashMap, envid, projectid);
                 } catch (Exception ex) {
                     Result = ex.getMessage();
                     //throw new Exception("当前用例的Header中参数名：" + HeaderName + "-对应的参数值：" + ex.getMessage());
@@ -1974,16 +1962,16 @@ public class ApicasesController {
     }
 
     //获取HttpParams
-    private HttpParamers GetHttpParamers(List<ApiCasedata> ParamsApiCasedataList, HashMap<String, String> ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap,HashMap<String, HashMap<Long,String>> EnvVariablesHashMap,Long envid, long projectid) throws Exception {
+    private HttpParamers GetHttpParamers(List<ApiCasedata> ParamsApiCasedataList, HashMap<String, String> ScriptParamsValuesMap, HashMap<String, String> ParamsValuesMap, HashMap<String, String> RadomMap, HashMap<String, String> DBMap, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> EnvVariablesHashMap, Long envid, long projectid) throws Exception {
         HttpParamers paramers = new HttpParamers();
         for (ApiCasedata Paramdata : ParamsApiCasedataList) {
             String ParamName = Paramdata.getApiparam();
             String ParamValue = Paramdata.getApiparamvalue();
             String DataType = Paramdata.getParamstype();
             Object ObjectResult = ParamValue;
-            if ((ParamValue.contains("#") && ParamValue.contains("#")) ||(ParamValue.contains("{") && ParamValue.contains("}")) ||(ParamValue.contains("<") && ParamValue.contains(">")) || (ParamValue.contains("<<") && ParamValue.contains(">>")) || (ParamValue.contains("[") && ParamValue.contains("]")) || (ParamValue.contains("$") && ParamValue.contains("$"))) {
+            if ((ParamValue.contains("#") && ParamValue.contains("#")) || (ParamValue.contains("{") && ParamValue.contains("}")) || (ParamValue.contains("<") && ParamValue.contains(">")) || (ParamValue.contains("<<") && ParamValue.contains(">>")) || (ParamValue.contains("[") && ParamValue.contains("]")) || (ParamValue.contains("$") && ParamValue.contains("$"))) {
                 try {
-                    ObjectResult = GetVaraibaleValue(ParamValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap,EnvVariablesHashMap,envid, projectid);
+                    ObjectResult = GetVaraibaleValue(ParamValue, RadomMap, ScriptParamsValuesMap, ParamsValuesMap, DBMap, GlobalVariablesHashMap, EnvVariablesHashMap, envid, projectid);
                 } catch (Exception ex) {
                     ObjectResult = ex.getMessage();
                     //throw new Exception("当前用例的Params或者Body中参数名：" + ParamName + "-对应的参数值：" + ex.getMessage());
@@ -1995,7 +1983,7 @@ public class ApicasesController {
         return paramers;
     }
 
-    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> ScriptMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> globalvariablesMap, HashMap<String, HashMap<Long,String>> envvariablesMap,long envid, long projectid) throws Exception {
+    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> ScriptMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> globalvariablesMap, HashMap<String, HashMap<Long, String>> envvariablesMap, long envid, long projectid) throws Exception {
         Object ObjectValue = Value;
         boolean exist = false; //标记是否Value有变量处理，false表示没有对应的子条件处理过
         //参数值替换脚本变量
@@ -2110,13 +2098,12 @@ public class ApicasesController {
             }
         }
         //参数值替换环境变量
-        HashMap<String,String>Last=new HashMap<>();
+        HashMap<String, String> Last = new HashMap<>();
         for (String variables : envvariablesMap.keySet()) {
             if (Value.contains("#" + variables + "#")) {
-                for (Long envromentid:envvariablesMap.get(variables).keySet()) {
-                    if(envromentid.equals(envid))
-                    {
-                        Last.put(variables,envvariablesMap.get(variables).get(envromentid));
+                for (Long envromentid : envvariablesMap.get(variables).keySet()) {
+                    if (envromentid.equals(envid)) {
+                        Last.put(variables, envvariablesMap.get(variables).get(envromentid));
                     }
                 }
             }
@@ -2158,13 +2145,11 @@ public class ApicasesController {
         return flag;
     }
 
-    private Object GetEnvValue(String EnvVariables,long Envid,List<Enviromentvariables> enviromentvariablesList)
-    {
+    private Object GetEnvValue(String EnvVariables, long Envid, List<Enviromentvariables> enviromentvariablesList) {
         Object Result = null;
-        for (Enviromentvariables  envva:enviromentvariablesList) {
-            if(envva.equals(EnvVariables)&&envva.getEnvid().equals(Envid))
-            {
-                Result=envva.getVariablesvalue();
+        for (Enviromentvariables envva : enviromentvariablesList) {
+            if (envva.equals(EnvVariables) && envva.getEnvid().equals(Envid)) {
+                Result = envva.getVariablesvalue();
             }
         }
         return Result;

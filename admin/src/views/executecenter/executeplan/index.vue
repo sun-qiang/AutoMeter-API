@@ -2741,6 +2741,7 @@
           businesstype: '',
           creator: '',
           nickname: '',
+          accountId: null,
           projectid: ''
         },
         Scenedelaysearch: {
@@ -2986,10 +2987,11 @@
     },
 
     computed: {
-      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid'])
+      ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     created() {
+      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpplanbatch.projectid = window.localStorage.getItem('pid')
       this.tmpplanenv.projectid = window.localStorage.getItem('pid')

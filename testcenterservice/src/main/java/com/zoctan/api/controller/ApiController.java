@@ -884,10 +884,10 @@ public class ApiController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
-        String creator = param.get("creator").toString();
-        if(creator.equalsIgnoreCase("admin"))
-        {
-            param.put("creator",null);
+        long accountid = Long.parseLong(param.get("accountId").toString());
+        if (accountid == 1) {
+            param.put("creator", null);
+            param.put("projectid", null);
         }
         PageHelper.startPage(page, size);
         final List<Api> list = this.apiService.findApiWithName(param);
