@@ -13,16 +13,17 @@
     <result column="propertytype" jdbcType="VARCHAR" property="propertytype" />
     <result column="paramstype" jdbcType="VARCHAR" property="paramstype" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="mid" jdbcType="BIGINT" property="mid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
   </resultMap>
 
 
   <insert id="saveCasedata">
-    INSERT INTO api_casedata (caseid, casename,apiparam,apiparamvalue,propertytype,memo,create_time,lastmodify_time,paramstype)
+    INSERT INTO api_casedata (caseid, casename,apiparam,apiparamvalue,propertytype,memo,mid,create_time,lastmodify_time,paramstype)
     VALUES
     <foreach collection="casedataMap" item="item" index="index" separator=",">
-      (#{item.caseid}, #{item.casename}, #{item.apiparam}, #{item.apiparamvalue},#{item.propertytype}, #{item.memo}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'),#{item.paramstype})
+      (#{item.caseid}, #{item.casename}, #{item.apiparam}, #{item.apiparamvalue},#{item.propertytype}, #{item.memo},#{item.mid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'),#{item.paramstype})
     </foreach>
   </insert>
 

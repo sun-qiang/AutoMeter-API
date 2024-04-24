@@ -16,6 +16,16 @@ public class Apicases {
 
     private Long mid;
 
+    public Long getCreatorid() {
+        return creatorid;
+    }
+
+    public void setCreatorid(Long creatorid) {
+        this.creatorid = creatorid;
+    }
+
+    private Long creatorid;
+
     public Long getMid() {
         return mid;
     }

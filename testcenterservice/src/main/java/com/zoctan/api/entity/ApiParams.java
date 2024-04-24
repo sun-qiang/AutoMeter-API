@@ -12,6 +12,16 @@ public class ApiParams {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getCreatorid() {
+        return creatorid;
+    }
+
+    public void setCreatorid(Long creatorid) {
+        this.creatorid = creatorid;
+    }
+
+    private Long creatorid;
+
 
     public Long getApiid() {
         return apiid;

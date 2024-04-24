@@ -17,6 +17,7 @@
     <result column="responecontenttype" jdbcType="VARCHAR" property="responecontenttype" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
@@ -37,7 +38,7 @@
       <if test="modelname != null and modelname != ''">and a.modelname like CONCAT('%',#{modelname},'%')</if>
       <if test="deployunitname != null  and deployunitname != ''">and a.deployunitname like CONCAT('%',#{deployunitname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator =#{creator}</if>
+      <if test="mid != null and mid != ''">and a.mid =#{mid}</if>
       <if test="path != null  and path != ''">and a.path like CONCAT('%',#{path},'%')</if>
     </where>
     order by lastmodify_time  DESC
@@ -73,7 +74,7 @@
     update api set apiname = #{apiname}, deployunitid = #{deployunitid}, deployunitname = #{deployunitname},
                    modelid = #{modelid}, modelname = #{modelname},
                    visittype = #{visittype},requesttype = #{requesttype},apistyle=#{apistyle}, path = #{path},
-    memo = #{memo}, requestcontenttype = #{requestcontenttype}, responecontenttype =#{responecontenttype},creator = #{creator},
+    memo = #{memo}, requestcontenttype = #{requestcontenttype}, responecontenttype =#{responecontenttype},creator = #{creator}, creatorid = #{creatorid},
                    mid = #{mid},mnickname = #{mnickname},   casecounts = #{casecounts},  lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>

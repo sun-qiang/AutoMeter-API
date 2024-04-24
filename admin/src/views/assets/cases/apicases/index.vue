@@ -2952,6 +2952,7 @@
           modelid: '',
           modelname: '',
           mnickname: '',
+          creatorid: '',
           mid: ''
         },
         tmpmodelquery: {
@@ -2976,7 +2977,8 @@
           memo: '',
           apiparam: '',
           apiparamvalue: '',
-          paramstype: ''
+          paramstype: '',
+          mid: ''
         },
         tmpcopycase: {
           sourcecaseid: '',
@@ -3070,9 +3072,7 @@
           casetype: null,
           casename: null,
           projectid: '',
-          nickname: '',
-          accountId: this.accountId,
-          creator: this.name
+          mid: ''
         },
         searchassert: {
           page: 1,
@@ -3270,7 +3270,6 @@
     },
 
     created() {
-      this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpconditionquery.projectid = window.localStorage.getItem('pid')
       this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -4028,9 +4027,9 @@
 
       creatorselectChanged(e) {
         if (e === '全部') {
-          this.search.creator = 'admin'
+          this.search.mid = null
         } else {
-          this.search.creator = this.name
+          this.search.mid = this.accountId
         }
       },
       /**
@@ -4358,7 +4357,6 @@
         this.search.apiid = this.tmpapiid
         this.search.casetype = this.tmpcasetype
         this.search.casename = this.tmpcasename
-        this.search.creator = this.name
         this.search.path = this.tmppath
         search(this.search).then(response => {
           this.apicasesList = response.data.list
@@ -4762,6 +4760,7 @@
         this.tmpapicases.level = 0
         this.tmpapicases.memo = ''
         this.tmpapicases.creator = this.nickname
+        this.tmpapicases.creatorid = this.accountId
         this.tmpapicases.projectid = window.localStorage.getItem('pid')
         this.tmpapicases.modelid = ''
         this.tmpapicases.modelname = ''
@@ -5052,10 +5051,19 @@
        * 保存用例数据
        */
       async addnewapicasesdata() {
+        for (let i = 0; i < this.Headertabledatas.length; i++) {
+          this.Headertabledatas[i].mid = this.accountId
+        }
         this.updateHeaderpropertydata(this.Headertabledatas)
+        for (let i = 0; i < this.Paramstabledatas.length; i++) {
+          this.Paramstabledatas[i].mid = this.accountId
+        }
         this.updateHeaderpropertydata(this.Paramstabledatas)
         await this.getapi()
         if (this.tmpapi.requestcontenttype === 'Form表单') {
+          for (let i = 0; i < this.Bodytabledatas.length; i++) {
+            this.Bodytabledatas[i].mid = this.accountId
+          }
           this.updateHeaderpropertydata(this.Bodytabledatas)
         } else {
           this.updateapicasesdata()
@@ -5070,6 +5078,7 @@
         this.tmpapicasesbodydata.apiparam = 'Body'
         this.tmpapicasesbodydata.paramstype = this.tmpapi.requestcontenttype
         this.tmpapicasesbodydata.propertytype = 'Body'
+        this.tmpapicasesbodydata.mid = this.accountId
         updateapicasesdata(this.tmpapicasesbodydata).then(response => {
         }).catch(res => {
           this.$message.error('更新用例Body值失败')
@@ -5107,6 +5116,7 @@
         this.tmpapicases.modelname = this.apicasesList[index].modelname
         this.tmpapicases.creator = this.apicasesList[index].creator
         this.tmpapicases.mid = this.apicasesList[index].mid
+        this.tmpapicases.creatorid = this.accountId
         this.tmpapicases.mnickname = this.apicasesList[index].mnickname
         this.tmpapicases.projectid = window.localStorage.getItem('pid')
         if (this.tmpapicases.casetype === '性能') {

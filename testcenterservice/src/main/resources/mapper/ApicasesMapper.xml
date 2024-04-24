@@ -23,6 +23,7 @@
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="modelid" jdbcType="BIGINT" property="modelid" />
     <result column="modelname" jdbcType="VARCHAR" property="modelname" />
@@ -40,7 +41,7 @@
       <if test="deployunitid != null  and deployunitid != ''">and a.deployunitid = #{deployunitid}</if>
       <if test="casename != null and casename != ''">and a.casename like CONCAT('%',#{casename},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator =#{creator}</if>
+      <if test="mid != null and mid != ''">and a.mid =#{mid}</if>
       <if test="path != null  and path != ''">and c.path like CONCAT('%',#{path},'%')</if>    </where>
     order by lastmodify_time  DESC
   </select>
@@ -76,7 +77,7 @@
 
   <update id="updateApicase" parameterType="com.zoctan.api.entity.Apicases">
     update apicases set casename = #{casename},casejmxname = #{casejmxname},apiid=#{apiid}, apiname = #{apiname},deployunitid=#{deployunitid}, deployunitname = #{deployunitname}, casecontent = #{casecontent},expect = #{expect},
-                        modelid = #{modelid}, modelname = #{modelname},
+                        modelid = #{modelid}, modelname = #{modelname}, creatorid = #{creatorid},
                         memo = #{memo},casetype=#{casetype},threadnum=#{threadnum},loops=#{loops},middleparam=#{middleparam},level=#{level}, creator = #{creator},
                         mid = #{mid},mnickname = #{mnickname}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};

@@ -12,13 +12,12 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.conn.ssl.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -58,22 +57,26 @@ public class SSLClient extends DefaultHttpClient{
 
 
     public static CloseableHttpClient createSSLClientDefault(CookieStore cookieStore) throws Exception {
-        SSLContext sslContext;
+//        SSLContext sslContext;
         try {
-            sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-                //信任所有
-                @Override
-                public boolean isTrusted(X509Certificate[] xcs, String string){
-                    return true;
-                }
-            }).build();
-
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
-            if(cookieStore == null){
-                return HttpClients.custom().setSSLSocketFactory(sslsf).build();
-            }else{
-                return HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultCookieStore(cookieStore).build();
-            }
+            SSLConnectionSocketFactory scsf = new SSLConnectionSocketFactory(
+                    SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build(),
+                    NoopHostnameVerifier.INSTANCE);
+            return HttpClients.custom().setSSLSocketFactory(scsf).build();
+//            sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+//                //信任所有
+//                @Override
+//                public boolean isTrusted(X509Certificate[] xcs, String string){
+//                    return true;
+//                }
+//            }).build();
+//
+//            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
+//            if(cookieStore == null){
+//                return HttpClients.custom().setSSLSocketFactory(sslsf).build();
+//            }else{
+//                return HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultCookieStore(cookieStore).build();
+//            }
         }
         catch (Exception ex) {
             throw new Exception("Https 创建请求失败"+ex.getMessage());

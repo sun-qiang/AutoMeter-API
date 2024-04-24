@@ -8,13 +8,14 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <id column="apiid" jdbcType="BIGINT" property="apiid" />
     <result column="apiname" jdbcType="VARCHAR" property="apiname" />
-    <result column="deployunitid" jdbcType="VARCHAR" property="deployunitid" />
+    <result column="deployunitid" jdbcType="BIGINT" property="deployunitid" />
     <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
     <result column="propertytype" jdbcType="VARCHAR" property="propertytype" />
     <result column="keyname" jdbcType="LONGVARCHAR" property="keyname" />
     <result column="keydefaultvalue" jdbcType="LONGVARCHAR" property="keydefaultvalue" />
     <result column="keytype" jdbcType="VARCHAR" property="keytype" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
   </resultMap>
@@ -52,8 +53,8 @@
   </update>
 
   <insert id="SaveApiParams">
-    insert into api_params(apiid,apiname,deployunitid,deployunitname,propertytype,keyname,keydefaultvalue,keytype,creator,create_time,lastmodify_time)
-    values(#{apiid},#{apiname},#{deployunitid},#{deployunitname},#{propertytype},#{keyname},#{keydefaultvalue},#{keytype},#{creator}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'))
+    insert into api_params(apiid,apiname,deployunitid,deployunitname,propertytype,keyname,keydefaultvalue,keytype,creator,creatorid,create_time,lastmodify_time)
+    values(#{apiid},#{apiname},#{deployunitid},#{deployunitname},#{propertytype},#{keyname},#{keydefaultvalue},#{keytype},#{creator},#{creatorid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'))
   </insert>
 
   <select id="getApiParamsbypropertytype" resultMap="BaseResultMap">

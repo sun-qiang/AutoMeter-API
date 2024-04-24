@@ -107,6 +107,9 @@ public class ApicasesController {
     @Autowired(required = false)
     private EnviromentvariablesService enviromentvariablesService;
 
+    @Resource
+    private AccountRoleService accountRoleService;
+
     @PostMapping
     public Result add(@RequestBody Apicases apicases) {
         Condition con = new Condition(Apicases.class);
@@ -153,6 +156,7 @@ public class ApicasesController {
 
     private ApiCasedata GetApiCaseData(Apicases apicases, ApiParams apiParams) {
         ApiCasedata apiCasedata = new ApiCasedata();
+        apiCasedata.setMid(apicases.getMid());
         apiCasedata.setCaseid(apicases.getId());
         apiCasedata.setCasename(apicases.getCasename());
         apiCasedata.setPropertytype(apiParams.getPropertytype());
@@ -303,6 +307,7 @@ public class ApicasesController {
                         DestinationApi.setPath(SourceApi.getPath());
                         DestinationApi.setRequestcontenttype(SourceApi.getRequestcontenttype());
                         DestinationApi.setCreator(SourceApi.getCreator());
+                        DestinationApi.setCreatorid(SourceApi.getCreatorid());
                         DestinationApi.setMemo(SourceApi.getMemo());
                         DestinationApi.setCreateTime(new Date());
                         DestinationApi.setLastmodifyTime(new Date());
@@ -324,6 +329,7 @@ public class ApicasesController {
                         for (ApiParams SourceParam : apiParamsList) {
                             ApiParams DestinationParam =new ApiParams();
                             DestinationParam.setCreator(SourceParam.getCreator());
+                            DestinationParam.setCreatorid(SourceParam.getCreatorid());
                             DestinationParam.setLastmodifyTime(new Date());
                             DestinationParam.setCreateTime(new Date());
                             DestinationParam.setKeytype(SourceParam.getKeytype());
@@ -371,6 +377,9 @@ public class ApicasesController {
                         DesitionApicase.setDeployunitid(destinationdeployunitid);
                         DesitionApicase.setApiid(DestinationApiid);
                         DesitionApicase.setApiname(DestinationApiName);
+                        DesitionApicase.setMid(SourceCase.getMid());
+                        DesitionApicase.setMnickname(SourceCase.getMnickname());
+                        DesitionApicase.setCreatorid(SourceCase.getCreatorid());
                         DesitionApicase.setId(null);
 
                         Condition desapicasecon = new Condition(Apicases.class);
@@ -771,46 +780,62 @@ public class ApicasesController {
      */
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Apicases apicases) {
-        if (apicasesService.forupdateifexist(apicases).size() > 0) {
-            return ResultGenerator.genFailedResult("用例名已存在");
-        } else {
-            //限制下类型变化，如果已经在对应类型的场景中，就不能改变类型
-            Apicases existapicases = apicasesService.getBy("id", apicases.getId());
-            if (existapicases != null) {
-                if (!apicases.getCasetype().equalsIgnoreCase(existapicases.getCasetype())) {
-                    Condition con = new Condition(TestsceneTestcase.class);
-                    con.createCriteria().andCondition("projectid = " + apicases.getProjectid())
-                            .andCondition("testcaseid = " + apicases.getId());
-                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(con);
-                    boolean flag = false;
-                    String SceneName = "";
-                    for (TestsceneTestcase testcase : testsceneTestcaseList) {
-                        Long Sceneid = testcase.getTestscenenid();
-                        Testscene testscene = testsceneService.getBy("id", Sceneid);
-                        if (testscene.getUsetype().equalsIgnoreCase(existapicases.getCasetype())) {
-                            SceneName = testscene.getScenename();
-                            flag = true;
-                        }
-                    }
-                    if (!flag) {
-                        this.apicasesService.updateApicase(apicases);
-                        //增加更新条件管理，子条件管理中的用例名
-                        testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
-                        conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
-                        return ResultGenerator.genOkResult();
-                    } else {
-                        return ResultGenerator.genFailedResult("当前用例类型为：" + existapicases.getCasetype() + ",已在相同类型的测试场景:" + SceneName + " 中存在，请先到测试场景中移除该用例后再尝试修改类型");
-                    }
+        long apicaseid = apicases.getId();
+        Long creatorid = apicases.getCreatorid();
+        AccountRole accountRole= accountRoleService.getBy("accountId",creatorid);
+        if(accountRole==null)
+        {
+            return ResultGenerator.genFailedResult("当前用户不存在");
+        }
+        Apicases apicaseexist = apicasesService.getBy("id", apicaseid);
+        if (apicaseexist != null) {
+            if (creatorid.equals(apicaseexist.getMid()) || accountRole.getRoleId() == 1) {
+                if (apicasesService.forupdateifexist(apicases).size() > 0) {
+                    return ResultGenerator.genFailedResult("用例名已存在");
                 } else {
-                    this.apicasesService.updateApicase(apicases);
-                    //增加更新条件管理，子条件管理中的用例名
-                    testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
-                    conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
-                    return ResultGenerator.genOkResult();
+                    //限制下类型变化，如果已经在对应类型的场景中，就不能改变类型
+                    Apicases existapicases = apicasesService.getBy("id", apicases.getId());
+                    if (existapicases != null) {
+                        if (!apicases.getCasetype().equalsIgnoreCase(existapicases.getCasetype())) {
+                            Condition con = new Condition(TestsceneTestcase.class);
+                            con.createCriteria().andCondition("projectid = " + apicases.getProjectid())
+                                    .andCondition("testcaseid = " + apicases.getId());
+                            List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(con);
+                            boolean flag = false;
+                            String SceneName = "";
+                            for (TestsceneTestcase testcase : testsceneTestcaseList) {
+                                Long Sceneid = testcase.getTestscenenid();
+                                Testscene testscene = testsceneService.getBy("id", Sceneid);
+                                if (testscene.getUsetype().equalsIgnoreCase(existapicases.getCasetype())) {
+                                    SceneName = testscene.getScenename();
+                                    flag = true;
+                                }
+                            }
+                            if (!flag) {
+                                this.apicasesService.updateApicase(apicases);
+                                //增加更新条件管理，子条件管理中的用例名
+                                testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
+                                conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
+                                return ResultGenerator.genOkResult();
+                            } else {
+                                return ResultGenerator.genFailedResult("当前用例类型为：" + existapicases.getCasetype() + ",已在相同类型的测试场景:" + SceneName + " 中存在，请先到测试场景中移除该用例后再尝试修改类型");
+                            }
+                        } else {
+                            this.apicasesService.updateApicase(apicases);
+                            //增加更新条件管理，子条件管理中的用例名
+                            testconditionService.updatecasename(apicases.getId(), "测试用例", apicases.getCasename());
+                            conditionApiService.updatecasename(apicases.getId(), apicases.getCasename());
+                            return ResultGenerator.genOkResult();
+                        }
+                    } else {
+                        return ResultGenerator.genFailedResult("当前用例已被删除");
+                    }
                 }
             } else {
-                return ResultGenerator.genFailedResult("当前用例已被删除");
+                return ResultGenerator.genFailedResult("当前api只有维护人或者管理员可以修改");
             }
+        }else {
+            return ResultGenerator.genFailedResult("当前用例不存在");
         }
     }
 
@@ -821,11 +846,6 @@ public class ApicasesController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
-        long accountid = Long.parseLong(param.get("accountId").toString());
-        if (accountid == 1) {
-            param.put("creator", null);
-            param.put("projectid", null);
-        }
         PageHelper.startPage(page, size);
         final List<Apicases> list = this.apicasesService.findApiCaseWithName(param);
         final PageInfo<Apicases> pageInfo = new PageInfo<>(list);

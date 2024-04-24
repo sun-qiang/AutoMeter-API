@@ -16,6 +16,16 @@ public class Api {
 
     private Long modelid;
 
+    public Long getCreatorid() {
+        return creatorid;
+    }
+
+    public void setCreatorid(Long creatorid) {
+        this.creatorid = creatorid;
+    }
+
+    private Long creatorid;
+
 
     private Long mid;
 

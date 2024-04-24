@@ -12,6 +12,16 @@ public class ApiCasedata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public Long getMid() {
+        return mid;
+    }
+
+    public void setMid(Long mid) {
+        this.mid = mid;
+    }
+
+    private Long mid;
+
     /**
      * 用例Id
      */

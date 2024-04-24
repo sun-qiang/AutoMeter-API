@@ -5,11 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.dto.Casedata;
-import com.zoctan.api.entity.ApiCasedata;
-import com.zoctan.api.entity.ApiParams;
-import com.zoctan.api.entity.Apicases;
-import com.zoctan.api.service.ApiCasedataService;
-import com.zoctan.api.service.ApiParamsService;
+import com.zoctan.api.entity.*;
+import com.zoctan.api.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,6 +24,11 @@ public class ApiCasedataController {
     private ApiCasedataService apiCasedataService;
     @Resource
     private ApiParamsService apiParamsService;
+    @Resource
+    private ApicasesService apicasesService;
+
+    @Resource
+    private AccountRoleService accountRoleService;
 
     @PostMapping
     public Result add(@RequestBody Casedata apiCasedata) {
@@ -51,18 +53,26 @@ public class ApiCasedataController {
      */
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final ApiCasedata apiCasedata) {
-        if(apiCasedata.getId()==null)
-        {
-            apiCasedataService.save(apiCasedata);
-        }
-        else
-        {
-            this.apiCasedataService.update(apiCasedata);
-
+        Long apicaseidid = apiCasedata.getCaseid();
+        Apicases apicases = apicasesService.getById(apicaseidid);
+        Long currentaccountid = apiCasedata.getMid();
+        AccountRole accountRole = accountRoleService.getBy("accountId", currentaccountid);
+        if (apicases != null) {
+            if (currentaccountid.equals(apicases.getMid()) || accountRole.getRoleId() == 1) {
+                if (apiCasedata.getId() == null) {
+                    apiCasedataService.save(apiCasedata);
+                } else {
+                    this.apiCasedataService.update(apiCasedata);
 //            if(!apiCasedata.getApiparamvalue().isEmpty())
 //            {
 //                this.apiCasedataService.update(apiCasedata);
 //            }
+                }
+            } else {
+                return ResultGenerator.genFailedResult("当前用例数据只有维护人或者管理员可以修改");
+            }
+        } else {
+            return ResultGenerator.genFailedResult("当前用例不存在");
         }
         return ResultGenerator.genOkResult();
     }
@@ -97,8 +107,20 @@ public class ApiCasedataController {
      */
     @PostMapping("/updatepropertydata")
     public Result updatepropertydata(@RequestBody List<ApiCasedata> apiCasedataList) {
-        for (ApiCasedata apiCasedata :apiCasedataList) {
-            apiCasedataService.update(apiCasedata);
+        for (ApiCasedata apiCasedata : apiCasedataList) {
+            Long apicaseidid = apiCasedataList.get(0).getCaseid();
+            Apicases apicases = apicasesService.getById(apicaseidid);
+            Long currentaccountid = apiCasedataList.get(0).getMid();
+            AccountRole accountRole = accountRoleService.getBy("accountId", currentaccountid);
+            if (apicases != null) {
+                if (currentaccountid.equals(apicases.getMid()) || accountRole.getRoleId() == 1) {
+                    apiCasedataService.update(apiCasedata);
+                } else {
+                    return ResultGenerator.genFailedResult("当前用例数据只有维护人或者管理员可以修改");
+                }
+            } else {
+                return ResultGenerator.genFailedResult("当前用例不存在");
+            }
         }
         return ResultGenerator.genOkResult();
     }
@@ -110,21 +132,17 @@ public class ApiCasedataController {
     @PostMapping("/casevalueforbody")
     public Result casevalueforbody(@RequestBody final Map<String, Object> param) {
         final List<ApiCasedata> list = this.apiCasedataService.getparamvaluebycaseidandtype(param);
-        String BodyValue="";
-        if(list.size()==0)
-        {
-            Long apiid=Long.parseLong(param.get("apiid").toString());
-            String propertytype=param.get("propertytype").toString();
-            List<ApiParams> apiParams= apiParamsService.getApiParamsbypropertytype(apiid,propertytype);
-            if(apiParams.size()>0)
-            {
-                BodyValue =apiParams.get(0).getKeyname();
+        String BodyValue = "";
+        if (list.size() == 0) {
+            Long apiid = Long.parseLong(param.get("apiid").toString());
+            String propertytype = param.get("propertytype").toString();
+            List<ApiParams> apiParams = apiParamsService.getApiParamsbypropertytype(apiid, propertytype);
+            if (apiParams.size() > 0) {
+                BodyValue = apiParams.get(0).getKeyname();
             }
             return ResultGenerator.genOkResult(BodyValue);
-        }
-        else
-        {
-            BodyValue=list.get(0).getApiparamvalue();
+        } else {
+            BodyValue = list.get(0).getApiparamvalue();
             return ResultGenerator.genOkResult(BodyValue);
         }
     }

@@ -46,9 +46,12 @@ public class ApiController {
     @Resource
     private DeployunitModelService deployunitModelService;
 
+    @Resource
+    private AccountRoleService accountRoleService;
+
 
     @PostMapping("/exportswagger")
-    public Result exportswagger(@RequestParam("file") MultipartFile multipartFile, @RequestParam("deployid") String deployid, @RequestParam("deployunitname") String deployunitname, @RequestParam("apistyle") String apistyle, @RequestParam("creator") String creator, @RequestParam("projectid") String projectid) {
+    public Result exportswagger(@RequestParam("file") MultipartFile multipartFile, @RequestParam("deployid") String deployid, @RequestParam("deployunitname") String deployunitname, @RequestParam("apistyle") String apistyle, @RequestParam("creator") String creator, @RequestParam("projectid") String projectid, @RequestParam("mnickname") String mnickname, @RequestParam("creatorid") String creatorid, @RequestParam("mid") String mid) {
         File file = null;
         try {
             if (multipartFile.isEmpty()) {
@@ -162,10 +165,12 @@ public class ApiController {
                                 api.setLastmodifyTime(new Date());
                                 api.setMemo(pathsob1.getDescription());
                                 api.setProjectid(pid);
-
                                 api.setModelname(Modelname);
                                 api.setModelid(ModelID);
                                 api.setCreator(creator);
+                                api.setCreatorid(Long.parseLong(creatorid));
+                                api.setMnickname(mnickname);
+                                api.setMid(Long.parseLong(mid));
                                 apiService.save(api);
                                 System.out.println("url-------:" + entry.getKey() + " method-------:" + entryjs.getKey() + "  getDescription-------:" + pathsob1.getTags().get(0));
                                 //api参数
@@ -346,7 +351,7 @@ public class ApiController {
     }
 
     @PostMapping("/exportpostman")
-    public Result exportpostman(@RequestParam("file") MultipartFile multipartFile, @RequestParam("deployid") String deployid, @RequestParam("deployunitname") String deployunitname, @RequestParam("apistyle") String apistyle, @RequestParam("creator") String creator, @RequestParam("projectid") String projectid) {
+    public Result exportpostman(@RequestParam("file") MultipartFile multipartFile, @RequestParam("deployid") String deployid, @RequestParam("deployunitname") String deployunitname, @RequestParam("apistyle") String apistyle, @RequestParam("creator") String creator, @RequestParam("projectid") String projectid, @RequestParam("mnickname") String mnickname, @RequestParam("creatorid") String creatorid, @RequestParam("mid") String mid) {
         File file = null;
         try {
             if (multipartFile.isEmpty()) {
@@ -401,7 +406,7 @@ public class ApiController {
                     modelmap.put(modelname, deployunitModel.getId());
                 }
                 HashMap<String, ApiInfo> apiInfoHashMap = new HashMap<>();
-                GetItemArray(GroupJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, "", pid);
+                GetItemArray(GroupJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, "", pid,creatorid,mid,mnickname);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -413,14 +418,14 @@ public class ApiController {
     }
 
 
-    private void GetItemArray(String GroupJson, Gson gson, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, ApiInfo> apiInfoHashMap, HashMap<String, Long> modelmap, String Modelname, Long pid) throws Exception {
+    private void GetItemArray(String GroupJson, Gson gson, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, ApiInfo> apiInfoHashMap, HashMap<String, Long> modelmap, String Modelname, Long pid, String creatorid, String mid, String mnickname) throws Exception {
         List<String> resu = GetJson(GroupJson);
         for (String apiinfojson : resu) {
             Map<String, Object> apiinfomap = gson.fromJson(apiinfojson, Map.class);
             String apiJson = gson.toJson(apiinfomap.get("item"));
             if (!apiJson.equalsIgnoreCase("null")) {
                 Modelname = apiinfomap.get("name").toString();
-                recitem(apiJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, Modelname, pid);
+                recitem(apiJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, Modelname, pid,creatorid,mid,mnickname);
             } else {
                 Modelname = "默认模块";
                 Type apiinfoType = new TypeToken<ApiInfo>() {
@@ -428,14 +433,14 @@ public class ApiController {
                 //System.out.println("apiinfojson-------:" + apiinfojson);
                 ApiInfo apiInfo = gson.fromJson(apiinfojson, apiinfoType);
                 if (!apiInfoHashMap.containsKey(apiInfo.getName())) {
-                    ExportData(apiInfo, apistyle, deployunitid, deployunitname, creator, modelmap, Modelname, pid);
+                    ExportData(apiInfo, apistyle, deployunitid, deployunitname, creator, modelmap, Modelname, pid,creatorid,mid,mnickname);
                 }
                 apiInfoHashMap.put(apiInfo.getName(), apiInfo);
             }
         }
     }
 
-    private void recitem(String GroupJson, Gson gson, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, ApiInfo> apiInfoHashMap, HashMap<String, Long> modelmap, String Modelname, Long pid) throws Exception {
+    private void recitem(String GroupJson, Gson gson, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, ApiInfo> apiInfoHashMap, HashMap<String, Long> modelmap, String Modelname, Long pid, String creatorid, String mid, String mnickname) throws Exception {
         List<String> resu = GetJson(GroupJson);
         for (String apiinfojson : resu) {
             Map<String, Object> apiinfomap = gson.fromJson(apiinfojson, Map.class);
@@ -445,21 +450,21 @@ public class ApiController {
 //                {
 //                    Modelname = apiinfomap.get("name").toString();
 //                }
-                recitem(apiJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, Modelname, pid);
+                recitem(apiJson, gson, apistyle, deployunitid, deployunitname, creator, apiInfoHashMap, modelmap, Modelname, pid,creatorid,mid,mnickname);
             } else {
                 Type apiinfoType = new TypeToken<ApiInfo>() {
                 }.getType();
                 //System.out.println("apiinfojson-------:" + apiinfojson);
                 ApiInfo apiInfo = gson.fromJson(apiinfojson, apiinfoType);
                 if (!apiInfoHashMap.containsKey(apiInfo.getName())) {
-                    ExportData(apiInfo, apistyle, deployunitid, deployunitname, creator, modelmap, Modelname, pid);
+                    ExportData(apiInfo, apistyle, deployunitid, deployunitname, creator, modelmap, Modelname, pid,creatorid,mid,mnickname);
                 }
                 apiInfoHashMap.put(apiInfo.getName(), apiInfo);
             }
         }
     }
 
-    private void ExportData(ApiInfo apiInfo, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, Long> modelmap, String Modelname, Long PID) {
+    private void ExportData(ApiInfo apiInfo, String apistyle, Long deployunitid, String deployunitname, String creator, HashMap<String, Long> modelmap, String Modelname, Long PID, String creatorid, String mid, String mnickname) {
         String AllPath = "";
         if (apiInfo.getRequest().getUrl() != null) {
             ArrayList<String> UrlPath = apiInfo.getRequest().getUrl().getPath();
@@ -507,6 +512,11 @@ public class ApiController {
         api.setDeployunitid(deployunitid);
         api.setDeployunitname(deployunitname);
         api.setCreator(creator);
+
+        api.setCreatorid(Long.parseLong(creatorid));
+        api.setMnickname(mnickname);
+        api.setMid(Long.parseLong(mid));
+
         api.setCreateTime(new Date());
         api.setLastmodifyTime(new Date());
         api.setPath(AllPath);
@@ -864,11 +874,15 @@ public class ApiController {
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Api api) {
         long apiid = api.getId();
+        Long creatorid = api.getCreatorid();
+        AccountRole accountRole= accountRoleService.getBy("accountId",creatorid);
+        if(accountRole==null)
+        {
+            return ResultGenerator.genFailedResult("当前用户不存在");
+        }
         Api apiexist = apiService.getBy("id", apiid);
         if (apiexist != null) {
-            if (!api.getCreator().equals(apiexist.getMnickname())) {
-                return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
-            } else {
+            if (creatorid.equals(apiexist.getMid()) || accountRole.getRoleId()==1) {
                 Condition con = new Condition(Api.class);
                 con.createCriteria().andCondition("projectid = " + api.getProjectid())
                         .andCondition("deployunitname = '" + api.getDeployunitname() + "'")
@@ -877,10 +891,12 @@ public class ApiController {
                 if (apiService.ifexist(con) > 0) {
                     return ResultGenerator.genFailedResult("此微服务下已经存在此API");
                 } else {
-
+                    api.setCreatorid(apiexist.getCreatorid());
                     this.apiService.updateApi(api);
                     return ResultGenerator.genOkResult();
                 }
+            } else {
+                return ResultGenerator.genFailedResult("当前api只有维护人或者管理员可以修改");
             }
         } else {
             return ResultGenerator.genFailedResult("当前api不存在");
@@ -894,11 +910,6 @@ public class ApiController {
     public Result search(@RequestBody final Map<String, Object> param) {
         Integer page = Integer.parseInt(param.get("page").toString());
         Integer size = Integer.parseInt(param.get("size").toString());
-        long accountid = Long.parseLong(param.get("accountId").toString());
-        if (accountid == 1) {
-            param.put("creator", null);
-            param.put("projectid", null);
-        }
         PageHelper.startPage(page, size);
         final List<Api> list = this.apiService.findApiWithName(param);
         final PageInfo<Api> pageInfo = new PageInfo<>(list);

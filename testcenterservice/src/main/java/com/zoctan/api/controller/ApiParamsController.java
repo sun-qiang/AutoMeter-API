@@ -4,14 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
-import com.zoctan.api.entity.Api;
-import com.zoctan.api.entity.ApiCasedata;
-import com.zoctan.api.entity.ApiParams;
-import com.zoctan.api.entity.Apicases;
-import com.zoctan.api.service.ApiCasedataService;
-import com.zoctan.api.service.ApiParamsService;
-import com.zoctan.api.service.ApiService;
-import com.zoctan.api.service.ApicasesService;
+import com.zoctan.api.entity.*;
+import com.zoctan.api.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
@@ -39,6 +33,8 @@ public class ApiParamsController {
     private ApicasesService apicasesService;
     @Resource
     private ApiService apiService;
+    @Resource
+    private AccountRoleService accountRoleService;
 
 
     @PostMapping
@@ -46,12 +42,12 @@ public class ApiParamsController {
         if(apiParams.getPropertytype().equalsIgnoreCase("Body"))
         {
             Long apiid = apiParams.getApiid();
-            Api api= apiService.getById(apiid);
-            if (api != null) {
-                if (!api.getMnickname().equals(apiParams.getCreator())) {
-                    return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
-                } else {
-                    String RequestContentType=api.getRequestcontenttype();
+            Api apiexist= apiService.getById(apiid);
+            Long currentaccountid = apiParams.getCreatorid();
+            AccountRole accountRole= accountRoleService.getBy("accountId",currentaccountid);
+            if (apiexist != null) {
+                if (currentaccountid.equals(apiexist.getMid()) || accountRole.getRoleId()==1) {
+                    String RequestContentType=apiexist.getRequestcontenttype();
                     String Property = apiParams.getPropertytype();
                     Condition con = new Condition(ApiParams.class);
                     con.createCriteria().andCondition("keytype = '" + apiParams.getKeytype() + "'").andCondition("apiid = " + apiParams.getApiid());
@@ -140,6 +136,8 @@ public class ApiParamsController {
 ////                    }
 //                }
                     }
+                } else {
+                    return ResultGenerator.genFailedResult("当前api参数只有api维护人或者管理员可以修改");
                 }
             } else
             {
@@ -157,10 +155,10 @@ public class ApiParamsController {
             String Property=apiParamsList.get(0).getPropertytype();
             Long apiid=apiParamsList.get(0).getApiid();
             Api api= apiService.getById(apiid);
+            Long currentaccountid = apiParamsList.get(0).getCreatorid();
+            AccountRole accountRole= accountRoleService.getBy("accountId",currentaccountid);
             if (api != null) {
-                if (!api.getMnickname().equals(apiParamsList.get(0).getCreator())) {
-                    return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
-                } else {
+                if (currentaccountid.equals(api.getMid()) || accountRole.getRoleId()==1) {
                     String requesttype=api.getRequestcontenttype();
                     if(Property.equalsIgnoreCase("Body"))
                     {
@@ -173,6 +171,8 @@ public class ApiParamsController {
                     {
                         updateparams(apiParamsList);
                     }
+                } else {
+                    return ResultGenerator.genFailedResult("当前api参数只有api维护人或者管理员可以修改");
                 }
             } else
             {

@@ -649,6 +649,15 @@
             <el-option label="Restful" value="restful"></el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="维护人:" prop="mnickname" required>
+          <el-select v-model="uploadData.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+                     @change="mnicknameselectChanged($event)">
+            <div v-for="(mnickname, index) in accountList" :key="index">
+              <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-upload
             style="display: inline"
@@ -686,6 +695,15 @@
           <el-select v-model="uploadData.apistyle" placeholder="api风格" style="width:100%">
             <el-option label="传统方式" value="传统方式"></el-option>
             <el-option label="Restful" value="restful"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="维护人:" prop="mnickname" required>
+          <el-select v-model="uploadData.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+                     @change="mnicknameselectChanged($event)">
+            <div v-for="(mnickname, index) in accountList" :key="index">
+              <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
+            </div>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -845,6 +863,7 @@ export default {
         casecounts: 0,
         projectid: '',
         mnickname: '',
+        creatorid: '',
         mid: ''
       },
       tmpcopyapi: {
@@ -888,9 +907,7 @@ export default {
         modelname: null,
         path: null,
         projectid: '',
-        nickname: '',
-        accountId: this.accountId,
-        creator: this.name
+        mid: ''
       },
       searchvaraibles: {
         page: 1,
@@ -906,7 +923,9 @@ export default {
       uploadData: {
         deployid: '',
         deptname: '',
-        apistyle: ''
+        apistyle: '',
+        mid: '',
+        mnickname: ''
       }
     }
   },
@@ -915,7 +934,6 @@ export default {
   },
   created() {
     this.getaccountLists()
-    this.search.accountId = this.accountId
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
       { id: '', keyname: '', keytype: '', keydefaultvalue: '', propertytype: 'Header', creator: '' }
@@ -946,9 +964,9 @@ export default {
   methods: {
     creatorselectChanged(e) {
       if (e === '全部') {
-        this.search.creator = 'admin'
+        this.search.mid = null
       } else {
-        this.search.creator = this.name
+        this.search.mid = this.accountId
       }
     },
     tabclick(tab, event) {
@@ -971,7 +989,8 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
-        creator: this.name
+        creatorid: this.accountId,
+        creator: this.nickname
       }
       console.log(newrow)
       this.Headertabledatas.splice(index + 1, 0, JSON.parse(JSON.stringify(newrow)))
@@ -987,7 +1006,8 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
-        creator: this.name
+        creatorid: this.accountId,
+        creator: this.nickname
       }
       console.log(newrow)
       this.Paramstabledatas.splice(index + 1, 0, JSON.parse(JSON.stringify(newrow)))
@@ -1003,7 +1023,8 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
-        creator: this.name
+        creatorid: this.accountId,
+        creator: this.nickname
       }
       console.log(newrow)
       this.Bodytabledatas.splice(index + 1, 0, JSON.parse(JSON.stringify(newrow)))
@@ -1034,7 +1055,8 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
-                creator: this.name
+                creatorid: this.accountId,
+                creator: this.nickname
               }
               this.Headertabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
               console.log(this.Headertabledatas)
@@ -1058,7 +1080,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creatorid: this.accountId,
+            creator: this.nickname
           }
           this.Headertabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
           console.log(this.Headertabledatas)
@@ -1091,7 +1114,8 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
-                creator: this.name
+                creatorid: this.accountId,
+                creator: this.nickname
               }
               this.Paramstabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
               console.log(this.Paramstabledatas)
@@ -1115,7 +1139,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creatorid: this.accountId,
+            creator: this.nickname
           }
           this.Paramstabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
           console.log(this.Paramstabledatas)
@@ -1148,7 +1173,8 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
-                creator: this.name
+                creatorid: this.accountId,
+                creator: this.nickname
               }
               this.Bodytabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
               console.log(this.Bodytabledatas)
@@ -1172,7 +1198,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creatorid: this.accountId,
+            creator: this.nickname
           }
           this.Bodytabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
           console.log(this.Bodytabledatas)
@@ -1277,7 +1304,10 @@ export default {
           fd.append('deployid', this.uploadData.deployid)
           fd.append('deployunitname', this.uploadData.deptname)
           fd.append('apistyle', this.uploadData.apistyle)
-          fd.append('creator', this.name)
+          fd.append('creator', this.nickname)
+          fd.append('creatorid', this.accountId)
+          fd.append('mnickname', this.uploadData.mnickname)
+          fd.append('mid', this.uploadData.mid)
           fd.append('projectid', window.localStorage.getItem('pid'))
           this.fileList.forEach(item => {
             fd.append('file', item.raw)
@@ -1311,7 +1341,10 @@ export default {
           fd.append('deployid', this.uploadData.deployid)
           fd.append('deployunitname', this.uploadData.deptname)
           fd.append('apistyle', this.uploadData.apistyle)
-          fd.append('creator', this.name)
+          fd.append('creator', this.nickname)
+          fd.append('creatorid', this.accountId)
+          fd.append('mnickname', this.uploadData.mnickname)
+          fd.append('mid', this.uploadData.mid)
           fd.append('projectid', window.localStorage.getItem('pid'))
           this.SwfileList.forEach(item => {
             fd.append('file', item.raw)
@@ -1352,6 +1385,7 @@ export default {
       for (let i = 0; i < this.accountList.length; i++) {
         if (this.accountList[i].nickname === e) {
           this.tmpapi.mid = this.accountList[i].id
+          this.uploadData.mid = this.accountList[i].id
         }
       }
     },
@@ -1484,7 +1518,6 @@ export default {
       this.search.apiname = this.tmpapiname
       this.search.deployunitname = this.tmpdeployunitname
       this.search.modelname = this.tmpmodelname
-      this.search.creator = this.name
       this.search.path = this.tmppath
       search(this.search).then(response => {
         this.apiList = response.data.list
@@ -1554,7 +1587,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creator: this.nickname,
+            creatorid: this.accountId
           }
           this.Paramstabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
         }
@@ -1579,7 +1613,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creator: this.nickname,
+            creatorid: this.accountId
           }
           this.Headertabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
         }
@@ -1604,7 +1639,8 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
-            creator: this.name
+            creator: this.nickname,
+            creatorid: this.accountId
           }
           this.Bodytabledatas.splice(1, 0, JSON.parse(JSON.stringify(newrow)))
         }
@@ -1732,7 +1768,8 @@ export default {
       this.tmpapiparams.propertytype = ''
       this.tmpapiparams.deployunitid = ''
       this.tmpapiparams.bodytype = ''
-      this.tmpapiparams.creator = this.name
+      this.tmpapiparams.creator = this.nickname
+      this.tmpapiparams.creatorid = this.accountId
     },
     /**
      * 显示添加api对话框
@@ -1756,6 +1793,7 @@ export default {
       this.tmpapi.memo = ''
       this.tmpapi.mid = ''
       this.tmpapi.mnickname = ''
+      this.tmpapi.creatorid = this.accountId
       this.tmpapi.creator = this.nickname
       this.tmpapi.projectid = window.localStorage.getItem('pid')
       console.log(window.localStorage.getItem('pid'))
@@ -1769,6 +1807,7 @@ export default {
       this.uploadData.deployid = ''
       this.uploadData.deptname = ''
       this.uploadData.apistyle = ''
+      this.uploadData.mnickname = ''
       this.fileList = []
     },
 
@@ -1778,6 +1817,7 @@ export default {
       this.uploadData.deployid = ''
       this.uploadData.deptname = ''
       this.uploadData.apistyle = ''
+      this.uploadData.mnickname = ''
       this.SwfileList = []
     },
     /**
@@ -1823,7 +1863,7 @@ export default {
         this.Headertabledatas[i].apiname = this.tmpapi.apiname
         this.Headertabledatas[i].deployunitid = this.tmpapi.deployunitid
         this.Headertabledatas[i].deployunitname = this.tmpapi.deployunitname
-        this.Headertabledatas[i].creator = this.nickname
+        this.Headertabledatas[i].creatorid = this.accountId
       }
       addapiallparams(this.Headertabledatas).then(() => {
         this.$message.success('添加Header成功')
@@ -1835,6 +1875,7 @@ export default {
         this.Paramstabledatas[i].apiname = this.tmpapi.apiname
         this.Paramstabledatas[i].deployunitid = this.tmpapi.deployunitid
         this.Paramstabledatas[i].deployunitname = this.tmpapi.deployunitname
+        this.Paramstabledatas[i].creatorid = this.accountId
         this.Paramstabledatas[i].creator = this.nickname
       }
       addapiallparams(this.Paramstabledatas).then(() => {
@@ -1849,7 +1890,8 @@ export default {
           this.Bodytabledatas[i].apiname = this.tmpapi.apiname
           this.Bodytabledatas[i].deployunitid = this.tmpapi.deployunitid
           this.Bodytabledatas[i].deployunitname = this.tmpapi.deployunitname
-          this.Bodytabledatas[i].creator = this.nickname
+          this.Bodytabledatas[i].creatorid = this.accountId
+          this.Paramstabledatas[i].creator = this.nickname
         }
         addapiallparams(this.Bodytabledatas).then(() => {
           this.$message.success('添加Body成功')
@@ -1880,6 +1922,7 @@ export default {
           this.tmpapiparams.apiname = this.tmpapi.apiname
           this.tmpapiparams.deployunitid = this.tmpapi.deployunitid
           this.tmpapiparams.deployunitname = this.tmpapi.deployunitname
+          this.tmpapiparams.creatorid = this.accountId
           this.tmpapiparams.creator = this.nickname
           addapiparams(this.tmpapiparams).then(() => {
             this.$message.success('添加Body成功')
@@ -1982,6 +2025,7 @@ export default {
       this.tmpapi.creator = this.apiList[index].creator
       this.tmpapi.mnickname = this.apiList[index].mnickname
       this.tmpapi.mid = this.apiList[index].mid
+      this.tmpapi.creatorid = this.accountId
       this.tmpapi.requestcontenttype = this.apiList[index].requestcontenttype
       this.tmpapi.projectid = window.localStorage.getItem('pid')
       // if (this.tmpapi.visittype === 'GET') {
@@ -2025,7 +2069,7 @@ export default {
       this.tmpapiparams.deployunitname = this.apiparamsList[index].deployunitname
       this.tmpapiparams.propertytype = this.apiparamsList[index].propertytype
       this.tmpapiparams.bodytype = this.apiparamsList[index].bodytype
-      this.tmpapiparams.creator = this.name
+      this.tmpapiparams.creator = this.nickname
       if (this.tmpapiparams.propertytype === 'Body') {
         this.BodyVisible = true
         this.paralabel = '参数(支持Json，Xml)'

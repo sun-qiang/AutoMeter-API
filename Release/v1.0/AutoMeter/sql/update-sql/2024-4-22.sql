@@ -8,3 +8,7 @@ ALTER TABLE testcenter.api add COLUMN `mnickname` varchar(20) CHARACTER SET utf8
 ALTER TABLE testcenter.api add COLUMN `mid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
 ALTER TABLE testcenter.apicases add COLUMN `mnickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '维护者' ;
 ALTER TABLE testcenter.apicases add COLUMN `mid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
+ALTER TABLE testcenter.api add COLUMN `creatorid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
+ALTER TABLE testcenter.api_params add COLUMN `creatorid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
+ALTER TABLE testcenter.apicases add COLUMN `creatorid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
+ALTER TABLE testcenter.api_casedata add COLUMN `mid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
