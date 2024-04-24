@@ -47,10 +47,14 @@ public class ApiParamsController {
         {
             Long apiid = apiParams.getApiid();
             Api api= apiService.getById(apiid);
-            String RequestContentType=api.getRequestcontenttype();
-            String Property = apiParams.getPropertytype();
-            Condition con = new Condition(ApiParams.class);
-            con.createCriteria().andCondition("keytype = '" + apiParams.getKeytype() + "'").andCondition("apiid = " + apiParams.getApiid());
+            if (api != null) {
+                if (!api.getMnickname().equals(apiParams.getCreator())) {
+                    return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
+                } else {
+                    String RequestContentType=api.getRequestcontenttype();
+                    String Property = apiParams.getPropertytype();
+                    Condition con = new Condition(ApiParams.class);
+                    con.createCriteria().andCondition("keytype = '" + apiParams.getKeytype() + "'").andCondition("apiid = " + apiParams.getApiid());
 //            List<ApiCasedata> apiCasedataList = apiCasedataService.getdataidbyapiidandtype(apiid, Property);
 //            String IDS = "";
 //            if (apiCasedataList.size() > 0) {
@@ -61,11 +65,11 @@ public class ApiParamsController {
 //                ApiParamsController.log.info("删除用例数据表的id为：" + IDS);
 //            }
 //            List<Apicases>apicasesList=apicasesService.getcasebyapiid(apiid);
-            //存在此类型的body参数
-            if (apiParamsService.ifexist(con) > 0) {
-                //更新参数表
-                apiParamsService.updateApiParams(apiParams);
-                //参数值是空，做删除操作
+                    //存在此类型的body参数
+                    if (apiParamsService.ifexist(con) > 0) {
+                        //更新参数表
+                        apiParamsService.updateApiParams(apiParams);
+                        //参数值是空，做删除操作
 //                if(apiParams.getKeyname().isEmpty())
 //                {
 //                    //Body值为空，则当做删除类型为keytype的Body，并且删除用例参数值
@@ -103,12 +107,12 @@ public class ApiParamsController {
 ////                        apiCasedataService.saveCasedata(apiCasedataList1);
 ////                    }
 //                }
-            }
-            //不存在此类型的body参数，新增，删除老的Body用例数据，同步新的Body用例数据
-            else
-            {
-                apiParamsService.SaveApiParams(apiParams);
-                //保存Body参数
+                    }
+                    //不存在此类型的body参数，新增，删除老的Body用例数据，同步新的Body用例数据
+                    else
+                    {
+                        apiParamsService.SaveApiParams(apiParams);
+                        //保存Body参数
 //                if(!apiParams.getKeyname().isEmpty())
 //                {
 //                    apiParamsService.SaveApiParams(apiParams);
@@ -135,6 +139,11 @@ public class ApiParamsController {
 ////                        apiCasedataService.saveCasedata(apiCasedataList1);
 ////                    }
 //                }
+                    }
+                }
+            } else
+            {
+                return ResultGenerator.genFailedResult("当前api不存在");
             }
         }
         return ResultGenerator.genOkResult();
@@ -148,17 +157,26 @@ public class ApiParamsController {
             String Property=apiParamsList.get(0).getPropertytype();
             Long apiid=apiParamsList.get(0).getApiid();
             Api api= apiService.getById(apiid);
-            String requesttype=api.getRequestcontenttype();
-            if(Property.equalsIgnoreCase("Body"))
-            {
-                if(requesttype.equalsIgnoreCase("Form表单"))
-                {
-                    updateparams(apiParamsList);
+            if (api != null) {
+                if (!api.getMnickname().equals(apiParamsList.get(0).getCreator())) {
+                    return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
+                } else {
+                    String requesttype=api.getRequestcontenttype();
+                    if(Property.equalsIgnoreCase("Body"))
+                    {
+                        if(requesttype.equalsIgnoreCase("Form表单"))
+                        {
+                            updateparams(apiParamsList);
+                        }
+                    }
+                    else
+                    {
+                        updateparams(apiParamsList);
+                    }
                 }
-            }
-            else
+            } else
             {
-                updateparams(apiParamsList);
+                return ResultGenerator.genFailedResult("当前api不存在");
             }
         }
         return ResultGenerator.genOkResult();

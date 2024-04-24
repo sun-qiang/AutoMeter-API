@@ -54,6 +54,7 @@
       <el-table-column label="环境变量名" align="center" prop="variablesname" width="180"/>
       <el-table-column label="环境名" align="center" prop="envname" width="120"/>
       <el-table-column :show-overflow-tooltip="true" label="变量值" align="center" prop="variablesvalue" width="350"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="70"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -191,6 +192,7 @@
           variablesname: '',
           variablesvalue: '',
           envname: '',
+          creator: '',
           projectid: ''
         },
         search: {
@@ -200,11 +202,18 @@
           variablesname: null,
           envname: null,
           projectid: ''
+        },
+        searchenv: {
+          page: 1,
+          size: 10,
+          projectid: ''
         }
       }
     },
 
     created() {
+      this.searchenv.projectid = window.localStorage.getItem('pid')
+      this.tmpenviromentvariables.creator = this.name
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getenviromentvariablesList()
@@ -232,7 +241,7 @@
        * 获取环境列表
        */
       getenviromentallList() {
-        getenviromentallList(this.search).then(response => {
+        getenviromentallList(this.searchenv).then(response => {
           this.enviromentnameList = response.data
         }).catch(res => {
           this.$message.error('加载环境列表失败')

@@ -44,6 +44,7 @@
         </template>
       </el-table-column>
       <el-table-column label="全局Header名" align="center" prop="globalheadername" width="280"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="70"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="200">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -308,6 +309,7 @@
     },
 
     created() {
+      this.tmpglobalheader.creator = this.name
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getglobalheaderList()

@@ -41,6 +41,12 @@ public class ApicasesController {
     private EnviromentService enviromentService;
     @Autowired
     private ApicasesAssertService apicasesAssertService;
+
+    @Autowired
+    private ApicasesDbassertService apicasesDbassertService;
+
+    @Autowired
+    private ApicasesDbassertValueService apicasesDbassertValueService;
     @Autowired(required = false)
     private ApiService apiService;
     @Autowired(required = false)
@@ -210,6 +216,38 @@ public class ApicasesController {
                     apicasesAssert.setId(null);
                     apicasesAssertService.save(apicasesAssert);
                 }
+                //复制数据库断言
+                Condition AssertDBCondition = new Condition(ApicasesDbassert.class);
+                AssertDBCondition.createCriteria().andCondition("caseid = " + Long.parseLong(sourcecaseid));
+                List<ApicasesDbassert> SourceAssertdbList = apicasesDbassertService.listByCondition(AssertDBCondition);
+                for (ApicasesDbassert apicasesDbassert : SourceAssertdbList) {
+                    long sourcedbassertid=apicasesDbassert.getId();
+                    apicasesDbassert.setCaseid(NewCaseId);
+                    apicasesDbassert.setId(null);
+                    apicasesDbassertService.save(apicasesDbassert);
+                    long dbassertid=apicasesDbassert.getId();
+                    Condition AssertDBValueCondition = new Condition(ApicasesDbassertValue.class);
+                    AssertDBValueCondition.createCriteria().andCondition("dbassertid = " + sourcedbassertid);
+                    List<ApicasesDbassertValue> apicasesDbassertValueList= apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
+                    for (ApicasesDbassertValue apicasesDbassertValue : apicasesDbassertValueList) {
+                        apicasesDbassertValue.setDbassertid(dbassertid);
+                        apicasesDbassertValue.setId(null);
+                        apicasesDbassertValueService.save(apicasesDbassertValue);
+                    }
+                }
+
+                //复制提取变量
+                Condition TestvariablesCondition = new Condition(Testvariables.class);
+                TestvariablesCondition.createCriteria().andCondition("caseid = " + Long.parseLong(sourcecaseid));
+                List<Testvariables> TestvariablesConditionList = testvariablesService.listByCondition(TestvariablesCondition);
+                for (Testvariables testvariables : TestvariablesConditionList) {
+                    testvariables.setCaseid(NewCaseId);
+                    testvariables.setCasename(newcasename);
+                    testvariables.setTestvariablesname(testvariables.getTestvariablesname()+"-copy");
+                    testvariables.setId(null);
+                    testvariablesService.save(testvariables);
+                }
+
                 //复制前置条件
                 SubCondition(Long.parseLong(sourcecaseid), NewCaseId, newcasename);
                 //api用例数加1
@@ -217,6 +255,10 @@ public class ApicasesController {
                 long casecount = api.getCasecounts();
                 api.setCasecounts(casecount + 1);
                 apiService.updateApi(api);
+
+                Deployunit desdeployunit= deployunitService.getBy("id",Long.parseLong(sourcedeployunitid));
+                desdeployunit.setApicounts(desdeployunit.getApicounts()+1);
+                deployunitService.update(desdeployunit);
             }
             return ResultGenerator.genOkResult();
         }
@@ -243,35 +285,62 @@ public class ApicasesController {
                 for (Api SourceApi : SourceapiList) {
                     long SourceApiid = SourceApi.getId();
                     //1.复制api
-                    Api DestinationApi = SourceApi;
-                    DestinationApi.setDeployunitname(destinationdeployunitname);
-                    DestinationApi.setDeployunitid(destinationdeployunitid);
-                    DestinationApi.setId(null);
-                    DestinationApi.setCasecounts(new Long(1));
-
+                    Api DestinationApi = new Api();
+                    long DestinationApiid = 0;
+                    String DestinationApiName = "";
                     Condition desapicon = new Condition(Api.class);
                     desapicon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
-                            .andCondition("apiname='" + SourceApi.getApiname() + "'");
-                    if (apiService.ifexist(desapicon) != 0) {
-                        DestinationApi.setApiname(SourceApi.getApiname() + "-复制");
-                    }
-                    apiService.save(DestinationApi);
-                    long DestinationApiid = DestinationApi.getId();
-                    String DestinationApiName = DestinationApi.getApiname();
+                            .andCondition("apiname='" + SourceApi.getApiname() + "-批量复制用例'");
 
+                    List<Api> apiList=apiService.listByCondition(desapicon);
+                    if (apiList.size()== 0) {
+                        DestinationApi.setMid(SourceApi.getMid());
+                        DestinationApi.setMnickname(SourceApi.getMnickname());
+                        DestinationApi.setProjectid(SourceApi.getProjectid());
+                        DestinationApi.setModelid(SourceApi.getModelid());
+                        DestinationApi.setModelname(SourceApi.getModelname());
+                        DestinationApi.setVisittype(SourceApi.getVisittype());
+                        DestinationApi.setPath(SourceApi.getPath());
+                        DestinationApi.setRequestcontenttype(SourceApi.getRequestcontenttype());
+                        DestinationApi.setCreator(SourceApi.getCreator());
+                        DestinationApi.setMemo(SourceApi.getMemo());
+                        DestinationApi.setCreateTime(new Date());
+                        DestinationApi.setLastmodifyTime(new Date());
+                        DestinationApi.setApistyle(SourceApi.getApistyle());
+                        DestinationApi.setResponecontenttype(SourceApi.getResponecontenttype());
+                        DestinationApi.setDeployunitname(destinationdeployunitname);
+                        DestinationApi.setDeployunitid(destinationdeployunitid);
+                        DestinationApi.setId(null);
+                        DestinationApi.setCasecounts(SourceApi.getCasecounts());
+                        DestinationApi.setApiname(SourceApi.getApiname() + "-批量复制用例");
+                        apiService.save(DestinationApi);
+                        DestinationApiid=DestinationApi.getId();
+                        DestinationApiName=DestinationApi.getApiname();
 
-                    //2.复制api参数
-                    Condition apiparamcon = new Condition(ApiParams.class);
-                    apiparamcon.createCriteria().andCondition("apiid = " + SourceApiid);
-                    List<ApiParams> apiParamsList = apiParamsService.listByCondition(apiparamcon);
-                    for (ApiParams SourceParam : apiParamsList) {
-                        ApiParams DestinationParam = SourceParam;
-                        DestinationParam.setApiid(DestinationApiid);
-                        DestinationParam.setApiname(DestinationApiName);
-                        DestinationParam.setDeployunitname(destinationdeployunitname);
-                        DestinationParam.setDeployunitid(destinationdeployunitid);
-                        DestinationParam.setId(null);
-                        apiParamsService.save(DestinationParam);
+                        //2.复制api参数
+                        Condition apiparamcon = new Condition(ApiParams.class);
+                        apiparamcon.createCriteria().andCondition("apiid = " + SourceApiid);
+                        List<ApiParams> apiParamsList = apiParamsService.listByCondition(apiparamcon);
+                        for (ApiParams SourceParam : apiParamsList) {
+                            ApiParams DestinationParam =new ApiParams();
+                            DestinationParam.setCreator(SourceParam.getCreator());
+                            DestinationParam.setLastmodifyTime(new Date());
+                            DestinationParam.setCreateTime(new Date());
+                            DestinationParam.setKeytype(SourceParam.getKeytype());
+                            DestinationParam.setKeyname(SourceParam.getKeyname());
+                            DestinationParam.setKeydefaultvalue(SourceParam.getKeydefaultvalue());
+                            DestinationParam.setPropertytype(SourceParam.getPropertytype());
+                            DestinationParam.setApiid(DestinationApiid);
+                            DestinationParam.setApiname(DestinationApiName);
+                            DestinationParam.setDeployunitname(destinationdeployunitname);
+                            DestinationParam.setDeployunitid(destinationdeployunitid);
+                            DestinationParam.setId(null);
+                            apiParamsService.save(DestinationParam);
+                        }
+                    } else
+                    {
+                         DestinationApiid = apiList.get(0).getId();
+                         DestinationApiName = apiList.get(0).getApiname();
                     }
 
                     //3.复制api用例
@@ -280,7 +349,24 @@ public class ApicasesController {
                     List<Apicases> apicasesList = apicasesService.listByCondition(apicasecon);
                     for (Apicases SourceCase : apicasesList) {
                         long SourceCaseID = SourceCase.getId();
-                        Apicases DesitionApicase = SourceCase;
+                        Apicases DesitionApicase = new Apicases() ;
+                        DesitionApicase.setMid(SourceCase.getMid());
+                        DesitionApicase.setMnickname(SourceCase.getMnickname());
+                        DesitionApicase.setProjectid(SourceCase.getProjectid());
+                        DesitionApicase.setModelid(SourceCase.getModelid());
+                        DesitionApicase.setModelname(SourceCase.getModelname());
+                        DesitionApicase.setCasecontent(SourceCase.getCasecontent());
+                        DesitionApicase.setCasejmxname(SourceCase.getCasejmxname());
+                        DesitionApicase.setCasetype(SourceCase.getCasetype());
+                        DesitionApicase.setCreateTime(new Date());
+                        DesitionApicase.setLastmodifyTime(new Date());
+                        DesitionApicase.setExpect(SourceCase.getExpect());
+                        DesitionApicase.setLevel(SourceCase.getLevel());
+                        DesitionApicase.setLoops(SourceCase.getLoops());
+                        DesitionApicase.setCreator(SourceCase.getCreator());
+                        DesitionApicase.setThreadnum(SourceCase.getThreadnum());
+                        DesitionApicase.setMemo(SourceCase.getMemo());
+                        DesitionApicase.setMiddleparam(SourceCase.getMiddleparam());
                         DesitionApicase.setDeployunitname(destinationdeployunitname);
                         DesitionApicase.setDeployunitid(destinationdeployunitid);
                         DesitionApicase.setApiid(DestinationApiid);
@@ -289,50 +375,75 @@ public class ApicasesController {
 
                         Condition desapicasecon = new Condition(Apicases.class);
                         desapicasecon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
-                                .andCondition("casename='" + SourceCase.getCasename() + "'");
-                        if (apicasesService.ifexist(desapicon) != 0) {
-                            DesitionApicase.setCasename(SourceCase.getCasename() + "-复制");
-                        }
-                        apicasesService.save(DesitionApicase);
-                        long DestinationCaseID = DesitionApicase.getId();
-                        String DestinationCaseName = DesitionApicase.getCasename();
+                                .andCondition("casename='" + SourceCase.getCasename()+"-批量复制用例'");
+                        if (apicasesService.ifexist(desapicasecon) == 0) {
+                            DesitionApicase.setCasename(SourceCase.getCasename()+"-批量复制用例");
+                            apicasesService.save(DesitionApicase);
 
-                        //4.复制用例数据
-                        Condition apicasedatacon = new Condition(ApiCasedata.class);
-                        apicasedatacon.createCriteria().andCondition("caseid = " + SourceCaseID);
-                        List<ApiCasedata> apiCasedataList = apiCasedataService.listByCondition(apicasedatacon);
-                        for (ApiCasedata SourceCaseData : apiCasedataList) {
-                            ApiCasedata DestinationData = SourceCaseData;
-                            DestinationData.setCaseid(DestinationCaseID);
-                            DestinationData.setId(null);
-                            apiCasedataService.save(DestinationData);
+                            long DestinationCaseID = DesitionApicase.getId();
+                            String DestinationCaseName = DesitionApicase.getCasename();
+
+                            //4.复制用例数据
+                            Condition apicasedatacon = new Condition(ApiCasedata.class);
+                            apicasedatacon.createCriteria().andCondition("caseid = " + SourceCaseID);
+                            List<ApiCasedata> apiCasedataList = apiCasedataService.listByCondition(apicasedatacon);
+                            for (ApiCasedata SourceCaseData : apiCasedataList) {
+                                ApiCasedata DestinationData = SourceCaseData;
+                                DestinationData.setCaseid(DestinationCaseID);
+                                DestinationData.setId(null);
+                                apiCasedataService.save(DestinationData);
+                            }
+
+                            //5.复制用例断言
+                            Condition CaseAssertCondition = new Condition(ApicasesAssert.class);
+                            CaseAssertCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
+                            List<ApicasesAssert> SourceAssertdataList = apicasesAssertService.listByCondition(CaseAssertCondition);
+                            for (ApicasesAssert apicasesAssert : SourceAssertdataList) {
+                                apicasesAssert.setCaseid(DestinationCaseID);
+                                apicasesAssert.setId(null);
+                                apicasesAssertService.save(apicasesAssert);
+                            }
+                            //复制数据库断言
+                            Condition AssertDBCondition = new Condition(ApicasesDbassert.class);
+                            AssertDBCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
+                            List<ApicasesDbassert> SourceAssertdbList = apicasesDbassertService.listByCondition(AssertDBCondition);
+                            for (ApicasesDbassert apicasesDbassert : SourceAssertdbList) {
+                                long sourcedbassertid=apicasesDbassert.getId();
+                                apicasesDbassert.setCaseid(DestinationCaseID);
+                                apicasesDbassert.setId(null);
+                                apicasesDbassertService.save(apicasesDbassert);
+                                long dbassertid=apicasesDbassert.getId();
+                                Condition AssertDBValueCondition = new Condition(ApicasesDbassertValue.class);
+                                AssertDBValueCondition.createCriteria().andCondition("dbassertid = " + sourcedbassertid);
+                                List<ApicasesDbassertValue> apicasesDbassertValueList= apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
+                                for (ApicasesDbassertValue apicasesDbassertValue : apicasesDbassertValueList) {
+                                    apicasesDbassertValue.setDbassertid(dbassertid);
+                                    apicasesDbassertValue.setId(null);
+                                    apicasesDbassertValueService.save(apicasesDbassertValue);
+                                }
+                            }
+
+                            //6.复制提取变量
+                            Condition TestvariablesCondition = new Condition(Testvariables.class);
+                            TestvariablesCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
+                            List<Testvariables> TestvariablesConditionList = testvariablesService.listByCondition(TestvariablesCondition);
+                            for (Testvariables testvariables : TestvariablesConditionList) {
+                                testvariables.setCaseid(DestinationCaseID);
+                                testvariables.setCasename(DestinationCaseName);
+                                testvariables.setTestvariablesname(testvariables.getTestvariablesname()+"-batchcopy");
+                                testvariables.setId(null);
+                                testvariablesService.save(testvariables);
+                            }
+
+                            //7.复制前置调试条件
+                            SubCondition(SourceCaseID, DestinationCaseID, DestinationCaseName);
                         }
 
-                        //5.复制用例断言
-                        Condition CaseAssertCondition = new Condition(ApicasesAssert.class);
-                        CaseAssertCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
-                        List<ApicasesAssert> SourceAssertdataList = apicasesAssertService.listByCondition(CaseAssertCondition);
-                        for (ApicasesAssert apicasesAssert : SourceAssertdataList) {
-                            apicasesAssert.setCaseid(DestinationCaseID);
-                            apicasesAssert.setId(null);
-                            apicasesAssertService.save(apicasesAssert);
-                        }
-
-                        //6.复制提取变量
-                        Condition TestvariablesCondition = new Condition(Testvariables.class);
-                        TestvariablesCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
-                        List<Testvariables> TestvariablesConditionList = testvariablesService.listByCondition(TestvariablesCondition);
-                        for (Testvariables testvariables : TestvariablesConditionList) {
-                            testvariables.setCaseid(DestinationCaseID);
-                            testvariables.setCasename(DestinationCaseName);
-                            testvariables.setId(null);
-                            testvariablesService.save(testvariables);
-                        }
-
-                        //7.复制前置调试条件
-                        SubCondition(SourceCaseID, DestinationCaseID, DestinationCaseName);
                     }
                 }
+                Deployunit desdeployunit= deployunitService.getBy("id",destinationdeployunitid);
+                desdeployunit.setApicounts(Long.valueOf(SourceapiList.size()));
+                deployunitService.update(desdeployunit);
                 return ResultGenerator.genOkResult();
             }
         }

@@ -50,14 +50,20 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
       if (a != null) {
         throw new ServiceException("邮箱已存在");
       } else {
-        // log.info("before password : {}", account.getPassword().trim());
-        accountDto.setPassword(this.passwordEncoder.encode(accountDto.getPassword().trim()));
-        // log.info("after password : {}", account.getPassword());
-        final Account account = new Account();
-        BeanUtils.copyProperties(accountDto, account);
-        this.accountMapper.insertSelective(account);
-        // log.info("Account<{}> id : {}", account.getName(), account.getId());
-        this.saveRole(account.getId(), accountDto.getRoleId());
+        a = this.getBy("nickname", accountDto.getEmail());
+        if (a != null) {
+          throw new ServiceException("昵称已存在");
+        }else
+        {
+          // log.info("before password : {}", account.getPassword().trim());
+          accountDto.setPassword(this.passwordEncoder.encode(accountDto.getPassword().trim()));
+          // log.info("after password : {}", account.getPassword());
+          final Account account = new Account();
+          BeanUtils.copyProperties(accountDto, account);
+          this.accountMapper.insertSelective(account);
+          // log.info("Account<{}> id : {}", account.getName(), account.getId());
+          this.saveRole(account.getId(), accountDto.getRoleId());
+        }
       }
     }
   }

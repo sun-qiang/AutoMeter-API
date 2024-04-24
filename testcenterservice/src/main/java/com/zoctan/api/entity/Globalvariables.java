@@ -21,6 +21,16 @@ public class Globalvariables {
 
     private Long projectid;
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    private String creator;
+
     /**
      * key名
      */

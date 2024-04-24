@@ -317,6 +317,7 @@ import { search as searchdbvariables } from '@/api/testvariables/dbvariables'
 import { search as searchscriptvariables } from '@/api/testvariables/scriptvariables'
 import { search as searchglobalvariables } from '@/api/testvariables/globalvariables'
 import { search as searchvariables } from '@/api/testvariables/variables'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'uservariables',
@@ -327,6 +328,12 @@ export default {
     this.searchglobalvaraibles.projectid = window.localStorage.getItem('pid')
     this.searchenvvaraibles.projectid = window.localStorage.getItem('pid')
     this.searchvaraibles.projectid = window.localStorage.getItem('pid')
+    this.searchtestvaraibles.accountId = this.accountId
+    this.searchdbvaraibles.accountId = this.accountId
+    this.searchscriptvaraibles.accountId = this.accountId
+    this.searchglobalvaraibles.accountId = this.accountId
+    this.searchenvvaraibles.accountId = this.accountId
+    this.searchvaraibles.accountId = this.accountId
     this.searchEnvVariablesBy()
     this.searchVariablesBy()
     this.searchGlobalVariablesBy()
@@ -366,40 +373,50 @@ export default {
         page: 1,
         size: 10,
         testvariablesname: '',
+        accountId: this.accountId,
         projectid: null
       },
       searchdbvaraibles: {
         page: 1,
         size: 10,
         dbvariablesname: '',
+        accountId: this.accountId,
         projectid: null
       },
       searchscriptvaraibles: {
         page: 1,
         size: 10,
         scriptvariablesname: '',
+        accountId: this.accountId,
         projectid: null
       },
       searchglobalvaraibles: {
         page: 1,
         size: 10,
         keyname: '',
+        accountId: this.accountId,
         projectid: null
       },
       searchvaraibles: {
         page: 1,
         size: 10,
         variablesname: '',
+        accountId: this.accountId,
         projectid: null
       },
       searchenvvaraibles: {
         page: 1,
         size: 10,
         variablesname: '',
+        accountId: this.accountId,
         envname: '',
         projectid: null
       }
     }
+  },
+
+  computed: {
+    ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
   methods: {
     clickCopy(index) {

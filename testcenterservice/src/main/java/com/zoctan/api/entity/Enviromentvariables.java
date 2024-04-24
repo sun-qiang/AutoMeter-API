@@ -11,6 +11,16 @@ public class Enviromentvariables {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    private String creator;
+
     /**
      * key名
      */

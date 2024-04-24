@@ -1,0 +1,10 @@
+use testcenter;
+ALTER TABLE testcenter.`dispatch` add COLUMN projectid  bigint(20) unsigned NOT NULL COMMENT '项目id' ;
+ALTER TABLE testcenter.enviromentvariables add COLUMN `creator` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者' ;
+ALTER TABLE testcenter.globalvariables add COLUMN `creator` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者' ;
+ALTER TABLE testcenter.globalheader add COLUMN `creator` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者' ;
+ALTER TABLE testcenter.variables add COLUMN `creator` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者' ;
+ALTER TABLE testcenter.api add COLUMN `mnickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '维护者' ;
+ALTER TABLE testcenter.api add COLUMN `mid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;
+ALTER TABLE testcenter.apicases add COLUMN `mnickname` varchar(20) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '维护者' ;
+ALTER TABLE testcenter.apicases add COLUMN `mid` bigint(20) unsigned NOT NULL COMMENT '维护者id' ;

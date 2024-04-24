@@ -9,6 +9,7 @@ import com.zoctan.api.dto.AccountDto;
 import com.zoctan.api.dto.AccountWithRole;
 import com.zoctan.api.entity.Account;
 import com.zoctan.api.entity.Deployunit;
+import com.zoctan.api.entity.Enviroment;
 import com.zoctan.api.service.AccountService;
 import com.zoctan.api.service.impl.AccountDetailsServiceImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -181,5 +183,13 @@ public class AccountController {
     final List<Account> list = this.accountService.findAccountWithName(param);
     final PageInfo<Account> pageInfo = new PageInfo<>(list);
     return ResultGenerator.genOkResult(pageInfo);
+  }
+
+
+  @GetMapping("/searchallaccount")
+  public Result listall() {
+    Condition con=new Condition(Account.class);
+    List<Account> list = accountService.listByCondition(con);
+    return ResultGenerator.genOkResult(list);
   }
 }

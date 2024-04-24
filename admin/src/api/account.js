@@ -8,6 +8,13 @@ export function search(searchForm1) {
   })
 }
 
+export function searchallaccount() {
+  return request({
+    url: '/account/searchallaccount',
+    method: 'get'
+  })
+}
+
 export function searchaccount(searchForm1) {
   return request({
     url: '/account/searchaccount',

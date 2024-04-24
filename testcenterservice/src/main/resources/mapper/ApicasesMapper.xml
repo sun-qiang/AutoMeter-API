@@ -26,6 +26,8 @@
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="modelid" jdbcType="BIGINT" property="modelid" />
     <result column="modelname" jdbcType="VARCHAR" property="modelname" />
+    <result column="mid" jdbcType="BIGINT" property="mid" />
+    <result column="mnickname" jdbcType="VARCHAR" property="mnickname" />
   </resultMap>
 
   <select id="findApiCaseWithName" resultMap="BaseResultMap">
@@ -75,7 +77,8 @@
   <update id="updateApicase" parameterType="com.zoctan.api.entity.Apicases">
     update apicases set casename = #{casename},casejmxname = #{casejmxname},apiid=#{apiid}, apiname = #{apiname},deployunitid=#{deployunitid}, deployunitname = #{deployunitname}, casecontent = #{casecontent},expect = #{expect},
                         modelid = #{modelid}, modelname = #{modelname},
-                        memo = #{memo},casetype=#{casetype},threadnum=#{threadnum},loops=#{loops},middleparam=#{middleparam},level=#{level}, creator = #{creator},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+                        memo = #{memo},casetype=#{casetype},threadnum=#{threadnum},loops=#{loops},middleparam=#{middleparam},level=#{level}, creator = #{creator},
+                        mid = #{mid},mnickname = #{mnickname}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 

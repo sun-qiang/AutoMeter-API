@@ -39,7 +39,7 @@
             size="mini"
             v-if="hasPermission('apicases:batchassert')"
             @click.native.prevent="showBatchAssertDialog"
-          >批量断言
+          >批量接口断言
           </el-button>
           <el-button
             type="danger"
@@ -169,7 +169,8 @@
       <el-table-column label="线程" align="center" prop="threadnum" width="50"/>
       <el-table-column label="循环" align="center" prop="loops" width="50"/>
       <el-table-column :show-overflow-tooltip="true" label="用例描述" align="center" prop="casecontent" width="80"/>
-      <el-table-column label="操作人" align="center" prop="creator" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"  label="维护人" align="center" prop="mnickname" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"  label="操作人" align="center" prop="creator" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="120">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -326,6 +327,15 @@
           />
         </el-form-item>
         </div>
+
+        <el-form-item label="维护人:" prop="mnickname" required>
+          <el-select v-model="tmpapicases.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+                     @change="mnicknameselectChanged($event)">
+            <div v-for="(mnickname, index) in accountList" :key="index">
+              <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
 
         <el-form-item label="用例描述" prop="casecontent" required>
           <el-input
@@ -2656,6 +2666,7 @@
   import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
   import { addapicasesdbassert, searchdbassert as searchdbassert, removeapicasesdbassert, updateapicasesdbassert } from '@/api/assets/apicasesdbassert'
   import { searchdbassertvalue, addapicasesdbassertvalue, updateapicasesdbassertvalue, removeapicasesdbassertvalue } from '@/api/assets/apicasesdbassertvalue'
+  import { searchallaccount as searchallaccount } from '@/api/account'
 
   export default {
     name: '用例库',
@@ -2672,6 +2683,7 @@
     },
     data() {
       return {
+        accountList: [],
         tmpdbassertvalue: {
           id: '',
           dbassertid: '',
@@ -2938,7 +2950,9 @@
           memo: '',
           creator: '',
           modelid: '',
-          modelname: ''
+          modelname: '',
+          mnickname: '',
+          mid: ''
         },
         tmpmodelquery: {
           page: 1,
@@ -3265,6 +3279,7 @@
       this.searchscriptcondition.projectid = window.localStorage.getItem('pid')
       this.searchapicasevariables.projectid = window.localStorage.getItem('pid')
       this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
+      this.getaccountLists()
       this.getenviromentallList()
       this.getapicasesList()
       this.getdepunitLists()
@@ -3286,6 +3301,22 @@
 
     methods: {
       unix2CurrentTime,
+      mnicknameselectChanged(e) {
+        for (let i = 0; i < this.accountList.length; i++) {
+          if (this.accountList[i].nickname === e) {
+            this.tmpapicases.mid = this.accountList[i].id
+          }
+        }
+      },
+
+      getaccountLists() {
+        this.accountList = null
+        searchallaccount().then(response => {
+          this.accountList = response.data
+        }).catch(res => {
+          this.$message.error('加载服务列表失败')
+        })
+      },
 
       showapicasesdbassertvalueDialog(index) {
         // 显示新增对话框
@@ -4730,10 +4761,12 @@
         this.tmpapicases.middleparam = ''
         this.tmpapicases.level = 0
         this.tmpapicases.memo = ''
-        this.tmpapicases.creator = this.name
+        this.tmpapicases.creator = this.nickname
         this.tmpapicases.projectid = window.localStorage.getItem('pid')
         this.tmpapicases.modelid = ''
         this.tmpapicases.modelname = ''
+        this.tmpapicases.mid = ''
+        this.tmpapicases.mnickname = ''
         this.apiQuery.modelid = 0
         console.log(this.name)
       },
@@ -5072,7 +5105,9 @@
         this.tmpapicases.loops = this.apicasesList[index].loops
         this.tmpapicases.modelid = this.apicasesList[index].modelid
         this.tmpapicases.modelname = this.apicasesList[index].modelname
-        this.tmpapicases.creator = this.name
+        this.tmpapicases.creator = this.apicasesList[index].creator
+        this.tmpapicases.mid = this.apicasesList[index].mid
+        this.tmpapicases.mnickname = this.apicasesList[index].mnickname
         this.tmpapicases.projectid = window.localStorage.getItem('pid')
         if (this.tmpapicases.casetype === '性能') {
           this.threadloopvisible = true

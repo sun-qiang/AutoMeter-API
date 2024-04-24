@@ -863,17 +863,27 @@ public class ApiController {
      */
     @PutMapping("/detail")
     public Result updateDeploy(@RequestBody final Api api) {
-        Condition con = new Condition(Api.class);
-        con.createCriteria().andCondition("projectid = " + api.getProjectid())
-                .andCondition("deployunitname = '" + api.getDeployunitname() + "'")
-                .andCondition("apiname = '" + api.getApiname().replace("'", "''") + "'")
-                .andCondition("id <> " + api.getId());
-        if (apiService.ifexist(con) > 0) {
-            return ResultGenerator.genFailedResult("此微服务下已经存在此API");
-        } else {
+        long apiid = api.getId();
+        Api apiexist = apiService.getBy("id", apiid);
+        if (apiexist != null) {
+            if (!api.getCreator().equals(apiexist.getMnickname())) {
+                return ResultGenerator.genFailedResult("当前api只有维护人可以修改");
+            } else {
+                Condition con = new Condition(Api.class);
+                con.createCriteria().andCondition("projectid = " + api.getProjectid())
+                        .andCondition("deployunitname = '" + api.getDeployunitname() + "'")
+                        .andCondition("apiname = '" + api.getApiname().replace("'", "''") + "'")
+                        .andCondition("id <> " + api.getId());
+                if (apiService.ifexist(con) > 0) {
+                    return ResultGenerator.genFailedResult("此微服务下已经存在此API");
+                } else {
 
-            this.apiService.updateApi(api);
-            return ResultGenerator.genOkResult();
+                    this.apiService.updateApi(api);
+                    return ResultGenerator.genOkResult();
+                }
+            }
+        } else {
+            return ResultGenerator.genFailedResult("当前api不存在");
         }
     }
 

@@ -46,6 +46,7 @@
       <el-table-column label="全局变量名" align="center" prop="keyname" width="150"/>
       <el-table-column :show-overflow-tooltip="true" label="变量值" align="center" prop="keyvalue" width="80"/>
       <el-table-column label="描述" align="center" prop="memo" width="250"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="70"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -182,7 +183,8 @@
           keyname: '',
           keyvalue: '',
           memo: '',
-          projectid: ''
+          projectid: '',
+          creator: ''
         },
         search: {
           page: 1,
@@ -195,6 +197,7 @@
     },
 
     created() {
+      this.tmpglobalvariables.creator = this.name
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getglobalvariablesList()

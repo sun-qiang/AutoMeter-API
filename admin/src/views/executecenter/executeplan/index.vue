@@ -83,7 +83,7 @@
       <el-table-column label="场景数" align="center" prop="scenenums" width="60"/>
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="通知钉钉token" align="center" prop="dingdingtoken" width="110"/>
-      <el-table-column label="操作人" align="center" prop="creator" width="60"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="60"/>
 <!--      <el-table-column :show-overflow-tooltip="true" label="描述" align="center" prop="memo" width="80"/>-->
       <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="110">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>

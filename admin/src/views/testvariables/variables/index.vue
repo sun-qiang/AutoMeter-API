@@ -47,6 +47,7 @@
       <el-table-column label="变量类型" align="center" prop="variablestype" width="120"/>
       <el-table-column label="变量条件" align="center" prop="variablecondition" width="100"/>
       <el-table-column label="随机描述" align="center" prop="memo" width="250"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="70"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -218,6 +219,7 @@
     },
 
     created() {
+      this.tmpvariables.creator = this.name
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.getvariablesList()

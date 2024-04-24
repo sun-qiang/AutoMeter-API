@@ -23,6 +23,9 @@
     <result column="casecounts" jdbcType="BIGINT" property="casecounts" />
     <result column="modelid" jdbcType="BIGINT" property="modelid" />
     <result column="modelname" jdbcType="VARCHAR" property="modelname" />
+    <result column="mid" jdbcType="BIGINT" property="mid" />
+    <result column="mnickname" jdbcType="VARCHAR" property="mnickname" />
+
   </resultMap>
 
 
@@ -70,7 +73,8 @@
     update api set apiname = #{apiname}, deployunitid = #{deployunitid}, deployunitname = #{deployunitname},
                    modelid = #{modelid}, modelname = #{modelname},
                    visittype = #{visittype},requesttype = #{requesttype},apistyle=#{apistyle}, path = #{path},
-    memo = #{memo}, requestcontenttype = #{requestcontenttype}, responecontenttype =#{responecontenttype},creator = #{creator},casecounts = #{casecounts},  lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    memo = #{memo}, requestcontenttype = #{requestcontenttype}, responecontenttype =#{responecontenttype},creator = #{creator},
+                   mid = #{mid},mnickname = #{mnickname},   casecounts = #{casecounts},  lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 

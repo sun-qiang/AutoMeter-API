@@ -86,51 +86,57 @@ fi
 #echo "配置AutoMeter后端服务IP成功。。。。。。。"
 
  
-conditionservicejar=../AutoMeter/conditionservice/conditionservice.jar
-conditionserviceyml=../AutoMeter/conditionservice/config/application.yml
+ cd ../AutoMeter/conditionservice
+conditionservicejar=conditionservice.jar
+conditionserviceyml=config/application.yml
 
 echo "AutoMeter-conditionservice开始启动。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
 
-nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $CURRENT_DIR$conditionservicejar --spring.config.location=$CURRENT_DIR$conditionserviceyml &
+nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $conditionservicejar --spring.config.location=$conditionserviceyml &
 
 sleep 3
 echo "AutoMeter-conditionservice启动成功"
 
-mockservicejar=../AutoMeter/mockservice/mockservice.jar
-mockserviceyml=../AutoMeter/mockservice/config/application.yml
+cd ../mockservice
+mockservicejar=mockservice.jar
+mockserviceyml=config/application.yml
 
 echo "AutoMeter-mockservicejar开始启动。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
 
-nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $CURRENT_DIR$mockservicejar --spring.config.location=$CURRENT_DIR$mockserviceyml &
+nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $mockservicejar --spring.config.location=$mockserviceyml &
 
 sleep 3
-echo "AutoMeter-conditionservice启动成功"
+echo "AutoMeter-mockservice启动成功"
 
-slaverservicejar=../AutoMeter/slaverservice/slaverservice.jar
-slaverserviceserviceyml=../AutoMeter/slaverservice/config/application.yml
+
+cd ../slaverservice
+slaverservicejar=slaverservice.jar
+slaverserviceserviceyml=config/application.yml
 
 echo "AutoMeter-slaverservice开始启动。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
 
-nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $CURRENT_DIR$slaverservicejar --spring.config.location=$CURRENT_DIR$slaverserviceserviceyml &
+nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $slaverservicejar --spring.config.location=$slaverserviceserviceyml &
 
 sleep 3
 echo "AutoMeter-slaverservice启动成功"
 
-testcenterservicejar=../AutoMeter/testcenterservice/testcenterservice.jar
-testcenterserviceserviceyml=../AutoMeter/testcenterservice/config/application.yml
+cd ../testcenterservice
+testcenterservicejar=testcenterservice.jar
+testcenterserviceserviceyml=config/application.yml
 
 echo "AutoMeter-testcenterservice开始启动。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
 
-nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $CURRENT_DIR$testcenterservicejar --spring.config.location=$CURRENT_DIR$testcenterserviceserviceyml &
+nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $testcenterservicejar --spring.config.location=$testcenterserviceserviceyml &
 sleep 3
 echo "AutoMeter-testcenterservice启动成功"
 
-dispatchservicejar=../AutoMeter/dispatchservice/dispatchservice.jar
-dispatchserviceserviceyml=../AutoMeter/dispatchservice/config/application.yml
+cd ../dispatchservice
+dispatchservicejar=dispatchservice.jar
+dispatchserviceserviceyml=config/application.yml
 
 echo "AutoMeter-dispatchservice开始启动。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。"
 
-nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $CURRENT_DIR$dispatchservicejar --spring.config.location=$CURRENT_DIR$dispatchserviceserviceyml &
+nohup java -Xms256m -Xmx256m -Xmn128m -XX:ReservedCodeCacheSize=120M -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m -XX:+UseConcMarkSweepGC -XX:MaxTenuringThreshold=6 -XX:+ExplicitGCInvokesConcurrent -XX:-UseBiasedLocking -XX:-UseCounterDecay -XX:AutoBoxCacheMax=20000 -XX:+PerfDisableSharedMem -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom  -jar $dispatchservicejar --spring.config.location=$dispatchserviceserviceyml &
 sleep 3
 echo "AutoMeter-dispatchservice启动成功"
 

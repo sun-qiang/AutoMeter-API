@@ -113,7 +113,8 @@
       </el-table-column>
       <el-table-column label="请求格式" align="center" prop="requestcontenttype" width="80"/>
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
-      <el-table-column label="操作人" align="center" prop="creator" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"   label="维护人" align="center" prop="mnickname" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"   label="操作人" align="center" prop="creator" width="60"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="140">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -257,6 +258,15 @@
         <!--            </div>-->
         <!--          </el-select>-->
         <!--        </el-form-item>-->
+
+        <el-form-item label="维护人:" prop="mnickname" required>
+          <el-select v-model="tmpapi.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+                     @change="mnicknameselectChanged($event)">
+            <div v-for="(mnickname, index) in accountList" :key="index">
+              <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
 
         <el-form-item label="备注:" prop="memo">
           <el-input
@@ -504,10 +514,10 @@
                           <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                         </template>
                       </el-table-column>
-                      <el-table-column label="操作" align="center" width="250">
+                      <el-table-column label="操作" align="center" width="220">
                         <template slot-scope="scope">
-                          <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量
-                          </el-button>
+<!--                          <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量-->
+<!--                          </el-button>-->
                           <el-button type="primary" size="mini" @click="copeBodyParam(scope.row,scope.$index)">新增
                           </el-button>
                           <el-button type="primary" size="mini" @click="delectBodyParam(scope.$index)">删除</el-button>
@@ -700,6 +710,7 @@
 </template>
 <script>
 import axios from 'axios'
+import { searchallaccount as searchallaccount } from '@/api/account'
 import { search, addapi, updateapi, removeapi, getapisbydeployunitid, copyapi, removebatchapi } from '@/api/deployunit/api'
 import { getdepunitLists as getdepunitLists } from '@/api/deployunit/depunit'
 import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
@@ -735,6 +746,7 @@ export default {
   },
   data() {
     return {
+      accountList: [],
       id: null,
       fileName: '',
       fileList: [],
@@ -831,7 +843,9 @@ export default {
         memo: '',
         creator: '',
         casecounts: 0,
-        projectid: ''
+        projectid: '',
+        mnickname: '',
+        mid: ''
       },
       tmpcopyapi: {
         sourceapiid: '',
@@ -900,6 +914,7 @@ export default {
     ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
   created() {
+    this.getaccountLists()
     this.search.accountId = this.accountId
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
@@ -1333,6 +1348,14 @@ export default {
       }
     },
 
+    mnicknameselectChanged(e) {
+      for (let i = 0; i < this.accountList.length; i++) {
+        if (this.accountList[i].nickname === e) {
+          this.tmpapi.mid = this.accountList[i].id
+        }
+      }
+    },
+
     modelselectChanged(e) {
       for (let i = 0; i < this.modelList.length; i++) {
         if (this.modelList[i].modelname === e) {
@@ -1599,6 +1622,15 @@ export default {
         this.$message.error('加载响应数据格式列表失败')
       })
     },
+
+    getaccountLists() {
+      this.accountList = null
+      searchallaccount().then(response => {
+        this.accountList = response.data
+      }).catch(res => {
+        this.$message.error('加载服务列表失败')
+      })
+    },
     /**
      * 获取服务列表
      */
@@ -1722,7 +1754,9 @@ export default {
       this.tmpapi.requestcontenttype = ''
       this.tmpapi.responecontenttype = ''
       this.tmpapi.memo = ''
-      this.tmpapi.creator = this.name
+      this.tmpapi.mid = ''
+      this.tmpapi.mnickname = ''
+      this.tmpapi.creator = this.nickname
       this.tmpapi.projectid = window.localStorage.getItem('pid')
       console.log(window.localStorage.getItem('pid'))
     },
@@ -1789,7 +1823,7 @@ export default {
         this.Headertabledatas[i].apiname = this.tmpapi.apiname
         this.Headertabledatas[i].deployunitid = this.tmpapi.deployunitid
         this.Headertabledatas[i].deployunitname = this.tmpapi.deployunitname
-        this.Headertabledatas[i].creator = this.name
+        this.Headertabledatas[i].creator = this.nickname
       }
       addapiallparams(this.Headertabledatas).then(() => {
         this.$message.success('添加Header成功')
@@ -1801,7 +1835,7 @@ export default {
         this.Paramstabledatas[i].apiname = this.tmpapi.apiname
         this.Paramstabledatas[i].deployunitid = this.tmpapi.deployunitid
         this.Paramstabledatas[i].deployunitname = this.tmpapi.deployunitname
-        this.Paramstabledatas[i].creator = this.name
+        this.Paramstabledatas[i].creator = this.nickname
       }
       addapiallparams(this.Paramstabledatas).then(() => {
         this.$message.success('添加Params成功')
@@ -1815,7 +1849,7 @@ export default {
           this.Bodytabledatas[i].apiname = this.tmpapi.apiname
           this.Bodytabledatas[i].deployunitid = this.tmpapi.deployunitid
           this.Bodytabledatas[i].deployunitname = this.tmpapi.deployunitname
-          this.Bodytabledatas[i].creator = this.name
+          this.Bodytabledatas[i].creator = this.nickname
         }
         addapiallparams(this.Bodytabledatas).then(() => {
           this.$message.success('添加Body成功')
@@ -1846,6 +1880,7 @@ export default {
           this.tmpapiparams.apiname = this.tmpapi.apiname
           this.tmpapiparams.deployunitid = this.tmpapi.deployunitid
           this.tmpapiparams.deployunitname = this.tmpapi.deployunitname
+          this.tmpapiparams.creator = this.nickname
           addapiparams(this.tmpapiparams).then(() => {
             this.$message.success('添加Body成功')
           }).catch(res => {
@@ -1944,7 +1979,9 @@ export default {
       this.tmpapi.responecontenttype = this.apiList[index].responecontenttype
       this.tmpapi.memo = this.apiList[index].memo
       this.tmpapi.casecounts = this.apiList[index].casecounts
-      this.tmpapi.creator = this.name
+      this.tmpapi.creator = this.apiList[index].creator
+      this.tmpapi.mnickname = this.apiList[index].mnickname
+      this.tmpapi.mid = this.apiList[index].mid
       this.tmpapi.requestcontenttype = this.apiList[index].requestcontenttype
       this.tmpapi.projectid = window.localStorage.getItem('pid')
       // if (this.tmpapi.visittype === 'GET') {
