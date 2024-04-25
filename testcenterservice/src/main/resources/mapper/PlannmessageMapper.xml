@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.PlannmessageMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Plannmessage">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="executeplanid" jdbcType="BIGINT" property="executeplanid" />
+    <result column="messagetype" jdbcType="VARCHAR" property="messagetype" />
+    <result column="mid" jdbcType="BIGINT" property="mid" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="hookcontent" jdbcType="LONGVARCHAR" property="hookcontent" />
+  </resultMap>
+
+  <select id="findPlannmessageWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM plannmessage a
+    <where>
+      <if test="executeplanid != null  and executeplanid != ''">and a.executeplanid =#{executeplanid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+  <update id="updatePlannmessage" parameterType="com.zoctan.api.entity.Plannmessage">
+    update plannmessage set messagetype = #{messagetype},hookcontent=#{hookcontent},
+                          memo = #{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+</mapper>

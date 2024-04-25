@@ -64,13 +64,13 @@
 
   <insert id="insertBatchDispatch"  parameterType="com.zoctan.api.entity.Dispatch">
     insert into dispatch (execplanid, execplanname,batchid,batchname,slaverid,slavername,testcaseid,testcasename,casejmxname,
-    deployunitname,expect,status,create_time,lastmodify_time,plantype,threadnum,loops,creator,sceneid,scenename,caseorder,stopflag)
+    deployunitname,expect,status,create_time,lastmodify_time,plantype,threadnum,loops,creator,sceneid,scenename,caseorder,stopflag,projectid)
     values
     <foreach collection="dispatchList" item="dispatch" index="index" separator=",">
       (#{dispatch.execplanid}, #{dispatch.execplanname}, #{dispatch.batchid},#{dispatch.batchname},#{dispatch.slaverid},
       #{dispatch.slavername},#{dispatch.testcaseid},#{dispatch.testcasename},#{dispatch.casejmxname},#{dispatch.deployunitname},#{dispatch.expect},
       #{dispatch.status},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),#{dispatch.plantype},#{dispatch.threadnum},
-       #{dispatch.loops},#{dispatch.creator},#{dispatch.sceneid},#{dispatch.scenename},#{dispatch.caseorder},#{dispatch.stopflag})
+       #{dispatch.loops},#{dispatch.creator},#{dispatch.sceneid},#{dispatch.scenename},#{dispatch.caseorder},#{dispatch.stopflag},#{dispatch.projectid})
     </foreach>
   </insert>
 

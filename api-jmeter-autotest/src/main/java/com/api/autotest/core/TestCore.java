@@ -156,6 +156,7 @@ public class TestCore {
         } else {
             //UpdateReportStatics(planid, BatchName, "已完成");
             SendMessageDingDing(planid, BatchName);
+            SendMessageFeishu(planid, BatchName);
             SendMailByFinishPlanCase(planid, BatchName);
         }
         //增加邮件通知
@@ -741,31 +742,68 @@ public class TestCore {
     public void SendMessageDingDing(String PlanID, String BatchName) {
         try {
             String MessageContent = GetSendContent(PlanID, BatchName);
-            String Token = "";
-            //先获取测试集合是否配置了钉钉token
-            ArrayList<HashMap<String, String>> list = Getplan(PlanID);
-            if (list.size() > 0) {
-                Token = list.get(0).get("dingdingtoken");
-                logger.info("测试集合中的token：-============：" + Token);
-                //如果计划中的token位空，则找字典表中的token
-                if (Token.isEmpty() || Token == null) {
-                    ArrayList<HashMap<String, String>> dicNameValueWithCode = findDicNameValueWithCode("DingDing");
-                    if (dicNameValueWithCode.size() > 0) {
-                        Token = dicNameValueWithCode.get(0).get("dicitmevalue");
-                        logger.info("字典中的钉钉的token：-============：" + Token);
-                        DingdingPost(MessageContent, Token);
-                        logger.info("字典中的钉钉的token：-============：发送完成");
-                    } else {
-                        logger.info("发送钉钉信息未找到字典表钉钉配置token,取消发送钉钉：-============：");
-                    }
-                } else {
-                    DingdingPost(MessageContent, Token);
-                    logger.info("测试集合中的钉钉的token：-============：发送完成");
-                }
+            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID,"钉钉");
+            for (HashMap<String, String> hs : list) {
+                String hookcontent = hs.get("hookcontent");
+                logger.info("开始发送钉钉：-============：");
+                DingdingPost(MessageContent, hookcontent);
+                logger.info("发送钉钉完成：-============：");
+
             }
+//            String Token = "";
+//            //先获取测试集合是否配置了钉钉token
+//            ArrayList<HashMap<String, String>> list = Getplan(PlanID);
+//            if (list.size() > 0) {
+//                Token = list.get(0).get("dingdingtoken");
+//                logger.info("测试集合中的token：-============：" + Token);
+//                //如果计划中的token位空，则找字典表中的token
+//                if (Token.isEmpty() || Token == null) {
+//                    ArrayList<HashMap<String, String>> dicNameValueWithCode = findDicNameValueWithCode("DingDing");
+//                    if (dicNameValueWithCode.size() > 0) {
+//                        Token = dicNameValueWithCode.get(0).get("dicitmevalue");
+//                        logger.info("字典中的钉钉的token：-============：" + Token);
+//                        DingdingPost(MessageContent, Token);
+//                        logger.info("字典中的钉钉的token：-============：发送完成");
+//                    } else {
+//                        logger.info("发送钉钉信息未找到字典表钉钉配置token,取消发送钉钉：-============：");
+//                    }
+//                } else {
+//                    DingdingPost(MessageContent, Token);
+//                    logger.info("测试集合中的钉钉的token：-============：发送完成");
+//                }
+//            }
         } catch (Exception ex) {
             logger.info("发送钉钉信息异常：-============：" + ex.getMessage());
         }
+    }
+
+    //发送飞书
+    public void SendMessageFeishu(String PlanID, String BatchName) {
+        try {
+            String MessageContent = GetSendContent(PlanID, BatchName);
+            //先获取测试集合是否配置了钉钉token
+            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID,"飞书");
+            for (HashMap<String, String> hs : list) {
+                String hookcontent = hs.get("hookcontent");
+                logger.info("开始发送飞书：-============：");
+                FeishuPost(MessageContent, hookcontent);
+                logger.info("发送飞书完成：-============：");
+            }
+        } catch (Exception ex) {
+            logger.info("发送飞书信息异常：-============：" + ex.getMessage());
+        }
+    }
+
+    private void FeishuPost(String Content, String Token) {
+        //消息内容
+        Map<String,Object> json=new HashMap();
+        Map<String,Object> text=new HashMap();
+        json.put("msg_type", "text");
+        text.put("text", "AutoMeter自动化测试平台执行：" + Content);
+        json.put("content", text);
+        //发送post请求
+        String result = HttpRequest.post(Token).body(JSON.toJSONString(json), "application/json;charset=UTF-8").execute().body();
+        logger.info("发送飞书信息响应：-============：" + result);
     }
 
     private void DingdingPost(String Content, String Token) {
@@ -774,7 +812,6 @@ public class TestCore {
         contentMap.put("content", "AutoMeter自动化测试平台执行" + Content);
         //通知人
         Map<String, Object> atMap = new HashMap<>();
-        ;
         //1.是否通知所有人
         atMap.put("isAtAll", true);
         Map<String, Object> reqMap = new HashMap<>(); //Maps.newHashMap();
@@ -821,6 +858,12 @@ public class TestCore {
     //获取测试集合
     public ArrayList<HashMap<String, String>> Getplan(String planid) {
         ArrayList<HashMap<String, String>> list = testMysqlHelp.Getplan(planid);
+        return list;
+    }
+
+    //获取测试集合通知
+    public ArrayList<HashMap<String, String>> Getplanmessage(String planid,String messagetype) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.Getplanmessage(planid,messagetype);
         return list;
     }
 

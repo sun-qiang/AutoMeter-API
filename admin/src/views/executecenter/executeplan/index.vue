@@ -82,7 +82,10 @@
       <el-table-column label="运行模式" align="center" prop="runmode" width="70"/>
       <el-table-column label="场景数" align="center" prop="scenenums" width="60"/>
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
-      <el-table-column :show-overflow-tooltip="true" label="通知钉钉token" align="center" prop="dingdingtoken" width="110"/>
+
+<!--      <el-table-column :show-overflow-tooltip="true" label="通知钉钉token" align="center" prop="dingdingtoken" width="110"/>-->
+
+
       <el-table-column label="维护人" align="center" prop="creator" width="60"/>
 <!--      <el-table-column :show-overflow-tooltip="true" label="描述" align="center" prop="memo" width="80"/>-->
       <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="110">
@@ -110,22 +113,9 @@
           >删除</el-button>
         </template>
       </el-table-column>
-      <el-table-column label="集合操作" align="center" width="400"
+      <el-table-column label="集合操作" align="center" width="500"
                        v-if="hasPermission('executeplan:update')  || hasPermission('executeplan:delete')">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
-            @click.native.prevent="showstopbatchDialog(scope.$index)"
-          >停止运行</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
-            @click.native.prevent="showplanparamsDialog(scope.$index)"
-          >全局Header</el-button>
-
           <el-button
             type="primary"
             size="mini"
@@ -139,7 +129,24 @@
             v-if="hasPermission('executeplan:update') && scope.row.id !== id"
             @click.native.prevent="showtestplanConditionDialog(scope.$index)"
           >前置条件</el-button>
-
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showstopbatchDialog(scope.$index)"
+          >停止运行</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showplanparamsDialog(scope.$index)"
+          >全局Header</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('executeplan:update') && scope.row.id !== id"
+            @click.native.prevent="showplannmessageDialog(scope.$index)"
+          >集合通知</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -440,7 +447,6 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-
     <el-dialog :title="paramstextMap[ParamsdialogStatus]" :visible.sync="modifyparamdialogFormVisible">
       <el-form
         status-icon
@@ -476,6 +482,96 @@
       </div>
     </el-dialog>
 
+    <el-dialog title="集合通知" :visible.sync="CollectionNoticeFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('plannmessage:add')"
+              @click.native.prevent="showCollectionNoticeDialog"
+            >添加集合通知</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <el-table
+        :data="planmessageList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="45">
+          <template slot-scope="scope">
+            <span v-text="plannmessagegetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="通知类型" align="center" prop="messagetype" width="80"/>
+        <el-table-column :show-overflow-tooltip="true"   label="通知token" align="center" prop="hookcontent" width="380"/>
+
+        <el-table-column label="管理" align="center"
+                         v-if="hasPermission('plannmessage:update')  || hasPermission('plannmessage:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('plannmessage:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdateplannmessageDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('plannmessage:delete') && scope.row.id !== id"
+              @click.native.prevent="removeplannmessageparam(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+    <el-dialog :title="plannmessagetextMap[plannmessagedialogStatus]" :visible.sync="modifyplannmessagedialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="120px"
+        style="width: 600px; margin-left:30px;"
+        :model="tmpplannmessage"
+        ref="tmpplannmessage"
+      >
+        <el-form-item label="通知类型:"  prop="messagetype" required >
+          <el-select v-model="tmpplannmessage.messagetype" placeholder="通知类型" style="width:100%" >
+            <el-option label="钉钉" value="钉钉"></el-option>
+            <el-option label="飞书" value="飞书"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="通知token:"  prop="hookcontent" required >
+          <el-input
+            type="text"
+            maxlength="500"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpplannmessage.hookcontent"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="modifyplannmessagedialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          v-if="plannmessagedialogStatus === 'add'"
+          @click.native.prevent="addplannmessageparam"
+        >添加</el-button>
+        <el-button
+          type="success"
+          v-if="plannmessagedialogStatus === 'update'"
+          @click.native.prevent="updateplannmessageparams"
+        >修改</el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog width="840px" title='测试场景' :visible.sync="testscenedialogFormVisible">
       <div class="filter-container" >
@@ -2409,6 +2505,7 @@
   import { search as getscriptconditionList, addscriptcondition, updatescriptcondition, removescriptcondition } from '@/api/condition/scriptcondition'
   import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
   import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
+  import { search as searchplannmessage, addplannmessageparam, updateplannmessageparams, removeplannmessageparam } from '@/api/executecenter/plannmessage'
 
   export default {
     name: '测试集合',
@@ -2424,6 +2521,27 @@
     },
     data() {
       return {
+        CollectionNoticeFormVisible: false,
+        modifyplannmessagedialogFormVisible: false,
+        plannmessagedialogStatus: 'add',
+        plannmessagetextMap: {
+          update: '修改集合通知',
+          add: '添加集合通知'
+        },
+        planmessageList: [], // 条件顺序显示列表
+        searchnotice: {
+          page: 1,
+          size: 10,
+          executeplanid: 0
+        },
+        tmpplannmessage: {
+          id: '',
+          executeplanid: '',
+          messagetype: '',
+          hookcontent: '',
+          mid: '',
+          memo: ''
+        },
         tmpsubconditionid: '',
         conditionorderList: [], // 条件顺序显示列表
         saveconditionorderList: [], // 条件顺序保存列表
@@ -4561,6 +4679,15 @@
           this.$message.error('加载header列表失败')
         })
       },
+
+      searchplannmessagebyepid() {
+        searchplannmessage(this.searchnotice).then(response => {
+          this.planmessageList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载header列表失败')
+        })
+      },
+
       /**
        * 停止执行计划
        */
@@ -4784,6 +4911,10 @@
 
       paramgetIndex(index) {
         return (this.searchparam.page - 1) * this.searchparam.size + index + 1
+      },
+
+      plannmessagegetIndex(index) {
+        return (this.searchnotice.page - 1) * this.searchnotice.size + index + 1
       },
 
       planscenegetIndex(index) {
@@ -5014,6 +5145,13 @@
         this.searchheaderbyepid()
       },
 
+      showplannmessageDialog(index) {
+        // 显示新增对话框
+        this.CollectionNoticeFormVisible = true
+        this.tmpplannmessage.executeplanid = this.executeplanList[index].id
+        this.searchnotice.executeplanid = this.executeplanList[index].id
+        this.searchplannmessagebyepid()
+      },
       showstopbatchDialog(index) {
         // 显示新增对话框
         this.stopbatchdialogFormVisible = true
@@ -5074,11 +5212,30 @@
         this.tmpparam.globalheadername = ''
       },
 
+      showCollectionNoticeDialog() {
+        this.modifyplannmessagedialogFormVisible = true
+        this.plannmessagedialogStatus = 'add'
+        this.tmpplannmessage.id = ''
+        this.tmpplannmessage.memo = ''
+        this.tmpplannmessage.mid = this.accountId
+        this.tmpplannmessage.messagetype = ''
+        this.tmpplannmessage.hookcontent = ''
+      },
+
       showUpdateparamsDialog(index) {
         this.modifyparamdialogFormVisible = true
         this.ParamsdialogStatus = 'update'
         this.tmpparam.id = this.paramsList[index].id
         this.tmpparam.globalheadername = this.paramsList[index].globalheadername
+      },
+
+      showUpdateplannmessageDialog(index) {
+        this.modifyplannmessagedialogFormVisible = true
+        this.plannmessagedialogStatus = 'update'
+        this.tmpplannmessage.id = this.planmessageList[index].id
+        this.tmpplannmessage.memo = this.planmessageList[index].memo
+        this.tmpplannmessage.hookcontent = this.planmessageList[index].hookcontent
+        this.tmpplannmessage.messagetype = this.planmessageList[index].messagetype
       },
       /**
        * 显示添加执行计划批次对话框
@@ -5153,6 +5310,20 @@
         })
       },
 
+      addplannmessageparam() {
+        this.$refs.tmpplannmessage.validate(valid => {
+          if (valid) {
+            addplannmessageparam(this.tmpplannmessage).then(() => {
+              this.$message.success('添加成功')
+              this.modifyplannmessagedialogFormVisible = false
+              this.searchplannmessagebyepid()
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
+
       /**
        * 更新param
        */
@@ -5163,6 +5334,20 @@
               this.$message.success('更新成功')
               this.searchheaderbyepid()
               this.modifyparamdialogFormVisible = false
+            }).catch(res => {
+              this.$message.error('添加失败')
+            })
+          }
+        })
+      },
+
+      updateplannmessageparams() {
+        this.$refs.tmpplannmessage.validate(valid => {
+          if (valid) {
+            updateplannmessageparams(this.tmpplannmessage).then(() => {
+              this.$message.success('更新成功')
+              this.searchplannmessagebyepid()
+              this.modifyplannmessagedialogFormVisible = false
             }).catch(res => {
               this.$message.error('添加失败')
             })
@@ -5184,6 +5369,22 @@
           removeapicasesdebug(id).then(() => {
             this.$message.success('删除成功')
             this.searchheaderbyepid()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
+
+      removeplannmessageparam(index) {
+        this.$confirm('删除该通知？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.planmessageList[index].id
+          removeplannmessageparam(id).then(() => {
+            this.$message.success('删除成功')
+            this.searchplannmessagebyepid()
           })
         }).catch(() => {
           this.$message.info('已取消删除')
