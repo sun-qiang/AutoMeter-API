@@ -77,7 +77,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
 
             Httphelp.log.info("..................Post请求地址 :  " + url);
@@ -146,7 +146,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (Protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
             Httphelp.log.info("Post PostWithBody..................Post请求地址 :  " + Url);
             for (Header header1 : httpPost.getAllHeaders()) {
@@ -219,7 +219,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (Protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
             Httphelp.log.info("Httphelp..................doGetWithBody请求地址 :  " + Url);
             for (Header header1 : httpGetWithEntity.getAllHeaders()) {
@@ -267,7 +267,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
 
             Httphelp.log.info("Httphelp..................GetWithNoParams请求地址 :  " + url);
@@ -327,7 +327,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
 
             Httphelp.log.info("Httphelp..................Get请求地址 :  " + url);
@@ -393,7 +393,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
 
             Httphelp.log.info("Httphelp..................Put请求地址 :  " + url);
@@ -459,7 +459,7 @@ public class Httphelp {
                 httpClient = HttpClients.createDefault();
             }
             if (protocal.equalsIgnoreCase("https")) {
-                httpClient = new SSLClient();
+                httpClient = SSLClient.createSSLClientDefault(cookieStore);
             }
 
             Httphelp.log.info("Httphelp..................Delete请求地址 :  " + url);
@@ -719,7 +719,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //
 //            Httphelp.log.info( "..................Post请求地址 :  " + url);
@@ -779,7 +779,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (Protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //            Httphelp.log.info( "Post PostWithBody..................Post请求地址 :  " + Url);
 //            for (Header header1 : httpPost.getAllHeaders()) {
@@ -833,7 +833,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (Protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //            Httphelp.log.info( "Httphelp..................doGetWithBody请求地址 :  " + Url);
 //            for (Header header1 : httpGetWithEntity.getAllHeaders()) {
@@ -876,7 +876,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //
 //            Httphelp.log.info( "Httphelp..................GetWithNoParams请求地址 :  " + url);
@@ -935,7 +935,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //
 //            Httphelp.log.info( "Httphelp..................Get请求地址 :  " + url);
@@ -992,7 +992,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //
 //            Httphelp.log.info( "Httphelp..................Put请求地址 :  " + url);
@@ -1049,7 +1049,7 @@ public class Httphelp {
 //                httpClient = HttpClients.createDefault();
 //            }
 //            if (protocal.equalsIgnoreCase("https")) {
-//                httpClient = new SSLClient();
+//                httpClient = SSLClient.createSSLClientDefault(cookieStore);
 //            }
 //
 //            Httphelp.log.info( "Httphelp..................Delete请求地址 :  " + url);
