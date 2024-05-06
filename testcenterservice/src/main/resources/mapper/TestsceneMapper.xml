@@ -24,7 +24,6 @@
       <if test="scenename != null and scenename != ''">a.scenename like CONCAT('%',#{scenename},'%')</if>
       <if test="usetype != null  and usetype != ''">and a.usetype =#{usetype}</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
     </where>
     order by lastmodify_time  DESC
   </select>

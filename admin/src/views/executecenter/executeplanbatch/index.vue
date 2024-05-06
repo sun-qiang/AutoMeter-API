@@ -136,6 +136,7 @@
 
     activated() {
       this.getallexplan()
+      this.getexecuteplanbatchList()
     },
 
     methods: {

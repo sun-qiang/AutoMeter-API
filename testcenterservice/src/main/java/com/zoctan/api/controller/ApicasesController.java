@@ -225,14 +225,14 @@ public class ApicasesController {
                 AssertDBCondition.createCriteria().andCondition("caseid = " + Long.parseLong(sourcecaseid));
                 List<ApicasesDbassert> SourceAssertdbList = apicasesDbassertService.listByCondition(AssertDBCondition);
                 for (ApicasesDbassert apicasesDbassert : SourceAssertdbList) {
-                    long sourcedbassertid=apicasesDbassert.getId();
+                    long sourcedbassertid = apicasesDbassert.getId();
                     apicasesDbassert.setCaseid(NewCaseId);
                     apicasesDbassert.setId(null);
                     apicasesDbassertService.save(apicasesDbassert);
-                    long dbassertid=apicasesDbassert.getId();
+                    long dbassertid = apicasesDbassert.getId();
                     Condition AssertDBValueCondition = new Condition(ApicasesDbassertValue.class);
                     AssertDBValueCondition.createCriteria().andCondition("dbassertid = " + sourcedbassertid);
-                    List<ApicasesDbassertValue> apicasesDbassertValueList= apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
+                    List<ApicasesDbassertValue> apicasesDbassertValueList = apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
                     for (ApicasesDbassertValue apicasesDbassertValue : apicasesDbassertValueList) {
                         apicasesDbassertValue.setDbassertid(dbassertid);
                         apicasesDbassertValue.setId(null);
@@ -247,7 +247,7 @@ public class ApicasesController {
                 for (Testvariables testvariables : TestvariablesConditionList) {
                     testvariables.setCaseid(NewCaseId);
                     testvariables.setCasename(newcasename);
-                    testvariables.setTestvariablesname(testvariables.getTestvariablesname()+"-copy");
+                    testvariables.setTestvariablesname(testvariables.getTestvariablesname() + "-copy");
                     testvariables.setId(null);
                     testvariablesService.save(testvariables);
                 }
@@ -260,8 +260,8 @@ public class ApicasesController {
                 api.setCasecounts(casecount + 1);
                 apiService.updateApi(api);
 
-                Deployunit desdeployunit= deployunitService.getBy("id",Long.parseLong(sourcedeployunitid));
-                desdeployunit.setApicounts(desdeployunit.getApicounts()+1);
+                Deployunit desdeployunit = deployunitService.getBy("id", Long.parseLong(sourcedeployunitid));
+                desdeployunit.setApicounts(desdeployunit.getApicounts() + 1);
                 deployunitService.update(desdeployunit);
             }
             return ResultGenerator.genOkResult();
@@ -296,8 +296,8 @@ public class ApicasesController {
                     desapicon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
                             .andCondition("apiname='" + SourceApi.getApiname() + "-批量复制用例'");
 
-                    List<Api> apiList=apiService.listByCondition(desapicon);
-                    if (apiList.size()== 0) {
+                    List<Api> apiList = apiService.listByCondition(desapicon);
+                    if (apiList.size() == 0) {
                         DestinationApi.setMid(SourceApi.getMid());
                         DestinationApi.setMnickname(SourceApi.getMnickname());
                         DestinationApi.setProjectid(SourceApi.getProjectid());
@@ -319,15 +319,15 @@ public class ApicasesController {
                         DestinationApi.setCasecounts(SourceApi.getCasecounts());
                         DestinationApi.setApiname(SourceApi.getApiname() + "-批量复制用例");
                         apiService.save(DestinationApi);
-                        DestinationApiid=DestinationApi.getId();
-                        DestinationApiName=DestinationApi.getApiname();
+                        DestinationApiid = DestinationApi.getId();
+                        DestinationApiName = DestinationApi.getApiname();
 
                         //2.复制api参数
                         Condition apiparamcon = new Condition(ApiParams.class);
                         apiparamcon.createCriteria().andCondition("apiid = " + SourceApiid);
                         List<ApiParams> apiParamsList = apiParamsService.listByCondition(apiparamcon);
                         for (ApiParams SourceParam : apiParamsList) {
-                            ApiParams DestinationParam =new ApiParams();
+                            ApiParams DestinationParam = new ApiParams();
                             DestinationParam.setCreator(SourceParam.getCreator());
                             DestinationParam.setCreatorid(SourceParam.getCreatorid());
                             DestinationParam.setLastmodifyTime(new Date());
@@ -343,10 +343,9 @@ public class ApicasesController {
                             DestinationParam.setId(null);
                             apiParamsService.save(DestinationParam);
                         }
-                    } else
-                    {
-                         DestinationApiid = apiList.get(0).getId();
-                         DestinationApiName = apiList.get(0).getApiname();
+                    } else {
+                        DestinationApiid = apiList.get(0).getId();
+                        DestinationApiName = apiList.get(0).getApiname();
                     }
 
                     //3.复制api用例
@@ -355,7 +354,7 @@ public class ApicasesController {
                     List<Apicases> apicasesList = apicasesService.listByCondition(apicasecon);
                     for (Apicases SourceCase : apicasesList) {
                         long SourceCaseID = SourceCase.getId();
-                        Apicases DesitionApicase = new Apicases() ;
+                        Apicases DesitionApicase = new Apicases();
                         DesitionApicase.setMid(SourceCase.getMid());
                         DesitionApicase.setMnickname(SourceCase.getMnickname());
                         DesitionApicase.setProjectid(SourceCase.getProjectid());
@@ -384,9 +383,9 @@ public class ApicasesController {
 
                         Condition desapicasecon = new Condition(Apicases.class);
                         desapicasecon.createCriteria().andCondition("deployunitid = " + destinationdeployunitid)
-                                .andCondition("casename='" + SourceCase.getCasename()+"-批量复制用例'");
+                                .andCondition("casename='" + SourceCase.getCasename() + "-批量复制用例'");
                         if (apicasesService.ifexist(desapicasecon) == 0) {
-                            DesitionApicase.setCasename(SourceCase.getCasename()+"-批量复制用例");
+                            DesitionApicase.setCasename(SourceCase.getCasename() + "-批量复制用例");
                             apicasesService.save(DesitionApicase);
 
                             long DestinationCaseID = DesitionApicase.getId();
@@ -417,14 +416,14 @@ public class ApicasesController {
                             AssertDBCondition.createCriteria().andCondition("caseid = " + SourceCaseID);
                             List<ApicasesDbassert> SourceAssertdbList = apicasesDbassertService.listByCondition(AssertDBCondition);
                             for (ApicasesDbassert apicasesDbassert : SourceAssertdbList) {
-                                long sourcedbassertid=apicasesDbassert.getId();
+                                long sourcedbassertid = apicasesDbassert.getId();
                                 apicasesDbassert.setCaseid(DestinationCaseID);
                                 apicasesDbassert.setId(null);
                                 apicasesDbassertService.save(apicasesDbassert);
-                                long dbassertid=apicasesDbassert.getId();
+                                long dbassertid = apicasesDbassert.getId();
                                 Condition AssertDBValueCondition = new Condition(ApicasesDbassertValue.class);
                                 AssertDBValueCondition.createCriteria().andCondition("dbassertid = " + sourcedbassertid);
-                                List<ApicasesDbassertValue> apicasesDbassertValueList= apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
+                                List<ApicasesDbassertValue> apicasesDbassertValueList = apicasesDbassertValueService.listByCondition(AssertDBValueCondition);
                                 for (ApicasesDbassertValue apicasesDbassertValue : apicasesDbassertValueList) {
                                     apicasesDbassertValue.setDbassertid(dbassertid);
                                     apicasesDbassertValue.setId(null);
@@ -439,7 +438,7 @@ public class ApicasesController {
                             for (Testvariables testvariables : TestvariablesConditionList) {
                                 testvariables.setCaseid(DestinationCaseID);
                                 testvariables.setCasename(DestinationCaseName);
-                                testvariables.setTestvariablesname(testvariables.getTestvariablesname()+"-batchcopy");
+                                testvariables.setTestvariablesname(testvariables.getTestvariablesname() + "-batchcopy");
                                 testvariables.setId(null);
                                 testvariablesService.save(testvariables);
                             }
@@ -450,7 +449,7 @@ public class ApicasesController {
 
                     }
                 }
-                Deployunit desdeployunit= deployunitService.getBy("id",destinationdeployunitid);
+                Deployunit desdeployunit = deployunitService.getBy("id", destinationdeployunitid);
                 desdeployunit.setApicounts(Long.valueOf(SourceapiList.size()));
                 deployunitService.update(desdeployunit);
                 return ResultGenerator.genOkResult();
@@ -782,9 +781,8 @@ public class ApicasesController {
     public Result updateDeploy(@RequestBody final Apicases apicases) {
         long apicaseid = apicases.getId();
         Long creatorid = apicases.getCreatorid();
-        AccountRole accountRole= accountRoleService.getBy("accountId",creatorid);
-        if(accountRole==null)
-        {
+        AccountRole accountRole = accountRoleService.getBy("accountId", creatorid);
+        if (accountRole == null) {
             return ResultGenerator.genFailedResult("当前用户不存在");
         }
         Apicases apicaseexist = apicasesService.getBy("id", apicaseid);
@@ -834,7 +832,7 @@ public class ApicasesController {
             } else {
                 return ResultGenerator.genFailedResult("当前api只有维护人或者管理员可以修改");
             }
-        }else {
+        } else {
             return ResultGenerator.genFailedResult("当前用例不存在");
         }
     }
@@ -2366,37 +2364,42 @@ public class ApicasesController {
     //根据数据类型转换
     private Object GetDataByType(String Data, String ValueType) throws Exception {
         Object Result = new Object();
-        if (ValueType.equalsIgnoreCase("Number")) {
-            try {
-                Result = Long.parseLong(Data);
-            } catch (Exception ex) {
-                Result = "参数值  " + Data + " 不是数字Number类型，请检查修改！";
-                throw new Exception(Result.toString());
+        if (Data.isEmpty()) {
+            Result = "";
+        } else {
+            if (ValueType.equalsIgnoreCase("Number")) {
+                try {
+                    Result = Long.parseLong(Data);
+                } catch (Exception ex) {
+                    Result = "参数值  " + Data + " 不是数字Number类型，请检查修改！";
+                    throw new Exception(Result.toString());
+                }
+            }
+            if (ValueType.equalsIgnoreCase("Json")) {
+                try {
+                    Result = JSON.parse(Data);
+                } catch (Exception ex) {
+                    Result = "参数值  " + Data + " 不是Json类型，请检查修改！";
+                    throw new Exception(Result.toString());
+                }
+            }
+            if (ValueType.equalsIgnoreCase("String") || ValueType.isEmpty()) {
+                Result = Data;
+            }
+            if (ValueType.equalsIgnoreCase("Array")) {
+                String[] Array = Data.split(",");
+                Result = Array;
+            }
+            if (ValueType.equalsIgnoreCase("Bool")) {
+                try {
+                    Result = Boolean.parseBoolean(Data);
+                } catch (Exception ex) {
+                    Result = "参数值  " + Data + " 不是布尔Bool类型，请检查修改！";
+                    throw new Exception(Result.toString());
+                }
             }
         }
-        if (ValueType.equalsIgnoreCase("Json")) {
-            try {
-                Result = JSON.parse(Data);
-            } catch (Exception ex) {
-                Result = "参数值  " + Data + " 不是Json类型，请检查修改！";
-                throw new Exception(Result.toString());
-            }
-        }
-        if (ValueType.equalsIgnoreCase("String") || ValueType.isEmpty()) {
-            Result = Data;
-        }
-        if (ValueType.equalsIgnoreCase("Array")) {
-            String[] Array = Data.split(",");
-            Result = Array;
-        }
-        if (ValueType.equalsIgnoreCase("Bool")) {
-            try {
-                Result = Boolean.parseBoolean(Data);
-            } catch (Exception ex) {
-                Result = "参数值  " + Data + " 不是布尔Bool类型，请检查修改！";
-                throw new Exception(Result.toString());
-            }
-        }
+
         return Result;
     }
 

@@ -35,7 +35,6 @@
       <if test="deployunitname != null and deployunitname != ''">a.deployunitname like CONCAT('%',#{deployunitname},'%')</if>
       <if test="protocal != null  and protocal != ''">and a.protocal like CONCAT('%',#{protocal},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
     </where>
     order by lastmodify_time  DESC
   </select>

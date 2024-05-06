@@ -208,15 +208,15 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="钉钉通知token" prop="dingdingtoken">
-            <el-input
-              maxlength="200"
-              type="text"
-              prefix-icon="el-icon-message"
-              auto-complete="off"
-              v-model="tmpexecuteplan.dingdingtoken"
-            />
-          </el-form-item>
+<!--          <el-form-item label="钉钉通知token" prop="dingdingtoken">-->
+<!--            <el-input-->
+<!--              maxlength="200"-->
+<!--              type="text"-->
+<!--              prefix-icon="el-icon-message"-->
+<!--              auto-complete="off"-->
+<!--              v-model="tmpexecuteplan.dingdingtoken"-->
+<!--            />-->
+<!--          </el-form-item>-->
 
         <el-form-item label="备注" prop="memo">
           <el-input
@@ -2802,7 +2802,8 @@
           creator: '',
           dingdingtoken: '',
           runmode: '',
-          projectid: ''
+          projectid: '',
+          domian: ''
         },
         tmpplanbatch: {
           executeplanid: '',
@@ -3109,6 +3110,10 @@
     },
 
     created() {
+      var url = window.location.href
+      url = url.slice(0, url.indexOf('#') + 2)
+      console.log('hostname url is:' + url)
+      this.tmpexecuteplan.domian = url
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpplanbatch.projectid = window.localStorage.getItem('pid')
@@ -3127,6 +3132,10 @@
     },
 
     activated() {
+      var url = window.location.href
+      url = url.slice(0, url.indexOf('#') + 2)
+      console.log('hostname url is:' + url)
+      this.tmpexecuteplan.domian = url
       // this.getapiList()
       this.getexecuteplanList()
       this.getdepunitList()
@@ -5396,6 +5405,10 @@
        * @param index 执行计划下标
        */
       showUpdateexecuteplanDialog(index) {
+        var url = window.location.href
+        url = url.slice(0, url.indexOf('#') + 2)
+        console.log('hostname url is:' + url)
+        this.tmpexecuteplan.domian = url
         this.dialogFormVisible = true
         this.dialogStatus = 'update'
         this.tmpexecuteplan.id = this.executeplanList[index].id

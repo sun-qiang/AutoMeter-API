@@ -119,13 +119,31 @@ public class TestAssert {
 
     public String ParseJson(String JSPath,String JsonRespone)
     {
-        String Result="";
+//        String Result="";
+//        try {
+//            Result= JsonPath.read(JsonRespone,JSPath).toString();
+//        }
+//        catch (Exception ex)
+//        {
+//            Result="解析Json结果异常"+ex.getMessage()+"解析内容："+JsonRespone;
+//        }
+//        return Result;
+        String Result = "";
         try {
-            Result= JsonPath.read(JsonRespone,JSPath).toString();
-        }
-        catch (Exception ex)
-        {
-            Result="解析Json结果异常"+ex.getMessage()+"解析内容："+JsonRespone;
+            List<String> ResultList = JsonPath.read(JsonRespone, JSPath);
+            if (ResultList.size() == 1) {
+                Result = ResultList.get(0);
+            } else {
+                Result = ResultList.toString();
+            }
+        } catch (Exception ex) {
+            if(ex.getMessage().equals("java.lang.String cannot be cast to java.util.List"))
+            {
+                Result = JsonPath.read(JsonRespone, JSPath);
+            } else
+            {
+                Result = ex.getMessage();
+            }
         }
         return Result;
     }

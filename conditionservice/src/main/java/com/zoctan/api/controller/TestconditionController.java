@@ -24,6 +24,7 @@ import com.zoctan.api.entity.Dictionary;
 import com.zoctan.api.mapper.TestconditionReportMapper;
 import com.zoctan.api.service.*;
 import com.zoctan.api.util.DnamicCompilerHelp;
+import com.zoctan.api.util.KingbaseConnectionUtils;
 import com.zoctan.api.util.PgsqlConnectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -791,26 +792,31 @@ public class TestconditionController {
             //增加判断case是否有前置条件
             Apicases apicases = apicasesService.GetCaseByCaseID(CaseID);
             if (apicases == null) {
+                TestconditionController.log.info("接口条件执行异常:接口条件未找到条件运行的接口用例，请检查是否存在或已被删除！");
                 throw new Exception("接口条件执行异常:接口条件未找到条件运行的接口用例，请检查是否存在或已被删除！");
             }
             Long ApiID = apicases.getApiid();
             Api api = apiService.getBy("id", ApiID);
             if (api == null) {
+                TestconditionController.log.info("接口条件执行异常:接口条件未找到条件运行的接口的API，请检查是否存在或已被删除！");
                 throw new Exception("接口条件执行异常:接口条件未找到条件运行的接口的API，请检查是否存在或已被删除！");
             }
             Long Deployunitid = api.getDeployunitid();
             Deployunit deployunit = deployunitService.getBy("id", Deployunitid);
             if (deployunit == null) {
+                TestconditionController.log.info("接口条件执行异常:接口条件未找到条件运行接口API所在的微服务，请检查是否存在或已被删除！");
                 throw new Exception("接口条件执行异常:接口条件未找到条件运行接口API所在的微服务，请检查是否存在或已被删除！");
             }
             List<ApiCasedata> apiCasedataList = apiCasedataService.GetCaseDatasByCaseID(CaseID);
             //区分环境类型
             Macdepunit macdepunit = macdepunitService.getmacdepbyenvidanddepid(EnviromentID, deployunit.getId());
             if (macdepunit == null) {
+                TestconditionController.log.info("接口条件执行异常:接口条件所在的微服务：" + deployunit.getDeployunitname() + " 未在运行环境中部署，请检查是否部署或已被删除！");
                 throw new Exception("接口条件执行异常:接口条件所在的微服务：" + deployunit.getDeployunitname() + " 未在运行环境中部署，请检查是否部署或已被删除！");
             }
             Machine machine = machineService.getBy("id", macdepunit.getMachineid());
             if (machine == null) {
+                TestconditionController.log.info("接口条件执行异常:接口条件未找到环境组件部署的服务器：" + macdepunit.getMachinename() + " ，请检查是否存在或已被删除！");
                 throw new Exception("接口条件执行异常:接口条件未找到环境组件部署的服务器：" + macdepunit.getMachinename() + " ，请检查是否存在或已被删除！");
             }
             TestCaseHelp testCaseHelp = new TestCaseHelp();
@@ -818,6 +824,7 @@ public class TestconditionController {
             try {
                 requestObject = testCaseHelp.GetCaseRequestDataForDebug(Result.get("db"), Result.get("api"), Result.get("script"), apiCasedataList, api, apicases, deployunit, macdepunit, machine,Enviromentid);
             } catch (Exception ex) {
+                TestconditionController.log.info("GetCaseRequestDataForDebug is:"+ex.getMessage());
                 throw new Exception(ex.getMessage());
             }
             TestResponeData testResponeData = testCaseHelp.request(requestObject);
@@ -962,6 +969,17 @@ public class TestconditionController {
                 DBUrl = DBUrl + Domain + "/" + dbname;
             }
         }
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = "jdbc:kingbase8://";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machine.getIp();
+                DBUrl = DBUrl + IP + ":" + port + "/" + dbname;
+            } else {
+                String Domain = macdepunit.getDomain();
+                DBUrl = DBUrl + Domain + "/" + dbname;
+            }
+        }
         if (AssembleType.equalsIgnoreCase("mysql")) {
             DBUrl = "jdbc:mysql://";
             // 根据访问方式来确定ip还是域名
@@ -1076,7 +1094,37 @@ public class TestconditionController {
                 }
             }
         }
-
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = GetDbUrl(AssembleType, macdepunit, deployunitvisittype, machine, dbname, port);
+            KingbaseConnectionUtils.initDbResource(DBUrl, username, pass);
+            if (SqlType.equalsIgnoreCase("Select")) {
+                //查询语句结果解析到数据库变量中
+                // 1.查询数据库条件是否有变量关联
+                long Conidtiondbid = conditionDb.getId();
+                List<Dbvariables> dbconditionVariablesList = dbvariablesService.getbyconditionid(Conidtiondbid);
+                if (dbconditionVariablesList.size() > 0) {
+                    //2.获取查询结果
+                    List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);
+                    for (Dbvariables dbconditionVariables : dbconditionVariablesList) {
+//                        long variablesid = dbconditionVariables.getVariablesid();
+                        String Variablesname = dbconditionVariables.getDbvariablesname();
+                        String columnname = dbconditionVariables.getFieldname();
+                        long roworder = dbconditionVariables.getRoworder();
+                        String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
+                        //保存数据库变量
+                        VariableNameValueMap.put(Variablesname, conditionDb.getId() + "," + VariablesValue);
+                    }
+                }
+            } else {
+                String[] SqlArr = Sql.split(";");
+                for (String ExecSql : SqlArr) {
+                    TestconditionController.log.info("数据库子条件pgSql开始执行：" + ExecSql);
+                    int nums = KingbaseConnectionUtils.execsql(ExecSql);
+                    TestconditionController.log.info("数据库子条件pgSql执行完成：" + ExecSql);
+                    Respone = Respone + " 成功执行Sql:" + Sql + " 影响条数：" + nums;
+                }
+            }
+        }
         if (AssembleType.equalsIgnoreCase("mysql")) {
             DBUrl = GetDbUrl(AssembleType, macdepunit, deployunitvisittype, machine, dbname, port);
             VariableNameValueMap = UseHutoolDbForDebug(conditionDb, SqlType, DBUrl, username, pass, Sql);
@@ -1125,6 +1173,42 @@ public class TestconditionController {
                 for (String ExecSql : SqlArr) {
                     TestconditionController.log.info("数据库子条件pgSql开始执行：" + ExecSql);
                     int nums = PgsqlConnectionUtils.execsql(ExecSql);
+                    TestconditionController.log.info("数据库子条件pgSql执行完成：" + ExecSql);
+                    Respone = Respone + " 成功执行Sql:" + Sql + " 影响条数：" + nums;
+                }
+            }
+        }
+
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = GetDbUrl(AssembleType, macdepunit, deployunitvisittype, machine, dbname, port);
+            KingbaseConnectionUtils.initDbResource(DBUrl, username, pass);
+            if (SqlType.equalsIgnoreCase("Select")) {
+                //查询语句结果解析到数据库变量中
+                // 1.查询数据库条件是否有变量关联
+                long Conidtiondbid = conditionDb.getId();
+                List<DbconditionVariables> dbconditionVariablesList = dbconditionVariablesService.getbyconditionid(Conidtiondbid);
+                if (dbconditionVariablesList.size() > 0) {
+                    //2.获取查询结果
+                    List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);
+                    for (DbconditionVariables dbconditionVariables : dbconditionVariablesList) {
+                        long variablesid = dbconditionVariables.getVariablesid();
+                        String Variablesname = dbconditionVariables.getVariablesname();
+                        String columnname = dbconditionVariables.getFieldname();
+                        long roworder = dbconditionVariables.getRoworder();
+                        if (roworder > 0) {
+                            roworder = roworder - 1;
+                        }
+                        String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
+                        Respone = Respone + "成功获取 数据库变量名：" + Variablesname + " 值:" + VariablesValue;
+                        //保存数据库变量
+                        SaveDBTestVariablesValue(dispatch, Conidtiondbid, conditionDb, variablesid, Variablesname, VariablesValue);
+                    }
+                }
+            } else {
+                String[] SqlArr = Sql.split(";");
+                for (String ExecSql : SqlArr) {
+                    TestconditionController.log.info("数据库子条件pgSql开始执行：" + ExecSql);
+                    int nums = KingbaseConnectionUtils.execsql(ExecSql);
                     TestconditionController.log.info("数据库子条件pgSql执行完成：" + ExecSql);
                     Respone = Respone + " 成功执行Sql:" + Sql + " 影响条数：" + nums;
                 }

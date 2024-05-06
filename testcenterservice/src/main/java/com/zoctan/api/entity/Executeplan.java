@@ -51,6 +51,18 @@ public class Executeplan {
      */
     private String executeplanname;
 
+    public String getDomian() {
+        return domian;
+    }
+
+    public void setDomian(String domian) {
+        this.domian = domian;
+    }
+
+    private String domian;
+
+
+
     public String getBusinesstype() {
         return businesstype;
     }

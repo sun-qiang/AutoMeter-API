@@ -11,6 +11,7 @@ import com.zoctan.api.entity.Machine;
 import com.zoctan.api.service.EnviromentAssembleService;
 import com.zoctan.api.service.MacdepunitService;
 import com.zoctan.api.service.MachineService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
@@ -25,6 +26,7 @@ import java.util.Map;
  * @author SeasonFan
  * @date 2020/11/06
  */
+@Slf4j
 @RestController
 @RequestMapping("/enviroment_assemble")
 public class EnviromentAssembleController {
@@ -125,12 +127,10 @@ public class EnviromentAssembleController {
         String visittype = param.get("visittype").toString();
         String assembletype = param.get("assembletype").toString();
         String ConStr = param.get("constr").toString();
-
         String[] ConnetcArray = ConStr.split(",");
         if (ConnetcArray.length < 4) {
             return ResultGenerator.genFailedResult("连接字格式错误，请检查：" + ConStr);
         }
-
         String username = ConnetcArray[0];
         String pass = ConnetcArray[1];
         String port = ConnetcArray[2];
@@ -142,7 +142,12 @@ public class EnviromentAssembleController {
         if (assembletype.equals("oracle")) {
             DBUrl = "jdbc:oracle://";
         }
-
+        if (assembletype.equals("pgsql")) {
+            DBUrl = "jdbc:pgsql://";
+        }
+        if (assembletype.equals("金仓")) {
+            DBUrl = "jdbc:kingbase8://";
+        }
         String Url = "";
         if (visittype.equalsIgnoreCase("IP")) {
             Machine machine = machineService.getBy("id", machineid);
@@ -156,9 +161,16 @@ public class EnviromentAssembleController {
             Url = domain;
             DBUrl = DBUrl + Url + "/" + dbname;
         }
-        String LastDBUrl = DBUrl + "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        String LastDBUrl = "";
+        if (assembletype.equals("mysql")) {
+            LastDBUrl = DBUrl + "?useUnicode=true&useSSL=false&allowMultiQueries=true&characterEncoding=utf-8&useLegacyDatetimeCode=false&serverTimezone=UTC";
+        } else {
+            LastDBUrl = DBUrl;
+        }
         Connection conn = null;
         try {
+            EnviromentAssembleController.log.info("assembletype is:"+assembletype);
+            EnviromentAssembleController.log.info("LastDBUrl is:"+LastDBUrl);
             conn = DriverManager.getConnection(LastDBUrl, username, pass);//获取连接
         } catch (Exception ex) {
             return ResultGenerator.genFailedResult("连接失败,请检查连接字：" + DBUrl + " ，异常原因：" + ex.getMessage());

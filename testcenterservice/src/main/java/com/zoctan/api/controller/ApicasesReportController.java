@@ -428,7 +428,7 @@ public class ApicasesReportController {
 
     @PostMapping("/getfunctionCaseSandF")
     public Result getfunctionCaseSandF(@RequestBody final Map<String, Object> param) {
-        if (param.get("batchid").toString().isEmpty() || param.get("executeplanid").toString().isEmpty()) {
+        if ((param.get("batchname")==null)||param.get("batchid").toString().isEmpty() || param.get("executeplanid").toString().isEmpty()) {
             return ResultGenerator.genFailedResult("请选择测试集合，执行计划");
         } else {
             Long executeplanid = Long.parseLong(param.get("executeplanid").toString());

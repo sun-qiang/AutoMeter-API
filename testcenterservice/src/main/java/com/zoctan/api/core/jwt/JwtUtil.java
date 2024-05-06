@@ -107,6 +107,16 @@ public class JwtUtil {
     return new UsernamePasswordAuthenticationToken(user, null, authorities);
   }
 
+  /** 返回账户认证 */
+  public UsernamePasswordAuthenticationToken getAuthenticationfor() {
+    final List<String> authList = new ArrayList<>();
+    // 将元素转换为 GrantedAuthority 接口集合
+    final Collection<? extends GrantedAuthority> authorities =
+            authList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    final User user = new User("reportwatcher", "", authorities);
+    return new UsernamePasswordAuthenticationToken(user, null, authorities);
+  }
+
   /** 验证 token 是否正确 */
   public boolean validateToken(final String token) {
     boolean isValidate = true;

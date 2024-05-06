@@ -6,6 +6,7 @@ import cn.hutool.db.ds.simple.SimpleDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.api.autotest.common.utils.DnamicCompilerHelp;
+import com.api.autotest.common.utils.KingbaseConnectionUtils;
 import com.api.autotest.common.utils.PgsqlConnectionUtils;
 import com.api.autotest.dto.RequestObject;
 import com.api.autotest.dto.TestResponeData;
@@ -362,6 +363,17 @@ public class TestCondition {
                 DBUrl = DBUrl + Domain + "/" + dbname;
             }
         }
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = "jdbc:kingbase8://";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machinelist.get(0).get("ip");
+                DBUrl = DBUrl + IP + ":" + port + "/" + dbname;
+            } else {
+                String Domain = macdepunitlist.get(0).get("domain");
+                DBUrl = DBUrl + Domain + "/" + dbname;
+            }
+        }
         if (AssembleType.equalsIgnoreCase("mysql")) {
             DBUrl = "jdbc:mysql://";
             // 根据访问方式来确定ip还是域名
@@ -480,7 +492,38 @@ public class TestCondition {
                 }
             }
         }
-
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = GetDbUrl(AssembleType, macdepunitlist, deployunitvisittype, machinelist, dbname, port);
+            KingbaseConnectionUtils.initDbResource(DBUrl, username, pass);
+            if (SqlType.equalsIgnoreCase("Select")) {
+                //查询语句结果解析到数据库变量中
+                // 1.查询数据库条件是否有变量关联
+                ArrayList<HashMap<String, String>> dbconditionVariablesList = testMysqlHelp.getbyconditionid(Conidtiondbid);
+                if (dbconditionVariablesList.size() > 0) {
+                    //2.获取查询结果
+                    List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);
+                    for (HashMap<String, String> dbconditionVariables : dbconditionVariablesList) {
+                        long variablesid = Long.parseLong(dbconditionVariables.get("variablesid"));
+                        String Variablesname = dbconditionVariables.get("variablesname");
+                        String columnname = dbconditionVariables.get("fieldname");
+                        long roworder = Long.parseLong(dbconditionVariables.get("roworder"));
+                        if (roworder > 0) {
+                            roworder = roworder - 1;
+                        }
+                        String VariablesValue = GetDBResultValueByMap(result, columnname, roworder);
+                        //保存数据库变量
+                        Respone = Respone + "成功获取 数据库变量名：" + Variablesname + " 值:" + VariablesValue;
+                        SaveDBTestVariablesValue(conditiontype,requestObject, Conidtiondbid, DBConditionName, variablesid, Variablesname, VariablesValue);
+                    }
+                }
+            } else {
+                String[] SqlArr = Sql.split(";");
+                for (String ExecSql : SqlArr) {
+                    int nums = KingbaseConnectionUtils.execsql(ExecSql);
+                    Respone = Respone + " 成功执行Sql:" + Sql + " 影响条数：" + nums;
+                }
+            }
+        }
         if (AssembleType.equalsIgnoreCase("mysql")) {
             DBUrl = GetDbUrl(AssembleType, macdepunitlist, deployunitvisittype, machinelist, dbname, port);
             Respone = UseHutoolDb(conditiontype,requestObject, Conidtiondbid, DBConditionName, SqlType, DBUrl, username, pass, Sql);

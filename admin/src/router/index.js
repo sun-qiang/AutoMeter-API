@@ -213,7 +213,7 @@ export const asyncRouterMap = [
       { path: 'executeplan/list', name: '测试集合', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
       // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
       // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},
-      { path: 'executeplanbatch/list', name: '计划执行', component: _import('executecenter/executeplanbatch/index'), meta: { title: '计划执行', permission: ['executeplanbatch:list'] }}
+      { path: 'executeplanbatch/list', name: '执行计划', component: _import('executecenter/executeplanbatch/index'), meta: { title: '执行计划', permission: ['executeplanbatch:list'] }}
     ]
   },
   {
@@ -224,6 +224,7 @@ export const asyncRouterMap = [
     children: [
       // { path: 'testconditionreport/list', name: '条件执行报告', component: _import('reportcenter/testconditionreport/index'), meta: { title: '条件执行报告', permission: ['testconditionreport:list'] }},
       { path: 'apinewreport/list', name: '集合功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
+      // { path: 'apinewtmpreport/list', alwaysShow: false, name: '集合功能报告11', component: _import('reportcenter/apinewtmpreport/index'), meta: { title: '集合功能报告1', permission: ['apireport:list'] }},
       { path: 'apireport/list', name: '功能报告明细', component: _import('reportcenter/apireport/index'), meta: { title: '功能报告明细', permission: ['apireport:list'] }},
       { path: 'apinewperreport/list', name: '集合性能报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '集合性能报告', permission: ['apireport:list'] }},
       // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},

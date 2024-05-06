@@ -1032,32 +1032,36 @@ public class TestCaseHelp {
     //根据数据类型转换
     private Object GetDataByType(String Data, String ValueType) {
         Object Result = new Object();
-        if (ValueType.equalsIgnoreCase("Number")) {
-            try {
-                Result = Long.parseLong(Data);
-            } catch (Exception ex) {
-                Result = "变量值：" + Data + " 不是数字类型，请检查！";
+        if (Data.isEmpty()) {
+            Result = "";
+        } else {
+            if (ValueType.equalsIgnoreCase("Number")) {
+                try {
+                    Result = Long.parseLong(Data);
+                } catch (Exception ex) {
+                    Result = "变量值：" + Data + " 不是数字类型，请检查！";
+                }
             }
-        }
-        if (ValueType.equalsIgnoreCase("Json")) {
-            try {
-                Result = JSON.parse(Data);
-            } catch (Exception ex) {
-                Result = "变量值：" + Data + " 不是数字类型，请检查！";
+            if (ValueType.equalsIgnoreCase("Json")) {
+                try {
+                    Result = JSON.parse(Data);
+                } catch (Exception ex) {
+                    Result = "变量值：" + Data + " 不是数字类型，请检查！";
+                }
             }
-        }
-        if (ValueType.equalsIgnoreCase("String") || ValueType.isEmpty()) {
-            Result = Data;
-        }
-        if (ValueType.equalsIgnoreCase("Array")) {
-            String[] Array = Data.split(",");
-            Result = Array;
-        }
-        if (ValueType.equalsIgnoreCase("Bool")) {
-            try {
-                Result = Boolean.parseBoolean(Data);
-            } catch (Exception ex) {
-                Result = "变量值：" + Data + " 不是布尔类型，请检查！";
+            if (ValueType.equalsIgnoreCase("String") || ValueType.isEmpty()) {
+                Result = Data;
+            }
+            if (ValueType.equalsIgnoreCase("Array")) {
+                String[] Array = Data.split(",");
+                Result = Array;
+            }
+            if (ValueType.equalsIgnoreCase("Bool")) {
+                try {
+                    Result = Boolean.parseBoolean(Data);
+                } catch (Exception ex) {
+                    Result = "变量值：" + Data + " 不是布尔类型，请检查！";
+                }
             }
         }
         return Result;

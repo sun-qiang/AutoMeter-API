@@ -206,6 +206,7 @@ public class ApiParamsController {
                             apiCasedata.setPropertytype(Protype);
                             apiCasedata.setParamstype(ParamType);
                             apiCasedata.setMemo("");
+                            apiCasedata.setMid(apiparam.getCreatorid());
                             apiCasedataList.add(apiCasedata);
                         }
                         if(apiCasedataList.size()>0)

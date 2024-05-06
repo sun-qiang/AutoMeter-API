@@ -22,6 +22,7 @@
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
     <result column="casecounts" jdbcType="BIGINT" property="casecounts" />
     <result column="scenenums" jdbcType="BIGINT" property="scenenums" />
+    <result column="domian" jdbcType="VARCHAR" property="domian" />
   </resultMap>
 
   <select id="findexplanWithName" resultMap="BaseResultMap">
@@ -31,7 +32,6 @@
       <if test="businesstype != null and businesstype != ''">a.businesstype = #{businesstype} </if>
       <if test="executeplanname != null and executeplanname != ''">and a.executeplanname like CONCAT('%',#{executeplanname},'%')</if>
       <if test="projectid != null  and projectid != ''">and a.projectid =#{projectid}</if>
-      <if test="creator != null and creator != ''">and a.creator like CONCAT('%',#{creator},'%')</if>
     </where>
     order by lastmodify_time  DESC
   </select>
@@ -81,11 +81,12 @@
         `errorinfo` text CHARACTER SET utf8 COLLATE utf8_bin COMMENT '错误信息',
         `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         `lastmodify_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '上一次修改时间',
-        `creator` varchar(10) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者',
+        `creator` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '创建者',
         `requestheader` text COMMENT '请求头数据',
         `requestdatas` text COMMENT '请求数据',
         `url` varchar(200) DEFAULT NULL COMMENT '地址',
         `requestmethod` varchar(20) DEFAULT NULL COMMENT '请求方式',
+        `domian` varchar(200) DEFAULT NULL COMMENT '域名',
         `projectid` bigint(20) unsigned NOT NULL COMMENT '项目id',
         PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='api用例报告表';

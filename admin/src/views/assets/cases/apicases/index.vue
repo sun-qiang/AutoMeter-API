@@ -197,7 +197,7 @@
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="用例操作" align="center" width="350"
+      <el-table-column label="用例操作" align="center" width="250"
                        v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
         <template slot-scope="scope">
           <el-button
@@ -221,13 +221,13 @@
             @click.native.prevent="showTestDialog(scope.$index)"
           >调试
           </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:params') && scope.row.id !== id"
-            @click.native.prevent="showCaseVariablesDialog(scope.$index)"
-          >提取变量
-          </el-button>
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            size="mini"-->
+<!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
+<!--            @click.native.prevent="showCaseVariablesDialog(scope.$index)"-->
+<!--          >提取变量-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>

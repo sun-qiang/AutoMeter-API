@@ -277,6 +277,9 @@ public class TestCore {
             //断言
             AssertInfo = FixAssert(TestAssert, requestObject.getApicasesAssertList(), responeData);
             AssertInfo = FixDBAssert(AssertInfo, TestAssert, requestObject.getApicasesDBAssertList());
+            if (!AssertInfo.isEmpty()) {
+                AssertInfo = AssertInfo.substring(0, AssertInfo.length() - 3);
+            }
         } catch (Exception ex) {
             logger.error("CaseException start。。。。。。。。。。。。。!" + ex.getMessage());
             String ExceptionMess = ex.getMessage();
@@ -442,8 +445,7 @@ public class TestCore {
     }
 
     public String FixDBAssert(String AssertInfo, TestAssert TestAssert, List<ApicasesDBAssert> apicasesDBAssertList) throws Exception {
-        try
-        {
+        try {
             for (ApicasesDBAssert apicasesDBAssert : apicasesDBAssertList) {
                 Long dbassertid = apicasesDBAssert.getId();
                 Long expectrecordsnums = apicasesDBAssert.getExpectrecordsnums();
@@ -496,61 +498,81 @@ public class TestCore {
                         String dbname = ConnetcArray[3];
                         String DBUrl = GetDbUrl(AssembleType, macdeplist, visittype, machinelist, dbname, port);
                         ArrayList<HashMap<String, String>> casedbassertvaluelist = testMysqlHelp.getcaseData("select * from apicases_dbassert_value where dbassertid=" + dbassertid);
-                        String fieldname = "";
-                        String valuetype = "";
-                        String assertcondition = "";
-                        String expectvalue = "";
-                        long roworder = 0;
+
+                        List<ApicasesDBAssertValue> apicasesDBAssertValueList=new ArrayList<>();
+
                         for (HashMap<String, String> map : casedbassertvaluelist) {
+                            ApicasesDBAssertValue apicasesDBAssertValue = new ApicasesDBAssertValue();
                             for (String Key : map.keySet()) {
                                 if (Key.equals(new String("fieldname"))) {
-                                    fieldname = map.get(Key);
+                                    String fieldname = map.get(Key);
+                                    apicasesDBAssertValue.setFieldname(fieldname);
                                 }
                                 if (Key.equals(new String("valuetype"))) {
-                                    valuetype = map.get(Key);
+                                    String valuetype = map.get(Key);
+                                    apicasesDBAssertValue.setValuetype(valuetype);
                                 }
                                 if (Key.equals(new String("assertcondition"))) {
-                                    assertcondition = map.get(Key);
+                                    String assertcondition = map.get(Key);
+                                    apicasesDBAssertValue.setAssertcondition(assertcondition);
                                 }
                                 if (Key.equals(new String("expectvalue"))) {
-                                    expectvalue = map.get(Key);
+                                    String expectvalue = map.get(Key);
+                                    apicasesDBAssertValue.setExpectvalue(expectvalue);
                                 }
                                 if (Key.equals(new String("roworder"))) {
-                                    roworder = Long.parseLong(map.get(Key));
+                                    long roworder = Long.parseLong(map.get(Key));
+                                    if (roworder > 0) {
+                                        roworder = roworder - 1;
+                                    }
+                                    apicasesDBAssertValue.setRoworder(roworder);
                                 }
                             }
+                            apicasesDBAssertValueList.add(apicasesDBAssertValue);
                         }
-                        if (roworder > 0) {
-                            roworder = roworder - 1;
-                        }
-                        ApicasesDBAssertValue apicasesDBAssertValue=new ApicasesDBAssertValue();
-                        apicasesDBAssertValue.setAssertcondition(assertcondition);
-                        apicasesDBAssertValue.setFieldname(fieldname);
-                        apicasesDBAssertValue.setExpectvalue(expectvalue);
-                        apicasesDBAssertValue.setValuetype(valuetype);
                         if (AssembleType.equalsIgnoreCase("pgsql")) {
                             PgsqlConnectionUtils.initDbResource(DBUrl, username, pass);
                             List<HashMap<String, String>> result = PgsqlConnectionUtils.query(Sql);
-                            if(result.size()!=expectrecordsnums)
-                            {
+                            if (result.size() != expectrecordsnums) {
                                 TestAssert.setCaseresult(false);
-                                AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数："+result.size()+" 期望结果条数为："+expectrecordsnums;
+                                AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数：" + result.size() + " 期望结果条数为：" + expectrecordsnums;
                                 return AssertInfo;
                             }
-                            String VariablesValue = GetDBResultValueByMap(result, fieldname, roworder);
-                            AssertInfo=TestAssert.AssertDBCondition(apicasesDBAssertValue,expectvalue,VariablesValue);
-
+                            for (ApicasesDBAssertValue apicasesDBAssertValue:apicasesDBAssertValueList) {
+                                String VariablesValue = GetDBResultValueByMap(result, apicasesDBAssertValue.getFieldname(), apicasesDBAssertValue.getRoworder());
+                                AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, apicasesDBAssertValue.getExpectvalue(), VariablesValue);
+                            }
                         } else {
-                            DataSource ds = new SimpleDataSource(DBUrl, username, pass);
-                            List<Entity> result = Db.use(ds).query(Sql);
-                            if(result.size()!=expectrecordsnums)
-                            {
-                                TestAssert.setCaseresult(false);
-                                AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数："+result.size()+" 期望结果条数为："+expectrecordsnums;
-                                return AssertInfo;
+                            if (AssembleType.equalsIgnoreCase("金仓")) {
+                                KingbaseConnectionUtils.initDbResource(DBUrl, username, pass);
+                                List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);                                logger.info(" 金仓 获取数据 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + result + "数据处理完成");
+                                logger.info(" 金仓 获取数据条数 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + result.size());
+                                if (result.size() != expectrecordsnums) {
+                                    TestAssert.setCaseresult(false);
+                                    AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数：" + result.size() + " 期望结果条数为：" + expectrecordsnums;
+                                    return AssertInfo;
+                                }
+                                logger.info(" 金仓 获取数据断言值条数 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValueList.size());
+                                for (ApicasesDBAssertValue apicasesDBAssertValue:apicasesDBAssertValueList) {
+                                    logger.info(" 金仓 获取数据断言值对象 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValue);
+                                    String VariablesValue = GetDBResultValueByMap(result, apicasesDBAssertValue.getFieldname(), apicasesDBAssertValue.getRoworder());
+                                    AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, apicasesDBAssertValue.getExpectvalue(), VariablesValue);
+                                }
+                            } else {
+                                DataSource ds = new SimpleDataSource(DBUrl, username, pass);
+                                List<Entity> result = Db.use(ds).query(Sql);
+                                if (result.size() != expectrecordsnums) {
+                                    TestAssert.setCaseresult(false);
+                                    AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数：" + result.size() + " 期望结果条数为：" + expectrecordsnums;
+                                    return AssertInfo;
+                                }
+                                for (ApicasesDBAssertValue apicasesDBAssertValue:apicasesDBAssertValueList) {
+                                    String VariablesValue = GetDBResultValueByEntity(result, apicasesDBAssertValue.getFieldname(), apicasesDBAssertValue.getRoworder());
+                                    AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, apicasesDBAssertValue.getExpectvalue(), VariablesValue);
+                                }
+//                                String VariablesValue = GetDBResultValueByEntity(result, fieldname, roworder);
+//                                AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, expectvalue, VariablesValue);
                             }
-                            String VariablesValue = GetDBResultValueByEntity(result, fieldname, roworder);
-                            AssertInfo=TestAssert.AssertDBCondition(apicasesDBAssertValue,expectvalue,VariablesValue);
                         }
                     }
                 } else {
@@ -559,11 +581,9 @@ public class TestCore {
                     return AssertInfo;
                 }
             }
-
-        }catch (Exception ex)
-        {
+        } catch (Exception ex) {
             TestAssert.setCaseresult(false);
-            throw new Exception("数据库断言异常:"+ex.getMessage());
+            throw new Exception("数据库断言异常:" + ex.getMessage());
         }
         return AssertInfo;
     }
@@ -572,6 +592,17 @@ public class TestCore {
         String DBUrl = "";
         if (AssembleType.equalsIgnoreCase("pgsql")) {
             DBUrl = "jdbc:postgresql://";
+            // 根据访问方式来确定ip还是域名
+            if (deployunitvisittype.equalsIgnoreCase("ip")) {
+                String IP = machinelist.get(0).get("ip");
+                DBUrl = DBUrl + IP + ":" + port + "/" + dbname;
+            } else {
+                String Domain = macdepunitlist.get(0).get("domain");
+                DBUrl = DBUrl + Domain + "/" + dbname;
+            }
+        }
+        if (AssembleType.equalsIgnoreCase("金仓")) {
+            DBUrl = "jdbc:kingbase8://";
             // 根据访问方式来确定ip还是域名
             if (deployunitvisittype.equalsIgnoreCase("ip")) {
                 String IP = machinelist.get(0).get("ip");
@@ -710,7 +741,9 @@ public class TestCore {
         ArrayList<HashMap<String, String>> list = GetplanBatchCreator(PlanID, BatchName);
         if (list.size() > 0) {
             String PlanName = list.get(0).get("executeplanname");
-            String Subject = "测试集合：" + PlanName + " |  执行计划：" + BatchName + " 完成！";
+            String Domain = list.get(0).get("domian");
+
+            String Subject = "测试集合：" + PlanName + " \n执行计划：" + BatchName + "\n";
             ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
             ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
             ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
@@ -733,7 +766,7 @@ public class TestCore {
                 }
             }
 //            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc+ "， 停止数：" + tuc;
-            Content = Subject + "-------------------------------------------------总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp + " ，请登陆AutoMeter-报告中心查看详情";
+            Content = Subject + "总计用例数：" + tc + "\n成功数：" + tpc + "\n失败数：" + tfc + "\n停止数：" + tsp + "\n请登陆AutoMeter-报告中心查看详情\n " + Domain + "reportcenter/apinewreport/list";
         }
         return Content;
     }
@@ -742,7 +775,7 @@ public class TestCore {
     public void SendMessageDingDing(String PlanID, String BatchName) {
         try {
             String MessageContent = GetSendContent(PlanID, BatchName);
-            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID,"钉钉");
+            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID, "钉钉");
             for (HashMap<String, String> hs : list) {
                 String hookcontent = hs.get("hookcontent");
                 logger.info("开始发送钉钉：-============：");
@@ -782,7 +815,7 @@ public class TestCore {
         try {
             String MessageContent = GetSendContent(PlanID, BatchName);
             //先获取测试集合是否配置了钉钉token
-            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID,"飞书");
+            ArrayList<HashMap<String, String>> list = Getplanmessage(PlanID, "飞书");
             for (HashMap<String, String> hs : list) {
                 String hookcontent = hs.get("hookcontent");
                 logger.info("开始发送飞书：-============：");
@@ -796,10 +829,10 @@ public class TestCore {
 
     private void FeishuPost(String Content, String Token) {
         //消息内容
-        Map<String,Object> json=new HashMap();
-        Map<String,Object> text=new HashMap();
+        Map<String, Object> json = new HashMap();
+        Map<String, Object> text = new HashMap();
         json.put("msg_type", "text");
-        text.put("text", "AutoMeter自动化测试平台执行：" + Content);
+        text.put("text", "AutoMeter自动化测试平台执行完成\n" + Content);
         json.put("content", text);
         //发送post请求
         String result = HttpRequest.post(Token).body(JSON.toJSONString(json), "application/json;charset=UTF-8").execute().body();
@@ -862,8 +895,8 @@ public class TestCore {
     }
 
     //获取测试集合通知
-    public ArrayList<HashMap<String, String>> Getplanmessage(String planid,String messagetype) {
-        ArrayList<HashMap<String, String>> list = testMysqlHelp.Getplanmessage(planid,messagetype);
+    public ArrayList<HashMap<String, String>> Getplanmessage(String planid, String messagetype) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.Getplanmessage(planid, messagetype);
         return list;
     }
 

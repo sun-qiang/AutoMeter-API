@@ -127,7 +127,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> GetplanBatchCreator(String planid, String BatchName) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT a.* FROM executeplanbatch a where a.executeplanid = " + planid + " and a.batchname='" + BatchName + "'";
+            String sql = "SELECT a.* FROM executeplan a where a.id = " + planid ;
             logger.info(logplannameandcasename + "获取数据库 获取计划批次 result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -782,7 +782,7 @@ public class TestMysqlHelp {
             }
             Map<String, Object> headermap = requestObject.getHeader().getParams();
             for (String key : headermap.keySet()) {
-                header = header + key + " ：" + headermap.get(key);
+                header = header + key + " ：" + headermap.get(key)+" ";
             }
             header = header.replace("'", "''");
             paramsmap = requestObject.getParamers().getParams();
@@ -790,7 +790,7 @@ public class TestMysqlHelp {
                 Params = Params + key + " ：" + paramsmap.get(key) + " ";
             }
             if (!Params.isEmpty()) {
-                PostData = "参数：" + Params;
+                PostData = Params;
             } else {
                 PostData = requestObject.getPostData();
             }
