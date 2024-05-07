@@ -498,10 +498,11 @@ public class TestCore {
                         String dbname = ConnetcArray[3];
                         String DBUrl = GetDbUrl(AssembleType, macdeplist, visittype, machinelist, dbname, port);
                         ArrayList<HashMap<String, String>> casedbassertvaluelist = testMysqlHelp.getcaseData("select * from apicases_dbassert_value where dbassertid=" + dbassertid);
-
+                        logger.info(" 开始处理数据库断言值数量。。。。。。。。。。。。。 "+casedbassertvaluelist.size());
                         List<ApicasesDBAssertValue> apicasesDBAssertValueList=new ArrayList<>();
 
                         for (HashMap<String, String> map : casedbassertvaluelist) {
+                            logger.info(" 开始处理数据库断言值。。。。。。。。。。。。。 ");
                             ApicasesDBAssertValue apicasesDBAssertValue = new ApicasesDBAssertValue();
                             for (String Key : map.keySet()) {
                                 if (Key.equals(new String("fieldname"))) {
@@ -544,8 +545,11 @@ public class TestCore {
                             }
                         } else {
                             if (AssembleType.equalsIgnoreCase("金仓")) {
+                                logger.info(" 开始处理金仓。。。。。。。。。。。。。 ");
                                 KingbaseConnectionUtils.initDbResource(DBUrl, username, pass);
-                                List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);                                logger.info(" 金仓 获取数据 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + result + "数据处理完成");
+                                logger.info(" 开始处理金仓initDbResource。。。。。。。。。。。。。 ");
+                                List<HashMap<String, String>> result = KingbaseConnectionUtils.query(Sql);
+                                logger.info(" 金仓 获取数据 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + result + "数据处理完成");
                                 logger.info(" 金仓 获取数据条数 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + result.size());
                                 if (result.size() != expectrecordsnums) {
                                     TestAssert.setCaseresult(false);
@@ -554,19 +558,24 @@ public class TestCore {
                                 }
                                 logger.info(" 金仓 获取数据断言值条数 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValueList.size());
                                 for (ApicasesDBAssertValue apicasesDBAssertValue:apicasesDBAssertValueList) {
-                                    logger.info(" 金仓 获取数据断言值对象 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValue);
+                                    logger.info(" 金仓 获取数据断言值对象 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValue.getFieldname()+"-"+apicasesDBAssertValue.getRoworder()+"-"+apicasesDBAssertValue.getExpectvalue());
                                     String VariablesValue = GetDBResultValueByMap(result, apicasesDBAssertValue.getFieldname(), apicasesDBAssertValue.getRoworder());
+                                    logger.info(" 金仓 获取实际断言值 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + VariablesValue);
+                                    logger.info(" 金仓 获取实际断言值类型 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValue.getAssertcondition());
                                     AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, apicasesDBAssertValue.getExpectvalue(), VariablesValue);
+                                    logger.info(" 金仓 获取实际断言结果 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + AssertInfo);
                                 }
                             } else {
                                 DataSource ds = new SimpleDataSource(DBUrl, username, pass);
                                 List<Entity> result = Db.use(ds).query(Sql);
+                                logger.info(" 其他数据库 获取数据断言值条数 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValueList.size());
                                 if (result.size() != expectrecordsnums) {
                                     TestAssert.setCaseresult(false);
                                     AssertInfo = AssertInfo + "断言失败，环境：" + enviromentname + "中的组件：" + assemblename + " 数据库断言实际结果条数：" + result.size() + " 期望结果条数为：" + expectrecordsnums;
                                     return AssertInfo;
                                 }
                                 for (ApicasesDBAssertValue apicasesDBAssertValue:apicasesDBAssertValueList) {
+                                    logger.info(" 其他数据库 获取数据断言值对象 。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。:" + apicasesDBAssertValue);
                                     String VariablesValue = GetDBResultValueByEntity(result, apicasesDBAssertValue.getFieldname(), apicasesDBAssertValue.getRoworder());
                                     AssertInfo = TestAssert.AssertDBCondition(apicasesDBAssertValue, apicasesDBAssertValue.getExpectvalue(), VariablesValue);
                                 }

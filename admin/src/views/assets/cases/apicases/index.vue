@@ -3508,7 +3508,7 @@
       showscriptvariablesDialog(index) {
         // 显示新增对话框
         this.scriptVariablesDialogFormVisible = true
-        this.tmpscriptvariables.conditionid = this.scriptconditionList[index].id
+        this.tmpscriptvariables.conditionid = this.scriptconditionList[index].conditionid
         this.searchscriptvariables.conditionid = this.scriptconditionList[index].id
         this.tmpscriptvariables.conditionname = this.scriptconditionList[index].subconditionname
         this.getscriptvariablesList()

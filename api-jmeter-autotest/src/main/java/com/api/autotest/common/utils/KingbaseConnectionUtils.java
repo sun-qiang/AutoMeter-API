@@ -28,12 +28,13 @@ public class KingbaseConnectionUtils {
     /**
      * 连接数据库
      */
-    public static void getConnection() {
+    public static void getConnection() throws Exception {
         try {
-            Class.forName("org.kingbase.Driver");
+            Class.forName("org.kingbase8.Driver");
             conn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             e.printStackTrace();
+            throw  new Exception(e.getMessage());
         }
     }
 
@@ -89,7 +90,7 @@ public class KingbaseConnectionUtils {
         return resultArrayList;
     }
 
-    public static String update(String sql) {
+    public static String update(String sql) throws Exception {
         getConnection();
         String result="";
         try {

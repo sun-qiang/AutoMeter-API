@@ -3470,7 +3470,7 @@
       showscenescriptvariablesDialog(index) {
         // 显示新增对话框
         this.scriptVariablesDialogFormVisible = true
-        this.tmpscriptvariables.conditionid = this.scenescriptconditionList[index].id
+        this.tmpscriptvariables.conditionid = this.scenescriptconditionList[index].conditionid
         this.searchscriptvariables.conditionid = this.scenescriptconditionList[index].id
         this.tmpscriptvariables.conditionname = this.scenescriptconditionList[index].subconditionname
         this.getscenescriptvariablesList()

@@ -188,7 +188,7 @@ public class TestCondition {
         long CostTime = 0;
         Long PlanID = Long.parseLong(requestObject.getTestplanid());
         Long CaseID = Long.parseLong(requestObject.getCaseid());
-        Long ConditionID = Long.parseLong(conditionScript.get("id"));
+        Long ConditionID = Long.parseLong(conditionScript.get("conditionid"));
         String conditionname = conditionScript.get("conditionname");
         String conditiontype = conditionScript.get("conditiontype");
 

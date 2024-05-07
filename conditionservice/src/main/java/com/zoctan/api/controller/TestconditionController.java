@@ -723,9 +723,10 @@ public class TestconditionController {
                 String Script = conditionScript.getScript();
                 TestconditionController.log.info("调试脚本报告脚本子条件:-============：" + conditionScript.getScript());
                 String Source = dnamicCompilerHelp.GetCompeleteClass(Script, Caseid);
+                TestconditionController.log.info("调试脚本报告脚本子条件Source:-============：" + Source);
                 Object ScriptResult = dnamicCompilerHelp.CallDynamicScript(Source);
 
-                List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getId());
+                List<Scriptvariables> scriptvariablesList = scriptvariablesService.getbyconditionid(conditionScript.getConditionid());
 
                 for (Scriptvariables scriptvariables : scriptvariablesList) {
                     String scriptvariablesname = scriptvariables.getScriptvariablesname();
