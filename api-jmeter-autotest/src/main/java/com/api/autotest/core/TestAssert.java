@@ -137,9 +137,9 @@ public class TestAssert {
                 Result = ResultList.toString();
             }
         } catch (Exception ex) {
-            if(ex.getMessage().equals("java.lang.String cannot be cast to java.util.List"))
+            if(ex.getMessage().contains("cannot be cast to java.util.List"))
             {
-                Result = JsonPath.read(JsonRespone, JSPath);
+                Result = JsonPath.read(JsonRespone, JSPath).toString();
             } else
             {
                 Result = ex.getMessage();

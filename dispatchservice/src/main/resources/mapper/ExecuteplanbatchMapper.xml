@@ -49,9 +49,17 @@
 
 
   <select id="getrecentbatch" resultMap="BaseResultMap">
-    select * from executeplanbatch a where a.status =#{status} and exectype=#{exectype} order by a.id ASC limit 1
+    select * from executeplanbatch a where a.status =#{status} and exectype=#{exectype} order by a.create_time ASC limit 1
   </select>
 
+  <select id="getrecentsinglebatch" resultMap="BaseResultMap">
+    select * from executeplanbatch a where a.status =#{status} and exectype=#{exectype} and executeplanid = #{executeplanid}  and batchname = #{batchname}
+    order by a.create_time ASC limit 1
+  </select>
+
+  <select id="getrecentallbatch" resultMap="BaseResultMap">
+    select DISTINCT executeplanid,batchname from a where a.status =#{status} and exectype=#{exectype}
+  </select>
 
 
   <select id="getbatchtestscene" resultMap="BaseResultMap">

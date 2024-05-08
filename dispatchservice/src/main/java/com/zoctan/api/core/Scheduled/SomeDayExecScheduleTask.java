@@ -60,112 +60,115 @@ public class SomeDayExecScheduleTask {
         try {
             long redis_default_expire_time = 2000;
             boolean lock = redisUtils.tryLock(redisKey, "SomeDayExecScheduleTask", redis_default_expire_time);
-            Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "某天定时");
             if (lock) {
                 try {
-                    if (executeplanbatch != null) {
-                        Calendar cal = Calendar.getInstance();
-                        int Month = cal.get(Calendar.MONTH) + 1;
-                        int DATE = cal.get(Calendar.DATE);
-                        int Hour = cal.get(Calendar.HOUR_OF_DAY);
-                        int Minitues = cal.get(Calendar.MINUTE);
-                        String MonthData = FinishZERO(Month);
-                        String DateData = FinishZERO(DATE);
-                        String HourData = FinishZERO(Hour);
-                        String MinitesData = FinishZERO(Minitues);
-                        String CurrentTime = cal.get(Calendar.YEAR) + "-" + MonthData + "-" + DateData + " " + HourData + ":" + MinitesData + ":00";
-                        SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============CurrentTime=======================" + CurrentTime);
-                        String ExecDate = executeplanbatch.getExecdate();
-                        SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============ExecDate=======================" + ExecDate);
-                        if (CurrentTime.equals(ExecDate)) {
-                            long PlanID = executeplanbatch.getExecuteplanid();
-                            String BatchName = executeplanbatch.getBatchname();
-                            //判断计划的所有前置条件是否已经完成，并且全部成功，否则更新Dispatch状态为前置条件失败
-                            Dispatch dispatch = new Dispatch();
-                            dispatch.setBatchname(BatchName);
-                            dispatch.setExecplanid(PlanID);
-                            dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
-                            dispatch.setSlaverid(executeplanbatch.getSlaverid());
-                            String FinishRespon = "";
-                            try {
-                                SomeDayExecScheduleTask.log.info("调度服务【每天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName);
-                                RequestConditionService(dispatch, "/testcondition/execplancondition");
-                                boolean conditionfinishflag = true;
-                                //每天进来只有一次机会，所以用while
-                                int trynums = 0;
-                                while (conditionfinishflag) {
-                                    FinishRespon = RequestConditionService(dispatch, "/testcondition/planconditionfinish");
-                                    Thread.sleep(5000);
-                                    trynums++;
-                                    SomeDayExecScheduleTask.log.info("调度服务【每天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " 条件服务FinishRespon:" + FinishRespon);
-                                    if (FinishRespon.contains("\"code\":200")) {
-                                        conditionfinishflag = false;
-                                    } else {
-                                        //重试60次5分钟后处理为失败，人工介入查找条件执行失败原因
-                                        if (trynums == 60) {
-                                            executeplanbatch.setStatus("已停止");
-                                            executeplanbatch.setMemo("conditionservice-条件服务尝试等待5分钟未正常完成，主动停止，请联系管理员查看日志原因");
-                                            executeplanbatchService.update(executeplanbatch);
+                    List<Executeplanbatch> executeplanbatchallList = executeplanbatchMapper.getrecentallbatch("初始", "某天定时");
+                    for (Executeplanbatch executeplanbatchtmp : executeplanbatchallList) {
+                        Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentsinglebatch("初始", "某天定时", executeplanbatchtmp.getExecuteplanid(), executeplanbatchtmp.getBatchname());
+                        if (executeplanbatch != null) {
+                            Calendar cal = Calendar.getInstance();
+                            int Month = cal.get(Calendar.MONTH) + 1;
+                            int DATE = cal.get(Calendar.DATE);
+                            int Hour = cal.get(Calendar.HOUR_OF_DAY);
+                            int Minitues = cal.get(Calendar.MINUTE);
+                            String MonthData = FinishZERO(Month);
+                            String DateData = FinishZERO(DATE);
+                            String HourData = FinishZERO(Hour);
+                            String MinitesData = FinishZERO(Minitues);
+                            String CurrentTime = cal.get(Calendar.YEAR) + "-" + MonthData + "-" + DateData + " " + HourData + ":" + MinitesData + ":00";
+                            SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============CurrentTime=======================" + CurrentTime);
+                            String ExecDate = executeplanbatch.getExecdate();
+                            SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============ExecDate=======================" + ExecDate);
+                            if (CurrentTime.equals(ExecDate)) {
+                                long PlanID = executeplanbatch.getExecuteplanid();
+                                String BatchName = executeplanbatch.getBatchname();
+                                //判断计划的所有前置条件是否已经完成，并且全部成功，否则更新Dispatch状态为前置条件失败
+                                Dispatch dispatch = new Dispatch();
+                                dispatch.setBatchname(BatchName);
+                                dispatch.setExecplanid(PlanID);
+                                dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
+                                dispatch.setSlaverid(executeplanbatch.getSlaverid());
+                                String FinishRespon = "";
+                                try {
+                                    SomeDayExecScheduleTask.log.info("调度服务【每天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName);
+                                    RequestConditionService(dispatch, "/testcondition/execplancondition");
+                                    boolean conditionfinishflag = true;
+                                    //每天进来只有一次机会，所以用while
+                                    int trynums = 0;
+                                    while (conditionfinishflag) {
+                                        FinishRespon = RequestConditionService(dispatch, "/testcondition/planconditionfinish");
+                                        Thread.sleep(5000);
+                                        trynums++;
+                                        SomeDayExecScheduleTask.log.info("调度服务【每天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " 条件服务FinishRespon:" + FinishRespon);
+                                        if (FinishRespon.contains("\"code\":200")) {
                                             conditionfinishflag = false;
+                                        } else {
+                                            //重试60次5分钟后处理为失败，人工介入查找条件执行失败原因
+                                            if (trynums == 60) {
+                                                executeplanbatch.setStatus("已停止");
+                                                executeplanbatch.setMemo("conditionservice-条件服务尝试等待5分钟未正常完成，主动停止，请联系管理员查看日志原因");
+                                                executeplanbatchService.update(executeplanbatch);
+                                                conditionfinishflag = false;
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            //如果conditionservice挂了，或者异常,将execplanbatch刷成失败，备注原因
-                            catch (Exception ex) {
-                                executeplanbatch.setStatus("已停止");
-                                executeplanbatch.setMemo("conditionservice-条件服务不可访问，主动停止，请联系管理员");
-                                executeplanbatchService.update(executeplanbatch);
-                            }
-                            SomeDayExecScheduleTask.log.info("调度服务【某天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " 条件处理完成。。。。。。。。。。。。。。");
-                            if (FinishRespon.contains("\"code\":200")) {
-                                List<Executeplanbatch> executeplanbatchList = executeplanbatchMapper.getbatchtestscene("初始", PlanID, BatchName, "某天定时");
-                                HashMap<Long, List<Executeplanbatch>> tmpmap = new HashMap<>();
-                                for (Executeplanbatch executeplanbatch1 : executeplanbatchList) {
-                                    Long slaverid = executeplanbatch1.getSlaverid();
-                                    if (!tmpmap.containsKey(slaverid)) {
-                                        List<Executeplanbatch> tmpList = new ArrayList<>();
-                                        tmpList.add(executeplanbatch1);
-                                        tmpmap.put(slaverid, tmpList);
-                                    } else {
-                                        tmpmap.get(slaverid).add(executeplanbatch1);
-                                    }
+                                //如果conditionservice挂了，或者异常,将execplanbatch刷成失败，备注原因
+                                catch (Exception ex) {
+                                    executeplanbatch.setStatus("已停止");
+                                    executeplanbatch.setMemo("conditionservice-条件服务不可访问，主动停止，请联系管理员");
+                                    executeplanbatchService.update(executeplanbatch);
                                 }
-                                for (Long slaverid : tmpmap.keySet()) {
-                                    try {
-                                        SomeDayExecScheduleTask.log.info("【某天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + slaverid);
-                                        Slaver slaver = slaverMapper.findslaverbyid(slaverid);
-                                        if (slaver != null) {
-                                            SomeDayExecScheduleTask.log.info("【某天定时执行任务】】执行机 SlaverIP:" + slaver.getIp() + " 状态：" + slaver.getStatus());
-                                            if (slaver.getStatus().equals("空闲")) {
-                                                //改为取测试场景请求到slaverservice  disdinct 场景id
-                                                SomeDayExecScheduleTask.log.info("【某天定时执行任务】 slaver:" + slaver.getSlavername() + " 获取dispatch数-：" + executeplanbatchList.size());
-                                                String params = JSON.toJSONString(tmpmap.get(slaverid));
-                                                SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
-                                                HttpHeader header = new HttpHeader();
-                                                String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
-                                                String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
-                                                SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============请求slaver响应结果：" + respon);
-                                                if (!respon.contains("\"code\":200")) {
-                                                    for (Executeplanbatch ex : tmpmap.get(slaverid)) {
-                                                        ex.setStatus("已停止");
-                                                        ex.setMemo("请求slaverservice执行任务异常：" + respon);
-                                                        executeplanbatchService.update(ex);
-                                                        dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常：" + respon, ex.getSlaverid(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                                SomeDayExecScheduleTask.log.info("调度服务【某天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " 条件处理完成。。。。。。。。。。。。。。");
+                                if (FinishRespon.contains("\"code\":200")) {
+                                    List<Executeplanbatch> executeplanbatchList = executeplanbatchMapper.getbatchtestscene("初始", PlanID, BatchName, "某天定时");
+                                    HashMap<Long, List<Executeplanbatch>> tmpmap = new HashMap<>();
+                                    for (Executeplanbatch executeplanbatch1 : executeplanbatchList) {
+                                        Long slaverid = executeplanbatch1.getSlaverid();
+                                        if (!tmpmap.containsKey(slaverid)) {
+                                            List<Executeplanbatch> tmpList = new ArrayList<>();
+                                            tmpList.add(executeplanbatch1);
+                                            tmpmap.put(slaverid, tmpList);
+                                        } else {
+                                            tmpmap.get(slaverid).add(executeplanbatch1);
+                                        }
+                                    }
+                                    for (Long slaverid : tmpmap.keySet()) {
+                                        try {
+                                            SomeDayExecScheduleTask.log.info("【某天定时执行任务】..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + slaverid);
+                                            Slaver slaver = slaverMapper.findslaverbyid(slaverid);
+                                            if (slaver != null) {
+                                                SomeDayExecScheduleTask.log.info("【某天定时执行任务】】执行机 SlaverIP:" + slaver.getIp() + " 状态：" + slaver.getStatus());
+                                                if (slaver.getStatus().equals("空闲")) {
+                                                    //改为取测试场景请求到slaverservice  disdinct 场景id
+                                                    SomeDayExecScheduleTask.log.info("【某天定时执行任务】 slaver:" + slaver.getSlavername() + " 获取dispatch数-：" + executeplanbatchList.size());
+                                                    String params = JSON.toJSONString(tmpmap.get(slaverid));
+                                                    SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
+                                                    HttpHeader header = new HttpHeader();
+                                                    String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execfunctiontest";
+                                                    String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                                    SomeDayExecScheduleTask.log.info("【某天定时执行任务】-============请求slaver响应结果：" + respon);
+                                                    if (!respon.contains("\"code\":200")) {
+                                                        for (Executeplanbatch ex : tmpmap.get(slaverid)) {
+                                                            ex.setStatus("已停止");
+                                                            ex.setMemo("请求slaverservice执行任务异常：" + respon);
+                                                            executeplanbatchService.update(ex);
+                                                            dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常：" + respon, ex.getSlaverid(), ex.getExecuteplanid(), ex.getId(), ex.getSceneid());
+                                                        }
                                                     }
+                                                } else {
+                                                    //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
+                                                    retry(PlanID, tmpmap.get(slaverid));
                                                 }
                                             } else {
                                                 //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
                                                 retry(PlanID, tmpmap.get(slaverid));
                                             }
-                                        } else {
+                                        } catch (Exception ex) {
                                             //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
                                             retry(PlanID, tmpmap.get(slaverid));
+                                            SomeDayExecScheduleTask.log.info("【某天定时执行任务】请求执行服务异常：" + ex.getMessage());
                                         }
-                                    } catch (Exception ex) {
-                                        //自动更换到可用的slaver上，如果没有可用的slaver再把dispatch状态更新为调度失败
-                                        retry(PlanID, tmpmap.get(slaverid));
-                                        SomeDayExecScheduleTask.log.info("【某天定时执行任务】请求执行服务异常：" + ex.getMessage());
                                     }
                                 }
                             }
@@ -219,9 +222,18 @@ public class SomeDayExecScheduleTask {
             trynums++;
             SomeDayExecScheduleTask.log.info("【某天定时执行任务】测试定时器-============retry CompensateAfterFail 次数：" + trynums);
             flag = CompensateAfterFail(PlanID, executeplanbatchList);
+            for (Executeplanbatch ex : executeplanbatchList) {
+                ex.setMemo("系统未找到任何空闲的slaver执行机，第" + trynums + "次尝试等待30秒再次寻找其他空闲的slaver执行机");
+                executeplanbatchService.update(ex);
+            }
             Thread.sleep(30000);
-            if (trynums == 10) {
+            if (trynums == 100) {
                 flag = true;
+                for (Executeplanbatch ex : executeplanbatchList) {
+                    ex.setMemo("系统尝试100次等待，耗时半小时后未找到空闲的slaver执行机，取消当前执行计划");
+                    ex.setStatus("已取消");
+                    executeplanbatchService.update(ex);
+                }
             }
         }
     }

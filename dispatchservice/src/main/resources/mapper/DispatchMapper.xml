@@ -111,6 +111,11 @@
   </foreach>
   </select>
 
+  <select id="getcopydispatch" resultMap="BaseResultMap">
+    select * from  dispatch  where slaverid = #{slaverid}
+            and execplanid = #{execplanid}  and batchid = #{batchid} and  sceneid = #{sceneid}
+  </select>
+
   <update id="updatedispatchstatusandmemo">
     update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') where slaverid = #{slaverid}
     and execplanid = #{execplanid} and testcaseid = #{testcaseid} and batchid = #{batchid}

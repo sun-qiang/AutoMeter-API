@@ -327,6 +327,7 @@
           <el-form-item label="执行计划："  prop="batchname" required>
             <el-input
               type="text"
+              @input="handleInput"
               maxlength="50"
               style="width:60%"
               placeholder="例如2020-10-21-tag-101"
@@ -3145,6 +3146,16 @@
     },
 
     methods: {
+      handleInput(event) {
+        // 获取输入框当前的值
+        console.log(event)
+        const value = event.replace(/#/g, '')
+        // 移除输入框值中的#字符
+        console.log(value)
+        // 更新输入框的值
+        this.tmpplanbatch.batchname = value
+        // event.target.value = value
+      },
       showplanconditionorderDialog() {
         // 显示新增对话框
         this.ConditionOrderdialogFormVisible = true

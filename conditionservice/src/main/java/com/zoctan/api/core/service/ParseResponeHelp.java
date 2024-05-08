@@ -49,9 +49,9 @@ public class ParseResponeHelp {
             }
             ParseResponeHelp.log.info("接口子条件条件报告子条件处理变量表达式-============：" + JSPath + " 响应内容" + JsonRespone + " 解析结果 is:" + Result);
         } catch (Exception ex) {
-            if(ex.getMessage().equals("java.lang.String cannot be cast to java.util.List"))
+            if(ex.getMessage().contains("cannot be cast to java.util.List"))
             {
-                Result = JsonPath.read(JsonRespone, JSPath);
+                Result = JsonPath.read(JsonRespone, JSPath).toString();
             } else
             {
                 Result = ex.getMessage();

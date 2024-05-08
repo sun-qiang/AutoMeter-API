@@ -30,7 +30,7 @@ public class KingbaseConnectionUtils {
      */
     public static void getConnection() throws Exception {
         try {
-            Class.forName("org.kingbase8.Driver");
+            Class.forName("com.kingbase8.Driver");
             conn = DriverManager.getConnection(url, user, password);
         } catch (Exception e) {
             e.printStackTrace();
