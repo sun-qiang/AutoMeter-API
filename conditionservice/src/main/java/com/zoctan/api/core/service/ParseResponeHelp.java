@@ -42,6 +42,7 @@ public class ParseResponeHelp {
         String Result = "";
         try {
             List<String> ResultList = JsonPath.read(JsonRespone, JSPath);
+
             if (ResultList.size() == 1) {
                 Result = ResultList.get(0);
             } else {
@@ -56,12 +57,25 @@ public class ParseResponeHelp {
             {
                 Result = ex.getMessage();
                 ParseResponeHelp.log.info("接口子条件条件报告子条件ParseJsonRespone处理变量表达式-============解析异常结果 is:" + Result);
-                throw new Exception("变量管理中此变量值表达式JsonPath：" + JSPath + " 在接口子条件的请求响应: " + JsonRespone + " 中未匹配到对应的值");
+                throw new Exception("此变量值表达式JsonPath：" + JSPath + " 在目标结果: " + JsonRespone + " 中未匹配到对应的值");
             }
         }
         return Result;
     }
 
+    public String SetJsonRespone(String JSPath, String JsonRespone,String NewValue) throws Exception {
+        DocumentContext ext = JsonPath.parse(JsonRespone);
+        JsonPath jsonPath = JsonPath.compile(JSPath);
+        try{
+            JsonPath.read(JsonRespone, JSPath);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("此变量值表达式JsonPath：" + JSPath + " 在目标结果: " + JsonRespone + " 中未匹配到对应的值");
+        }
+        ext.set(jsonPath, NewValue);
+        return ext.jsonString();
+    }
 
     public String ParseXmlRespone(String XPath, String ActualXml) throws Exception {
         String Result = "";

@@ -178,7 +178,7 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="管理" align="center" width="150"
+      <el-table-column label="管理" align="center" width="250"
                        v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
         <template slot-scope="scope">
           <el-button
@@ -195,41 +195,57 @@
             @click.native.prevent="removeapicases(scope.$index)"
           >删除
           </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:params') && scope.row.id !== id"
+            @click.native.prevent="showcaseoperationDialog(scope.$index)"
+          >用例操作
+          </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="用例操作" align="center" width="250"
-                       v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:params') && scope.row.id !== id"
-            @click.native.prevent="showcasedataDialog(scope.$index)"
-          >用例数据
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:params') && scope.row.id !== id"
-            @click.native.prevent="showAssertDialog(scope.$index)"
-          >断言
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:params') && scope.row.id !== id"
-            @click.native.prevent="showTestDialog(scope.$index)"
-          >调试
-          </el-button>
+
+<!--      <el-table-column label="用例操作" align="center" width="350"-->
+<!--                       v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">-->
+<!--        <template slot-scope="scope">-->
 <!--          <el-button-->
 <!--            type="primary"-->
 <!--            size="mini"-->
 <!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
-<!--            @click.native.prevent="showCaseVariablesDialog(scope.$index)"-->
-<!--          >提取变量-->
+<!--            @click.native.prevent="showcaseoperationDialog(scope.$index)"-->
+<!--          >用例操作-->
 <!--          </el-button>-->
-        </template>
-      </el-table-column>
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            size="mini"-->
+<!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
+<!--            @click.native.prevent="showcasedataDialog(scope.$index)"-->
+<!--          >用例数据-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            size="mini"-->
+<!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
+<!--            @click.native.prevent="showAssertDialog(scope.$index)"-->
+<!--          >断言-->
+<!--          </el-button>-->
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            size="mini"-->
+<!--            v-if="hasPermission('apicases:params') && scope.row.id !== id"-->
+<!--            @click.native.prevent="showTestDialog(scope.$index)"-->
+<!--          >调试-->
+<!--          </el-button>-->
+<!--&lt;!&ndash;          <el-button&ndash;&gt;-->
+<!--&lt;!&ndash;            type="primary"&ndash;&gt;-->
+<!--&lt;!&ndash;            size="mini"&ndash;&gt;-->
+<!--&lt;!&ndash;            v-if="hasPermission('apicases:params') && scope.row.id !== id"&ndash;&gt;-->
+<!--&lt;!&ndash;            @click.native.prevent="showCaseVariablesDialog(scope.$index)"&ndash;&gt;-->
+<!--&lt;!&ndash;          >提取变量&ndash;&gt;-->
+<!--&lt;!&ndash;          </el-button>&ndash;&gt;-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
@@ -1277,7 +1293,6 @@
 
       </el-form>
     </el-dialog>
-
     <el-dialog title="添加调试前置条件用例" :visible.sync="casedebugconditionnotexistdialogFormVisible">
       <div class="filter-container" >
         <el-form :inline="true" :model="searchnotexistcase" ref="searchnotexistcase" >
@@ -1343,7 +1358,6 @@
         >添加前置</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="取消调试前置条件用例" :visible.sync="casedebugconditionexistdialogFormVisible">
       <div class="filter-container" >
         <el-form :inline="true" :model="searchexistcase" ref="searchexistcase" >
@@ -1410,7 +1424,6 @@
         >取消前置</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="添加全局Header用例" :visible.sync="caseglobalheadernotexistdialogFormVisible">
       <div class="filter-container" >
         <el-form :inline="true" :model="searchglobalnotexistheadercase" ref="searchglobalnotexistheadercase" >
@@ -1476,7 +1489,6 @@
         >添加Header</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="取消全局Header用例" :visible.sync="caseglobalheaderexistdialogFormVisible">
       <div class="filter-container" >
         <el-form :inline="true" :model="searchglobalheadercase" ref="searchglobalheadercase" >
@@ -1542,7 +1554,6 @@
         >取消Header</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="批量断言" :visible.sync="BatchAssertdialogFormVisible">
       <el-form
         status-icon
@@ -1627,7 +1638,6 @@
         </el-button>
       </div>
     </el-dialog>
-
     <el-dialog width="1200px" title='用例提取变量列表' :visible.sync="caseVariablesDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
@@ -1699,7 +1709,6 @@
         layout="total, sizes, prev, pager, next, jumper"
       ></el-pagination>
     </el-dialog>
-
     <el-dialog :title="caseaddvariablestextMap[caseaddvariablesdialogStatus]" :visible.sync="caseaddvariablesdialogFormVisible">
       <el-form
         status-icon
@@ -1800,7 +1809,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="用例调试前置条件" width="1120px" :visible.sync="scenecaseConditionFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
@@ -2012,7 +2020,6 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-
     <el-dialog :title="scripttextMap[scriptdialogStatus]" :visible.sync="scriptdialogFormVisible">
       <el-form
         status-icon
@@ -2062,7 +2069,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" :visible.sync="caseconditiondialogFormVisible">
       <el-form
         status-icon
@@ -2141,7 +2147,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog :title="dbtextMap[dbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
@@ -2221,7 +2226,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog width="1000px" title='数据库变量列表' :visible.sync="dbVariablesDialogFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
@@ -2292,7 +2296,6 @@
         layout="total, sizes, prev, pager, next, jumper"
       ></el-pagination>
     </el-dialog>
-
     <el-dialog :title="dbvariablestextMap[dbvariablesdialogStatus]" :visible.sync="adddbvariablesdialogFormVisible">
       <el-form
         status-icon
@@ -2525,7 +2528,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog :title="DelaytextMap[DelaydialogStatus]" :visible.sync="DelaydialogFormVisible">
       <el-form
         status-icon
@@ -2577,7 +2579,6 @@
         >修改</el-button>
       </div>
     </el-dialog>
-
     <el-dialog title="前置条件顺序" width="840px" :visible.sync="ConditionOrderdialogFormVisible">
       <el-form
         status-icon
@@ -2622,6 +2623,646 @@
           type="success"
           @click.native.prevent="saveconditionorder"
         >保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="用例操作"  width="1000px"  :visible.sync="caseoperationialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="80px"
+        style="width: 900px; margin-left:50px;"
+        :model="tmpapicasesdata"
+        ref="tmpapicasesdata"
+      >
+        <template>
+          <el-tabs v-model="opearationactiveName" type="card" ref="tabs">
+            <el-tab-pane label="用例值" name="zero">
+              <el-form
+                status-icon
+                class="small-space"
+                label-position="left"
+                label-width="80px"
+                style="width: 900px;"
+                :model="tmpapicasesdata"
+                ref="tmpapicasesdata"
+              >
+                <template>
+                  <el-tabs v-model="activeName" type="card" ref="tabs">
+                    <el-tab-pane label="Header" name="zero">
+                      <template>
+                        <el-table :data="Headertabledatas" border>
+                          <el-table-column label="参数" prop="apiparam" align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="值" prop="apiparamvalue" align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                      </template>
+                    </el-tab-pane>
+                    <el-tab-pane label="Params" name="first">
+                      <template>
+                        <el-table :data="Paramstabledatas" border>
+                          <el-table-column label="参数"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="值类型"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="值"  align="center">
+                            <template slot-scope="scope">
+                              <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                      </template>
+                    </el-tab-pane>
+                    <el-tab-pane label="Body" name="second">
+                      <template>
+                        <div v-if="BodyParamDataVisible">
+                          <el-table :data="Bodytabledatas" border>
+                            <el-table-column label="参数"  align="center">
+                              <template slot-scope="scope">
+                                <el-input size="mini" placeholder="参数名" v-model="scope.row.apiparam"></el-input>
+                              </template>
+                            </el-table-column>
+                            <el-table-column label="值类型"  align="center">
+                              <template slot-scope="scope">
+                                <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
+                              </template>
+                            </el-table-column>
+                            <el-table-column label="默认值"  align="center">
+                              <template slot-scope="scope">
+                                <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
+                              </template>
+                            </el-table-column>
+                          </el-table>
+                        </div>
+                        <div v-if="BodyDataVisible">
+                          <el-form-item label="Body值：" prop="apiparamvalue" >
+                            <el-input
+                              type="textarea"
+                              rows="20" cols="70"
+                              prefix-icon="el-icon-message"
+                              auto-complete="off"
+                              v-model.trim="tmpapicasesbodydata.apiparamvalue"
+                            />
+                          </el-form-item>
+                        </div>
+                      </template>
+                    </el-tab-pane>
+                    <el-tab-pane label="使用变量" name="third">
+                      <uservariables></uservariables>
+                    </el-tab-pane>
+                  </el-tabs>
+                </template>
+              </el-form>
+              <div slot="footer" class="dialog-footer">
+                <el-button @click.native.prevent="casedataialogFormVisible = false">取消</el-button>
+                <el-button
+                  type="success"
+                  :loading="btnLoading"
+                  @click.native.prevent="addnewapicasesdata"
+                >保存
+                </el-button>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="调试" name="first">
+              <template>
+                <el-form
+                  status-icon
+                  class="small-space"
+                  label-width="100px"
+                  style="width: 900px;"
+                  label-position="left"
+                >
+                  <div class="filter-container">
+                    <el-form :inline="true" :model="tmptest" ref="tmptest">
+                      <el-form-item label="用例名：">
+                        <el-input style="width:800px" readonly="true" v-model="tmpapicases.casename"/>
+                      </el-form-item>
+
+                      <el-form-item label="环境：" prop="enviromentname"  required>
+                        <el-select style="width:800px" v-model="tmptest.enviromentname"  placeholder="环境" @change="EnviromentselectChanged($event)" >
+                          <el-option label="请选择"  value=""  />
+                          <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+                            <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+                          </div>
+                        </el-select>
+                      </el-form-item>
+
+                      <!--            <el-form-item label="前置条件:"  prop="conditionname" >-->
+                      <!--              <el-select style="width:490px" v-model="tmptest.conditionname" placeholder="前置父条件" @change="notexistconditionnameselectChanged($event)">-->
+                      <!--                <el-option label="请选择" value="请选择" />-->
+                      <!--                <div v-for="(testcase, index) in conditionList" :key="index">-->
+                      <!--                  <el-option :label="testcase.conditionname" :value="testcase.conditionname" />-->
+                      <!--                </div>-->
+                      <!--              </el-select>-->
+                      <!--            </el-form-item>-->
+
+
+                      <el-form-item label="全局Header:"  prop="globalheadername" >
+                        <el-select style="width:620px" v-model="tmptest.globalheadername" placeholder="全局Header" @change="notexistheaderselectChanged($event)">
+                          <el-option label="请选择" value="请选择" />
+                          <div v-for="(globalheader, index) in globalheaderallList" :key="index">
+                            <el-option :label="globalheader.globalheadername" :value="globalheader.globalheadername" />
+                          </div>
+                        </el-select>
+                        <el-button type="primary" :loading="btnLoading" @click.native.prevent="runtest">调试</el-button>
+                        <el-button type="primary" :loading="btnLoading" @click.native.prevent="showtestcaseConditionDialog">前置条件</el-button>
+                      </el-form-item>
+
+                      <template>
+                        <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+                          <el-tab-pane label="通用" name="zero">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.general"
+                            />
+                          </el-tab-pane>
+
+                          <el-tab-pane label="响应内容" name="first">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.respone"
+                            />
+                          </el-tab-pane>
+
+                          <el-tab-pane label="请求Header" name="seven">
+                            <el-table
+                              :data="requestHeadList"
+                              element-loading-text="loading"
+                              border
+                              fit
+                              highlight-current-row
+                            >
+                              <el-table-column label="Name" align="center" prop="keyName" width="250"/>
+                              <el-table-column label="Value" align="center" prop="keyValue" width="350"/>
+                            </el-table>
+                          </el-tab-pane>
+
+                          <el-tab-pane label="请求Params" name="nine">
+                            <el-table
+                              :data="requestParamsList"
+                              element-loading-text="loading"
+                              border
+                              fit
+                              highlight-current-row
+                            >
+                              <el-table-column label="Name" align="center" prop="keyName" width="250"/>
+                              <el-table-column label="Value" align="center" prop="keyValue" width="350"/>
+                            </el-table>
+                          </el-tab-pane>
+
+                          <el-tab-pane label="请求Body" name="eight">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.requestdata"
+                            />
+                          </el-tab-pane>
+
+                          <el-tab-pane label="响应Header" name="five">
+                            <el-table
+                              :data="headerList"
+                              element-loading-text="loading"
+                              border
+                              fit
+                              highlight-current-row
+                            >
+                              <el-table-column label="Name" align="center" prop="name" width="250"/>
+                              <el-table-column label="Value" align="center" prop="value" width="350"/>
+                            </el-table>
+                          </el-tab-pane>
+
+                          <el-tab-pane label="响应码" name="second">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.code"
+                            />
+                          </el-tab-pane>
+                          <el-tab-pane label="响应时间(ms)" name="third">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.responeTime"
+                            />
+                          </el-tab-pane>
+                          <el-tab-pane label="大小(B)" name="fourth">
+                            <el-input
+                              type="textarea"
+                              style="width: 100%;border: none;outline: none;resize:none;overflow:hidden" readonly
+                              rows="20" cols="90"
+                              maxlength="4000"
+                              v-model="tmptest.size"
+                            />
+                          </el-tab-pane>
+
+                          <el-tab-pane label="Cookies" name="six">
+                            <el-table
+                              :data="cookies"
+                              element-loading-text="loading"
+                              border
+                              fit
+                              highlight-current-row
+                            >
+                              <el-table-column label="Name" align="center" prop="name" width="250"/>
+                              <el-table-column label="Value" align="center" prop="value" width="350"/>
+                            </el-table>
+                          </el-tab-pane>
+                        </el-tabs>
+                      </template>
+                    </el-form>
+                  </div>
+
+                </el-form>
+              </template>
+            </el-tab-pane>
+            <el-tab-pane label="断言" name="second">
+              <template>
+                <el-tabs v-model="assertactiveName"  type="card" ref="asserttabs">
+                  <el-tab-pane label="接口断言" name="zero">
+                    <template>
+                      <div class="filter-container">
+                        <el-form :inline="true"  :model="searchassert" ref="searchcase" >
+                          <el-form-item>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              icon="el-icon-plus"
+                              @click.native.prevent="showAddassertDialog"
+                            >添加接口断言
+                            </el-button>
+                          </el-form-item>
+
+                          <el-form-item label="接口断言类型:"  prop="asserttype" >
+                            <el-select v-model="searchassert.asserttype" placeholder="断言类型" >
+                              <el-option label="Respone断言" value="Respone"></el-option>
+                              <el-option label="Json断言" value="Json"></el-option>
+                              <el-option label="Xml断言" value="Xml"></el-option>
+                            </el-select>
+                          </el-form-item>
+
+                          <el-form-item>
+                            <el-button type="primary" @click="searchassertBy" :loading="btnLoading">查询</el-button>
+                          </el-form-item>
+
+                        </el-form>
+                      </div>
+                      <el-table
+                        ref="assertTable"
+                        :data="assertList"
+                        :key="assertitemKey"
+                        element-loading-text="loading"
+                        border
+                        fit
+                        highlight-current-row
+                      >
+                        <el-table-column label="编号" align="center" width="60">
+                          <template slot-scope="scope">
+                            <span v-text="assertgetIndex(scope.$index)"></span>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="断言类型"  align="center" prop="asserttype" width="80"/>
+                        <el-table-column label="断言子类型"  align="center" prop="assertsubtype" width="120"/>
+                        <el-table-column label="表达式"  align="center" prop="expression" width="150"/>
+                        <el-table-column label="条件" align="center" prop="assertcondition" width="90"/>
+                        <el-table-column label="期望值"  align="center" prop="assertvalues" width="120"/>
+                        <el-table-column label="断言值类型"  align="center" prop="assertvaluetype" width="100"/>
+                        <el-table-column label="管理" align="center"  width="180">
+                          <template slot-scope="scope">
+                            <el-button
+                              type="warning"
+                              size="mini"
+                              @click.native.prevent="showUpdateapicasesassertDialog(scope.$index)"
+                            >修改
+                            </el-button>
+                            <el-button
+                              type="danger"
+                              size="mini"
+                              @click.native.prevent="removeapicasesassert(scope.$index)"
+                            >删除
+                            </el-button>
+
+                          </template>
+                        </el-table-column>
+
+                      </el-table>
+                      <el-pagination
+                        @size-change="asserthandleSizeChange"
+                        @current-change="asserthandleCurrentChange"
+                        :current-page="searchassert.page"
+                        :page-size="searchassert.size"
+                        :total="asserttotal"
+                        :page-sizes="[10, 20, 30, 40]"
+                        layout="total, sizes, prev, pager, next, jumper"
+                      ></el-pagination>
+                    </template>
+                  </el-tab-pane>
+                  <el-tab-pane label="数据库断言" name="first">
+                    <template>
+                      <div class="filter-container">
+                        <el-form :inline="true"  :model="searchdbassert" ref="searchdbassert" >
+                          <el-form-item>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              icon="el-icon-plus"
+                              @click.native.prevent="showAdddbassertDialog"
+                            >添加数据库断言
+                            </el-button>
+                          </el-form-item>
+
+                          <el-form-item label="环境：" prop="enviroment"  >
+                            <el-select clearable style="width:200px" v-model="searchdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)"   >
+                              <el-option label="请选择"  value=""  />
+                              <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+                                <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+                              </div>
+                            </el-select>
+                          </el-form-item>
+
+                          <el-form-item label="数据库组件：" prop="assemblename"  >
+                            <el-select clearable v-model="searchdbassert.assemblename" filterable placeholder="数据库组件" style="width:100%">
+                              <el-option label="请选择" value="''" style="display: none" />
+                              <div v-for="(macname, index) in enviroment_assembleList" :key="index">
+                                <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
+                              </div>
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button type="primary" @click="searchdbassertBy" :loading="btnLoading">查询</el-button>
+                          </el-form-item>
+
+                        </el-form>
+                      </div>
+                      <el-table
+                        ref="assertTable"
+                        :data="dbassertList"
+                        :key="dbassertitemKey"
+                        element-loading-text="loading"
+                        border
+                        fit
+                        highlight-current-row
+                      >
+                        <el-table-column label="编号" align="center" width="60">
+                          <template slot-scope="scope">
+                            <span v-text="dbassertgetIndex(scope.$index)"></span>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="环境"  align="center" prop="enviroment" width="150"/>
+                        <el-table-column label="组件"  align="center" prop="assemblename" width="120"/>
+                        <el-table-column  :show-overflow-tooltip="true"   label="查询sql"  align="center" prop="expression" width="260"/>
+                        <el-table-column label="结果条数"  align="center" prop="expectrecordsnums" width="80"/>
+                        <el-table-column label="管理" align="center"  width="230">
+                          <template slot-scope="scope">
+                            <el-button
+                              type="warning"
+                              size="mini"
+                              @click.native.prevent="showUpdateapicasesdbassertDialog(scope.$index)"
+                            >修改
+                            </el-button>
+                            <el-button
+                              type="danger"
+                              size="mini"
+                              @click.native.prevent="removeapicasesdbassert(scope.$index)"
+                            >删除
+                            </el-button>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              @click.native.prevent="showapicasesdbassertvalueDialog(scope.$index)"
+                            >断言值
+                            </el-button>
+                          </template>
+                        </el-table-column>
+
+                      </el-table>
+                      <el-pagination
+                        @size-change="dbasserthandleSizeChange"
+                        @current-change="dbasserthandleCurrentChange"
+                        :current-page="searchdbassert.page"
+                        :page-size="searchdbassert.size"
+                        :total="dbasserttotal"
+                        :page-sizes="[10, 20, 30, 40]"
+                        layout="total, sizes, prev, pager, next, jumper"
+                      ></el-pagination>
+                    </template>
+                  </el-tab-pane>
+                </el-tabs>
+              </template>
+            </el-tab-pane>
+            <el-tab-pane label="响应设置" name="third">
+              <template>
+                <el-tabs v-model="assertactiveName"  type="card" ref="asserttabs">
+                  <el-tab-pane label="接口断言" name="zero">
+                    <template>
+                      <div class="filter-container">
+                        <el-form :inline="true"  :model="searchassert" ref="searchcase" >
+                          <el-form-item>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              icon="el-icon-plus"
+                              @click.native.prevent="showAddassertDialog"
+                            >添加接口断言
+                            </el-button>
+                          </el-form-item>
+
+                          <el-form-item label="接口断言类型:"  prop="asserttype" >
+                            <el-select v-model="searchassert.asserttype" placeholder="断言类型" >
+                              <el-option label="Respone断言" value="Respone"></el-option>
+                              <el-option label="Json断言" value="Json"></el-option>
+                              <el-option label="Xml断言" value="Xml"></el-option>
+                            </el-select>
+                          </el-form-item>
+
+                          <el-form-item>
+                            <el-button type="primary" @click="searchassertBy" :loading="btnLoading">查询</el-button>
+                          </el-form-item>
+
+                        </el-form>
+                      </div>
+                      <el-table
+                        ref="assertTable"
+                        :data="assertList"
+                        :key="assertitemKey"
+                        element-loading-text="loading"
+                        border
+                        fit
+                        highlight-current-row
+                      >
+                        <el-table-column label="编号" align="center" width="60">
+                          <template slot-scope="scope">
+                            <span v-text="assertgetIndex(scope.$index)"></span>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="断言类型"  align="center" prop="asserttype" width="80"/>
+                        <el-table-column label="断言子类型"  align="center" prop="assertsubtype" width="120"/>
+                        <el-table-column label="表达式"  align="center" prop="expression" width="150"/>
+                        <el-table-column label="条件" align="center" prop="assertcondition" width="90"/>
+                        <el-table-column label="期望值"  align="center" prop="assertvalues" width="180"/>
+                        <el-table-column label="断言值类型"  align="center" prop="assertvaluetype" width="100"/>
+                        <el-table-column label="管理" align="center"  width="180">
+                          <template slot-scope="scope">
+                            <el-button
+                              type="warning"
+                              size="mini"
+                              @click.native.prevent="showUpdateapicasesassertDialog(scope.$index)"
+                            >修改
+                            </el-button>
+                            <el-button
+                              type="danger"
+                              size="mini"
+                              @click.native.prevent="removeapicasesassert(scope.$index)"
+                            >删除
+                            </el-button>
+
+                          </template>
+                        </el-table-column>
+
+                      </el-table>
+                      <el-pagination
+                        @size-change="asserthandleSizeChange"
+                        @current-change="asserthandleCurrentChange"
+                        :current-page="searchassert.page"
+                        :page-size="searchassert.size"
+                        :total="asserttotal"
+                        :page-sizes="[10, 20, 30, 40]"
+                        layout="total, sizes, prev, pager, next, jumper"
+                      ></el-pagination>
+                    </template>
+                  </el-tab-pane>
+                  <el-tab-pane label="数据库断言" name="first">
+                    <template>
+                      <div class="filter-container">
+                        <el-form :inline="true"  :model="searchdbassert" ref="searchdbassert" >
+                          <el-form-item>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              icon="el-icon-plus"
+                              @click.native.prevent="showAdddbassertDialog"
+                            >添加数据库断言
+                            </el-button>
+                          </el-form-item>
+
+                          <el-form-item label="环境：" prop="enviroment"  >
+                            <el-select clearable style="width:200px" v-model="searchdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)"   >
+                              <el-option label="请选择"  value=""  />
+                              <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+                                <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+                              </div>
+                            </el-select>
+                          </el-form-item>
+
+                          <el-form-item label="数据库组件：" prop="assemblename"  >
+                            <el-select clearable v-model="searchdbassert.assemblename" filterable placeholder="数据库组件" style="width:100%">
+                              <el-option label="请选择" value="''" style="display: none" />
+                              <div v-for="(macname, index) in enviroment_assembleList" :key="index">
+                                <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
+                              </div>
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item>
+                            <el-button type="primary" @click="searchdbassertBy" :loading="btnLoading">查询</el-button>
+                          </el-form-item>
+
+                        </el-form>
+                      </div>
+                      <el-table
+                        ref="assertTable"
+                        :data="dbassertList"
+                        :key="dbassertitemKey"
+                        element-loading-text="loading"
+                        border
+                        fit
+                        highlight-current-row
+                      >
+                        <el-table-column label="编号" align="center" width="60">
+                          <template slot-scope="scope">
+                            <span v-text="dbassertgetIndex(scope.$index)"></span>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="环境"  align="center" prop="enviroment" width="150"/>
+                        <el-table-column label="组件"  align="center" prop="assemblename" width="120"/>
+                        <el-table-column  :show-overflow-tooltip="true"   label="查询sql"  align="center" prop="expression" width="300"/>
+                        <el-table-column label="结果条数"  align="center" prop="expectrecordsnums" width="100"/>
+                        <el-table-column label="管理" align="center"  width="230">
+                          <template slot-scope="scope">
+                            <el-button
+                              type="warning"
+                              size="mini"
+                              @click.native.prevent="showUpdateapicasesdbassertDialog(scope.$index)"
+                            >修改
+                            </el-button>
+                            <el-button
+                              type="danger"
+                              size="mini"
+                              @click.native.prevent="removeapicasesdbassert(scope.$index)"
+                            >删除
+                            </el-button>
+                            <el-button
+                              type="primary"
+                              size="mini"
+                              @click.native.prevent="showapicasesdbassertvalueDialog(scope.$index)"
+                            >断言值
+                            </el-button>
+                          </template>
+                        </el-table-column>
+
+                      </el-table>
+                      <el-pagination
+                        @size-change="dbasserthandleSizeChange"
+                        @current-change="dbasserthandleCurrentChange"
+                        :current-page="searchdbassert.page"
+                        :page-size="searchdbassert.size"
+                        :total="dbasserttotal"
+                        :page-sizes="[10, 20, 30, 40]"
+                        layout="total, sizes, prev, pager, next, jumper"
+                      ></el-pagination>
+                    </template>
+                  </el-tab-pane>
+                </el-tabs>
+              </template>
+            </el-tab-pane>
+          </el-tabs>
+        </template>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          v-if=" opearationactiveName == 'zero'"
+          @click.native.prevent="caseoperationialogFormVisible = false">取消</el-button>
+        <el-button
+          v-if=" opearationactiveName == 'zero'"
+          type="success"
+          :loading="btnLoading"
+          @click.native.prevent="addnewapicasesdata"
+        >保存
+        </el-button>
       </div>
     </el-dialog>
 
@@ -2683,6 +3324,8 @@
     },
     data() {
       return {
+        opearationactiveName: 'zero',
+        caseoperationialogFormVisible: false,
         accountList: [],
         tmpdbassertvalue: {
           id: '',
@@ -3300,6 +3943,19 @@
 
     methods: {
       unix2CurrentTime,
+      showAddassertDialog() {
+        // 显示新增对话框
+        this.AssertdialogStatus = 'add'
+        this.AssertAUdialogFormVisible = true
+        this.tmpassert.id = ''
+        this.tmpassert.assertcondition = ''
+        this.tmpassert.assertsubtype = ''
+        this.tmpassert.asserttype = ''
+        this.tmpassert.assertvalues = ''
+        this.tmpassert.expression = ''
+        this.tmpassert.assertvaluetype = ''
+        this.tmpassert.creator = this.name
+      },
       mnicknameselectChanged(e) {
         for (let i = 0; i < this.accountList.length; i++) {
           if (this.accountList[i].nickname === e) {
@@ -4773,20 +5429,6 @@
       /**
        * 显示增加断言对话框
        */
-      showAddassertDialog() {
-        // 显示新增对话框
-        this.AssertdialogStatus = 'add'
-        this.AssertAUdialogFormVisible = true
-        this.tmpassert.id = ''
-        this.tmpassert.assertcondition = ''
-        this.tmpassert.assertsubtype = ''
-        this.tmpassert.asserttype = ''
-        this.tmpassert.assertvalues = ''
-        this.tmpassert.expression = ''
-        this.tmpassert.assertvaluetype = ''
-        this.tmpassert.creator = this.name
-      },
-
       showAdddbassertDialog() {
         // 显示新增对话框
         this.dbAssertdialogStatus = 'add'
@@ -5068,7 +5710,7 @@
         } else {
           this.updateapicasesdata()
         }
-        this.$message.success('保存成功')
+        this.$message.success('保存用例值成功')
         this.casedataialogFormVisible = false
       },
 
@@ -5151,6 +5793,80 @@
         }).catch(res => {
           this.$message.error('获取api失败')
         })
+      },
+      async showcaseoperationDialog(index) {
+        this.caseoperationialogFormVisible = true
+        this.opearationactiveName = 'zero'
+        this.activeName = 'zero'
+        // this.casedataialogFormVisible = true
+        this.tmpapicases.casename = this.apicasesList[index].casename
+        this.tmpapicases.id = this.apicasesList[index].id
+        this.tmpapicases.apiid = this.apicasesList[index].apiid
+        this.tmpapicasesbodydata.caseid = this.apicasesList[index].id
+        this.tmpapicasesbodydata.casename = this.apicasesList[index].casename
+        this.getheaderdatabycaseidandtype()
+        this.getparamdatabycaseidandtype()
+        await this.getapi()
+        if (this.tmpapi.requestcontenttype === 'Form表单') {
+          this.BodyParamDataVisible = true
+          this.BodyDataVisible = false
+          // 获取Body参数数据
+          this.getbodydatabycaseidandtype()
+        } else {
+          // 获取body文本数据
+          this.BodyDataVisible = true
+          this.BodyParamDataVisible = false
+          this.getbodytextdatabycaseidandtype()
+          // 调试
+          this.tmptestdata.caseid = this.apicasesList[index].id
+          this.tmptestdata.conditionid = this.tmptest.conditionid
+          this.tmptestdata.globalheaderid = this.tmptest.globalheaderid
+          this.checked = false
+          this.tmptestdata.prixflag = this.checked
+          this.tmpapicases.casename = this.apicasesList[index].casename
+          this.activeName = 'zero'
+          this.tmptest.globalheaderid = 0
+          this.tmptest.conditionid = 0
+          this.tmptest.globalheadername = ''
+          this.tmptest.conditionname = ''
+          this.tmptest.general = ''
+          this.headerList = null
+          this.cookies = null
+          this.requestHeadList = null
+          this.tmptest.size = ''
+          this.tmptest.code = ''
+          this.tmptest.responeTime = ''
+          this.tmptest.enviromentname = ''
+          this.tmptest.respone = ''
+          // this.TestdialogFormVisible = true
+          this.tmpapicondition.conditionid = this.apicasesList[index].id
+          this.tmpapicondition.conditionname = this.apicasesList[index].casename
+          this.tmpapicondition.conditiontype = 'case'
+          this.searchapicondition.conditiontype = 'case'
+          this.searchapicondition.conditionid = this.apicasesList[index].id
+          this.searchdbcondition.conditiontype = 'case'
+          this.searchdbcondition.conditionid = this.apicasesList[index].id
+          this.tmpdbcondition.conditionid = this.apicasesList[index].id
+          this.tmpdbcondition.conditionname = this.apicasesList[index].casename
+          this.tmpdbcondition.conditiontype = 'case'
+          this.Scenedelaysearch.conditionid = this.apicasesList[index].id
+          this.tmpscriptcondition.conditionid = this.apicasesList[index].id
+          this.tmpscriptcondition.conditionname = this.apicasesList[index].casename
+          this.tmpscriptcondition.conditiontype = 'case'
+          this.searchscriptcondition.conditiontype = 'case'
+          this.searchscriptcondition.conditionid = this.apicasesList[index].id
+          // 断言
+          this.assertactiveName = 'zero'
+          this.tmpapicases.id = this.apicasesList[index].id
+          this.tmpassert.caseid = this.tmpapicases.id
+          this.tmpdbassert.caseid = this.apicasesList[index].id
+          this.searchassert.caseid = this.tmpassert.caseid
+          this.searchdbassert.caseid = this.apicasesList[index].id
+          this.getassertbycaseid(this.searchassert)
+          this.getdbassertbycaseid(this.searchdbassert)
+          // this.AssertdialogFormVisible = true
+          this.searchassert.asserttype = ''
+        }
       },
       /**
        * 显示用例值对话框

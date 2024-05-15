@@ -20,9 +20,11 @@ public class DnamicCompilerHelp {
                 "import com.zoctan.api.util.DES;" +
                 "import com.zoctan.api.util.AutoMeter;" +
                 "public class TestCasePreClass{" +
-                "public String AutoMeterPreScriptFun() {" +
+                "public String AutoMeterPreScriptFun() throws Exception {" +
                 "AutoMeter.caseid=new Long(" + Caseid + ");" +
-                SourceClassScript +
+                "try {"+
+                SourceClassScript
+                +"} catch (Exception exception) { throw new Exception(exception.getMessage()); } "+
                 "}" +
                 "}";
         return javaSrc;

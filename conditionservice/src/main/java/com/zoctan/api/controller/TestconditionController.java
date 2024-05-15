@@ -36,6 +36,7 @@ import tk.mybatis.mapper.entity.Condition;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.awt.font.ShapeGraphicAttribute;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -732,8 +733,15 @@ public class TestconditionController {
                     String scriptvariablesname = scriptvariables.getScriptvariablesname();
                     Result.get("script").put(scriptvariablesname, conditionScript.getConditionid() + "," + ScriptResult.toString());
                 }
-            } catch (Exception ex) {
+            }
+            catch (InvocationTargetException ex) {
+                Respone = ex.getCause().getMessage();
+                TestconditionController.log.info("调试脚本报告更新子条件结果-============："+Respone);
+                throw new Exception("脚本条件执行异常:" + Respone);
+            }
+            catch (Exception ex) {
                 Respone = ex.getMessage();
+                TestconditionController.log.info("调试脚本报告更新子条件结果-============："+Respone);
                 throw new Exception("脚本条件执行异常:" + Respone);
             }
             TestconditionController.log.info("调试脚本报告更新子条件结果-============：");

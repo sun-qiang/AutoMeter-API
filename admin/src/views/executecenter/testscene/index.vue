@@ -1932,6 +1932,178 @@
                   </el-tab-pane>
                 </el-tabs>
               </el-tab-pane>
+              <el-tab-pane label="断言" name="second">
+                <template>
+                  <el-tabs v-model="assertactiveName"  type="card" ref="asserttabs">
+                    <el-tab-pane label="接口断言" name="zero">
+                      <template>
+                        <div class="filter-container">
+                          <el-form :inline="true"  :model="searchassert" ref="searchcase" >
+                            <el-form-item>
+                              <el-button
+                                type="primary"
+                                size="mini"
+                                icon="el-icon-plus"
+                                @click.native.prevent="showAddassertDialog"
+                              >添加接口断言
+                              </el-button>
+                            </el-form-item>
+
+                            <el-form-item label="接口断言类型:"  prop="asserttype" >
+                              <el-select v-model="searchassert.asserttype" placeholder="断言类型" >
+                                <el-option label="Respone断言" value="Respone"></el-option>
+                                <el-option label="Json断言" value="Json"></el-option>
+                                <el-option label="Xml断言" value="Xml"></el-option>
+                              </el-select>
+                            </el-form-item>
+
+                            <el-form-item>
+                              <el-button type="primary" @click="searchassertBy" :loading="btnLoading">查询</el-button>
+                            </el-form-item>
+
+                          </el-form>
+                        </div>
+                        <el-table
+                          ref="assertTable"
+                          :data="assertList"
+                          :key="assertitemKey"
+                          element-loading-text="loading"
+                          border
+                          fit
+                          highlight-current-row
+                        >
+                          <el-table-column label="编号" align="center" width="60">
+                            <template slot-scope="scope">
+                              <span v-text="assertgetIndex(scope.$index)"></span>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="断言类型"  align="center" prop="asserttype" width="80"/>
+                          <el-table-column label="断言子类型"  align="center" prop="assertsubtype" width="120"/>
+                          <el-table-column label="表达式"  align="center" prop="expression" width="150"/>
+                          <el-table-column label="条件" align="center" prop="assertcondition" width="90"/>
+                          <el-table-column label="期望值"  align="center" prop="assertvalues" width="180"/>
+                          <el-table-column label="断言值类型"  align="center" prop="assertvaluetype" width="100"/>
+                          <el-table-column label="管理" align="center"  width="180">
+                            <template slot-scope="scope">
+                              <el-button
+                                type="warning"
+                                size="mini"
+                                @click.native.prevent="showUpdateapicasesassertDialog(scope.$index)"
+                              >修改
+                              </el-button>
+                              <el-button
+                                type="danger"
+                                size="mini"
+                                @click.native.prevent="removeapicasesassert(scope.$index)"
+                              >删除
+                              </el-button>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                        <el-pagination
+                          @size-change="asserthandleSizeChange"
+                          @current-change="asserthandleCurrentChange"
+                          :current-page="searchassert.page"
+                          :page-size="searchassert.size"
+                          :total="asserttotal"
+                          :page-sizes="[10, 20, 30, 40]"
+                          layout="total, sizes, prev, pager, next, jumper"
+                        ></el-pagination>
+                      </template>
+                    </el-tab-pane>
+                    <el-tab-pane label="数据库断言" name="first">
+                      <template>
+                        <div class="filter-container">
+                          <el-form :inline="true"  :model="searchdbassert" ref="searchdbassert" >
+                            <el-form-item>
+                              <el-button
+                                type="primary"
+                                size="mini"
+                                icon="el-icon-plus"
+                                @click.native.prevent="showAdddbassertDialog"
+                              >添加数据库断言
+                              </el-button>
+                            </el-form-item>
+
+                            <el-form-item label="环境：" prop="enviroment"  >
+                              <el-select clearable style="width:200px" v-model="searchdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)"   >
+                                <el-option label="请选择"  value=""  />
+                                <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+                                  <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+                                </div>
+                              </el-select>
+                            </el-form-item>
+
+                            <el-form-item label="数据库组件：" prop="assemblename"  >
+                              <el-select clearable v-model="searchdbassert.assemblename" filterable placeholder="数据库组件" style="width:100%">
+                                <el-option label="请选择" value="''" style="display: none" />
+                                <div v-for="(macname, index) in enviroment_assembleList" :key="index">
+                                  <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
+                                </div>
+                              </el-select>
+                            </el-form-item>
+                            <el-form-item>
+                              <el-button type="primary" @click="searchdbassertBy" :loading="btnLoading">查询</el-button>
+                            </el-form-item>
+
+                          </el-form>
+                        </div>
+                        <el-table
+                          ref="assertTable"
+                          :data="dbassertList"
+                          :key="dbassertitemKey"
+                          element-loading-text="loading"
+                          border
+                          fit
+                          highlight-current-row
+                        >
+                          <el-table-column label="编号" align="center" width="60">
+                            <template slot-scope="scope">
+                              <span v-text="dbassertgetIndex(scope.$index)"></span>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="环境"  align="center" prop="enviroment" width="150"/>
+                          <el-table-column label="组件"  align="center" prop="assemblename" width="120"/>
+                          <el-table-column  :show-overflow-tooltip="true"   label="查询sql"  align="center" prop="expression" width="300"/>
+                          <el-table-column label="结果条数"  align="center" prop="expectrecordsnums" width="100"/>
+                          <el-table-column label="管理" align="center"  width="230">
+                            <template slot-scope="scope">
+                              <el-button
+                                type="warning"
+                                size="mini"
+                                @click.native.prevent="showUpdateapicasesdbassertDialog(scope.$index)"
+                              >修改
+                              </el-button>
+                              <el-button
+                                type="danger"
+                                size="mini"
+                                @click.native.prevent="removeapicasesdbassert(scope.$index)"
+                              >删除
+                              </el-button>
+                              <el-button
+                                type="primary"
+                                size="mini"
+                                @click.native.prevent="showapicasesdbassertvalueDialog(scope.$index)"
+                              >断言值
+                              </el-button>
+                            </template>
+                          </el-table-column>
+
+                        </el-table>
+                        <el-pagination
+                          @size-change="dbasserthandleSizeChange"
+                          @current-change="dbasserthandleCurrentChange"
+                          :current-page="searchdbassert.page"
+                          :page-size="searchdbassert.size"
+                          :total="dbasserttotal"
+                          :page-sizes="[10, 20, 30, 40]"
+                          layout="total, sizes, prev, pager, next, jumper"
+                        ></el-pagination>
+                      </template>
+                    </el-tab-pane>
+                  </el-tabs>
+                </template>
+              </el-tab-pane>
               <el-tab-pane label="前置条件" name="xxx1">
                 <div class="filter-container">
                   <el-form :inline="true">
@@ -2195,8 +2367,7 @@
           </el-form>
         </div>
       </div>
-
-      <div style="height: 350px">
+      <div style="height: 350px; margin-top: 20px">
         <el-form :inline="true">
           <el-form-item label="状态:" prop="status" >
             <el-select v-model="debugsearch.status" style="width:100%" placeholder="状态">
@@ -2215,6 +2386,7 @@
           </el-form-item>
         </el-form>
           <el-table
+            height="280px"
             :data="apireportList"
             :key="itemKey"
             v-loading.body="listLoading"
@@ -2334,6 +2506,306 @@
       </div>
     </el-dialog>
 
+    <el-dialog :title="AsserttextMap[AssertdialogStatus]" :visible.sync="AssertAUdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="150px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpassert"
+        ref="tmpassert"
+      >
+        <el-form-item label="断言类型" prop="asserttype" required >
+          <el-select v-model="tmpassert.asserttype" style="width:100%" placeholder="断言类型" @change="asserttypeselectChanged($event)">
+            <el-option label="Respone断言" value="Respone"></el-option>
+            <el-option label="Json断言" value="Json"></el-option>
+            <el-option label="Xml断言" value="Xml"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <div v-if="AssertSubVisible">
+          <el-form-item label="断言子类型" prop="assertsubtype" required >
+            <el-select v-model="tmpassert.assertsubtype" style="width:100%" placeholder="断言子类型">
+              <el-option label="Code" value="Code"></el-option>
+              <el-option label="文本" value="文本"></el-option>
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div v-if="ExpressionVisible">
+          <el-form-item label="表达式" prop="expression" required>
+            <el-input
+              type="text"
+              maxlength="400"
+              prefix-icon="el-icon-edit"
+              auto-complete="off"
+              v-model="tmpassert.expression"
+            />
+            <div class="right">
+              <el-tooltip placement="right-end">
+                <div slot="content">1.如果断言类型是Json则使用JsonPath表示, 例如：$.store.book[0].title  在线解析网站：http://www.e123456.com/aaaphp/online/jsonpath/<br/>2.如果断言类型为XML，则使用XPath表示， 例如：//div/h3//text()=hello|//div/h4//text()   在线解析网站： http://www.ab173.com/other/xpath.php</div>
+                <el-button>表达式语法</el-button>
+              </el-tooltip>
+            </div>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="条件" prop="assertcondition" required >
+          <el-select v-model="tmpassert.assertcondition" style="width:100%" placeholder="条件" @change="assertnameselectChanged($event)">
+            <el-option label="等于" value="="></el-option>
+            <el-option label="大于" value=">"></el-option>
+            <el-option label="小于" value="<"></el-option>
+            <el-option label="包含" value="Contain"></el-option>
+            <el-option label="不包含" value="NoContain"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="断言值" prop="assertvalues" required>
+          <el-input
+            type="text"
+            maxlength="2000"
+            prefix-icon="el-icon-edit"
+            auto-complete="off"
+            v-model="tmpassert.assertvalues"
+          />
+        </el-form-item>
+        <el-form-item label="断言值类型" prop="assertvaluetype" required >
+          <el-select v-model="tmpassert.assertvaluetype" style="width:100%" placeholder="断言值类型">
+            <el-option label="int" value="int"></el-option>
+            <el-option label="Long" value="Long"></el-option>
+            <el-option label="Float" value="Float"></el-option>
+            <el-option label="Double" value="Double"></el-option>
+            <el-option label="Decimal" value="Decimal"></el-option>
+            <el-option label="字符串" value="String"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="AssertAUdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          :loading="btnLoading"
+          v-if="AssertdialogStatus === 'add'"
+          @click.native.prevent="addassert"
+        >保存
+        </el-button>
+        <el-button
+          type="success"
+          :loading="btnLoading"
+          v-if="AssertdialogStatus === 'update'"
+          @click.native.prevent="updateassert"
+        >更新
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog width="1000px" title='数据库断言值列表' :visible.sync="dbassertvaluelistDialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('apicasesdbassertvalue:add')"
+              @click.native.prevent="showAddApicasesdbassertvalueDialog"
+            >新增断言值</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="ApicasesdbassertvalueList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="ApicasesdbassertvaluegetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column :show-overflow-tooltip="true" label="列名" align="center" prop="fieldname" width="90"/>
+        <el-table-column :show-overflow-tooltip="true" label="行号" align="center" prop="roworder" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="期望值" align="center" prop="expectvalue" width="130"/>
+        <el-table-column :show-overflow-tooltip="true" label="值类型" align="center" prop="valuetype" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="条件" align="center" prop="assertcondition" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column :show-overflow-tooltip="true" label="最后修改时间" align="center" prop="lastmodifyTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center" width="180"
+                         v-if="hasPermission('apicasesdbassertvalue:update')  || hasPermission('apicasesdbassertvalue:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('apicasesdbassertvalue:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedbassertvalueDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('apicasesdbassertvalue:delete') && scope.row.id !== id"
+              @click.native.prevent="removedbassertvalue(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="dbassertvaluehandleSizeChange"
+        @current-change="dbassertvaluehandleCurrentChange"
+        :current-page="searchdbassertvalue.page"
+        :page-size="searchdbassertvalue.size"
+        :total="dbassertvaluetotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+    </el-dialog>
+    <el-dialog :title="dbAsserttextMap[dbAssertdialogStatus]" width="800px" :visible.sync="dbAssertAUdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="150px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpdbassert"
+        ref="tmpdbassert"
+      >
+        <el-form-item label="环境：" prop="enviroment"  required>
+          <el-select clearable style="width:500px" v-model="tmpdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)" >
+            <div v-for="(enviroment, index) in enviromentnameList" :key="index">
+              <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="数据库组件：" prop="assemblename" required >
+          <el-select clearable style="width:500px" v-model="tmpdbassert.assemblename" filterable placeholder="数据库组件"  @change="dbassertselectChangedAS($event)">
+            <div v-for="(macname, index) in enviroment_assembleList" :key="index">
+              <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
+            </div>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="查询sql" prop="expression" required>
+          <el-input style="width:500px"
+                    type="textarea" rows="20" cols="90"
+                    maxlength="4000"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.expression"
+          />
+        </el-form-item>
+
+        <el-form-item label="结果条数" prop="expectrecordsnums" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.expectrecordsnums"
+          />
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="dbAssertAUdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertdialogStatus === 'add'"
+          @click.native.prevent="adddbassert"
+        >保存
+        </el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertdialogStatus === 'update'"
+          @click.native.prevent="updatedbassert"
+        >更新
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :title="dbAssertvaluetextMap[dbAssertvaluedialogStatus]" width="800px" :visible.sync="dbassertvalueDialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="150px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpdbassertvalue"
+        ref="tmpdbassertvalue"
+      >
+        <el-form-item label="列名" prop="fieldname" required>
+          <el-input style="width:500px"
+                    type="text"
+                    maxlength="60"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassertvalue.fieldname"
+          />
+        </el-form-item>
+
+        <el-form-item label="行号" prop="roworder" required>
+          <el-input style="width:500px"
+                    type="text"
+                    maxlength="20"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassertvalue.roworder"
+          />
+        </el-form-item>
+
+        <el-form-item label="期望值" prop="expectvalue" required>
+          <el-input style="width:500px"
+                    maxlength="200"
+                    type="text"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassertvalue.expectvalue"
+          />
+        </el-form-item>
+
+        <el-form-item label="变量值类型" prop="valuetype" required >
+          <el-select style="width:500px" v-model="tmpdbassertvalue.valuetype" placeholder="变量值类型">
+            <el-option label="Number" value="Number"></el-option>
+            <el-option label="String" value="String"></el-option>
+            <el-option label="Array" value="Array"></el-option>
+            <el-option label="Bool" value="Bool"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="条件" prop="assertcondition" required >
+          <el-select v-model="tmpdbassertvalue.assertcondition" style="width:500px" placeholder="条件">
+            <el-option label="等于" value="="></el-option>
+            <el-option label="大于" value=">"></el-option>
+            <el-option label="小于" value="<"></el-option>
+            <el-option label="包含" value="Contain"></el-option>
+            <el-option label="不包含" value="NoContain"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="dbassertvalueDialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertvaluedialogStatus === 'add'"
+          @click.native.prevent="adddbassertvalue"
+        >保存
+        </el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertvaluedialogStatus === 'update'"
+          @click.native.prevent="updatedbassertvalue"
+        >更新
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -2364,6 +2836,9 @@ import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/m
 import { searchconditionorder, addconditionorder } from '@/api/condition/conditionorder'
 import { runscenecasetest, runscenetest } from '@/api/assets/apicases'
 import { findscenecasedebugreportWithName } from '@/api/reportcenter/scenecases_debug_report'
+import { addapicasesassert, getassertbycaseid as getassertbycaseid, searchassert as searchassert, removeapicasesassert, updateapicasesassert } from '@/api/assets/apicasesassert'
+import { addapicasesdbassert, searchdbassert as searchdbassert, removeapicasesdbassert, updateapicasesdbassert } from '@/api/assets/apicasesdbassert'
+import { searchdbassertvalue, addapicasesdbassertvalue, updateapicasesdbassertvalue, removeapicasesdbassertvalue } from '@/api/assets/apicasesdbassertvalue'
 
 export default {
   name: '测试场景',
@@ -2386,6 +2861,90 @@ export default {
   },
   data() {
     return {
+      tmpdbassertvalue: {
+        id: '',
+        dbassertid: '',
+        fieldname: '',
+        roworder: '',
+        valuetype: '',
+        assertcondition: '',
+        expectvalue: '',
+        memo: '',
+        creator: ''
+      },
+      dbassertvalueDialogFormVisible: false,
+      dbAssertvaluedialogStatus: 'add',
+      dbAssertvaluetextMap: {
+        update: '修改断言值',
+        add: '添加断言值'
+      },
+      searchdbassertvalue: {
+        page: 1,
+        size: 10,
+        fieldname: null,
+        dbassertid: null
+      },
+      dbassertvaluetotal: 0,
+      ApicasesdbassertvalueList: [],
+      dbassertvaluelistDialogFormVisible: false,
+      tmpdbassert: {
+        id: '',
+        caseid: '',
+        assembleid: '',
+        assemblename: '',
+        expectrecordsnums: null,
+        envid: '',
+        expression: '',
+        enviroment: '',
+        creator: ''
+      },
+      dbAssertAUdialogFormVisible: false,
+      dbAssertdialogStatus: 'add',
+      dbAsserttextMap: {
+        updateRole: '修改数据库断言',
+        update: '修改数据库断言',
+        add: '添加数据库断言'
+      },
+      dbassertList: [],
+      dbassertitemKey: null,
+      searchdbassert: {
+        page: 1,
+        size: 10,
+        assemblename: null,
+        enviroment: null,
+        caseid: null
+      },
+      asserttotal: 0,
+      dbasserttotal: 0,
+      assertList: [],
+      assertitemKey: null,
+      ExpressionVisible: false, // 断言表达式显示
+      AssertSubVisible: false, // 断言子条件显示
+      tmpassert: {
+        id: '',
+        caseid: '',
+        asserttype: '',
+        assertsubtype: '',
+        expression: '',
+        assertcondition: '',
+        assertvalues: '',
+        assertvaluetype: '',
+        creator: ''
+      },
+      AssertAUdialogFormVisible: false,
+      AssertdialogStatus: 'add',
+      AsserttextMap: {
+        updateRole: '修改用例断言',
+        update: '修改用例断言',
+        add: '添加用例断言'
+      },
+      searchassert: {
+        page: 1,
+        size: 10,
+        asserttype: null,
+        caseid: null
+      },
+      assertactiveName: 'zero',
       tmpstatus: '',
       tmpcasename: '',
       tmpbatchname: '',
@@ -2873,6 +3432,345 @@ export default {
   },
 
   methods: {
+    updatedbassertvalue() {
+      this.$refs.tmpdbassertvalue.validate(valid => {
+        if (valid) {
+          updateapicasesdbassertvalue(this.tmpdbassertvalue).then(() => {
+            this.$message.success('更新成功')
+            this.getdbassertvaluebyid()
+            this.dbassertvalueDialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+    adddbassertvalue() {
+      this.$refs.tmpdbassertvalue.validate(valid => {
+        if (valid) {
+          addapicasesdbassertvalue(this.tmpdbassertvalue).then(() => {
+            this.$message.success('添加断言成功')
+            this.getdbassertvaluebyid()
+            this.dbassertvalueDialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加断言失败')
+          })
+        }
+      })
+    },
+    removedbassertvalue(index) {
+      this.$confirm('删除该用例断言？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.ApicasesdbassertvalueList[index].id
+        removeapicasesdbassertvalue(id).then(() => {
+          this.$message.success('删除成功')
+          this.getdbassertvaluebyid()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+    showUpdatedbassertvalueDialog(index) {
+      this.dbAssertvaluedialogStatus = 'update'
+      this.dbassertvalueDialogFormVisible = true
+      this.tmpdbassertvalue.id = this.ApicasesdbassertvalueList[index].id
+      this.tmpdbassertvalue.fieldname = this.ApicasesdbassertvalueList[index].fieldname
+      this.tmpdbassertvalue.roworder = this.ApicasesdbassertvalueList[index].roworder
+      this.tmpdbassertvalue.valuetype = this.ApicasesdbassertvalueList[index].valuetype
+      this.tmpdbassertvalue.assertcondition = this.ApicasesdbassertvalueList[index].assertcondition
+      this.tmpdbassertvalue.expectvalue = this.ApicasesdbassertvalueList[index].expectvalue
+      this.tmpdbassertvalue.memo = this.ApicasesdbassertvalueList[index].memo
+      this.tmpdbassertvalue.creator = this.name
+    },
+    showAddApicasesdbassertvalueDialog() {
+      // 显示新增对话框
+      this.dbAssertvaluedialogStatus = 'add'
+      this.dbassertvalueDialogFormVisible = true
+      this.tmpdbassertvalue.id = ''
+      this.tmpdbassertvalue.expectvalue = ''
+      this.tmpdbassertvalue.valuetype = ''
+      this.tmpdbassertvalue.roworder = ''
+      this.tmpdbassertvalue.fieldname = ''
+      this.tmpdbassertvalue.assertcondition = ''
+      this.tmpdbassertvalue.creator = this.name
+    },
+    getassertbycaseid() {
+      getassertbycaseid(this.searchassert).then(response => {
+        this.assertList = response.data.list
+        this.asserttotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载用例断言列表失败')
+      })
+    },
+
+    getdbassertbycaseid() {
+      this.searchdbassert.enviroment = this.tmpdbassertenviromrnt
+      this.searchdbassert.assemblename = this.tmpdbasserttype
+      searchdbassert(this.searchdbassert).then(response => {
+        this.dbassertList = response.data.list
+        this.dbasserttotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载用例断言列表失败')
+      })
+    },
+
+    getdbassertvaluebyid() {
+      this.searchdbassertvalue.fieldname = this.tmpfieldname
+      searchdbassertvalue(this.searchdbassertvalue).then(response => {
+        this.ApicasesdbassertvalueList = response.data.list
+        this.dbassertvaluetotal = response.data.total
+      }).catch(res => {
+        this.$message.error('加载用例断言列表失败')
+      })
+    },
+    updatedbassert() {
+      this.$refs.tmpdbassert.validate(valid => {
+        if (valid) {
+          updateapicasesdbassert(this.tmpdbassert).then(() => {
+            this.$message.success('更新成功')
+            this.getdbassertbycaseid()
+            this.dbAssertAUdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+    adddbassert() {
+      this.$refs.tmpdbassert.validate(valid => {
+        if (valid) {
+          addapicasesdbassert(this.tmpdbassert).then(() => {
+            this.$message.success('添加断言成功')
+            this.getdbassertbycaseid(this.searchdbassert)
+            this.dbAssertAUdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加断言失败')
+          })
+        }
+      })
+    },
+    showapicasesdbassertvalueDialog(index) {
+      // 显示新增对话框
+      this.tmpdbassertvalue.dbassertid = this.dbassertList[index].id
+      this.dbassertvaluelistDialogFormVisible = true
+      this.searchdbassertvalue.dbassertid = this.dbassertList[index].id
+      this.getdbassertvaluebyid()
+    },
+    removeapicasesdbassert(index) {
+      this.$confirm('删除该用例断言？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.dbassertList[index].id
+        removeapicasesdbassert(id).then(() => {
+          this.$message.success('删除成功')
+          this.getdbassertbycaseid()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+
+    showUpdateapicasesdbassertDialog(index) {
+      this.dbAssertdialogStatus = 'update'
+      this.dbAssertAUdialogFormVisible = true
+      this.tmpdbassert.id = this.dbassertList[index].id
+      this.tmpdbassert.assemblename = this.dbassertList[index].assemblename
+      this.tmpdbassert.envid = this.dbassertList[index].envid
+      this.tmpdbassert.assembleid = this.dbassertList[index].assembleid
+      this.tmpdbassert.enviroment = this.dbassertList[index].enviroment
+      this.tmpdbassert.expression = this.dbassertList[index].expression
+      this.tmpdbassert.expectrecordsnums = this.dbassertList[index].expectrecordsnums
+      this.tmpdbassert.creator = this.name
+    },
+    /**
+     * 显示增加断言对话框
+     */
+    showAdddbassertDialog() {
+      // 显示新增对话框
+      this.dbAssertdialogStatus = 'add'
+      this.dbAssertAUdialogFormVisible = true
+      this.tmpdbassert.id = ''
+      this.tmpdbassert.enviroment = ''
+      this.tmpdbassert.envid = ''
+      this.tmpdbassert.assembleid = ''
+      this.tmpdbassert.assemblename = ''
+      this.tmpdbassert.expectrecordsnums = null
+      this.tmpdbassert.expression = ''
+      this.tmpdbassert.creator = this.name
+    },
+    /**
+     * 删除用例断言
+     * @param index 用例下标
+     */
+    removeapicasesassert(index) {
+      this.$confirm('删除该用例断言？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.assertList[index].id
+        removeapicasesassert(id).then(() => {
+          this.$message.success('删除成功')
+          this.getassertbycaseid()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+    /**
+     * 显示修改用例断言对话框
+     * @param index 用例下标
+     */
+    showUpdateapicasesassertDialog(index) {
+      this.AssertdialogStatus = 'update'
+      this.AssertAUdialogFormVisible = true
+      this.tmpassert.id = this.assertList[index].id
+      this.tmpassert.asserttype = this.assertList[index].asserttype
+      this.tmpassert.assertsubtype = this.assertList[index].assertsubtype
+      this.tmpassert.expression = this.assertList[index].expression
+      this.tmpassert.assertcondition = this.assertList[index].assertcondition
+      this.tmpassert.assertvalues = this.assertList[index].assertvalues
+      this.tmpassert.assertvaluetype = this.assertList[index].assertvaluetype
+      this.tmpassert.creator = this.name
+      if (this.tmpassert.asserttype === 'Respone') {
+        this.ExpressionVisible = false
+        this.AssertSubVisible = true
+      } else {
+        this.AssertSubVisible = false
+        this.ExpressionVisible = true
+      }
+    },
+
+    searchdbassertBy() {
+      this.searchdbassert.page = 1
+      searchdbassert(this.searchdbassert).then(response => {
+        this.dbassertitemKey = Math.random()
+        this.dbassertList = response.data.list
+        this.dbasserttotal = response.data.total
+      }).catch(res => {
+        this.$message.error('搜索失败')
+      })
+      this.tmpdbasserttype = this.searchdbassert.assemblename
+      this.tmpdbassertenviromrnt = this.searchdbassert.enviroment
+    },
+    /**
+     * 改变每页数量
+     * @param size 页大小
+     */
+    asserthandleSizeChange(size) {
+      this.searchassert.page = 1
+      this.searchassert.size = size
+      this.getassertbycaseid(this.tmpassert)
+    },
+    dbasserthandleSizeChange(size) {
+      this.searchdbassert.page = 1
+      this.searchdbassert.size = size
+      this.getdbassertbycaseid()
+    },
+    dbassertvaluehandleSizeChange(size) {
+      this.searchdbassertvalue.page = 1
+      this.searchdbassertvalue.size = size
+      this.getdbassertvaluebyid()
+    },
+    /**
+     * 改变页码
+     * @param page 页号
+     */
+    asserthandleCurrentChange(page) {
+      this.searchassert.page = page
+      this.getassertbycaseid(this.tmpassert)
+    },
+
+    dbasserthandleCurrentChange(page) {
+      this.searchdbassert.page = page
+      this.getdbassertbycaseid(this.tmpassert)
+    },
+
+    dbassertvaluehandleCurrentChange(page) {
+      this.searchdbassertvalue.page = page
+      this.getdbassertvaluebyid()
+    },
+    /**
+     * 表格序号
+     * 可参考自定义表格序号
+     * http://element-cn.eleme.io/#/zh-CN/component/table#zi-ding-yi-suo-yin
+     * @param index 数据下标
+     * @returns 表格序号
+     */
+    assertgetIndex(index) {
+      return (this.searchassert.page - 1) * this.searchassert.size + index + 1
+    },
+    dbassertgetIndex(index) {
+      return (this.searchdbassert.page - 1) * this.searchdbassert.size + index + 1
+    },
+    ApicasesdbassertvaluegetIndex(index) {
+      return (this.searchdbassertvalue.page - 1) * this.searchdbassertvalue.size + index + 1
+    },
+
+    searchassertBy() {
+      this.searchassert.page = 1
+      this.searchassert.caseid = this.tmpassert.caseid
+      searchassert(this.searchassert).then(response => {
+        this.assertitemKey = Math.random()
+        this.assertList = response.data.list
+        this.asserttotal = response.data.total
+      }).catch(res => {
+        this.$message.error('搜索失败')
+      })
+      this.tmpasserttype = this.searchassert.asserttype
+    },
+    /**
+     * 更新用例断言
+     */
+    updateassert() {
+      this.$refs.tmpassert.validate(valid => {
+        if (valid) {
+          updateapicasesassert(this.tmpassert).then(() => {
+            this.$message.success('更新成功')
+            this.getassertbycaseid()
+            this.AssertAUdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+    /**
+     * 添加断言
+     */
+    addassert() {
+      this.$refs.tmpassert.validate(valid => {
+        if (valid) {
+          addapicasesassert(this.tmpassert).then(() => {
+            this.$message.success('添加断言成功')
+            this.searchassert.caseid = this.tmpassert.caseid
+            this.getassertbycaseid(this.searchassert)
+            this.AssertAUdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加断言失败')
+          })
+        }
+      })
+    },
+    showAddassertDialog() {
+      // 显示新增对话框
+      this.AssertdialogStatus = 'add'
+      this.AssertAUdialogFormVisible = true
+      this.tmpassert.id = ''
+      this.tmpassert.assertcondition = ''
+      this.tmpassert.assertsubtype = ''
+      this.tmpassert.asserttype = ''
+      this.tmpassert.assertvalues = ''
+      this.tmpassert.expression = ''
+      this.tmpassert.assertvaluetype = ''
+      this.tmpassert.creator = this.name
+    },
+
     getscenedebugreportList() {
       this.debugsearch.status = this.tmpstatus
       this.debugsearch.batchname = this.tmpbatchname
@@ -2950,6 +3848,8 @@ export default {
       this.tmptest.casename = node.data.label
       if (node.level === 1) {
         console.log('测试场景')
+        this.assertList = []
+        this.dbassertList = []
         this.searchconditionorder.conditiontype = 'scene'
         this.Headertabledatas = []
         this.Paramstabledatas = []
@@ -3002,6 +3902,7 @@ export default {
           this.getbodytextdatabycaseidandtype()
         }
         // 获取前置条件
+        console.log('00000000000000000000000')
         this.tmpsubconditionid = node.data.caseid
         this.tmpapicondition.conditionid = node.data.caseid
         this.tmpapicondition.conditionname = node.data.label
@@ -3023,6 +3924,18 @@ export default {
         this.tmpscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditiontype = 'case'
         this.searchscriptcondition.conditionid = node.data.caseid
+        // 断言
+        console.log('111111111111111111111111111111111111111111111111')
+        this.assertactiveName = 'zero'
+        this.tmpassert.caseid = node.data.caseid
+        this.tmpdbassert.caseid = node.data.caseid
+        this.searchassert.caseid = node.data.caseid
+        this.searchdbassert.caseid = node.data.caseid
+        this.getassertbycaseid(this.searchassert)
+        this.getdbassertbycaseid(this.searchdbassert)
+        console.log('2222222222222222222222222222222222222222222222222')
+        // this.AssertdialogFormVisible = true
+        this.searchassert.asserttype = ''
       }
       this.getapiconditionList()
       this.getdelayconditionList()

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.ProjectMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Project">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="projectname" jdbcType="VARCHAR" property="projectname" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+  </resultMap>
+
+  <select id="findProjectWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM project a
+    <where>
+      <if test="projectname != null and projectname != ''">a.projectname like CONCAT('%',#{projectname},'%')</if>
+      <if test="status != null  and status != ''">and a.status like CONCAT('%',#{status},'%')</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+  <update id="updateProject" parameterType="com.zoctan.api.entity.Project">
+    update project set projectname = #{projectname},status=#{status},start_time=#{startTime},end_time=#{endTime},
+    memo = #{memo},creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+</mapper>

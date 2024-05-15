@@ -9,10 +9,7 @@ import com.zoctan.api.core.service.Httphelp;
 import com.zoctan.api.dto.Testplanandbatch;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.mapper.*;
-import com.zoctan.api.service.ExecuteplanService;
-import com.zoctan.api.service.ExecuteplanbatchService;
-import com.zoctan.api.service.TestplanTestsceneService;
-import com.zoctan.api.service.TestsceneTestcaseService;
+import com.zoctan.api.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +50,9 @@ public class TestPlanCaseController {
 
     @Autowired
     private ExecuteplanService executeplanService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @Resource
     private ExecuteplanbatchService executeplanbatchService;
@@ -153,7 +153,7 @@ public class TestPlanCaseController {
         }
         for (Long slaverid : longListHashMap.keySet()) {
             String slavername = slavermap.get(slaverid);
-            TestPlanCaseController.log.info("开始分配调度slavername。。。。。。。。。。。。。。。。：" +slavername);
+            TestPlanCaseController.log.info("开始分配调度slavername。。。。。。。。。。。。。。。。：" + slavername);
             List<TestplanTestscene> testplanTestsceneList1 = longListHashMap.get(slaverid);
             for (TestplanTestscene testscene : testplanTestsceneList1) {
                 long testsceneid = testscene.getTestscenenid();
@@ -162,11 +162,10 @@ public class TestPlanCaseController {
                 List<Dispatch> dispatchList = new ArrayList<>();
                 for (TestsceneTestcase testcase : testsceneTestcaseList) {
                     Dispatch dis = getdispatch(slaverid, testcase.getCaseorder(), slavername, testcase, ep, epb, 1, testcase.getLoopnums());
-                    TestPlanCaseController.log.info("getdispatch获取调度slaverid。。。。。。。。。。。。。。。。：" +slaverid);
+                    TestPlanCaseController.log.info("getdispatch获取调度slaverid。。。。。。。。。。。。。。。。：" + slaverid);
                     dispatchList.add(dis);
                 }
-                if(dispatchList.size()>0)
-                {
+                if (dispatchList.size() > 0) {
                     dispatchMapper.insertBatchDispatch(dispatchList);
                     epb.setSlaverid(slaverid);
                     executeplanbatchService.update(epb);
@@ -178,12 +177,26 @@ public class TestPlanCaseController {
 
     //CI接口
     @PostMapping("/TestPlanRun")
-    public Result TestPlanRun(@RequestBody final Map<String, Object> param) throws UnsupportedEncodingException {
+    public Result TestPlanRun(@RequestBody final Map<String, Object> param) throws Exception {
+        String ProjectName = param.get("ProjectName").toString();
         String TestPlanName = param.get("TestCollectionName").toString();
         String BatchName = param.get("TestPlan").toString();
         String Source = param.get("Source").toString();
+
+
+        Project project = projectService.getBy("projectname", ProjectName);
+        if (project == null) {
+            return ResultGenerator.genFailedResult("不存在该项目：" + ProjectName + "，请联系AutoMeter管理员使用正确的项目名");
+        }
         long PlanID;
-        Executeplan executeplan = executeplanService.getBy("executeplanname", TestPlanName);
+        Condition execplancon = new Condition(Executeplan.class);
+        execplancon.createCriteria().andCondition("projectid = " + project.getId())
+                .andCondition("executeplanname='" + TestPlanName + "'");
+        List<Executeplan> executeplanList = executeplanService.listByCondition(execplancon);
+        if (executeplanList.size() == 0) {
+            return ResultGenerator.genFailedResult("该项目下不存在此测试集合: " + TestPlanName + "，请联系AutoMeter管理员使用正确的测试集合名");
+        }
+        Executeplan executeplan = executeplanList.get(0);
         List<ExecuteplanTestcase> caselist = new ArrayList<>();
         if (executeplan != null) {
             PlanID = executeplan.getId();
@@ -281,7 +294,7 @@ public class TestPlanCaseController {
                 TestplanTestscene testplanTestscene = testplanTestsceneList.get(j);
                 splitdispatchList.add(testplanTestscene);
                 LastDispatchList.put(slaverid, splitdispatchList);
-                TestPlanCaseController.log.info("分配slaverid："+slaverid+" slavername:" + slaverlist.get(i).getSlavername());
+                TestPlanCaseController.log.info("分配slaverid：" + slaverid + " slavername:" + slaverlist.get(i).getSlavername());
             }
             x = j;
         }

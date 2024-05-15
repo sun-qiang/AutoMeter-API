@@ -32,7 +32,7 @@
 
   <update id="updateDbAssertValue" parameterType="com.zoctan.api.entity.ApicasesDbassert">
     update apicases_dbassert_value set fieldname = #{fieldname},roworder=#{roworder},valuetype=#{valuetype},
-    creator = #{creator}, expectvalue = #{expectvalue}, assertcondition = #{assertcondition} lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    creator = #{creator}, expectvalue = #{expectvalue}, assertcondition = #{assertcondition}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 </mapper>
