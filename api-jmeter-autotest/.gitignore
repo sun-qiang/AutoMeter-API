@@ -1,0 +1,14 @@
+\.idea/
+*.iml
+.DS_Store
+.git
+*.log
+*.gz
+*/target/*
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar

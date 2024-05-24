@@ -1247,7 +1247,7 @@ public class ApicasesController {
                         resource = resource.replace(UseScriptvariables, VariableValue.substring(index + 1));
                     }
                 }
-                ApicasesController.log.info("。。。。。。。。处理后的resource Url：" + resource);
+                ApicasesController.log.info("1。。。。。。。。处理后的resource Url：" + resource);
 
                 List<ApiCasedata> HeaderApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Header");
                 List<ApiCasedata> ParamsApiCasedataList = apiCasedataService.getparamvaluebycaseidandtype(Caseid, "Params");
