@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.api.autotest.common.utils.HttpHeader;
 import com.api.autotest.common.utils.HttpParamers;
+import com.api.autotest.common.utils.MD5;
 import com.api.autotest.common.utils.RadomVariables;
 import com.api.autotest.dto.RequestObject;
 import com.api.autotest.dto.Variables;
@@ -166,16 +167,14 @@ public class TestHttpRequestData {
 
             ArrayList<HashMap<String, String>> enviromentvariableslist = testMysqlHelp.getcaseData("select variablesname,variablesvalue,envid from enviromentvariables where projectid=" + Projectid);
 
-            HashMap<String, HashMap<Long,String>> EnvVariablesHashMap = new HashMap<>();
-            for (HashMap<String, String>  va : enviromentvariableslist) {
-                HashMap<Long,String> envidvaluemap=new HashMap<>();
-                if(!EnvVariablesHashMap.containsKey(va.get("variablesname")))
-                {
-                    envidvaluemap.put(Long.parseLong(va.get("envid")),va.get("variablesvalue"));
-                    EnvVariablesHashMap.put(va.get("variablesname"),envidvaluemap);
-                } else
-                {
-                    EnvVariablesHashMap.get(va.get("variablesname")).put(Long.parseLong(va.get("envid")),va.get("variablesvalue"));
+            HashMap<String, HashMap<Long, String>> EnvVariablesHashMap = new HashMap<>();
+            for (HashMap<String, String> va : enviromentvariableslist) {
+                HashMap<Long, String> envidvaluemap = new HashMap<>();
+                if (!EnvVariablesHashMap.containsKey(va.get("variablesname"))) {
+                    envidvaluemap.put(Long.parseLong(va.get("envid")), va.get("variablesvalue"));
+                    EnvVariablesHashMap.put(va.get("variablesname"), envidvaluemap);
+                } else {
+                    EnvVariablesHashMap.get(va.get("variablesname")).put(Long.parseLong(va.get("envid")), va.get("variablesvalue"));
                 }
             }
 
@@ -191,12 +190,11 @@ public class TestHttpRequestData {
             String RequestUrl = requestObject.getResource();
 
             //0.环境变量替换
-            for (HashMap<String, String>   envvariables : enviromentvariableslist) {
+            for (HashMap<String, String> envvariables : enviromentvariableslist) {
                 String VariableName = "#" + envvariables.get("variablesname") + "#";
                 if (RequestUrl.contains(VariableName)) {
-                    Long envid=Long.parseLong(envvariables.get("envid"));
-                    if( envid.equals(Long.parseLong(enviromentid)))
-                    {
+                    Long envid = Long.parseLong(envvariables.get("envid"));
+                    if (envid.equals(Long.parseLong(enviromentid))) {
                         Object VariableValue = envvariables.get("variablesvalue");
                         RequestUrl = RequestUrl.replace(VariableName, VariableValue.toString());
                     }
@@ -260,14 +258,14 @@ public class TestHttpRequestData {
             for (String property : PropertyList) {
                 if (property.equalsIgnoreCase("Header")) {
                     //值支持变量
-                    header = GetHttpHeader(casedatalist, header, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), ProjectId);
+                    header = GetHttpHeader(casedatalist, header, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), ProjectId);
                     for (String Key : header.getParams().keySet()) {
                         logger.info(logplannameandcasename + "TestHttpRequestData Header Key :  " + Key + " Value: " + header.getParams().get(Key));
                     }
                 }
                 if (property.equalsIgnoreCase("Params")) {
                     //值支持变量
-                    paramers = GetHttpParams(casedatalist, paramers, RadomMap, InterfaceMap, DBMap, ScriptMap, "Params", radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), ProjectId);
+                    paramers = GetHttpParams(casedatalist, paramers, RadomMap, InterfaceMap, DBMap, ScriptMap, "Params", radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), ProjectId);
                     for (String Key : paramers.getParams().keySet()) {
                         logger.info(logplannameandcasename + "TestHttpRequestData Params Key :  " + Key + " Value: " + paramers.getParams().get(Key));
                     }
@@ -276,7 +274,7 @@ public class TestHttpRequestData {
                     // 设置Body
                     if (requestcontenttype.equalsIgnoreCase("Form表单")) {
                         //值支持变量
-                        Bodyparamers = GetHttpParams(casedatalist, Bodyparamers, RadomMap, InterfaceMap, DBMap, ScriptMap, "Body", radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), ProjectId);
+                        Bodyparamers = GetHttpParams(casedatalist, Bodyparamers, RadomMap, InterfaceMap, DBMap, ScriptMap, "Body", radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), ProjectId);
                         if (Bodyparamers.getParams().size() > 0) {
                             try {
                                 PostData = Bodyparamers.getQueryString();
@@ -289,6 +287,7 @@ public class TestHttpRequestData {
 
                     } else {
                         HashMap<String, String> bodymap = testMysqlHelp.fixhttprequestdatas("Body", casedatalist);
+                        HashMap<String, String> bodyenymap = testMysqlHelp.fixhttprequestenrcrydatas("Body", casedatalist);
                         for (String Key : bodymap.keySet()) {
                             PostData = bodymap.get(Key);
                             //1.替换随机变量
@@ -335,16 +334,23 @@ public class TestHttpRequestData {
                             }
 
                             //6.替换环境变量
-                            for (HashMap<String, String>   envvariables : enviromentvariableslist) {
+                            for (HashMap<String, String> envvariables : enviromentvariableslist) {
                                 String VariableName = "#" + envvariables.get("variablesname") + "#";
                                 if (PostData.contains(VariableName)) {
-                                    Long envid=Long.parseLong(envvariables.get("envid"));
-                                    if( envid.equals(Long.parseLong(enviromentid)))                                    {
+                                    Long envid = Long.parseLong(envvariables.get("envid"));
+                                    if (envid.equals(Long.parseLong(enviromentid))) {
                                         Object VariableValue = envvariables.get("variablesvalue");
                                         PostData = PostData.replace(VariableName, VariableValue.toString());
                                     }
                                 }
                             }
+
+                            String PostDataEnycry=bodyenymap.get(Key);
+                            if(!PostDataEnycry.equals("无"))
+                            {
+                                PostData= GetEncryValue(PostDataEnycry,PostData);
+                            }
+
                             logger.info(logplannameandcasename + "TestHttpRequestData Body  PostData:  " + PostData);
                         }
                     }
@@ -353,6 +359,7 @@ public class TestHttpRequestData {
             //全局header
             ArrayList<HashMap<String, String>> planheaderlist = testMysqlHelp.getcaseData("select * from globalheaderuse where executeplanid=" + PlanId);
             long globalheaderid = 0;
+            //需要处理多个header
             ArrayList<HashMap<String, String>> planparamslist = new ArrayList<>();
             if (planheaderlist.size() > 0) {
                 globalheaderid = Long.parseLong(testMysqlHelp.getcaseValue("globalheaderid", planheaderlist));
@@ -360,7 +367,7 @@ public class TestHttpRequestData {
             }
 
             //处理全局Header参数
-            header = GetHeaderFromTestPlanParam(header, planparamslist, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,Long.parseLong(enviromentid), Projectid);
+            header = GetHeaderFromTestPlanParam(header, planparamslist, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, Long.parseLong(enviromentid), Projectid);
             for (String Key : header.getParams().keySet()) {
                 logger.info(logplannameandcasename + "TestHttpRequestData 全局参数Header Key :  " + Key + " Value: " + header.getParams().get(Key));
             }
@@ -526,22 +533,48 @@ public class TestHttpRequestData {
     }
 
     // 设置header
-    private HttpHeader GetHttpHeader(ArrayList<HashMap<String, String>> casedatalist, HttpHeader header, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap,HashMap<String, HashMap<Long,String>> EnvVariablesHashMap,Long envid,  long projectid) {
+    private HttpHeader GetHttpHeader(ArrayList<HashMap<String, String>> casedatalist, HttpHeader header, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> EnvVariablesHashMap, Long envid, long projectid) {
         HashMap<String, String> headmap = testMysqlHelp.fixhttprequestdatas("Header", casedatalist);
+        HashMap<String, String> headenycrymap = testMysqlHelp.fixhttprequestenrcrydatas("Header", casedatalist);
         for (String key : headmap.keySet()) {
             String Value = headmap.get(key);
             Object ObjectValue = Value;
-            if ((Value.contains("#") && Value.contains("#")) ||(Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
+            if ((Value.contains("#") && Value.contains("#")) || (Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
                 try {
-                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,envid, projectid);
+                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, envid, projectid);
                 } catch (Exception exception) {
                     logger.info(logplannameandcasename + "TestHttpRequestData Header替换变量异常 :  " + exception.getMessage());
                 }
+            }
+            String Enycry = headenycrymap.get(key);
+            if (!Enycry.equals("无")) {
+                ObjectValue = GetEncryValue(Enycry, ObjectValue.toString());
             }
             header.addParam(key, ObjectValue);
             logger.info(logplannameandcasename + "TestHttpRequestData Header中添加Key is :  " + key + "   Value  is:   " + ObjectValue);
         }
         return header;
+    }
+
+
+    private String GetEncryValue(String EncryType, String EncryData) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.findDicNameValueWithCode("EncryType");
+        String Value = "";
+        for (int i = 0; i < list.size(); i++) {
+            HashMap<String, String> rowdata = list.get(i);
+            if (rowdata.get("dicname").equalsIgnoreCase(EncryType)) {
+                String remoteurl = rowdata.get("dicitmevalue");
+                if (remoteurl.isEmpty()) {
+                    //本地加密
+                    if (EncryType.equals("MD5")) {
+                        Value = MD5.encrypt(EncryData);
+                    }
+                } else {
+                    //远程加密
+                }
+            }
+        }
+        return Value;
     }
 
     //判断是否有拼接
@@ -563,7 +596,7 @@ public class TestHttpRequestData {
         return flag;
     }
 
-    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long,String>> envvariablesMap,Long envid, long projectid) throws Exception {
+    private Object GetVaraibaleValue(String Value, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> envvariablesMap, Long envid, long projectid) throws Exception {
         Object ObjectValue = Value;
         boolean exist = false; //标记是否Value有变量处理，false表示没有对应的子条件处理过
         //参数值替换接口变量
@@ -663,13 +696,12 @@ public class TestHttpRequestData {
         }
 
         //参数值替换环境变量
-        HashMap<String,String>Last=new HashMap<>();
+        HashMap<String, String> Last = new HashMap<>();
         for (String variables : envvariablesMap.keySet()) {
             if (Value.contains("#" + variables + "#")) {
-                for (Long envromentid:envvariablesMap.get(variables).keySet()) {
-                    if(envromentid.equals(envid))
-                    {
-                        Last.put(variables,envvariablesMap.get(variables).get(envromentid));
+                for (Long envromentid : envvariablesMap.get(variables).keySet()) {
+                    if (envromentid.equals(envid)) {
+                        Last.put(variables, envvariablesMap.get(variables).get(envromentid));
                     }
                 }
             }
@@ -742,21 +774,26 @@ public class TestHttpRequestData {
 
 
     // 设置参数params
-    private HttpParamers GetHttpParams(ArrayList<HashMap<String, String>> casedatalist, HttpParamers paramers, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, String Property, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long,String>> EnvVariablesHashMap,Long envid, long projectid) {
+    private HttpParamers GetHttpParams(ArrayList<HashMap<String, String>> casedatalist, HttpParamers paramers, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, String Property, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> EnvVariablesHashMap, Long envid, long projectid) {
         for (HashMap<String, String> data : casedatalist) {
             String propertytype = data.get("propertytype");
             if (propertytype.equals(Property)) {
                 String Key = data.get("apiparam").trim();
                 String Value = data.get("apiparamvalue").trim();
                 String DataType = data.get("paramstype").trim();
+                String EnycryType = data.get("encyptype").trim();
                 Object ObjectValue = Value;
                 try {
-                    if ((Value.contains("#") && Value.contains("#")) ||(Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
-                        ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,envid, projectid);
+                    if ((Value.contains("#") && Value.contains("#")) || (Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
+                        ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, envid, projectid);
                     }
                     ObjectValue = GetDataByType(ObjectValue.toString(), DataType);
                 } catch (Exception exception) {
                     logger.info(logplannameandcasename + "TestHttpRequestData 处理Params参数变量替换异常" + exception.getMessage());
+                }
+                String Enycry = EnycryType;
+                if (!Enycry.equals("无")) {
+                    ObjectValue = GetEncryValue(Enycry, ObjectValue.toString());
                 }
                 paramers.addParam(Key, ObjectValue);
                 logger.info(logplannameandcasename + "TestHttpRequestData -" + Property + "-中添加Key is :  " + Key + "   Value  is:   " + ObjectValue + " 类型：" + DataType);
@@ -880,23 +917,33 @@ public class TestHttpRequestData {
     }
 
     //获取全局Header
-    private HttpHeader GetHeaderFromTestPlanParam(HttpHeader header, ArrayList<HashMap<String, String>> planparamslist, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long,String>> EnvVariablesHashMap,Long envid, long projectid) {
+    private HttpHeader GetHeaderFromTestPlanParam(HttpHeader header, ArrayList<HashMap<String, String>> planparamslist, HashMap<String, String> RadomMap, HashMap<String, String> InterfaceMap, HashMap<String, String> DBMap, HashMap<String, String> ScriptMap, ArrayList<HashMap<String, String>> radomvariableslist, HashMap<String, String> GlobalVariablesHashMap, HashMap<String, HashMap<Long, String>> EnvVariablesHashMap, Long envid, long projectid) {
         //HashMap<String, String> headmapfromparam = testMysqlHelp.getparamsdatabytype("Header", planparamslist);
         HashMap<String, String> headmapfromparam = new HashMap<>();
         for (HashMap<String, String> data : planparamslist) {
             headmapfromparam.put(data.get("keyname").trim(), data.get("keyvalue").trim());
         }
+
+        HashMap<String, String> headmapfromparameny = new HashMap<>();
+        for (HashMap<String, String> data : planparamslist) {
+            headmapfromparameny.put(data.get("keyname").trim(), data.get("encyptype").trim());
+        }
         for (String key : headmapfromparam.keySet()) {
             String Value = headmapfromparam.get(key);
             Object ObjectValue = Value;
-            if ((Value.contains("#") && Value.contains("#")) ||(Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
+            if ((Value.contains("#") && Value.contains("#")) || (Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$")) || (Value.contains("{") && Value.contains("}"))) {
                 try {
-                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap,EnvVariablesHashMap,envid, projectid);
+                    ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap, ScriptMap, radomvariableslist, GlobalVariablesHashMap, EnvVariablesHashMap, envid, projectid);
                 } catch (Exception exception) {
                     logger.info(logplannameandcasename + "TestHttpRequestData 全局参数Header处理变量替换异常:  " + exception.getMessage());
                 }
             }
             //如果有相同的参数，则以全局参数的覆盖之,如果没有则添加
+            String Enycry=headmapfromparameny.get(key);
+            if(!Enycry.equals("无"))
+            {
+                ObjectValue= GetEncryValue(Enycry, ObjectValue.toString());
+            }
             header.getParams().put(key, ObjectValue);
             logger.info(logplannameandcasename + "TestHttpRequestData 全局参数Header中添加Key is :  " + key + "   Value  is:   " + ObjectValue);
         }

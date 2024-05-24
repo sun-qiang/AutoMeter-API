@@ -76,8 +76,8 @@
         FROM account a
         <where>
             <if test="nickname != null and nickname != ''">a.nickname like CONCAT('%',#{nickname},'%')</if>
+            <if test="email != null and email != ''">a.email like CONCAT('%',#{email},'%')</if>
         </where>
         order by register_time  DESC
     </select>
-
 </mapper>

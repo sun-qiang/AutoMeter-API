@@ -32,6 +32,15 @@ public class ApiCasedata {
      */
     private String casename;
 
+    public String getEncyptype() {
+        return encyptype;
+    }
+
+    public void setEncyptype(String encyptype) {
+        this.encyptype = encyptype;
+    }
+
+    private String encyptype;
     /**
      * api参数
      */

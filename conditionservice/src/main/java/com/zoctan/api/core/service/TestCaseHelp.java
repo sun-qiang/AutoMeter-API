@@ -14,6 +14,7 @@ import com.zoctan.api.dto.RequestObject;
 import com.zoctan.api.dto.TestResponeData;
 import com.zoctan.api.entity.*;
 import com.zoctan.api.service.*;
+import com.zoctan.api.util.MD5;
 import com.zoctan.api.util.RadomVariables;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -49,6 +50,7 @@ public class TestCaseHelp {
         tch.dbvariablesService = this.dbvariablesService;
         tch.globalvariablesService = this.globalvariablesService;
         tch.enviromentvariablesService = this.enviromentvariablesService;
+        tch.dictionaryService = this.dictionaryService;
     }
 
     @Autowired(required = false)
@@ -71,6 +73,9 @@ public class TestCaseHelp {
 
     @Autowired(required = false)
     private EnviromentvariablesService enviromentvariablesService;
+
+    @Autowired(required = false)
+    private DictionaryService dictionaryService;
 
 
     public RequestObject GetCaseRequestDataForDebug(HashMap<String, String> DBValueMap, HashMap<String, String> InterfaceValueMap, HashMap<String, String> ScriptMap, List<ApiCasedata> apiCasedataList, Api api, Apicases apicases, Deployunit deployunit, Macdepunit macdepunit, Machine machine,Long Enviromentid) throws Exception {
@@ -236,6 +241,11 @@ public class TestCaseHelp {
                     if ((Value.contains("#") && Value.contains("#")) ||(Value.contains("<") && Value.contains(">")) || (Value.contains("<<") && Value.contains(">>")) || (Value.contains("[") && Value.contains("]")) || (Value.contains("$") && Value.contains("$"))|| (Value.contains("{") && Value.contains("}"))) {
                         ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap,ScriptMap,GlobalVariablesMap,EnvVariablesHashMap,Enviromentid,projectid);
                     }
+                    String Enycry=headmap.get(key).getEncyptype();
+                    if(!Enycry.equals("无"))
+                    {
+                        ObjectValue= GetEncryValue(Enycry, ObjectValue.toString());
+                    }
                     header.addParam(key, ObjectValue);
                 }
             }
@@ -251,6 +261,12 @@ public class TestCaseHelp {
                         ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap,ScriptMap,GlobalVariablesMap,EnvVariablesHashMap,Enviromentid,projectid);
                     }
                     Object Result = GetDataByType(ObjectValue.toString(), DataType);
+
+                    String Enycry=paramsmap.get(key).getEncyptype();
+                    if(!Enycry.equals("无"))
+                    {
+                        Result= GetEncryValue(Enycry, Result.toString());
+                    }
                     paramers.addParam(key, Result);
                 }
             }
@@ -269,6 +285,12 @@ public class TestCaseHelp {
                             ObjectValue = GetVaraibaleValue(Value, RadomMap, InterfaceMap, DBMap,ScriptMap,GlobalVariablesMap,EnvVariablesHashMap,Enviromentid,projectid);
                         }
                         Object Result = GetDataByType(ObjectValue.toString(), DataType);
+
+                        String Enycry=bodymap.get(key).getEncyptype();
+                        if(!Enycry.equals("无"))
+                        {
+                            Result= GetEncryValue(Enycry, Result.toString());
+                        }
                         Bodyparamers.addParam(key, Result);
                     }
                     try {
@@ -332,6 +354,13 @@ public class TestCaseHelp {
                                 }
                             }
                         }
+                        //
+                        // PostData 加密
+                        String PostDataEnycry=bodymap.get(Key).getEncyptype();
+                        if(!PostDataEnycry.equals("无"))
+                        {
+                            PostData= GetEncryValue(PostDataEnycry,PostData);
+                        }
                     }
                 }
             }
@@ -356,6 +385,27 @@ public class TestCaseHelp {
         return ro;
     }
 
+    private String GetEncryValue(String EncryType, String EncryData) {
+        String Value = "";
+        Condition con = new Condition(Dictionary.class);
+        con.createCriteria().andCondition("diccode = 'EncryType'");
+        List<Dictionary> dictionaryList = tch.dictionaryService.listByCondition(con);
+        for (Dictionary dic : dictionaryList) {
+            if (dic.getDicname().equals(EncryType)) {
+                String remoteurl = dic.getDicitmevalue();
+                if (remoteurl.isEmpty()) {
+                    //本地加密
+                    if (EncryType.equals("MD5")) {
+                        Value = MD5.encrypt(EncryData);
+                    }
+                } else {
+                    //远程加密
+
+                }
+            }
+        }
+        return Value;
+    }
 
     // 拼装请求需要的用例数据
     public RequestObject GetCaseRequestData(Long Planid,String Batchname,  List<ApiCasedata> apiCasedataList, Api api, Apicases apicases, Deployunit deployunit, Macdepunit macdepunit, Machine machine,Long enviromentid)  {

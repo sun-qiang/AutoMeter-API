@@ -34,6 +34,6 @@ public interface ApiCasedataMapper extends MyMapper<ApiCasedata> {
 
     void deletcasedatabyid(@Param("caseid") Long caseid);
 
-    void updateparambycaseidandprotypeandapiparam(@Param("caseid") Long caseid, @Param("propertytype") String propertytype, @Param("apiparam") String param3, @Param("apiparam") String param4, @Param("paramstype") String param5);
+    void updateparambycaseidandprotypeandapiparam(@Param("caseid") Long caseid, @Param("propertytype") String propertytype, @Param("apiparam") String param3, @Param("apiparam") String param4, @Param("paramstype") String param5,@Param("encyptype") String param6);
 
 }

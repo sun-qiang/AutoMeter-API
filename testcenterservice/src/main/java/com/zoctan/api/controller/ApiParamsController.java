@@ -190,6 +190,7 @@ public class ApiParamsController {
             String KeyName = apiparam.getKeyname();
             String KeyValue = apiparam.getKeydefaultvalue();
             String ParamType = apiparam.getKeytype();
+            String EnytypeType = apiparam.getEncyptype();
             List<Apicases> apicasesList = apicasesService.getcasebyapiid(apiidnew);
             if (apiparam.getId() == null) {
                 if ((!apiparam.getKeyname().isEmpty()) || (!apiparam.getKeytype().isEmpty()) || (!apiparam.getKeydefaultvalue().isEmpty())) {
@@ -205,6 +206,7 @@ public class ApiParamsController {
                             apiCasedata.setApiparamvalue(KeyValue);
                             apiCasedata.setPropertytype(Protype);
                             apiCasedata.setParamstype(ParamType);
+                            apiCasedata.setEncyptype(EnytypeType);
                             apiCasedata.setMemo("");
                             apiCasedata.setMid(apiparam.getCreatorid());
                             apiCasedataList.add(apiCasedata);
@@ -223,7 +225,7 @@ public class ApiParamsController {
                 apiParamsService.updateApiParams(apiparam);
                 //更新所有用例值的参数名，（参数值先不刷新成默认值）
                 for (Apicases apicase : apicasesList) {
-                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType);
+                    apiCasedataService.updateparambycaseidandprotypeandapiparam(apicase.getId(),Protype,KeyName,OldParamName,ParamType,EnytypeType);
                 }
             }
         }
@@ -342,6 +344,7 @@ public class ApiParamsController {
         if(apiParams==null)
         {
             apiParams=new ApiParams();
+            apiParams.setEncyptype("无");
         }
         return ResultGenerator.genOkResult(apiParams);
     }

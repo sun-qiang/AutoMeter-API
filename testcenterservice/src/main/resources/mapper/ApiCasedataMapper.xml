@@ -12,6 +12,7 @@
     <result column="apiparamvalue" jdbcType="LONGVARCHAR" property="apiparamvalue" />
     <result column="propertytype" jdbcType="VARCHAR" property="propertytype" />
     <result column="paramstype" jdbcType="VARCHAR" property="paramstype" />
+    <result column="encyptype" jdbcType="VARCHAR" property="encyptype" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />
     <result column="mid" jdbcType="BIGINT" property="mid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -20,10 +21,10 @@
 
 
   <insert id="saveCasedata">
-    INSERT INTO api_casedata (caseid, casename,apiparam,apiparamvalue,propertytype,memo,mid,create_time,lastmodify_time,paramstype)
+    INSERT INTO api_casedata (caseid, casename,apiparam,apiparamvalue,propertytype,memo,mid,create_time,lastmodify_time,paramstype,encyptype)
     VALUES
     <foreach collection="casedataMap" item="item" index="index" separator=",">
-      (#{item.caseid}, #{item.casename}, #{item.apiparam}, #{item.apiparamvalue},#{item.propertytype}, #{item.memo},#{item.mid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'),#{item.paramstype})
+      (#{item.caseid}, #{item.casename}, #{item.apiparam}, #{item.apiparamvalue},#{item.propertytype}, #{item.memo},#{item.mid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'),#{item.paramstype},#{item.encyptype})
     </foreach>
   </insert>
 
@@ -61,6 +62,6 @@
   </insert>
 
   <update id="updateparambycaseidandprotypeandapiparam">
-    update api_casedata set apiparam=#{param3},paramstype=#{param5} where caseid = #{caseid} and propertytype=#{propertytype} and apiparam=#{param4}
+    update api_casedata set apiparam=#{param3},paramstype=#{param5},encyptype=#{param6}  where caseid = #{caseid} and propertytype=#{propertytype} and apiparam=#{param4}
   </update>
 </mapper>

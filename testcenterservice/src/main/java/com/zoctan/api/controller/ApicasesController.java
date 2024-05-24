@@ -10,7 +10,9 @@ import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.core.service.*;
 import com.zoctan.api.dto.*;
 import com.zoctan.api.entity.*;
+import com.zoctan.api.entity.Dictionary;
 import com.zoctan.api.service.*;
+import com.zoctan.api.util.MD5;
 import com.zoctan.api.util.RadomVariables;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +109,9 @@ public class ApicasesController {
     @Autowired(required = false)
     private EnviromentvariablesService enviromentvariablesService;
 
+    @Autowired(required = false)
+    private DictionaryService dictionaryService;
+
     @Resource
     private AccountRoleService accountRoleService;
 
@@ -157,6 +162,7 @@ public class ApicasesController {
     private ApiCasedata GetApiCaseData(Apicases apicases, ApiParams apiParams) {
         ApiCasedata apiCasedata = new ApiCasedata();
         apiCasedata.setMid(apicases.getMid());
+        apiCasedata.setEncyptype(apiParams.getEncyptype());
         apiCasedata.setCaseid(apicases.getId());
         apiCasedata.setCasename(apicases.getCasename());
         apiCasedata.setPropertytype(apiParams.getPropertytype());
@@ -1337,6 +1343,12 @@ public class ApicasesController {
                                 }
                             }
                         }
+                        // PostData 加密
+                        String PostDataEnycry=Paramdata.getEncyptype();
+                        if(!PostDataEnycry.equals("无"))
+                        {
+                            PostData= GetEncryValue(PostDataEnycry,PostData);
+                        }
                     }
                 }
                 try {
@@ -1393,7 +1405,6 @@ public class ApicasesController {
         }
         return ResultGenerator.genOkResult();
     }
-
 
     /**
      * 运行测试
@@ -1681,6 +1692,12 @@ public class ApicasesController {
                                 PostData = PostData.replace(VariableName, VariableValue.toString());
                             }
                         }
+                    }
+                    // PostData 加密
+                    String PostDataEnycry=Paramdata.getEncyptype();
+                    if(!PostDataEnycry.equals("无"))
+                    {
+                        PostData= GetEncryValue(PostDataEnycry,PostData);
                     }
                 }
             }
@@ -2013,6 +2030,12 @@ public class ApicasesController {
                             }
                         }
                     }
+                    // PostData 加密
+                    String PostDataEnycry=Paramdata.getEncyptype();
+                    if(!PostDataEnycry.equals("无"))
+                    {
+                        PostData= GetEncryValue(PostDataEnycry,PostData);
+                    }
                 }
             }
             try {
@@ -2020,6 +2043,8 @@ public class ApicasesController {
                 TestHttp testHttp = new TestHttp();
                 String VisitType = api.getVisittype();
                 TestResponeData respon = testHttp.doService(Protocal, ApiStyle, resource, header, paramers, PostData, VisitType, requestcontenttype, 2000);
+
+
                 long End = new Date().getTime();
                 long CostTime = End - Start;
                 respon.setResponeTime(CostTime);
@@ -2085,9 +2110,78 @@ public class ApicasesController {
                     //throw new Exception("当前用例的Header中参数名：" + HeaderName + "-对应的参数值：" + ex.getMessage());
                 }
             }
-            header.addParam(HeaderName, Result);
+            //通过header名，获取加密类型
+            String EncryValue = GetEncryByName(HeaderName, Result.toString(), globalheaderParamsList, HeaderApiCasedataList);
+            if (EncryValue.equals("无")) {
+                header.addParam(HeaderName, Result);
+            } else {
+                header.addParam(HeaderName, EncryValue);
+            }
         }
         return header;
+    }
+
+
+    private String GetEncryByName(String KeyName, String KValue, List<GlobalheaderParams> globalheaderParamsList, List<ApiCasedata> HeaderApiCasedataList) {
+        String EncryValue = "无";
+        boolean globalhas = false;
+        //全局Header，有相同则覆盖，无相同则增加
+        for (GlobalheaderParams ghp : globalheaderParamsList) {
+            if (ghp.getKeyname().equals(KeyName)) {
+                String EncryType = ghp.getEncyptype();
+                if(!EncryType.equals("无"))
+                {
+                    EncryValue = GetEncryValue(EncryType, KValue);
+                }
+                globalhas = true;
+            }
+        }
+        if (!globalhas) {
+            for (ApiCasedata Headdata : HeaderApiCasedataList) {
+                if (Headdata.getApiparam().equals(KeyName)) {
+                    String EncryType = Headdata.getEncyptype();
+                    if(!EncryType.equals("无"))
+                    {
+                        EncryValue = GetEncryValue(EncryType, KValue);
+                    }
+                }
+            }
+        }
+        return EncryValue;
+    }
+    private String GetEncryByNameForPamaras(String KeyName, String KValue,  List<ApiCasedata> ParamsApiCasedataList) {
+        String EncryValue = "无";
+            for (ApiCasedata Paramsdata : ParamsApiCasedataList) {
+                if (Paramsdata.getApiparam().equals(KeyName)) {
+                    String EncryType = Paramsdata.getEncyptype();
+                    if(!EncryType.equals("无"))
+                    {
+                        EncryValue = GetEncryValue(EncryType, KValue);
+                    }
+                }
+            }
+        return EncryValue;
+    }
+    private String GetEncryValue(String EncryType, String EncryData) {
+        String Value = "";
+        Condition con = new Condition(Dictionary.class);
+        con.createCriteria().andCondition("diccode = 'EncryType'");
+        List<Dictionary> dictionaryList = dictionaryService.listByCondition(con);
+        for (Dictionary dic : dictionaryList) {
+            if (dic.getDicname().equals(EncryType)) {
+                String remoteurl = dic.getDicitmevalue();
+                if (remoteurl.isEmpty()) {
+                    //本地加密
+                    if (EncryType.equals("MD5")) {
+                        Value = MD5.encrypt(EncryData);
+                    }
+                } else {
+                    //远程加密
+
+                }
+            }
+        }
+        return Value;
     }
 
     //获取HttpParams
@@ -2107,7 +2201,15 @@ public class ApicasesController {
                 }
             }
             Object Result = GetDataByType(ObjectResult.toString(), DataType);
-            paramers.addParam(ParamName, Result);
+
+            //通过header名，获取加密类型
+            String EncryValue = GetEncryByNameForPamaras(ParamName, Result.toString(), ParamsApiCasedataList);
+            if (EncryValue.equals("无")) {
+                paramers.addParam(ParamName, Result);
+            } else {
+                paramers.addParam(ParamName, EncryValue);
+            }
+           // paramers.addParam(ParamName, Result);
         }
         return paramers;
     }

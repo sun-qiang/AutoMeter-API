@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.PlanmailMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.Planmail">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="executeplanid" jdbcType="BIGINT" property="executeplanid" />
+    <result column="accountid" jdbcType="BIGINT" property="accountid" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+  </resultMap>
+
+  <select id="findDicWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM planmail a
+    <where>
+      <if test="executeplanid != null  and executeplanid != ''">and a.executeplanid =#{executeplanid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+  <insert id="saveplanmail">
+    INSERT INTO planmail (executeplanid,accountid,nickname,email,create_time,lastmodify_time)
+    VALUES
+    <foreach collection="planmailList" item="item" index="index" separator=",">
+      (#{item.executeplanid},#{item.accountid},#{item.nickname}, #{item.email},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),
+      DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'))
+    </foreach>
+  </insert>
+</mapper>

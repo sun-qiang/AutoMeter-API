@@ -12,6 +12,16 @@ public class ApiCasedata {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public String getEncyptype() {
+        return encyptype;
+    }
+
+    public void setEncyptype(String encyptype) {
+        this.encyptype = encyptype;
+    }
+
+    private String encyptype;
+
     /**
      * 用例Id
      */

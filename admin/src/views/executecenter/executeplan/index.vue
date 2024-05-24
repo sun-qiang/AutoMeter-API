@@ -484,53 +484,99 @@
     </el-dialog>
 
     <el-dialog title="集合通知" :visible.sync="CollectionNoticeFormVisible">
-      <div class="filter-container">
-        <el-form :inline="true">
-          <el-form-item>
-            <el-button
-              type="primary"
-              size="mini"
-              icon="el-icon-plus"
-              v-if="hasPermission('plannmessage:add')"
-              @click.native.prevent="showCollectionNoticeDialog"
-            >添加集合通知</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
 
-      <el-table
-        :data="planmessageList"
-        element-loading-text="loading"
-        border
-        fit
-        highlight-current-row
-      >
-        <el-table-column label="编号" align="center" width="45">
-          <template slot-scope="scope">
-            <span v-text="plannmessagegetIndex(scope.$index)"></span>
-          </template>
-        </el-table-column>
-        <el-table-column label="通知类型" align="center" prop="messagetype" width="80"/>
-        <el-table-column :show-overflow-tooltip="true"   label="通知token" align="center" prop="hookcontent" width="380"/>
+      <el-tabs v-model="activeName" type="card" ref="tabs">
+        <el-tab-pane label="集合即时通知" name="zero">
+          <div class="filter-container">
+            <el-form :inline="true">
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  icon="el-icon-plus"
+                  v-if="hasPermission('plannmessage:add')"
+                  @click.native.prevent="showCollectionNoticeDialog"
+                >添加集合通知</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <el-table
+            :data="planmessageList"
+            element-loading-text="loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="编号" align="center" width="45">
+              <template slot-scope="scope">
+                <span v-text="plannmessagegetIndex(scope.$index)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column label="通知类型" align="center" prop="messagetype" width="80"/>
+            <el-table-column :show-overflow-tooltip="true"   label="通知token" align="center" prop="hookcontent" width="380"/>
 
-        <el-table-column label="管理" align="center"
-                         v-if="hasPermission('plannmessage:update')  || hasPermission('plannmessage:delete')">
-          <template slot-scope="scope">
-            <el-button
-              type="warning"
-              size="mini"
-              v-if="hasPermission('plannmessage:update') && scope.row.id !== id"
-              @click.native.prevent="showUpdateplannmessageDialog(scope.$index)"
-            >修改</el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              v-if="hasPermission('plannmessage:delete') && scope.row.id !== id"
-              @click.native.prevent="removeplannmessageparam(scope.$index)"
-            >删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+            <el-table-column label="管理" align="center"
+                             v-if="hasPermission('plannmessage:update')  || hasPermission('plannmessage:delete')">
+              <template slot-scope="scope">
+                <el-button
+                  type="warning"
+                  size="mini"
+                  v-if="hasPermission('plannmessage:update') && scope.row.id !== id"
+                  @click.native.prevent="showUpdateplannmessageDialog(scope.$index)"
+                >修改</el-button>
+                <el-button
+                  type="danger"
+                  size="mini"
+                  v-if="hasPermission('plannmessage:delete') && scope.row.id !== id"
+                  @click.native.prevent="removeplannmessageparam(scope.$index)"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="集合邮件通知" name="first">
+          <div class="filter-container">
+            <el-form :inline="true">
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  size="mini"
+                  icon="el-icon-plus"
+                  v-if="hasPermission('planmail:add')"
+                  @click.native.prevent="showCollectionMailNoticeDialog"
+                >添加邮件通知</el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+          <el-table
+            :data="planmailList"
+            element-loading-text="loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column label="编号" align="center" width="45">
+              <template slot-scope="scope">
+                <span v-text="plannmailgetIndex(scope.$index)"></span>
+              </template>
+            </el-table-column>
+            <el-table-column label="用户" align="center" prop="nickname" width="150"/>
+            <el-table-column :show-overflow-tooltip="true"   label="邮箱" align="center" prop="email" width="300"/>
+
+            <el-table-column label="管理" align="center"
+                             v-if="hasPermission('planmail:delete')">
+              <template slot-scope="scope">
+                <el-button
+                  type="danger"
+                  size="mini"
+                  v-if="hasPermission('planmail:delete') && scope.row.id !== id"
+                  @click.native.prevent="removeplannmailparam(scope.$index)"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
     </el-dialog>
     <el-dialog :title="plannmessagetextMap[plannmessagedialogStatus]" :visible.sync="modifyplannmessagedialogFormVisible">
       <el-form
@@ -573,6 +619,62 @@
         >修改</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title='添加邮件通知人' :visible.sync="modifyplanaddmaildialogFormVisible">
+      <div class="filter-container" >
+        <el-form :inline="true"  >
+          <el-form-item label="账户昵称:">
+            <el-input v-model="searchaccountmail.nickname" clearable @keyup.enter.native="searchmailBy" placeholder="账户昵称"></el-input>
+          </el-form-item>
+
+          <el-form-item label="邮箱:">
+            <el-input v-model="searchaccountmail.name" clearable @keyup.enter.native="searchmailBy" placeholder="邮箱"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="searchmailBy" :loading="btnLoading">查询</el-button>
+          </el-form-item>
+        </el-form>
+
+      </div>
+      <el-table
+        :data="accountmailList"
+        @row-click="addmailhandleClickTableRow"
+        @selection-change="addmailhandleSelectionChange"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="mailaddgetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+
+        <el-table-column type="selection" prop="status" width="50"/>
+        <el-table-column label="用户昵称" align="center" prop="nickname" width="150"/>
+        <el-table-column :show-overflow-tooltip="true"   label="邮箱" align="center" prop="email" width="420"/>
+      </el-table>
+      <el-pagination
+        @size-change="addmailhandleSizeChange"
+        @current-change="addmailhandleCurrentChange"
+        :current-page="searchaccountmail.page"
+        :page-size="searchaccountmail.size"
+        :total="accountmailtotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="modifyplanaddmaildialogFormVisible = false">取消</el-button>
+        <el-button
+          type="primary"
+          :loading="btnLoading"
+          @click.native.prevent="addplanmailparam"
+        >添加</el-button>
+      </div>
+    </el-dialog>
+
 
     <el-dialog width="840px" title='测试场景' :visible.sync="testscenedialogFormVisible">
       <div class="filter-container" >
@@ -2507,6 +2609,8 @@
   import { search as searchdbvariables, adddbvariables, updatedbvariables, removedbvariables } from '@/api/testvariables/dbvariables'
   import { findMacAndDepWithEnv as findMacAndDepWithEnv } from '@/api/enviroment/macdepunit'
   import { search as searchplannmessage, addplannmessageparam, updateplannmessageparams, removeplannmessageparam } from '@/api/executecenter/plannmessage'
+  import { search as searchplannmail, removeplanmailparam, addbatchmail } from '@/api/executecenter/plannmail'
+  import { searchaccount as searchaccount } from '@/api/account'
 
   export default {
     name: '测试集合',
@@ -2522,6 +2626,24 @@
     },
     data() {
       return {
+        activeName: 'zero',
+        modifyplanaddmaildialogFormVisible: false,
+        addmailList: [],
+        mailmultipleSelection: [], // 查询用例表格被选中的内容
+        accountmailList: [],
+        accountmailtotal: 0,
+        searchaccountmail: {
+          page: 1,
+          size: 10,
+          name: '',
+          nickname: ''
+        },
+        searchmail: {
+          page: 1,
+          size: 10,
+          executeplanid: 0
+        },
+        planmailList: [],
         CollectionNoticeFormVisible: false,
         modifyplannmessagedialogFormVisible: false,
         plannmessagedialogStatus: 'add',
@@ -3146,6 +3268,68 @@
     },
 
     methods: {
+      addplanmailparam() {
+        this.addmailList = []
+        if (this.mailmultipleSelection.length === 0) {
+          this.$message.error('请选择账户邮件')
+        } else {
+          for (let i = 0; i < this.mailmultipleSelection.length; i++) {
+            this.addmailList.push({
+              'executeplanid': this.tmpplannmessage.executeplanid,
+              'accountid': this.mailmultipleSelection[i].id,
+              'nickname': this.mailmultipleSelection[i].nickname,
+              'email': this.mailmultipleSelection[i].email
+            })
+          }
+          addbatchmail(this.addmailList).then(() => {
+            this.modifyplanaddmaildialogFormVisible = false
+            this.searchplannmailbyepid()
+            this.$message.success('装载成功')
+          }).catch(res => {
+            this.$message.error('装载失败')
+          })
+        }
+      },
+      addmailhandleCurrentChange(page) {
+        this.searchaccountmail.page = page
+        this.getaccountmailList()
+      },
+      addmailhandleSizeChange(size) {
+        this.searchaccountmail.page = 1
+        this.searchaccountmail.size = size
+        this.getaccountmailList()
+      },
+      mailaddgetIndex(index) {
+        return (this.searchaccountmail.page - 1) * this.searchaccountmail.size + index + 1
+      },
+      addmailhandleClickTableRow(row, event, column) {
+      },
+      addmailhandleSelectionChange(rows) {
+        this.mailmultipleSelection = rows
+      },
+      getaccountmailList() {
+        this.searchaccountmail.nickname = this.tmpnickname
+        this.searchaccountmail.name = this.tmpname
+        searchaccount(this.searchaccountmail).then(response => {
+          this.accountmailList = response.data.list
+          this.accountmailtotal = response.data.total
+        }).catch(res => {
+          this.$message.error('加载字典列表失败')
+        })
+      },
+
+      searchmailBy() {
+        this.searchaccountmail.page = 1
+        searchaccount(this.searchaccountmail).then(response => {
+          this.accountmailList = response.data.list
+          this.accountmailtotal = response.data.total
+        }).catch(res => {
+          this.$message.error('搜索失败')
+        })
+        this.tmpnickname = this.searchaccountmail.nickname
+        this.tmpname = this.searchaccountmail.name
+      },
+
       handleInput(event) {
         // 获取输入框当前的值
         console.log(event)
@@ -4708,6 +4892,14 @@
         })
       },
 
+      searchplannmailbyepid() {
+        searchplannmail(this.searchmail).then(response => {
+          this.planmailList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载header列表失败')
+        })
+      },
+
       /**
        * 停止执行计划
        */
@@ -4935,6 +5127,10 @@
 
       plannmessagegetIndex(index) {
         return (this.searchnotice.page - 1) * this.searchnotice.size + index + 1
+      },
+
+      plannmailgetIndex(index) {
+        return (this.searchmail.page - 1) * this.searchmail.size + index + 1
       },
 
       planscenegetIndex(index) {
@@ -5167,10 +5363,13 @@
 
       showplannmessageDialog(index) {
         // 显示新增对话框
+        this.activeName = 'zero'
         this.CollectionNoticeFormVisible = true
         this.tmpplannmessage.executeplanid = this.executeplanList[index].id
         this.searchnotice.executeplanid = this.executeplanList[index].id
+        this.searchmail.executeplanid = this.executeplanList[index].id
         this.searchplannmessagebyepid()
+        this.searchplannmailbyepid()
       },
       showstopbatchDialog(index) {
         // 显示新增对话框
@@ -5242,6 +5441,10 @@
         this.tmpplannmessage.hookcontent = ''
       },
 
+      showCollectionMailNoticeDialog() {
+        this.modifyplanaddmaildialogFormVisible = true
+        this.accountmailList = null
+      },
       showUpdateparamsDialog(index) {
         this.modifyparamdialogFormVisible = true
         this.ParamsdialogStatus = 'update'
@@ -5411,6 +5614,21 @@
         })
       },
 
+      removeplannmailparam(index) {
+        this.$confirm('删除该通知？', '警告', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          const id = this.planmailList[index].id
+          removeplanmailparam(id).then(() => {
+            this.$message.success('删除成功')
+            this.searchplannmailbyepid()
+          })
+        }).catch(() => {
+          this.$message.info('已取消删除')
+        })
+      },
       /**
        * 显示修改执行计划对话框
        * @param index 执行计划下标

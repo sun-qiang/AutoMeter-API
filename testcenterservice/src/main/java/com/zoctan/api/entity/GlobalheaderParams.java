@@ -17,6 +17,15 @@ public class GlobalheaderParams {
      */
     private Long globalheaderid;
 
+    public String getEncyptype() {
+        return encyptype;
+    }
+
+    public void setEncyptype(String encyptype) {
+        this.encyptype = encyptype;
+    }
+
+    private String encyptype;
     /**
      * key名
      */

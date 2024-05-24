@@ -2643,7 +2643,7 @@
                 status-icon
                 class="small-space"
                 label-position="left"
-                label-width="80px"
+                label-width="85px"
                 style="width: 900px;"
                 :model="tmpapicasesdata"
                 ref="tmpapicasesdata"
@@ -2661,6 +2661,16 @@
                           <el-table-column label="值" prop="apiparamvalue" align="center">
                             <template slot-scope="scope">
                               <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="加密方式" prop="encyptype" align="center">
+                            <template slot-scope="scope">
+                              <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                                <el-option label="无" value="无" />
+                                <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                  <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                                </div>
+                              </el-select>
                             </template>
                           </el-table-column>
                         </el-table>
@@ -2682,6 +2692,16 @@
                           <el-table-column label="值"  align="center">
                             <template slot-scope="scope">
                               <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                            </template>
+                          </el-table-column>
+                          <el-table-column label="加密方式" prop="encyptype" align="center">
+                            <template slot-scope="scope">
+                              <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                                <el-option label="无" value="无" />
+                                <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                  <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                                </div>
+                              </el-select>
                             </template>
                           </el-table-column>
                         </el-table>
@@ -2706,17 +2726,38 @@
                                 <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
                               </template>
                             </el-table-column>
+                            <el-table-column label="加密方式" prop="encyptype" align="center">
+                              <template slot-scope="scope">
+                                <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                                  <el-option label="无" value="无" />
+                                  <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                    <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                                  </div>
+                                </el-select>
+                              </template>
+                            </el-table-column>
                           </el-table>
                         </div>
                         <div v-if="BodyDataVisible">
                           <el-form-item label="Body值：" prop="apiparamvalue" >
                             <el-input
                               type="textarea"
+                              style="width: 800px;height: 400px;color: #0000FF"
                               rows="20" cols="70"
                               prefix-icon="el-icon-message"
                               auto-complete="off"
                               v-model.trim="tmpapicasesbodydata.apiparamvalue"
                             />
+                          </el-form-item>
+                          <el-form-item label="加密方式："  prop="encyptype">
+                            <template slot-scope="scope">
+                              <el-select style="width: 500px" v-model="tmpapicasesbodydata.encyptype" filterable placeholder="加密方式" >
+                                <el-option label="无" value="无" />
+                                <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                  <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                                </div>
+                              </el-select>
+                            </template>
                           </el-form-item>
                         </div>
                       </template>
@@ -2812,8 +2853,8 @@
                               fit
                               highlight-current-row
                             >
-                              <el-table-column label="Name" align="center" prop="keyName" width="250"/>
-                              <el-table-column label="Value" align="center" prop="keyValue" width="350"/>
+                              <el-table-column label="Name" align="center" prop="keyName" width="150"/>
+                              <el-table-column label="Value" align="center" prop="keyValue" width="750"/>
                             </el-table>
                           </el-tab-pane>
 
@@ -2825,8 +2866,8 @@
                               fit
                               highlight-current-row
                             >
-                              <el-table-column label="Name" align="center" prop="keyName" width="250"/>
-                              <el-table-column label="Value" align="center" prop="keyValue" width="350"/>
+                              <el-table-column label="Name" align="center" prop="keyName" width="150"/>
+                              <el-table-column label="Value" align="center" prop="keyValue" width="750"/>
                             </el-table>
                           </el-tab-pane>
 
@@ -2849,7 +2890,7 @@
                               highlight-current-row
                             >
                               <el-table-column label="Name" align="center" prop="name" width="250"/>
-                              <el-table-column label="Value" align="center" prop="value" width="350"/>
+                              <el-table-column label="Value" align="center" prop="value" width="650"/>
                             </el-table>
                           </el-tab-pane>
 
@@ -2889,8 +2930,8 @@
                               fit
                               highlight-current-row
                             >
-                              <el-table-column label="Name" align="center" prop="name" width="250"/>
-                              <el-table-column label="Value" align="center" prop="value" width="350"/>
+                              <el-table-column label="Name" align="center" prop="name" width="150"/>
+                              <el-table-column label="Value" align="center" prop="value" width="750"/>
                             </el-table>
                           </el-tab-pane>
                         </el-tabs>
@@ -3076,178 +3117,24 @@
               </template>
             </el-tab-pane>
             <el-tab-pane label="响应设置" name="third">
-              <template>
-                <el-tabs v-model="assertactiveName"  type="card" ref="asserttabs">
-                  <el-tab-pane label="接口断言" name="zero">
-                    <template>
-                      <div class="filter-container">
-                        <el-form :inline="true"  :model="searchassert" ref="searchcase" >
-                          <el-form-item>
-                            <el-button
-                              type="primary"
-                              size="mini"
-                              icon="el-icon-plus"
-                              @click.native.prevent="showAddassertDialog"
-                            >添加接口断言
-                            </el-button>
-                          </el-form-item>
-
-                          <el-form-item label="接口断言类型:"  prop="asserttype" >
-                            <el-select v-model="searchassert.asserttype" placeholder="断言类型" >
-                              <el-option label="Respone断言" value="Respone"></el-option>
-                              <el-option label="Json断言" value="Json"></el-option>
-                              <el-option label="Xml断言" value="Xml"></el-option>
-                            </el-select>
-                          </el-form-item>
-
-                          <el-form-item>
-                            <el-button type="primary" @click="searchassertBy" :loading="btnLoading">查询</el-button>
-                          </el-form-item>
-
-                        </el-form>
-                      </div>
-                      <el-table
-                        ref="assertTable"
-                        :data="assertList"
-                        :key="assertitemKey"
-                        element-loading-text="loading"
-                        border
-                        fit
-                        highlight-current-row
-                      >
-                        <el-table-column label="编号" align="center" width="60">
-                          <template slot-scope="scope">
-                            <span v-text="assertgetIndex(scope.$index)"></span>
-                          </template>
-                        </el-table-column>
-                        <el-table-column label="断言类型"  align="center" prop="asserttype" width="80"/>
-                        <el-table-column label="断言子类型"  align="center" prop="assertsubtype" width="120"/>
-                        <el-table-column label="表达式"  align="center" prop="expression" width="150"/>
-                        <el-table-column label="条件" align="center" prop="assertcondition" width="90"/>
-                        <el-table-column label="期望值"  align="center" prop="assertvalues" width="180"/>
-                        <el-table-column label="断言值类型"  align="center" prop="assertvaluetype" width="100"/>
-                        <el-table-column label="管理" align="center"  width="180">
-                          <template slot-scope="scope">
-                            <el-button
-                              type="warning"
-                              size="mini"
-                              @click.native.prevent="showUpdateapicasesassertDialog(scope.$index)"
-                            >修改
-                            </el-button>
-                            <el-button
-                              type="danger"
-                              size="mini"
-                              @click.native.prevent="removeapicasesassert(scope.$index)"
-                            >删除
-                            </el-button>
-
-                          </template>
-                        </el-table-column>
-
-                      </el-table>
-                      <el-pagination
-                        @size-change="asserthandleSizeChange"
-                        @current-change="asserthandleCurrentChange"
-                        :current-page="searchassert.page"
-                        :page-size="searchassert.size"
-                        :total="asserttotal"
-                        :page-sizes="[10, 20, 30, 40]"
-                        layout="total, sizes, prev, pager, next, jumper"
-                      ></el-pagination>
-                    </template>
-                  </el-tab-pane>
-                  <el-tab-pane label="数据库断言" name="first">
-                    <template>
-                      <div class="filter-container">
-                        <el-form :inline="true"  :model="searchdbassert" ref="searchdbassert" >
-                          <el-form-item>
-                            <el-button
-                              type="primary"
-                              size="mini"
-                              icon="el-icon-plus"
-                              @click.native.prevent="showAdddbassertDialog"
-                            >添加数据库断言
-                            </el-button>
-                          </el-form-item>
-
-                          <el-form-item label="环境：" prop="enviroment"  >
-                            <el-select clearable style="width:200px" v-model="searchdbassert.enviroment"  placeholder="环境" @change="dbassertEnviromentselectChanged($event)"   >
-                              <el-option label="请选择"  value=""  />
-                              <div v-for="(enviroment, index) in enviromentnameList" :key="index">
-                                <el-option :label="enviroment.enviromentname" :value="enviroment.enviromentname" required />
-                              </div>
-                            </el-select>
-                          </el-form-item>
-
-                          <el-form-item label="数据库组件：" prop="assemblename"  >
-                            <el-select clearable v-model="searchdbassert.assemblename" filterable placeholder="数据库组件" style="width:100%">
-                              <el-option label="请选择" value="''" style="display: none" />
-                              <div v-for="(macname, index) in enviroment_assembleList" :key="index">
-                                <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
-                              </div>
-                            </el-select>
-                          </el-form-item>
-                          <el-form-item>
-                            <el-button type="primary" @click="searchdbassertBy" :loading="btnLoading">查询</el-button>
-                          </el-form-item>
-
-                        </el-form>
-                      </div>
-                      <el-table
-                        ref="assertTable"
-                        :data="dbassertList"
-                        :key="dbassertitemKey"
-                        element-loading-text="loading"
-                        border
-                        fit
-                        highlight-current-row
-                      >
-                        <el-table-column label="编号" align="center" width="60">
-                          <template slot-scope="scope">
-                            <span v-text="dbassertgetIndex(scope.$index)"></span>
-                          </template>
-                        </el-table-column>
-                        <el-table-column label="环境"  align="center" prop="enviroment" width="150"/>
-                        <el-table-column label="组件"  align="center" prop="assemblename" width="120"/>
-                        <el-table-column  :show-overflow-tooltip="true"   label="查询sql"  align="center" prop="expression" width="300"/>
-                        <el-table-column label="结果条数"  align="center" prop="expectrecordsnums" width="100"/>
-                        <el-table-column label="管理" align="center"  width="230">
-                          <template slot-scope="scope">
-                            <el-button
-                              type="warning"
-                              size="mini"
-                              @click.native.prevent="showUpdateapicasesdbassertDialog(scope.$index)"
-                            >修改
-                            </el-button>
-                            <el-button
-                              type="danger"
-                              size="mini"
-                              @click.native.prevent="removeapicasesdbassert(scope.$index)"
-                            >删除
-                            </el-button>
-                            <el-button
-                              type="primary"
-                              size="mini"
-                              @click.native.prevent="showapicasesdbassertvalueDialog(scope.$index)"
-                            >断言值
-                            </el-button>
-                          </template>
-                        </el-table-column>
-
-                      </el-table>
-                      <el-pagination
-                        @size-change="dbasserthandleSizeChange"
-                        @current-change="dbasserthandleCurrentChange"
-                        :current-page="searchdbassert.page"
-                        :page-size="searchdbassert.size"
-                        :total="dbasserttotal"
-                        :page-sizes="[10, 20, 30, 40]"
-                        layout="total, sizes, prev, pager, next, jumper"
-                      ></el-pagination>
-                    </template>
-                  </el-tab-pane>
-                </el-tabs>
-              </template>
+              <el-form
+                status-icon
+                class="small-space"
+                label-position="left"
+                label-width="85px"
+                style="width: 900px;"
+                :model="tmpapicasesresponedata"
+                ref="tmpapicasesresponedata"
+              >
+                <el-form-item label="响应解密" prop="Descry"  >
+                  <el-select style="width:200px" v-model="tmpapicasesresponedata.Descry"  placeholder="解密" >
+                    <el-option label="无"  value="无"  />
+                    <div v-for="(Decry, index) in DEcrytypeList" :key="index">
+                      <el-option :label="Decry.dicname" :value="Decry.dicname" required />
+                    </div>
+                  </el-select>
+                </el-form-item>
+              </el-form>
             </el-tab-pane>
           </el-tabs>
         </template>
@@ -3261,6 +3148,12 @@
           type="success"
           :loading="btnLoading"
           @click.native.prevent="addnewapicasesdata"
+        >保存
+        </el-button>
+        <el-button
+          v-if=" opearationactiveName == 'third'"
+          type="success"
+          @click.native.prevent="addapicaseresponesetting"
         >保存
         </el-button>
       </div>
@@ -3308,6 +3201,8 @@
   import { addapicasesdbassert, searchdbassert as searchdbassert, removeapicasesdbassert, updateapicasesdbassert } from '@/api/assets/apicasesdbassert'
   import { searchdbassertvalue, addapicasesdbassertvalue, updateapicasesdbassertvalue, removeapicasesdbassertvalue } from '@/api/assets/apicasesdbassertvalue'
   import { searchallaccount as searchallaccount } from '@/api/account'
+  import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
+  import { search as searchresponesetting, addapicaseresponesetting } from '@/api/assets/apicaseresponesetting'
 
   export default {
     name: '用例库',
@@ -3324,6 +3219,29 @@
     },
     data() {
       return {
+        searchapicasesresponedata: {
+          page: 1,
+          size: 10,
+          caseid: ''
+        },
+        tmpapicasesresponedata: {
+          id: '',
+          caseid: '',
+          Descry: '无',
+          creator: ''
+        },
+        dicDescryQuery: {
+          page: 1, // 页码
+          size: 30, // 每页数量
+          diccode: 'DecryType' // 获取字典表入参
+        },
+        dicEncryQuery: {
+          page: 1, // 页码
+          size: 30, // 每页数量
+          diccode: 'EncryType' // 获取字典表入参
+        },
+        DEcrytypeList: [],
+        EncrytypeList: [],
         opearationactiveName: 'zero',
         caseoperationialogFormVisible: false,
         accountList: [],
@@ -3621,6 +3539,7 @@
           apiparam: '',
           apiparamvalue: '',
           paramstype: '',
+          encyptype: '',
           mid: ''
         },
         tmpcopycase: {
@@ -3927,9 +3846,13 @@
       this.getdepunitLists()
       this.getalltestcondition()
       this.getglobalheaderallList()
+      this.getencrytypeList()
+      this.getDEcrytypeList()
     },
 
     activated() {
+      this.getencrytypeList()
+      this.getDEcrytypeList()
       this.getapicasesList()
       this.getdepunitLists()
       this.getalltestcondition()
@@ -3943,6 +3866,47 @@
 
     methods: {
       unix2CurrentTime,
+      addapicaseresponesetting() {
+        this.$refs.tmpapicasesresponedata.validate(valid => {
+          if (valid) {
+            addapicaseresponesetting(this.tmpapicasesresponedata).then(() => {
+              this.$message.success('保存成功')
+            }).catch(res => {
+              this.$message.error('保存失败')
+            })
+          }
+        })
+      },
+
+      searchresponesetting() {
+        searchresponesetting(this.searchapicasesresponedata).then(response => {
+          console.log(111111111111)
+          console.log(response.data.list.length)
+          if (response.data.list.length > 0) {
+            this.tmpapicasesresponedata.id = response.data.list[0].id
+            this.tmpapicasesresponedata.Descry = response.data.list[0].descry
+          } else {
+            this.tmpapicasesresponedata.Descry = '无'
+          }
+        }).catch(res => {
+          this.$message.error('11111111111111111')
+        })
+      },
+
+      getencrytypeList() {
+        getdatabydiccodeList(this.dicEncryQuery).then(response => {
+          this.EncrytypeList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载字典访问方式列表失败')
+        })
+      },
+      getDEcrytypeList() {
+        getdatabydiccodeList(this.dicDescryQuery).then(response => {
+          this.DEcrytypeList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载字典访问方式列表失败')
+        })
+      },
       showAddassertDialog() {
         // 显示新增对话框
         this.AssertdialogStatus = 'add'
@@ -5795,6 +5759,9 @@
         })
       },
       async showcaseoperationDialog(index) {
+        this.searchapicasesresponedata.caseid = this.apicasesList[index].id
+        this.tmpapicasesresponedata.caseid = this.apicasesList[index].id
+        this.searchresponesetting()
         this.caseoperationialogFormVisible = true
         this.opearationactiveName = 'zero'
         this.activeName = 'zero'

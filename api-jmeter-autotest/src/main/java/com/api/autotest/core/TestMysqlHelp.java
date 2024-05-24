@@ -89,7 +89,7 @@ public class TestMysqlHelp {
     public ArrayList<HashMap<String, String>> findDicNameValueWithCode(String DicCode) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         try {
-            String sql = "SELECT a.dicitemname,a.dicitmevalue FROM dictionary a where a.diccode = '" + DicCode + "'";
+            String sql = "SELECT a.dicitemname,a.dicitmevalue,a.diccode,a.dicname FROM dictionary a where a.diccode = '" + DicCode + "'";
             logger.info(logplannameandcasename + "获取数据库 获取字典值caseid result sql is...........: " + sql);
             list = MysqlConnectionUtils.query(sql);
         } catch (Exception e) {
@@ -135,6 +135,20 @@ public class TestMysqlHelp {
         }
         return list;
     }
+
+    public ArrayList<HashMap<String, String>> Getplanmail(String planid) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+        try {
+            String sql = "SELECT a.* FROM planmail a where a.executeplanid = " + planid ;
+            logger.info(logplannameandcasename + "获取数据库 获取计划mail result sql is...........: " + sql);
+            list = MysqlConnectionUtils.query(sql);
+        } catch (Exception e) {
+            logger.info(logplannameandcasename + "获取数据库 获取计划mail异常...........: " + e.getMessage());
+        }
+        return list;
+    }
+
+
 
     //获取数据库用例相关数据
     public ArrayList<HashMap<String, String>> getcaseData(String Sql) {
@@ -721,6 +735,17 @@ public class TestMysqlHelp {
             String propertytype = data.get("propertytype");
             if (propertytype.equals(MapType)) {
                 DataMap.put(data.get("apiparam").trim(), data.get("apiparamvalue").trim());
+            }
+        }
+        return DataMap;
+    }
+
+    public HashMap<String, String> fixhttprequestenrcrydatas(String MapType, ArrayList<HashMap<String, String>> casedatalist) {
+        HashMap<String, String> DataMap = new HashMap<>();
+        for (HashMap<String, String> data : casedatalist) {
+            String propertytype = data.get("propertytype");
+            if (propertytype.equals(MapType)) {
+                DataMap.put(data.get("apiparam").trim(), data.get("encyptype").trim());
             }
         }
         return DataMap;

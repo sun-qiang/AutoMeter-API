@@ -34,5 +34,5 @@ public interface ApiCasedataService extends Service<ApiCasedata> {
 
     void deletcasedatabyid(Long caseid);
 
-    void updateparambycaseidandprotypeandapiparam(Long caseid,String propertytype,String apiparam, String oldapiparam,String paramstype);
+    void updateparambycaseidandprotypeandapiparam(Long caseid,String propertytype,String apiparam, String oldapiparam,String paramstype,String encyptype);
 }

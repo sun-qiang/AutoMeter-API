@@ -708,41 +708,83 @@ public class TestCore {
                     account.setUser(mailuser);
                     account.setPass(pass);
 
-                    ArrayList<HashMap<String, String>> list = GetplanBatchCreator(PlanID, BatchName);
-                    if (list.size() > 0) {
-                        String PlanName = list.get(0).get("executeplanname");
-                        String Creator = list.get(0).get("creator");
-                        ArrayList<HashMap<String, String>> listaccount = findWithUsername(Creator);
-                        if (listaccount.size() > 0) {
-                            String mailto = listaccount.get(0).get("email");
-                            String Subject = PlanName + "|" + BatchName + " 执行完成！";
-                            ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
-                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
-                            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
-                            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName, "已停止");
-
-
-                            long tc = 0;
-                            long tpc = 0;
-                            long tfc = 0;
-                            long tsp = 0;
-                            if (liststatics.size() > 0) {
-                                tc = Long.parseLong(liststatics.get(0).get("tc"));
-                                if (liststaticssuccess.size() > 0) {
-                                    tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
-                                }
-                                if (liststaticsfail.size() > 0) {
-                                    tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
-                                }
-                                if (liststaticstop.size() > 0) {
-                                    tsp = Long.parseLong(liststaticstop.get(0).get("tsp"));
-                                }
-                            }
-                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp;
-                            MailUtil.send(account, CollUtil.newArrayList(mailto), Subject, Content, false);
-                            logger.info("TestCore 发送邮件成功-============：" + mailto);
-                        }
+                    ArrayList<HashMap<String, String>> list = Getplanmail(PlanID);
+                    ArrayList<String> maitolist=new ArrayList<>();
+                    for (int i=0;i<list.size();i++)
+                    {
+                        String mailto = list.get(i).get("email");
+                        logger.info("TestCore 发送邮件mailto-============：" + mailto);
+                        maitolist.add(mailto);
                     }
+                    ArrayList<HashMap<String, String>> planlist = GetplanBatchCreator(PlanID,BatchName);
+                    String PlanName="";
+                    if(planlist.size()>0)
+                    {
+                         PlanName = list.get(0).get("executeplanname");
+                    }
+
+                    if(maitolist.size()>0)
+                    {
+                        String Subject = PlanName + "|" + BatchName + " 执行完成！";
+                        ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
+                        ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
+                        ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
+                        ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName, "已停止");
+
+                        long tc = 0;
+                        long tpc = 0;
+                        long tfc = 0;
+                        long tsp = 0;
+                        if (liststatics.size() > 0) {
+                            tc = Long.parseLong(liststatics.get(0).get("tc"));
+                            if (liststaticssuccess.size() > 0) {
+                                tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
+                            }
+                            if (liststaticsfail.size() > 0) {
+                                tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
+                            }
+                            if (liststaticstop.size() > 0) {
+                                tsp = Long.parseLong(liststaticstop.get(0).get("tsp"));
+                            }
+                        }
+                        String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp;
+                        MailUtil.send(account, maitolist, Subject, Content, false);
+                        logger.info("TestCore 发送邮件成功-============：" + maitolist);
+                    }
+//                    if (list.size() > 0) {
+//                        String PlanName = list.get(0).get("executeplanname");
+//                        String Creator = list.get(0).get("creator");
+//                        ArrayList<HashMap<String, String>> listaccount = findWithUsername(Creator);
+//                        if (listaccount.size() > 0) {
+//                            String mailto = listaccount.get(0).get("email");
+//                            String Subject = PlanName + "|" + BatchName + " 执行完成！";
+//                            ArrayList<HashMap<String, String>> liststatics = GetStatic(PlanID, BatchName);
+//                            ArrayList<HashMap<String, String>> liststaticssuccess = GetStaticSuccess(PlanID, BatchName, "成功");
+//                            ArrayList<HashMap<String, String>> liststaticsfail = GetStaticSuccess(PlanID, BatchName, "失败");
+//                            ArrayList<HashMap<String, String>> liststaticstop = GetStaticStop(PlanID, BatchName, "已停止");
+//
+//
+//                            long tc = 0;
+//                            long tpc = 0;
+//                            long tfc = 0;
+//                            long tsp = 0;
+//                            if (liststatics.size() > 0) {
+//                                tc = Long.parseLong(liststatics.get(0).get("tc"));
+//                                if (liststaticssuccess.size() > 0) {
+//                                    tpc = Long.parseLong(liststaticssuccess.get(0).get("tcp"));
+//                                }
+//                                if (liststaticsfail.size() > 0) {
+//                                    tfc = Long.parseLong(liststaticsfail.get(0).get("tcp"));
+//                                }
+//                                if (liststaticstop.size() > 0) {
+//                                    tsp = Long.parseLong(liststaticstop.get(0).get("tsp"));
+//                                }
+//                            }
+//                            String Content = "测试集合运行完成结果总计用例数：" + tc + "， 成功数：" + tpc + "， 失败数：" + tfc + "， 停止数：" + tsp;
+//                            MailUtil.send(account, CollUtil.newArrayList(mailto), Subject, Content, false);
+//                            logger.info("TestCore 发送邮件成功-============：" + mailto);
+//                        }
+//                    }
                 }
             } else {
                 logger.info("TestCore发送邮件未找到字典表邮件配置信息-============：");
@@ -919,6 +961,11 @@ public class TestCore {
     //获取计划批次
     public ArrayList<HashMap<String, String>> GetplanBatchCreator(String planid, String BatchName) {
         ArrayList<HashMap<String, String>> list = testMysqlHelp.GetplanBatchCreator(planid, BatchName);
+        return list;
+    }
+
+    public ArrayList<HashMap<String, String>> Getplanmail(String planid) {
+        ArrayList<HashMap<String, String>> list = testMysqlHelp.Getplanmail(planid);
         return list;
     }
 

@@ -66,7 +66,7 @@ public class ApiCasedataServiceImpl extends AbstractService<ApiCasedata> impleme
     }
 
     @Override
-    public void updateparambycaseidandprotypeandapiparam(Long caseid, String propertytype, String apiparam,String oldapiparam, String paramstype) {
-        apiCasedataMapper.updateparambycaseidandprotypeandapiparam(caseid, propertytype, apiparam,oldapiparam,paramstype);
+    public void updateparambycaseidandprotypeandapiparam(Long caseid, String propertytype, String apiparam,String oldapiparam, String paramstype,String encyptype) {
+        apiCasedataMapper.updateparambycaseidandprotypeandapiparam(caseid, propertytype, apiparam,oldapiparam,paramstype,encyptype);
     }
 }

@@ -21,7 +21,7 @@
   </resultMap>
 
   <select id="findDicNameValueWithCode" resultMap="DicValueWithNameMap">
-    SELECT a.dicitemname,a.dicitmevalue
+    SELECT a.*
     FROM dictionary a where a.diccode = #{diccode}
   </select>
 

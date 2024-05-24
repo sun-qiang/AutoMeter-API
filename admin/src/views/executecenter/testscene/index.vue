@@ -1332,7 +1332,7 @@
         status-icon
         class="small-space"
         label-position="left"
-        label-width="80px"
+        label-width="90px"
         style="width: 900px; margin-left:50px;"
         :model="tmpapicasesdata"
         ref="tmpapicasesdata"
@@ -1359,6 +1359,16 @@
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
                     </template>
                   </el-table-column>
+                  <el-table-column label="加密方式" prop="encyptype" align="center">
+                    <template slot-scope="scope">
+                      <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                        <el-option label="无" value="无" />
+                        <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                          <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                        </div>
+                      </el-select>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </template>
             </el-tab-pane>
@@ -1378,6 +1388,16 @@
                   <el-table-column label="值"  align="center">
                     <template slot-scope="scope">
                       <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="加密方式" prop="encyptype" align="center">
+                    <template slot-scope="scope">
+                      <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                        <el-option label="无" value="无" />
+                        <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                          <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                        </div>
+                      </el-select>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -1402,6 +1422,16 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
                       </template>
                     </el-table-column>
+                    <el-table-column label="加密方式" prop="encyptype" align="center">
+                      <template slot-scope="scope">
+                        <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                          <el-option label="无" value="无" />
+                          <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                            <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                          </div>
+                        </el-select>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </div>
                 <div v-if="BodyDataVisible">
@@ -1413,6 +1443,16 @@
                       auto-complete="off"
                       v-model.trim="tmpapicasesbodydata.apiparamvalue"
                     />
+                  </el-form-item>
+                  <el-form-item label="加密方式："  prop="encyptype">
+                    <template slot-scope="scope">
+                      <el-select style="width: 500px" v-model="tmpapicasesbodydata.encyptype" filterable placeholder="加密方式" >
+                        <el-option label="无" value="无" />
+                        <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                          <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                        </div>
+                      </el-select>
+                    </template>
                   </el-form-item>
                 </div>
               </template>
@@ -1428,7 +1468,7 @@
         <el-button
           type="success"
           :loading="btnLoading"
-          @click.native.prevent="addnewapicasesdata"
+          @click.native.prevent="addapicasesdata"
         >保存
         </el-button>
       </div>
@@ -1857,14 +1897,24 @@
                     <template>
                       <el-table :data="Headertabledatas" fit
                                 highlight-current-row border>
-                        <el-table-column label="参数" prop="apiparam" align="center" width="450">
+                        <el-table-column label="参数" prop="apiparam" align="center" width="300">
                           <template slot-scope="scope">
                             <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column label="值" prop="apiparamvalue" align="center" width="500">
+                        <el-table-column label="值" prop="apiparamvalue" align="center" width="450">
                           <template slot-scope="scope">
                             <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="加密方式" prop="encyptype" align="center" width="200">
+                          <template slot-scope="scope">
+                            <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                              <el-option label="无" value="无" />
+                              <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                              </div>
+                            </el-select>
                           </template>
                         </el-table-column>
                       </el-table>
@@ -1873,12 +1923,12 @@
                   <el-tab-pane label="Params" name="first">
                     <template>
                       <el-table :data="Paramstabledatas" border>
-                        <el-table-column label="参数"  align="center" width="450">
+                        <el-table-column label="参数"  align="center" width="200">
                           <template slot-scope="scope">
                             <el-input size="mini" readonly="true" v-model="scope.row.apiparam"></el-input>
                           </template>
                         </el-table-column>
-                        <el-table-column label="值类型"  align="center" width="250">
+                        <el-table-column label="值类型"  align="center" width="350">
                           <template slot-scope="scope">
                             <el-input size="mini" readonly="true" v-model="scope.row.paramstype"></el-input>
                           </template>
@@ -1888,11 +1938,20 @@
                             <el-input size="mini" placeholder="值" v-model="scope.row.apiparamvalue"></el-input>
                           </template>
                         </el-table-column>
+                        <el-table-column label="加密方式" prop="encyptype" align="center" width="150">
+                          <template slot-scope="scope">
+                            <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                              <el-option label="无" value="无" />
+                              <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                              </div>
+                            </el-select>
+                          </template>
+                        </el-table-column>
                       </el-table>
                     </template>
                   </el-tab-pane>
                   <el-tab-pane label="Body" name="second">
-
                     <template>
                       <div v-if="BodyParamDataVisible">
                         <el-table :data="Bodytabledatas" border>
@@ -1911,6 +1970,16 @@
                               <el-input size="mini" placeholder="默认值" v-model="scope.row.apiparamvalue"></el-input>
                             </template>
                           </el-table-column>
+                          <el-table-column label="加密方式" prop="encyptype" align="center">
+                            <template slot-scope="scope">
+                              <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                                <el-option label="无" value="无" />
+                                <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                  <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                                </div>
+                              </el-select>
+                            </template>
+                          </el-table-column>
                         </el-table>
                       </div>
                       <div v-if="BodyDataVisible">
@@ -1922,6 +1991,16 @@
                             auto-complete="off"
                             v-model.trim="tmpapicasesbodydata.apiparamvalue"
                           />
+                        </el-form-item>
+                        <el-form-item label="加密方式："  prop="encyptype">
+                          <template slot-scope="scope">
+                            <el-select style="width: 500px" v-model="tmpapicasesbodydata.encyptype" filterable placeholder="加密方式" >
+                              <el-option label="无" value="无" />
+                              <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                                <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                              </div>
+                            </el-select>
+                          </template>
                         </el-form-item>
                       </div>
                     </template>
@@ -1967,7 +2046,6 @@
                           ref="assertTable"
                           :data="assertList"
                           :key="assertitemKey"
-                          element-loading-text="loading"
                           border
                           fit
                           highlight-current-row
@@ -2052,7 +2130,6 @@
                           ref="assertTable"
                           :data="dbassertList"
                           :key="dbassertitemKey"
-                          element-loading-text="loading"
                           border
                           fit
                           highlight-current-row
@@ -2149,8 +2226,6 @@
                 1.接口前置条件：
                 <el-table
                   :data="apiconditioncaseList"
-                  v-loading.body="listLoading"
-                  element-loading-text="loading"
                   border
                   fit
                   highlight-current-row
@@ -2199,8 +2274,6 @@
                 <el-table
                   :data="delayconditionList"
                   :key="itemKey"
-                  v-loading.body="listLoading"
-                  element-loading-text="loading"
                   border
                   fit
                   highlight-current-row
@@ -2245,7 +2318,6 @@
                   :data="dbconditioncaseList"
                   table-layout='auto'
                   class="tableAuto"
-                  element-loading-text="loading"
                   border
                   fit
                   highlight-current-row
@@ -2305,7 +2377,6 @@
                 4.脚本前置条件
                 <el-table
                   :data="scriptconditionList"
-                  element-loading-text="loading"
                   border
                   fit
                   highlight-current-row
@@ -2389,8 +2460,6 @@
             height="280px"
             :data="apireportList"
             :key="itemKey"
-            v-loading.body="listLoading"
-            element-loading-text="loading"
             border
             fit
             highlight-current-row
@@ -2839,6 +2908,7 @@ import { findscenecasedebugreportWithName } from '@/api/reportcenter/scenecases_
 import { addapicasesassert, getassertbycaseid as getassertbycaseid, searchassert as searchassert, removeapicasesassert, updateapicasesassert } from '@/api/assets/apicasesassert'
 import { addapicasesdbassert, searchdbassert as searchdbassert, removeapicasesdbassert, updateapicasesdbassert } from '@/api/assets/apicasesdbassert'
 import { searchdbassertvalue, addapicasesdbassertvalue, updateapicasesdbassertvalue, removeapicasesdbassertvalue } from '@/api/assets/apicasesdbassertvalue'
+import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
 
 export default {
   name: '测试场景',
@@ -2861,6 +2931,12 @@ export default {
   },
   data() {
     return {
+      dicEncryQuery: {
+        page: 1, // 页码
+        size: 30, // 每页数量
+        diccode: 'EncryType' // 获取字典表入参
+      },
+      EncrytypeList: [],
       tmpdbassertvalue: {
         id: '',
         dbassertid: '',
@@ -3420,6 +3496,7 @@ export default {
     this.getassembleallnameList()
     this.getenviromentallList()
     this.getsceneallList()
+    this.getencrytypeList()
   },
 
   activated() {
@@ -3432,6 +3509,13 @@ export default {
   },
 
   methods: {
+    getencrytypeList() {
+      getdatabydiccodeList(this.dicEncryQuery).then(response => {
+        this.EncrytypeList = response.data.list
+      }).catch(res => {
+        this.$message.error('加载字典访问方式列表失败')
+      })
+    },
     updatedbassertvalue() {
       this.$refs.tmpdbassertvalue.validate(valid => {
         if (valid) {
@@ -3832,6 +3916,7 @@ export default {
             console.log(this.tmptestdata)
             runscenecasetest(this.tmptestdata).then(response => {
               this.apireportList = response.data
+              this.debugtotal = 1
               this.$message.success('调试进行中，可到调试报告中查询结果')
               console.log(response.data)
               this.$message.error(response.data)
@@ -3845,6 +3930,7 @@ export default {
 
     async clickNode(data, node, obj) {
       this.tmpnode = node
+      console.log('00000000000000000000000')
       this.tmptest.casename = node.data.label
       if (node.level === 1) {
         console.log('测试场景')
@@ -3902,7 +3988,6 @@ export default {
           this.getbodytextdatabycaseidandtype()
         }
         // 获取前置条件
-        console.log('00000000000000000000000')
         this.tmpsubconditionid = node.data.caseid
         this.tmpapicondition.conditionid = node.data.caseid
         this.tmpapicondition.conditionname = node.data.label
@@ -4338,7 +4423,7 @@ export default {
         this.$message.error('更新用例Header,Params值失败')
       })
     },
-    async addnewapicasesdata() {
+    async addapicasesdata() {
       this.updateHeaderpropertydata(this.Headertabledatas)
       this.updateHeaderpropertydata(this.Paramstabledatas)
       await this.getapi()
@@ -4349,6 +4434,28 @@ export default {
       }
       this.$message.success('保存成功')
       this.casedataialogFormVisible = false
+    },
+    async addnewapicasesdata() {
+      console.log('111111111111111111111111111111')
+      console.log(this.tmpnode)
+      if (this.tmpnode === null) {
+        this.$message.error('请先选择需要保存数据的用例')
+      } else {
+        if (this.tmpnode.level !== 2) {
+          this.$message.error('请先选择需要保存数据的用例')
+        } else {
+          this.updateHeaderpropertydata(this.Headertabledatas)
+          this.updateHeaderpropertydata(this.Paramstabledatas)
+          await this.getapi()
+          if (this.tmpapi.requestcontenttype === 'Form表单') {
+            this.updateHeaderpropertydata(this.Bodytabledatas)
+          } else {
+            this.updateapicasesdata()
+          }
+          this.$message.success('保存成功')
+          this.casedataialogFormVisible = false
+        }
+      }
     },
     async showtestcasedataDialog(index) {
       console.log(index)
@@ -4757,7 +4864,6 @@ export default {
     },
 
     getenviromentallList() {
-      this.listLoading = true
       getenviromentallList(this.search).then(response => {
         this.enviromentnameList = response.data
       }).catch(res => {
@@ -5147,6 +5253,8 @@ export default {
       this.tmpdbcondition.projectid = window.localStorage.getItem('pid')
     },
     async showDebugSceneDialog(index) {
+      this.tmpnode = null
+      this.getenviromentallList()
       this.debugtotal = 0
       this.apireportList = null
       this.tmptest.casename = ''

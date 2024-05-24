@@ -445,6 +445,18 @@
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                       </template>
                     </el-table-column>
+
+                    <el-table-column label="加密方式" prop="encyptype" align="center">
+                      <template slot-scope="scope">
+                    <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                      <el-option label="无" value="无" />
+                      <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                        <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                      </div>
+                    </el-select>
+                      </template>
+                    </el-table-column>
+
                     <el-table-column label="操作" align="center" width="300">
                       <template slot-scope="scope">
 <!--                        <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量-->
@@ -477,6 +489,16 @@
                     <el-table-column label="默认值" prop="keydefaultvalue" align="center">
                       <template slot-scope="scope">
                         <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="加密方式" prop="encyptype" align="center">
+                      <template slot-scope="scope">
+                        <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                          <el-option label="无" value="无" />
+                          <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                            <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                          </div>
+                        </el-select>
                       </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="250">
@@ -514,6 +536,16 @@
                           <el-input size="mini" placeholder="默认值" v-model="scope.row.keydefaultvalue"></el-input>
                         </template>
                       </el-table-column>
+                      <el-table-column label="加密方式" prop="encyptype" align="center">
+                        <template slot-scope="scope">
+                          <el-select style="width: 120px" v-model="scope.row.encyptype" filterable placeholder="加密方式" >
+                            <el-option label="无" value="无" />
+                            <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                              <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                            </div>
+                          </el-select>
+                        </template>
+                      </el-table-column>
                       <el-table-column label="操作" align="center" width="220">
                         <template slot-scope="scope">
 <!--                          <el-button type="primary" size="mini" @click="UseParams(scope.row,scope.$index)">使用变量-->
@@ -538,13 +570,24 @@
 <!--                        </el-button>-->
                         <el-input
                             type="textarea"
-                          style="width: 650px;height: 400px;color: #0000FF"
+                          style="width: 850px;height: 400px;color: #0000FF"
                           rows="20" cols="70"
                           prefix-icon="el-icon-message"
                           auto-complete="off"
                           v-model="tmpapiparams.keyname"
                           :placeholder="paramsplaceholder"
                         />
+                      </el-form-item>
+
+                      <el-form-item label="加密方式："  prop="encyptype">
+                        <template slot-scope="scope">
+                          <el-select style="width: 200px" v-model="tmpapiparams.encyptype" filterable placeholder="加密方式" >
+                            <el-option label="无" value="无" />
+                            <div v-for="(Encrytype, index) in EncrytypeList" :key="index">
+                              <el-option :label="Encrytype.dicname" :value="Encrytype.dicname"/>
+                            </div>
+                          </el-select>
+                        </template>
                       </el-form-item>
                     </el-form>
                   </div>
@@ -764,6 +807,7 @@ export default {
   },
   data() {
     return {
+      EncrytypeList: [],
       accountList: [],
       id: null,
       fileName: '',
@@ -805,6 +849,11 @@ export default {
         page: 1, // 页码
         size: 30, // 每页数量
         diccode: 'httpvisittype' // 获取字典表入参
+      },
+      dicEncryQuery: {
+        page: 1, // 页码
+        size: 30, // 每页数量
+        diccode: 'EncryType' // 获取字典表入参
       },
       dicrequestypeQuery: {
         page: 1, // 页码
@@ -885,6 +934,7 @@ export default {
         keyname: '',
         keytype: '',
         keydefaultvalue: '',
+        encyptype: '无',
         creator: ''
       },
       tmpqueryparams: {
@@ -936,13 +986,15 @@ export default {
     this.getaccountLists()
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
-      { id: '', keyname: '', keytype: '', keydefaultvalue: '', propertytype: 'Header', creator: '' }
+      { id: '', keyname: '', keytype: '', keydefaultvalue: '', encyptype: '无', propertytype: 'Header', creator: '' }
     ]
+    console.log('this.Headertabledatas inital.........')
+    console.log(this.Headertabledatas)
     this.Paramstabledatas = [
-      { id: '', keyname: '', keytype: '', keydefaultvalue: '', propertytype: 'Params', creator: '' }
+      { id: '', keyname: '', keytype: '', keydefaultvalue: '', encyptype: '无', propertytype: 'Params', creator: '' }
     ]
     this.Bodytabledatas = [
-      { id: '', keyname: '', keytype: '', keydefaultvalue: '', propertytype: 'Body', creator: '' }
+      { id: '', keyname: '', keytype: '', keydefaultvalue: '', encyptype: '无', propertytype: 'Body', creator: '' }
     ]
     this.Paramstabledatas.map(i => {
       i.show = false
@@ -953,6 +1005,7 @@ export default {
     this.getrequestcontenttypeList()
     this.getresponecontenttypeList()
     this.getdepunitLists()
+    this.getencrytypeList()
     // this.editAll()
     // this.editParamAll()
   },
@@ -960,8 +1013,16 @@ export default {
   activated() {
     this.getapiList()
     this.getdepunitLists()
+    this.getencrytypeList()
   },
   methods: {
+    getencrytypeList() {
+      getdatabydiccodeList(this.dicEncryQuery).then(response => {
+        this.EncrytypeList = response.data.list
+      }).catch(res => {
+        this.$message.error('加载字典访问方式列表失败')
+      })
+    },
     creatorselectChanged(e) {
       if (e === '全部') {
         this.search.mid = null
@@ -989,6 +1050,7 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
+        encyptype: '无',
         creatorid: this.accountId,
         creator: this.nickname
       }
@@ -1006,6 +1068,7 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
+        encyptype: '无',
         creatorid: this.accountId,
         creator: this.nickname
       }
@@ -1023,6 +1086,7 @@ export default {
         apiname: '',
         deployunitid: '',
         deployunitname: '',
+        encyptype: '无',
         creatorid: this.accountId,
         creator: this.nickname
       }
@@ -1055,6 +1119,7 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
+                encyptype: '无',
                 creatorid: this.accountId,
                 creator: this.nickname
               }
@@ -1080,6 +1145,7 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
+            encyptype: '无',
             creatorid: this.accountId,
             creator: this.nickname
           }
@@ -1114,6 +1180,7 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
+                encyptype: '无',
                 creatorid: this.accountId,
                 creator: this.nickname
               }
@@ -1139,6 +1206,7 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
+            encyptype: '无',
             creatorid: this.accountId,
             creator: this.nickname
           }
@@ -1173,6 +1241,7 @@ export default {
                 apiname: '',
                 deployunitid: '',
                 deployunitname: '',
+                encyptype: '无',
                 creatorid: this.accountId,
                 creator: this.nickname
               }
@@ -1198,6 +1267,7 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
+            encyptype: '无',
             creatorid: this.accountId,
             creator: this.nickname
           }
@@ -1587,6 +1657,7 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
+            encyptype: '无',
             creator: this.nickname,
             creatorid: this.accountId
           }
@@ -1612,6 +1683,7 @@ export default {
             apiid: '',
             apiname: '',
             deployunitid: '',
+            encyptype: '无',
             deployunitname: '',
             creator: this.nickname,
             creatorid: this.accountId
@@ -1639,6 +1711,7 @@ export default {
             apiname: '',
             deployunitid: '',
             deployunitname: '',
+            encyptype: '无',
             creator: this.nickname,
             creatorid: this.accountId
           }
@@ -1865,6 +1938,8 @@ export default {
         this.Headertabledatas[i].deployunitname = this.tmpapi.deployunitname
         this.Headertabledatas[i].creatorid = this.accountId
       }
+      console.log('this.Headertabledatas is.....................')
+      console.log(this.Headertabledatas)
       addapiallparams(this.Headertabledatas).then(() => {
         this.$message.success('添加Header成功')
       }).catch(res => {
@@ -1891,7 +1966,7 @@ export default {
           this.Bodytabledatas[i].deployunitid = this.tmpapi.deployunitid
           this.Bodytabledatas[i].deployunitname = this.tmpapi.deployunitname
           this.Bodytabledatas[i].creatorid = this.accountId
-          this.Paramstabledatas[i].creator = this.nickname
+          this.Bodytabledatas[i].creator = this.nickname
         }
         addapiallparams(this.Bodytabledatas).then(() => {
           this.$message.success('添加Body成功')

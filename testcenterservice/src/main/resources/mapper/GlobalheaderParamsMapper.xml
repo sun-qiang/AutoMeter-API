@@ -9,6 +9,7 @@
     <result column="globalheaderid" jdbcType="BIGINT" property="globalheaderid" />
     <result column="keyname" jdbcType="VARCHAR" property="keyname" />
     <result column="keyvalue" jdbcType="LONGVARCHAR" property="keyvalue" />
+    <result column="encyptype" jdbcType="VARCHAR" property="encyptype" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
   </resultMap>

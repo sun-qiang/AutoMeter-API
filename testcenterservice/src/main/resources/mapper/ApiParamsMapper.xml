@@ -14,6 +14,7 @@
     <result column="keyname" jdbcType="LONGVARCHAR" property="keyname" />
     <result column="keydefaultvalue" jdbcType="LONGVARCHAR" property="keydefaultvalue" />
     <result column="keytype" jdbcType="VARCHAR" property="keytype" />
+    <result column="encyptype" jdbcType="VARCHAR" property="encyptype" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -47,14 +48,14 @@
 
   <update id="updateApiParams" parameterType="com.zoctan.api.entity.ApiParams">
     update api_params set apiname = #{apiname},deployunitid =#{deployunitid}, deployunitname = #{deployunitname}, propertytype = #{propertytype},
-    keyname = #{keyname},keytype = #{keytype},keydefaultvalue = #{keydefaultvalue},creator = #{creator},
+    keyname = #{keyname},keytype = #{keytype},keydefaultvalue = #{keydefaultvalue}, encyptype = #{encyptype}, creator = #{creator},
     lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 
   <insert id="SaveApiParams">
-    insert into api_params(apiid,apiname,deployunitid,deployunitname,propertytype,keyname,keydefaultvalue,keytype,creator,creatorid,create_time,lastmodify_time)
-    values(#{apiid},#{apiname},#{deployunitid},#{deployunitname},#{propertytype},#{keyname},#{keydefaultvalue},#{keytype},#{creator},#{creatorid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'))
+    insert into api_params(apiid,apiname,deployunitid,deployunitname,propertytype,keyname,keydefaultvalue,keytype,creator,creatorid,create_time,lastmodify_time,encyptype)
+    values(#{apiid},#{apiname},#{deployunitid},#{deployunitname},#{propertytype},#{keyname},#{keydefaultvalue},#{keytype},#{creator},#{creatorid}, DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'), DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s'),#{encyptype})
   </insert>
 
   <select id="getApiParamsbypropertytype" resultMap="BaseResultMap">
