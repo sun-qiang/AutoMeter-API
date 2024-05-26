@@ -99,7 +99,7 @@
 ![输入图片说明](img/fanfanxiao.png)
 
 ![输入图片说明](img/dy.jpeg)
-## License
+## License & Copyright
 License & Copyright
 Copyright (c) 2020-2024 Season, All rights reserved.
 
