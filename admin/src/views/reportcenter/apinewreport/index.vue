@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true"
+      <el-form :inline="true" style="width: 1200px"
                :model="tmpquery"
                ref="tmpquery"
       >
@@ -37,18 +37,18 @@
       </el-form>
     </div>
 
-    <div class="dashboard-editor-container">
+    <div  class="dashboard-editor-container">
       <github-corner class="github-corner" />
       <el-row :gutter="50">
         <el-col :xs="24" :sm="24" :lg="9">
-          <div id="22" class="chart-wrapper">
+          <div id="22"  class="chart-wrapper">
             <template>
               <div id="mian" style="width: 300px;height:380px;"></div>
             </template>
           </div>
         </el-col>
         <el-col :xs="24" :sm="24" :lg="15">
-          <div id="12" class="chart-wrapper">
+          <div id="12"  class="chart-wrapper">
             <el-table
               style="width: 290vh;height:100px;"
               :data="casestaticsList"
@@ -70,7 +70,7 @@
           </div>
         </el-col>
         <el-col :xs="24" :sm="24" :lg="15">
-          <div id="14" class="chart-wrapper">
+          <div id="14"  class="chart-wrapper">
             <el-table
               style="width: 120vh;height:100px;"
               :data="casestaticsList"
@@ -88,7 +88,7 @@
           </div>
         </el-col>
         <el-col :xs="24" :sm="24" :lg="15">
-          <div id="13" class="chart-wrapper">
+          <div id="13"  class="chart-wrapper">
             <el-table
               style="width: 100vh;height:120px;"
               :data="casesconditiontaticsList"
@@ -110,7 +110,7 @@
       </el-row>
     </div>
 
-    <el-tabs v-model="activeName" type="card" ref="tabs">
+    <el-tabs v-model="activeName"  type="card" ref="tabs">
       <el-tab-pane label="执行计划结果" name="four">
         <template>
           <el-table

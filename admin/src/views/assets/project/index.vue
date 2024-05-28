@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true" style="width: 900px">
         <el-form-item>
           <el-button
             type="success"
@@ -98,7 +98,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -109,7 +109,7 @@
         ref="tmpproject"
       >
         <el-form-item label="项目名" prop="projectname" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="50"
             type="text"
             prefix-icon="el-icon-edit"
@@ -119,7 +119,7 @@
         </el-form-item>
 
         <el-form-item label="状态" prop="status" required >
-          <el-select v-model="tmpproject.status" placeholder="状态" style="width:100%">
+          <el-select v-model="tmpproject.status" placeholder="状态"  style="width: 500px">
             <el-option label="开始" value="开始"></el-option>
             <el-option label="暂停" value="暂停"></el-option>
             <el-option label="关闭" value="关闭"></el-option>
@@ -147,7 +147,7 @@
 <!--        </el-form-item>-->
 
         <el-form-item label="项目描述" prop="memo" required>
-          <el-input
+          <el-input  style="width: 500px"
             type="textarea"
             rows="10" cols="50"
             prefix-icon="el-icon-message"

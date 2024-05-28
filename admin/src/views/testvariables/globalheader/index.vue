@@ -86,7 +86,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"   width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -97,7 +97,7 @@
         ref="tmpglobalheader"
       >
         <el-form-item label="全局Header名" prop="globalheadername" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="50"
             type="text"
             prefix-icon="el-icon-edit"
@@ -129,7 +129,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="BindtextMap[BinddialogStatus]" :visible.sync="BindFormVisible">
+    <el-dialog :title="BindtextMap[BinddialogStatus]" width="800px"   :visible.sync="BindFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -141,14 +141,14 @@
       >
 
         <el-form-item label="参数名：" prop="keyname" required>
-          <el-input
+          <el-input style="width: 500px"
             prefix-icon="el-icon-message"
             auto-complete="off"
             v-model.trim="tmpglobalheaderparams.keyname"
           />
         </el-form-item>
         <el-form-item label="参数值：" prop="keyvalue" required>
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="15" cols="50"
             prefix-icon="el-icon-message"

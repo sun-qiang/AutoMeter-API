@@ -103,7 +103,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"   width="800px" :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -114,7 +114,7 @@
         ref="tmptestscene"
       >
         <el-form-item label="测试场景名" prop="scenename" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-edit"
@@ -124,7 +124,7 @@
         </el-form-item>
 
         <el-form-item label="场景类型" prop="usetype" required >
-          <el-select v-model="tmptestscene.usetype" placeholder="场景类型" style="width:100%">
+          <el-select v-model="tmptestscene.usetype" placeholder="场景类型"  style="width: 500px">
             <el-option label="功能" value="功能"></el-option>
             <el-option label="性能" value="性能"></el-option>
           </el-select>
@@ -132,7 +132,7 @@
 
 
         <el-form-item label="备注" prop="memo">
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-message"
@@ -164,7 +164,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title='复制场景' :visible.sync="CopysceneFormVisible">
+    <el-dialog title='复制场景'  width="800px"  :visible.sync="CopysceneFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -175,7 +175,7 @@
         ref="tmpcopyscene"
       >
         <el-form-item label="源场景" prop="sourcescenename" required >
-          <el-select v-model="tmpcopyscene.sourcescenename" placeholder="源场景" style="width:100%" @change="CopySourceSceneChanged($event)">
+          <el-select v-model="tmpcopyscene.sourcescenename" placeholder="源场景"  style="width: 500px" @change="CopySourceSceneChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(testcase, index) in sourcetestsceneList" :key="index">
               <el-option :label="testcase.scenename" :value="testcase.scenename" required/>
@@ -183,7 +183,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="新场景名" prop="newscenename" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -780,7 +780,7 @@
       </el-table>
     </el-dialog>
 
-    <el-dialog :title="scripttextMap[scriptdialogStatus]" :visible.sync="scriptdialogFormVisible">
+    <el-dialog :title="scripttextMap[scriptdialogStatus]" width="800px"  :visible.sync="scriptdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -791,7 +791,7 @@
         ref="tmpscriptcondition"
       >
         <el-form-item label="脚本条件名" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -801,7 +801,7 @@
         </el-form-item>
 
         <el-form-item label="Java代码" prop="script" required >
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="10" cols="50"
             maxlength="4000"
@@ -830,7 +830,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" :visible.sync="caseconditiondialogFormVisible">
+    <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]"   width="800px"  :visible.sync="caseconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -842,7 +842,7 @@
       >
 
         <el-form-item label="前置条件名" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -852,7 +852,7 @@
         </el-form-item>
 
         <el-form-item label="微服务" prop="deployunitname" required >
-          <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务" style="width:100%" @change="apiconditiondeployunitselectChanged($event)">
+          <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务"  style="width: 500px" @change="apiconditiondeployunitselectChanged($event)">
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
             </div>
@@ -860,7 +860,7 @@
         </el-form-item>
 
         <el-form-item  label="模块:" prop="modelname" >
-          <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块" style="width:100%"  @change="apiconditionmodelselectChanged($event)">
+          <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块"  style="width: 500px" @change="apiconditionmodelselectChanged($event)">
             <div v-for="(model, index) in apiconditionmodelList" :key="index">
               <el-option :label="model.modelname" :value="model.modelname" />
             </div>
@@ -868,7 +868,7 @@
         </el-form-item>
 
         <el-form-item label="API" prop="apiname" required >
-          <el-select v-model="tmpapicondition.apiname" filterable placeholder="API" style="width:100%" @change="apiconditionapiselectChanged($event)">
+          <el-select v-model="tmpapicondition.apiname" filterable placeholder="API"  style="width: 500px" @change="apiconditionapiselectChanged($event)">
             <div v-for="(api, index) in apiconditionapiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
             </div>
@@ -876,7 +876,7 @@
         </el-form-item>
 
         <el-form-item label="接口" prop="casename" required >
-          <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
+          <el-select v-model="tmpapicondition.casename" filterable placeholder="接口"  style="width: 500px" @change="apiconditiontestcaseselectChanged($event)">
             <div v-for="(testcase, index) in conditionapicaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
@@ -907,7 +907,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="dbtextMap[dbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
+    <el-dialog :title="dbtextMap[dbdialogStatus]" width="800px"  :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -918,7 +918,7 @@
         ref="tmpdbcondition"
       >
         <el-form-item label="数据库条件名：" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -928,7 +928,7 @@
         </el-form-item>
 
         <el-form-item label="环境：" prop="enviromentname" required >
-          <el-select v-model="tmpdbcondition.enviromentname" filterable  placeholder="环境" style="width:100%" @change="selectChangedEN($event)">
+          <el-select v-model="tmpdbcondition.enviromentname" filterable  placeholder="环境"  style="width: 500px" @change="selectChangedEN($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(envname, index) in enviromentnameList" :key="index">
               <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
@@ -937,7 +937,7 @@
         </el-form-item>
 
         <el-form-item label="组件：" prop="assemblename" required >
-          <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件" style="width:100%" @change="ConditionselectChangedAS($event)">
+          <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件"  style="width: 500px" @change="ConditionselectChangedAS($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(macname, index) in enviroment_assembleList" :key="index">
               <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
@@ -946,7 +946,7 @@
         </el-form-item>
 
         <el-form-item label="操作类型：" prop="dbtype" required >
-          <el-select v-model="tmpdbcondition.dbtype" placeholder="操作类型" style="width:100%" @change="selectChangedDBType($event)">
+          <el-select v-model="tmpdbcondition.dbtype" placeholder="操作类型"  style="width: 500px" @change="selectChangedDBType($event)">
             <el-option label="新增" value="Insert"  />
             <el-option label="删除" value="Delete"  />
             <el-option label="修改" value="Update"  />
@@ -955,7 +955,7 @@
         </el-form-item>
 
         <el-form-item label="Sql语句：" prop="dbcontent" required>
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="10" cols="50"
             maxlength="2000"
@@ -1067,7 +1067,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="DelaytextMap[DelaydialogStatus]" :visible.sync="DelaydialogFormVisible">
+    <el-dialog :title="DelaytextMap[DelaydialogStatus]"  width="800px"  :visible.sync="DelaydialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -1078,7 +1078,7 @@
         ref="tmpdelaycondition"
       >
         <el-form-item label="条件名" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -1088,7 +1088,7 @@
         </el-form-item>
 
         <el-form-item label="等待时间(秒)" prop="delaytime" required>
-          <el-input
+          <el-input style="width: 500px"
             placeholder="等待时间(秒)"
             oninput="value=value.replace(/[^\d]/g,'')"
             maxLength='10'
@@ -1119,7 +1119,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="逻辑设置" :visible.sync="LogicdialogFormVisible">
+    <el-dialog title="逻辑设置" width="800px"  :visible.sync="LogicdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -1130,7 +1130,7 @@
         ref="tmpscenecaselogic"
       >
         <el-form-item label="循环次数" prop="loopnums" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="50"
             prefix-icon="el-icon-edit"
@@ -1139,7 +1139,7 @@
           />
         </el-form-item>
         <el-form-item label="断言失败停止项" prop="stopflag" required>
-          <el-select v-model="tmpscenecaselogic.stopflag" placeholder="类型" style="width:100%">
+          <el-select v-model="tmpscenecaselogic.stopflag" placeholder="类型"  style="width: 500px">
             <el-option label="无" value="无" />
             <el-option label="当前场景" value="当前场景" />
             <el-option label="当前集合" value="当前集合" />

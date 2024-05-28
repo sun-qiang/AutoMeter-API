@@ -93,7 +93,7 @@
       :page-sizes="[9, 18, 36, 72]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -105,7 +105,7 @@
         ref="tmpAccount"
       >
         <el-form-item label="账户名" prop="name" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="20"
             prefix-icon="el-icon-edit"
@@ -115,7 +115,7 @@
           />
         </el-form-item>
         <el-form-item label="昵称" prop="nickname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             prefix-icon="el-icon-edit"
             auto-complete="off"
@@ -124,7 +124,7 @@
           />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             prefix-icon="el-icon-message"
             auto-complete="off"
@@ -134,7 +134,7 @@
         </el-form-item>
         <el-form-item label="密码" prop="password" required
         v-if="dialogStatus !== 'updateRole'">
-          <el-input
+          <el-input style="width: 500px"
             type="password"
             prefix-icon="el-icon-edit"
             auto-complete="off"
@@ -144,7 +144,7 @@
         </el-form-item>
         <el-form-item label="角色"
           v-if="dialogStatus === 'updateRole'">
-          <el-select placeholder="请选择" v-model="tmpAccount.roleId">
+          <el-select style="width: 500px" placeholder="请选择" v-model="tmpAccount.roleId">
             <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true"  style="width: 900px">
         <el-form-item>
           <el-button
             type="success"
@@ -91,7 +91,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -102,7 +102,7 @@
         ref="tmpmachine"
       >
         <el-form-item label="服务器名" prop="machinename" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="40"
             type="text"
             prefix-icon="el-icon-edit"
@@ -111,7 +111,7 @@
           />
         </el-form-item>
         <el-form-item label="ip" prop="ip" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -120,7 +120,7 @@
           />
         </el-form-item>
         <el-form-item label="cpu" prop="cpu" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="40"
             type="text"
             prefix-icon="el-icon-edit"
@@ -129,7 +129,7 @@
           />
         </el-form-item>
         <el-form-item label="disk" prop="disk" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -138,7 +138,7 @@
           />
         </el-form-item>
         <el-form-item label="mem" prop="mem" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="300"
             prefix-icon="el-icon-message"

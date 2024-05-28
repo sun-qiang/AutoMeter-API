@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true"  style="width: 900px">
         <el-form-item>
           <el-button
             type="success"
@@ -58,9 +58,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="390"
+      <el-table-column label="管理" align="center"  :min-width="dynamicWidth"
                        v-if="hasPermission('enviroment:update')  || hasPermission('enviroment:delete')">
         <template slot-scope="scope">
+          <div class="optionDiv" style="white-space: nowrap; display: inline-block">
+
           <el-button
             type="warning"
             size="mini"
@@ -89,6 +91,7 @@
             @click.native.prevent="showdeployassemblyDialog(scope.$index)"
           >配置中间件
           </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -101,7 +104,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -112,7 +115,7 @@
         ref="tmpenviroment"
       >
         <el-form-item label="测试环境名" prop="enviromentname" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-edit"
@@ -122,14 +125,14 @@
         </el-form-item>
 
         <el-form-item label="环境类型" prop="envtype" required>
-          <el-select v-model="tmpenviroment.envtype" placeholder="环境类型" style="width:100%">
+          <el-select v-model="tmpenviroment.envtype" placeholder="环境类型"  style="width: 500px">
             <el-option label="功能" value="功能"></el-option>
             <el-option label="性能" value="性能"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="备注" prop="memo">
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-message"
@@ -163,7 +166,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="deployservicetextMap[deployservicedialogStatus]"
+    <el-dialog :title="deployservicetextMap[deployservicedialogStatus]" width="800px"
                :visible.sync="adddeployservicedialogFormVisible">
       <el-form
         status-icon
@@ -176,7 +179,7 @@
       >
 
         <el-form-item label="服务器" prop="machinename" required>
-          <el-select v-model="tmpmacdepunit.machinename" filterable placeholder="服务器" style="width:100%"
+          <el-select v-model="tmpmacdepunit.machinename" filterable placeholder="服务器"  style="width: 500px"
                      @change="selectChangedMN($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(macname, index) in machinenameList" :key="index">
@@ -186,7 +189,7 @@
         </el-form-item>
 
         <el-form-item label="微服务" prop="deployunitname" required>
-          <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="微服务" style="width:100%"
+          <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="微服务"  style="width: 500px"
                      @change="selectChangedDU($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(depunit, index) in deployUnitList" :key="index">
@@ -196,7 +199,7 @@
         </el-form-item>
 
         <el-form-item label="访问方式" prop="visittype" required>
-          <el-select v-model="tmpmacdepunit.visittype" placeholder="访问方式" style="width:100%"
+          <el-select v-model="tmpmacdepunit.visittype" placeholder="访问方式"  style="width: 500px"
                      @change="selectChangedVisittype($event)">
             <el-option label="ip" value="ip"></el-option>
             <el-option label="域名" value="域名"></el-option>
@@ -205,13 +208,13 @@
 
         <div v-if="domianVisible">
           <el-form-item label="访问域名" prop="domain" required>
-            <el-input v-model="tmpmacdepunit.domain" placeholder="访问域名" required></el-input>
+            <el-input v-model="tmpmacdepunit.domain" style="width: 500px" placeholder="访问域名" required></el-input>
           </el-form-item>
         </div>
 
         <div v-if="assembleVisible">
           <el-form-item label="组件" prop="deployunitname" required>
-            <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="组件" style="width:100%"
+            <el-select v-model="tmpmacdepunit.deployunitname" filterable placeholder="组件"  style="width: 500px"
                        @change="selectChangedAS($event)">
               <el-option label="请选择" value="''" style="display: none"/>
               <div v-for="(assemble, index) in assembleList" :key="index">
@@ -221,7 +224,7 @@
           </el-form-item>
 
           <el-form-item label="访问方式" prop="visittype" required>
-            <el-select v-model="tmpmacdepunit.visittype" placeholder="访问方式" style="width:100%"
+            <el-select v-model="tmpmacdepunit.visittype" placeholder="访问方式"  style="width: 500px"
                        @change="selectChangedVisittype($event)">
               <el-option label="ip" value="ip"></el-option>
               <el-option label="域名" value="域名"></el-option>
@@ -230,7 +233,7 @@
 
           <div v-if="domianVisible">
             <el-form-item label="访问域名" prop="domain" required>
-              <el-input v-model="tmpmacdepunit.domain" maxlength="110" placeholder="访问域名" required></el-input>
+              <el-input v-model="tmpmacdepunit.domain" style="width: 500px" maxlength="110" placeholder="访问域名" required></el-input>
             </el-form-item>
           </div>
         </div>
@@ -408,9 +411,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center" width="230"
+        <el-table-column label="管理" align="center" width="230px"
                          v-if="hasPermission('macdepunit:update')  || hasPermission('macdepunit:delete')">
           <template slot-scope="scope">
+
             <el-button
               type="primary"
               :loading="btnLoading"
@@ -444,7 +448,7 @@
       ></el-pagination>
     </el-dialog>
 
-    <el-dialog :title="deployassembletextMap[deployassembledialogStatus]"
+    <el-dialog :title="deployassembletextMap[deployassembledialogStatus]"  width="800px"
                :visible.sync="adddeployassembledialogFormVisible">
       <el-form
         status-icon
@@ -457,7 +461,7 @@
       >
 
         <el-form-item label="中间件名" prop="assemblename" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="60"
             prefix-icon="el-icon-message"
@@ -467,7 +471,7 @@
         </el-form-item>
 
         <el-form-item label="服务器" prop="machinename" required>
-          <el-select v-model="tmpmacassemble.machinename" filterable placeholder="服务器" style="width:100%"
+          <el-select v-model="tmpmacassemble.machinename" filterable placeholder="服务器"  style="width: 500px"
                      @change="AssembleselectChangedMN($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(macname, index) in machinenameList" :key="index">
@@ -477,7 +481,7 @@
         </el-form-item>
 
         <el-form-item label="中间件类型" prop="assembletype" required >
-          <el-select v-model="tmpmacassemble.assembletype" placeholder="中间件类型" style="width:100%" @change="selectChanged($event)">
+          <el-select v-model="tmpmacassemble.assembletype" placeholder="中间件类型"  style="width: 500px" @change="selectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(asstype, index) in assembleypeList" :key="index">
               <el-option :label="asstype.dicitmevalue" :value="asstype.dicitmevalue" required/>
@@ -485,7 +489,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="连接字" prop="connectstr" required>
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             maxlength="60"
             prefix-icon="el-icon-message"
@@ -496,7 +500,7 @@
         </el-form-item>
 
         <el-form-item label="访问方式" prop="visittype" required>
-          <el-select v-model="tmpmacassemble.visittype" placeholder="访问方式" style="width:100%"
+          <el-select v-model="tmpmacassemble.visittype" placeholder="访问方式"  style="width: 500px"
                      @change="selectChangedVisittype($event)">
             <el-option label="ip" value="ip"></el-option>
             <el-option label="域名" value="域名"></el-option>
@@ -505,7 +509,7 @@
 
         <div v-if="domianVisible">
           <el-form-item label="访问域名" prop="domain" required>
-            <el-input v-model="tmpmacassemble.domain" maxlength="110" placeholder="访问域名" required></el-input>
+            <el-input v-model="tmpmacassemble.domain" style="width: 500px" maxlength="110" placeholder="访问域名" required></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -570,6 +574,7 @@ export default {
   },
   data() {
     return {
+      dynamicWidth: 0,
       id: null,
       itemKey: null,
       serviceitemKey: null,
@@ -723,11 +728,33 @@ export default {
     this.getdepunitLists()
   },
 
+  updated() {
+    this.dynamicWidth = this.$getOperatorWidth()
+  },
   computed: {
     ...mapGetters(['name', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
 
   methods: {
+    renderHeader(h, { column, $index }) {
+      // 获取操作按钮组的元素
+      const opts = document.getElementsByClassName('optionDiv')
+      const widthArr = []
+      // 取操作组的最大宽度
+      Array.prototype.forEach.call(opts, function(item) {
+        if (item.innerText) {
+          widthArr.push(item.offsetWidth)
+        }
+      })
+      // 重新设置列标题及宽度属性
+      if (widthArr.length > 0) {
+        column.width = Math.max(...widthArr) + 24
+        return h('span', column.label)
+      } else {
+        column.width = 0
+        return h('span', column.label)
+      }
+    },
     unix2CurrentTime,
 
     runtest(index) {

@@ -1,85 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-button
-            type="success"
-            size="mini"
-            :loading="btnLoading"
-            icon="el-icon-refresh"
-            v-if="hasPermission('apicases:list')"
-            @click.native.prevent="getapicasesList"
-          >刷新
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-plus"
-            v-if="hasPermission('apicases:add')"
-            @click.native.prevent="showAddapicasesDialog"
-          >添加用例
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:copy')"
-            @click.native.prevent="showCopyapicasesDialog"
-          >复制用例
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:batchcopy')"
-            @click.native.prevent="showCopyBatchapicasesDialog"
-          >批量复制
-          </el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('apicases:batchassert')"
-            @click.native.prevent="showBatchAssertDialog"
-          >批量接口断言
-          </el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            v-if="hasPermission('apicases:batchdelete')"
-            @click.native.prevent="removebatchapicase"
-          >批量删除
-          </el-button>
+      <el-form :inline="true" style="width: 1200px">
 
-<!--          <el-button-->
-<!--            type="primary"-->
-<!--            size="mini"-->
-<!--            icon="el-icon-plus"-->
-<!--            v-if="hasPermission('apicases:add')"-->
-<!--            @click.native.prevent="showAddapicasesconditionnotexistDialog"-->
-<!--          >调试前置条件-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            type="danger"-->
-<!--            size="mini"-->
-<!--            v-if="hasPermission('apicases:add')"-->
-<!--            @click.native.prevent="showdeleteapicasesconditionnotexistDialog"-->
-<!--          >取消调试前置-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            type="primary"-->
-<!--            size="mini"-->
-<!--            icon="el-icon-plus"-->
-<!--            v-if="hasPermission('apicases:add')"-->
-<!--            @click.native.prevent="showGlobalHeadernotexistDialog"-->
-<!--          >调试全局Header-->
-<!--          </el-button>-->
-<!--          <el-button-->
-<!--            type="danger"-->
-<!--            size="mini"-->
-<!--            v-if="hasPermission('apicases:add')"-->
-<!--            @click.native.prevent="showGlobalHeaderexistDialog"-->
-<!--          >取消全局Header-->
-<!--          </el-button>-->
-        </el-form-item>
 <!--        </el-form>-->
 <!--      <el-form :inline="true">-->
         <span v-if="hasPermission('apicases:search')" >
@@ -128,15 +51,96 @@
           </el-form-item>
 
           <el-form-item  label="范围:">
-            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
+            <el-select v-model="search.nickname" style="width:100px" clearable placeholder="范围"  @change="creatorselectChanged($event)">
               <el-option label="我的" value="我的" />
               <el-option label="全部" value="全部" />
             </el-select>
           </el-form-item>
 
           <el-form-item >
-            <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
+            <el-button type="primary"             size="mini"
+                       @click="searchBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
+
+                  <el-form-item>
+          <el-button
+            type="success"
+            size="mini"
+            :loading="btnLoading"
+            icon="el-icon-refresh"
+            v-if="hasPermission('apicases:list')"
+            @click.native.prevent="getapicasesList"
+          >刷新
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-plus"
+            v-if="hasPermission('apicases:add')"
+            @click.native.prevent="showAddapicasesDialog"
+          >添加用例
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:copy')"
+            @click.native.prevent="showCopyapicasesDialog"
+          >复制用例
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:batchcopy')"
+            @click.native.prevent="showCopyBatchapicasesDialog"
+          >批量复制
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('apicases:batchassert')"
+            @click.native.prevent="showBatchAssertDialog"
+          >批量接口断言
+          </el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            v-if="hasPermission('apicases:batchdelete')"
+            @click.native.prevent="removebatchapicase"
+          >批量删除
+          </el-button>
+
+                    <!--          <el-button-->
+                    <!--            type="primary"-->
+                    <!--            size="mini"-->
+                    <!--            icon="el-icon-plus"-->
+                    <!--            v-if="hasPermission('apicases:add')"-->
+                    <!--            @click.native.prevent="showAddapicasesconditionnotexistDialog"-->
+                    <!--          >调试前置条件-->
+                    <!--          </el-button>-->
+                    <!--          <el-button-->
+                    <!--            type="danger"-->
+                    <!--            size="mini"-->
+                    <!--            v-if="hasPermission('apicases:add')"-->
+                    <!--            @click.native.prevent="showdeleteapicasesconditionnotexistDialog"-->
+                    <!--          >取消调试前置-->
+                    <!--          </el-button>-->
+                    <!--          <el-button-->
+                    <!--            type="primary"-->
+                    <!--            size="mini"-->
+                    <!--            icon="el-icon-plus"-->
+                    <!--            v-if="hasPermission('apicases:add')"-->
+                    <!--            @click.native.prevent="showGlobalHeadernotexistDialog"-->
+                    <!--          >调试全局Header-->
+                    <!--          </el-button>-->
+                    <!--          <el-button-->
+                    <!--            type="danger"-->
+                    <!--            size="mini"-->
+                    <!--            v-if="hasPermission('apicases:add')"-->
+                    <!--            @click.native.prevent="showGlobalHeaderexistDialog"-->
+                    <!--          >取消全局Header-->
+                    <!--          </el-button>-->
+        </el-form-item>
+
         </span>
       </el-form>
     </div>
@@ -161,26 +165,28 @@
       </el-table-column>
 
       <el-table-column label="用例名" :show-overflow-tooltip="true" align="center" prop="casename" width="100"/>
-      <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="120"/>
-      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="100"/>
+      <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="140"/>
+      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="130"/>
 <!--      <el-table-column label="Jmeter-Class" align="center" prop="casejmxname" width="100"/>-->
-      <el-table-column label="类型" align="center" prop="casetype" width="50"/>
-      <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="50"/>
+      <el-table-column label="类型" align="center" prop="casetype" width="60"/>
+      <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="100"/>
       <!--      <el-table-column label="线程" align="center" prop="threadnum" width="50"/>-->
 <!--      <el-table-column label="循环" align="center" prop="loops" width="50"/>-->
       <el-table-column :show-overflow-tooltip="true" label="用例描述" align="center" prop="casecontent" width="80"/>
       <el-table-column :show-overflow-tooltip="true"  label="维护人" align="center" prop="mnickname" width="60"/>
       <el-table-column :show-overflow-tooltip="true"  label="操作人" align="center" prop="creator" width="60"/>
-      <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="120">
+      <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="最后修改时间" align="center" prop="lastmodifyTime" width="120">
+      <el-table-column :show-overflow-tooltip="true" label="最后修改时间" align="center" prop="lastmodifyTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-      <el-table-column label="管理" align="center" width="250"
+      <el-table-column label="管理" align="center"   :min-width="dynamicWidth"
                        v-if="hasPermission('apicases:update')  || hasPermission('apicases:delete')">
         <template slot-scope="scope">
+          <div class="optionDiv" style="white-space: nowrap; display: inline-block">
+
           <el-button
             type="warning"
             size="mini"
@@ -202,6 +208,7 @@
             @click.native.prevent="showcaseoperationDialog(scope.$index)"
           >用例操作
           </el-button>
+          </div>
         </template>
       </el-table-column>
 
@@ -256,7 +263,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -267,7 +274,7 @@
         ref="tmpapicases"
       >
         <el-form-item label="微服务" prop="deployunitname" required >
-          <el-select v-model="tmpapicases.deployunitname" clearable style="width:100%" placeholder="微服务" @change="selectChanged($event)">
+          <el-select v-model="tmpapicases.deployunitname" clearable  style="width: 500px" placeholder="微服务" @change="selectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -275,7 +282,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="模块" prop="modelname" >
-          <el-select v-model="tmpapicases.modelname" clearable style="width:100%" placeholder="模块" @change="modelselectChanged($event)">
+          <el-select v-model="tmpapicases.modelname" clearable  style="width: 500px" placeholder="模块" @change="modelselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(model, index) in modelList" :key="index">
               <el-option :label="model.modelname" :value="model.modelname" required/>
@@ -284,7 +291,7 @@
         </el-form-item>
 
         <el-form-item label="API" prop="apiname" required >
-          <el-select v-model="tmpapicases.apiname" clearable style="width:100%" placeholder="API" @change="apiselectChanged($event)">
+          <el-select v-model="tmpapicases.apiname" clearable  style="width: 500px" placeholder="API" @change="apiselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(apiname, index) in apiList" :key="index">
               <el-option :label="apiname.apiname" :value="apiname.apiname" required/>
@@ -292,13 +299,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="用例类型" prop="casetype" required >
-          <el-select v-model="tmpapicases.casetype" style="width:100%" placeholder="用例类型" @change="funorperformChanged($event)">
+          <el-select v-model="tmpapicases.casetype"  style="width: 500px" placeholder="用例类型" @change="funorperformChanged($event)">
             <el-option label="功能" value="功能"></el-option>
             <el-option label="性能" value="性能"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="用例名" prop="casename" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -309,7 +316,7 @@
 
         <div v-if="threadloopvisible">
         <el-form-item label="线程数" prop="threadnum" required>
-          <el-input
+          <el-input style="width: 500px"
             oninput="value=value.replace(/[^\d]/g,'')"
             maxLength='20'
             type="number"
@@ -320,7 +327,7 @@
         </el-form-item>
 
           <el-form-item label="循环次数" prop="loops" required>
-            <el-input placeholder="用例循环执行次数"
+            <el-input placeholder="用例循环执行次数" style="width: 500px"
                       oninput="value=value.replace(/[^\d]/g,'')"
                       maxLength='20'
                       type="number"
@@ -333,7 +340,7 @@
 
         <div v-if="JmeterClassVisible">
         <el-form-item label="Jmeter" prop="casejmxname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -344,7 +351,7 @@
         </div>
 
         <el-form-item label="维护人:" prop="mnickname" required>
-          <el-select v-model="tmpapicases.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+          <el-select v-model="tmpapicases.mnickname" filterable clearable placeholder="维护人"  style="width: 500px"
                      @change="mnicknameselectChanged($event)">
             <div v-for="(mnickname, index) in accountList" :key="index">
               <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
@@ -353,7 +360,7 @@
         </el-form-item>
 
         <el-form-item label="用例描述" prop="casecontent" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="50"
             prefix-icon="el-icon-edit"
@@ -372,7 +379,7 @@
 <!--          />-->
 <!--        </el-form-item>-->
         <el-form-item label="备注" prop="memo" >
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="100"
             prefix-icon="el-icon-message"
@@ -574,7 +581,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="CopyApiCase" :visible.sync="CopydialogFormVisible">
+    <el-dialog :title="CopyApiCase" width="800px"   :visible.sync="CopydialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -584,7 +591,7 @@
         :model="tmpcopycase"
         ref="tmpcopycase"
       >      <el-form-item label="源微服务" prop="sourcedeployunitname" required >
-        <el-select v-model="tmpcopycase.sourcedeployunitname" placeholder="微服务" style="width:100%" @change="CopyCasesSourceDeployselectChanged($event)">
+        <el-select v-model="tmpcopycase.sourcedeployunitname" placeholder="微服务"  style="width: 500px" @change="CopyCasesSourceDeployselectChanged($event)">
           <el-option label="请选择" value="''" style="display: none" />
           <div v-for="(depunitname, index) in deployunitList" :key="index">
             <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -593,7 +600,7 @@
       </el-form-item>
 
       <el-form-item label="用例来源" prop="sourcecasename" required >
-        <el-select v-model="tmpcopycase.sourcecasename" placeholder="用例" style="width:100%" @change="CopySourceCasesChanged($event)">
+        <el-select v-model="tmpcopycase.sourcecasename" placeholder="用例"  style="width: 500px" @change="CopySourceCasesChanged($event)">
           <el-option label="请选择" value="''" style="display: none" />
           <div v-for="(testcase, index) in sourcetestcaseList" :key="index">
             <el-option :label="testcase.casename" :value="testcase.casename" required/>
@@ -601,7 +608,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="新用例名" prop="newcasename" required>
-        <el-input
+        <el-input style="width: 500px"
           type="text"
           maxlength="40"
           prefix-icon="el-icon-edit"
@@ -621,7 +628,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="CopyBatchApiCase" :visible.sync="CopybatchdialogFormVisible">
+    <el-dialog :title="CopyBatchApiCase"  width="800px" :visible.sync="CopybatchdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -632,7 +639,7 @@
         ref="tmpbatchcopycase"
       >
         <el-form-item label="源微服务" prop="sourcedeployunitname" required >
-        <el-select v-model="tmpbatchcopycase.sourcedeployunitname" placeholder="微服务" style="width:100%" @change="CopyBatchCasesSourceDeployselectChanged($event)">
+        <el-select v-model="tmpbatchcopycase.sourcedeployunitname" placeholder="微服务"  style="width: 500px" @change="CopyBatchCasesSourceDeployselectChanged($event)">
           <el-option label="请选择" value="''" style="display: none" />
           <div v-for="(depunitname, index) in deployunitList" :key="index">
             <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -640,7 +647,7 @@
         </el-select>
       </el-form-item>
         <el-form-item label="目标微服务" prop="destinationdeployunitname" required >
-          <el-select v-model="tmpbatchcopycase.destinationdeployunitname" placeholder="微服务" style="width:100%" @change="CopyBatchDesiCasesSourceDeployselectChanged($event)">
+          <el-select v-model="tmpbatchcopycase.destinationdeployunitname" placeholder="微服务"  style="width: 500px" @change="CopyBatchDesiCasesSourceDeployselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -1037,7 +1044,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="AsserttextMap[AssertdialogStatus]" :visible.sync="AssertAUdialogFormVisible">
+    <el-dialog :title="AsserttextMap[AssertdialogStatus]" width="800px"  :visible.sync="AssertAUdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -1048,7 +1055,7 @@
         ref="tmpassert"
       >
       <el-form-item label="断言类型" prop="asserttype" required >
-        <el-select v-model="tmpassert.asserttype" style="width:100%" placeholder="断言类型" @change="asserttypeselectChanged($event)">
+        <el-select v-model="tmpassert.asserttype"  style="width: 500px" placeholder="断言类型" @change="asserttypeselectChanged($event)">
           <el-option label="Respone断言" value="Respone"></el-option>
           <el-option label="Json断言" value="Json"></el-option>
           <el-option label="Xml断言" value="Xml"></el-option>
@@ -1057,7 +1064,7 @@
 
         <div v-if="AssertSubVisible">
         <el-form-item label="断言子类型" prop="assertsubtype" required >
-          <el-select v-model="tmpassert.assertsubtype" style="width:100%" placeholder="断言子类型">
+          <el-select v-model="tmpassert.assertsubtype"  style="width: 500px" placeholder="断言子类型">
             <el-option label="Code" value="Code"></el-option>
             <el-option label="文本" value="文本"></el-option>
           </el-select>
@@ -1066,7 +1073,7 @@
 
         <div v-if="ExpressionVisible">
         <el-form-item label="表达式" prop="expression" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="400"
             prefix-icon="el-icon-edit"
@@ -1083,7 +1090,7 @@
         </div>
 
         <el-form-item label="条件" prop="assertcondition" required >
-          <el-select v-model="tmpassert.assertcondition" style="width:100%" placeholder="条件" @change="assertnameselectChanged($event)">
+          <el-select v-model="tmpassert.assertcondition"  style="width: 500px" placeholder="条件" @change="assertnameselectChanged($event)">
             <el-option label="等于" value="="></el-option>
             <el-option label="大于" value=">"></el-option>
             <el-option label="小于" value="<"></el-option>
@@ -1093,7 +1100,7 @@
         </el-form-item>
 
         <el-form-item label="断言值" prop="assertvalues" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="2000"
             prefix-icon="el-icon-edit"
@@ -1102,7 +1109,7 @@
           />
         </el-form-item>
         <el-form-item label="断言值类型" prop="assertvaluetype" required >
-          <el-select v-model="tmpassert.assertvaluetype" style="width:100%" placeholder="断言值类型">
+          <el-select v-model="tmpassert.assertvaluetype"  style="width: 500px" placeholder="断言值类型">
             <el-option label="int" value="int"></el-option>
             <el-option label="Long" value="Long"></el-option>
             <el-option label="Float" value="Float"></el-option>
@@ -1553,7 +1560,7 @@
         >取消Header</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="批量断言" :visible.sync="BatchAssertdialogFormVisible">
+    <el-dialog title="批量断言"  width="800px"   :visible.sync="BatchAssertdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -1564,7 +1571,7 @@
         ref="tmpbatchassert"
       >
         <el-form-item label="断言类型" prop="asserttype" required >
-          <el-select v-model="tmpbatchassert.asserttype" style="width:100%" placeholder="断言类型" @change="asserttypeselectChanged($event)">
+          <el-select v-model="tmpbatchassert.asserttype"  style="width: 500px" placeholder="断言类型" @change="asserttypeselectChanged($event)">
             <el-option label="Respone断言" value="Respone"></el-option>
             <el-option label="Json断言" value="Json"></el-option>
             <el-option label="Xml断言" value="Xml"></el-option>
@@ -1573,7 +1580,7 @@
 
         <div v-if="AssertSubVisible">
           <el-form-item label="断言子类型" prop="assertsubtype" required >
-            <el-select v-model="tmpbatchassert.assertsubtype" style="width:100%" placeholder="断言子类型">
+            <el-select v-model="tmpbatchassert.assertsubtype"  style="width: 500px" placeholder="断言子类型">
               <el-option label="Code" value="Code"></el-option>
               <el-option label="文本" value="文本"></el-option>
             </el-select>
@@ -1582,7 +1589,7 @@
 
         <div v-if="ExpressionVisible">
           <el-form-item label="表达式" prop="expression" required>
-            <el-input
+            <el-input style="width: 500px"
               type="text"
               maxlength="400"
               prefix-icon="el-icon-edit"
@@ -1599,7 +1606,7 @@
         </div>
 
         <el-form-item label="条件" prop="assertcondition" required >
-          <el-select v-model="tmpbatchassert.assertcondition" style="width:100%" placeholder="条件">
+          <el-select v-model="tmpbatchassert.assertcondition"  style="width: 500px" placeholder="条件">
             <el-option label="等于" value="="></el-option>
             <el-option label="大于" value=">"></el-option>
             <el-option label="小于" value="<"></el-option>
@@ -1608,7 +1615,7 @@
         </el-form-item>
 
         <el-form-item label="断言值" prop="assertvalues" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="2000"
             prefix-icon="el-icon-edit"
@@ -1617,7 +1624,7 @@
           />
         </el-form-item>
         <el-form-item label="断言值类型" prop="assertvaluetype" required >
-          <el-select v-model="tmpbatchassert.assertvaluetype" style="width:100%" placeholder="断言值类型">
+          <el-select v-model="tmpbatchassert.assertvaluetype"  style="width: 500px" placeholder="断言值类型">
             <el-option label="int" value="int"></el-option>
             <el-option label="Long" value="Long"></el-option>
             <el-option label="Float" value="Float"></el-option>
@@ -2019,7 +2026,7 @@
         </el-table-column>
       </el-table>
     </el-dialog>
-    <el-dialog :title="scripttextMap[scriptdialogStatus]" :visible.sync="scriptdialogFormVisible">
+    <el-dialog :title="scripttextMap[scriptdialogStatus]" width="800px"  :visible.sync="scriptdialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -2030,7 +2037,7 @@
         ref="tmpscriptcondition"
       >
         <el-form-item label="脚本条件名" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -2040,7 +2047,7 @@
         </el-form-item>
 
         <el-form-item label="Java代码" prop="script" required >
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="10" cols="50"
             maxlength="4000"
@@ -2068,7 +2075,7 @@
         >修改</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" :visible.sync="caseconditiondialogFormVisible">
+    <el-dialog :title="apiconditiontextMap[apiconditiondialogStatus]" width="800px"  :visible.sync="caseconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -2080,7 +2087,7 @@
       >
 
         <el-form-item label="前置条件名" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -2090,7 +2097,7 @@
         </el-form-item>
 
         <el-form-item label="微服务" prop="deployunitname" required >
-          <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务" style="width:100%" @change="apiconditiondeployunitselectChanged($event)">
+          <el-select v-model="tmpapicondition.deployunitname" filterable placeholder="微服务"  style="width: 500px" @change="apiconditiondeployunitselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -2099,7 +2106,7 @@
         </el-form-item>
 
         <el-form-item  label="模块:" prop="modelname" >
-          <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块" style="width:100%"  @change="apiconditionmodelselectChanged($event)">
+          <el-select v-model="tmpapicondition.modelname" filterable placeholder="模块"  style="width: 500px"  @change="apiconditionmodelselectChanged($event)">
             <el-option label="请选择" value />
             <div v-for="(model, index) in apiconditionmodelList" :key="index">
               <el-option :label="model.modelname" :value="model.modelname" />
@@ -2108,7 +2115,7 @@
         </el-form-item>
 
         <el-form-item label="API" prop="apiname" required >
-          <el-select v-model="tmpapicondition.apiname" filterable placeholder="API" style="width:100%" @change="apiconditionapiselectChanged($event)">
+          <el-select v-model="tmpapicondition.apiname" filterable placeholder="API"  style="width: 500px" @change="apiconditionapiselectChanged($event)">
             <div v-for="(api, index) in apiconditionapiList" :key="index">
               <el-option :label="api.apiname" :value="api.apiname"/>
             </div>
@@ -2116,7 +2123,7 @@
         </el-form-item>
 
         <el-form-item label="接口" prop="casename" required >
-          <el-select v-model="tmpapicondition.casename" filterable placeholder="接口" style="width:100%" @change="apiconditiontestcaseselectChanged($event)">
+          <el-select v-model="tmpapicondition.casename" filterable placeholder="接口"  style="width: 500px" @change="apiconditiontestcaseselectChanged($event)">
             <div v-for="(testcase, index) in conditionapicaseList" :key="index">
               <el-option :label="testcase.casename" :value="testcase.casename" required/>
             </div>
@@ -2146,7 +2153,7 @@
         >修改</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="dbtextMap[dbdialogStatus]" :visible.sync="dbconditiondialogFormVisible">
+    <el-dialog :title="dbtextMap[dbdialogStatus]" width="800px"  :visible.sync="dbconditiondialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -2157,7 +2164,7 @@
         ref="tmpdbcondition"
       >
         <el-form-item label="数据库条件名：" prop="subconditionname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="30"
             prefix-icon="el-icon-edit"
@@ -2167,7 +2174,7 @@
         </el-form-item>
 
         <el-form-item label="环境：" prop="enviromentname" required >
-          <el-select v-model="tmpdbcondition.enviromentname" filterable  placeholder="环境" style="width:100%" @change="selectChangedEN($event)">
+          <el-select v-model="tmpdbcondition.enviromentname" filterable  placeholder="环境"  style="width: 500px" @change="selectChangedEN($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(envname, index) in enviromentnameList" :key="index">
               <el-option :label="envname.enviromentname" :value="envname.enviromentname" required/>
@@ -2176,7 +2183,7 @@
         </el-form-item>
 
         <el-form-item label="组件：" prop="assemblename" required >
-          <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件" style="width:100%" @change="ConditionselectChangedAS($event)">
+          <el-select v-model="tmpdbcondition.assemblename" filterable placeholder="组件"  style="width: 500px" @change="ConditionselectChangedAS($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(macname, index) in enviroment_assembleList" :key="index">
               <el-option :label="macname.deployunitname" :value="macname.deployunitname" required/>
@@ -2185,7 +2192,7 @@
         </el-form-item>
 
         <el-form-item label="操作类型：" prop="dbtype" required >
-          <el-select v-model="tmpdbcondition.dbtype" placeholder="操作类型" style="width:100%" @change="selectChangedDBType($event)">
+          <el-select v-model="tmpdbcondition.dbtype" placeholder="操作类型"  style="width: 500px" @change="selectChangedDBType($event)">
             <el-option label="新增" value="Insert"  />
             <el-option label="删除" value="Delete"  />
             <el-option label="修改" value="Update"  />
@@ -2194,7 +2201,7 @@
         </el-form-item>
 
         <el-form-item label="Sql语句：" prop="dbcontent" required>
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="10" cols="50"
             maxlength="2000"
@@ -3218,6 +3225,7 @@
     },
     data() {
       return {
+        dynamicWidth: 0,
         searchapicasesresponedata: {
           page: 1,
           size: 10,
@@ -3859,12 +3867,34 @@
       this.getenviromentallList()
     },
 
+    updated() {
+      this.dynamicWidth = this.$getOperatorWidth()
+    },
     computed: {
       ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
     },
 
     methods: {
       unix2CurrentTime,
+      renderHeader(h, { column, $index }) {
+        // 获取操作按钮组的元素
+        const opts = document.getElementsByClassName('optionDiv')
+        const widthArr = []
+        // 取操作组的最大宽度
+        Array.prototype.forEach.call(opts, function(item) {
+          if (item.innerText) {
+            widthArr.push(item.offsetWidth)
+          }
+        })
+        // 重新设置列标题及宽度属性
+        if (widthArr.length > 0) {
+          column.width = Math.max(...widthArr) + 24
+          return h('span', column.label)
+        } else {
+          column.width = 0
+          return h('span', column.label)
+        }
+      },
       addapicaseresponesetting() {
         this.$refs.tmpapicasesresponedata.validate(valid => {
           if (valid) {
@@ -5598,6 +5628,9 @@
        * 调试
        */
       runtest() {
+        console.log('调试请求数据。。。。。。。。。')
+        console.log(this.tmptestdata)
+        console.log('调试请求数据。。。。。。。。。')
         this.$refs.tmptest.validate(valid => {
           if (valid) {
             runtest(this.tmptestdata).then(response => {
@@ -5760,7 +5793,6 @@
       async showcaseoperationDialog(index) {
         this.searchapicasesresponedata.caseid = this.apicasesList[index].id
         this.tmpapicasesresponedata.caseid = this.apicasesList[index].id
-        this.searchresponesetting()
         this.caseoperationialogFormVisible = true
         this.opearationactiveName = 'zero'
         this.activeName = 'zero'
@@ -5785,6 +5817,7 @@
           this.getbodytextdatabycaseidandtype()
           // 调试
           this.tmptestdata.caseid = this.apicasesList[index].id
+          console.log('调试获取caseid完成：' + this.tmptestdata.caseid)
           this.tmptestdata.conditionid = this.tmptest.conditionid
           this.tmptestdata.globalheaderid = this.tmptest.globalheaderid
           this.checked = false
@@ -5833,6 +5866,7 @@
           // this.AssertdialogFormVisible = true
           this.searchassert.asserttype = ''
         }
+        this.searchresponesetting()
       },
       /**
        * 显示用例值对话框

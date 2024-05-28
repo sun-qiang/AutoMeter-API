@@ -82,7 +82,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -93,7 +93,7 @@
         ref="tmpvariables"
       >
         <el-form-item label="随机变量名" prop="variablesname" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="50"
             type="text"
             prefix-icon="el-icon-edit"
@@ -103,7 +103,7 @@
         </el-form-item>
 
         <el-form-item label="变量类型" prop="variablestype" required >
-          <el-select v-model="tmpvariables.variablestype" placeholder="变量类型" style="width:100%" @change="variablestypeselectChanged($event)">
+          <el-select v-model="tmpvariables.variablestype" placeholder="变量类型"  style="width: 500px" @change="variablestypeselectChanged($event)">
             <el-option label="当前时间" value="当前时间"></el-option>
             <el-option label="当前日期" value="当前日期"></el-option>
             <el-option label="当前时间戳" value="当前时间戳"></el-option>
@@ -118,7 +118,7 @@
 
         <div v-if="variablecondition">
           <el-form-item label="变量条件" prop="variablecondition" >
-            <el-input
+            <el-input style="width: 500px"
               type="textarea"
               rows="3" cols="30"
               :placeholder='variableconditionplaceholder'
@@ -130,7 +130,7 @@
         </div>
 
         <el-form-item label="变量描述" prop="memo" >
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="60"
             placeholder="变量描述"

@@ -82,7 +82,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -93,7 +93,7 @@
         ref="tmpglobalvariables"
       >
         <el-form-item label="全局变量名" prop="keyname" required>
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-edit"
@@ -103,7 +103,7 @@
         </el-form-item>
 
         <el-form-item label="变量值" prop="keyvalue" required>
-          <el-input
+          <el-input style="width: 500px"
             type="textarea"
             rows="15" cols="50"
             prefix-icon="el-icon-message"
@@ -113,7 +113,7 @@
         </el-form-item>
 
         <el-form-item label="备注" prop="memo">
-          <el-input
+          <el-input style="width: 500px"
             maxlength="60"
             type="text"
             prefix-icon="el-icon-message"
