@@ -162,12 +162,12 @@
 
       <el-table-column label="用例名" :show-overflow-tooltip="true" align="center" prop="casename" width="100"/>
       <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="120"/>
-      <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="100"/>
 <!--      <el-table-column label="Jmeter-Class" align="center" prop="casejmxname" width="100"/>-->
       <el-table-column label="类型" align="center" prop="casetype" width="50"/>
-      <el-table-column label="线程" align="center" prop="threadnum" width="50"/>
-      <el-table-column label="循环" align="center" prop="loops" width="50"/>
+      <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="50"/>
+      <!--      <el-table-column label="线程" align="center" prop="threadnum" width="50"/>-->
+<!--      <el-table-column label="循环" align="center" prop="loops" width="50"/>-->
       <el-table-column :show-overflow-tooltip="true" label="用例描述" align="center" prop="casecontent" width="80"/>
       <el-table-column :show-overflow-tooltip="true"  label="维护人" align="center" prop="mnickname" width="60"/>
       <el-table-column :show-overflow-tooltip="true"  label="操作人" align="center" prop="creator" width="60"/>
@@ -318,19 +318,18 @@
             v-model="tmpapicases.threadnum"
           />
         </el-form-item>
+
+          <el-form-item label="循环次数" prop="loops" required>
+            <el-input placeholder="用例循环执行次数"
+                      oninput="value=value.replace(/[^\d]/g,'')"
+                      maxLength='20'
+                      type="number"
+                      prefix-icon="el-icon-edit"
+                      auto-complete="off"
+                      v-model="tmpapicases.loops"
+            />
+          </el-form-item>
         </div>
-
-
-        <el-form-item label="循环次数" prop="loops" required>
-          <el-input placeholder="用例循环执行次数"
-            oninput="value=value.replace(/[^\d]/g,'')"
-            maxLength='20'
-            type="number"
-            prefix-icon="el-icon-edit"
-            auto-complete="off"
-            v-model="tmpapicases.loops"
-          />
-        </el-form-item>
 
         <div v-if="JmeterClassVisible">
         <el-form-item label="Jmeter" prop="casejmxname" required>
@@ -3503,8 +3502,8 @@
           casejmxname: '',
           casecontent: '',
           casetype: '',
-          threadnum: '',
-          loops: '',
+          threadnum: 1,
+          loops: 1,
           expect: '',
           middleparam: '',
           level: 0,
@@ -4847,9 +4846,9 @@
        */
       funorperformChanged(e) {
         if (e === '性能') {
-          this.threadloopvisible = true
-          this.tmpapicases.threadnum = ''
-          this.tmpapicases.loops = ''
+          this.threadloopvisible = false
+          this.tmpapicases.threadnum = 1
+          this.tmpapicases.loops = 1
         } else {
           this.threadloopvisible = false
           this.tmpapicases.threadnum = 1
@@ -5726,7 +5725,7 @@
         this.tmpapicases.mnickname = this.apicasesList[index].mnickname
         this.tmpapicases.projectid = window.localStorage.getItem('pid')
         if (this.tmpapicases.casetype === '性能') {
-          this.threadloopvisible = true
+          this.threadloopvisible = false
           this.tmpapicases.threadnum = this.apicasesList[index].threadnum
           // this.tmpapicases.loops = this.apicasesList[index].loops
         } else {

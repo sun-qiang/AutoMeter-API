@@ -7,7 +7,7 @@ import store from './store'
 import '@/icons' // icon
 import '@/permission' // 权限
 import { default as request } from './utils/request'
-import { hasPermission } from './utils/hasPermission'
+import { hasPermission, getOperatorWidth } from './utils/hasPermission'
 import lang from 'element-ui/lib/locale/lang/zh-CN'
 import locale from 'element-ui/lib/locale'
 import VueClipboard from 'vue-clipboard2'
@@ -16,6 +16,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 Vue.component('Treeselect', Treeselect)
 Vue.use(VueClipboard)
+Vue.prototype.$getOperatorWidth = getOperatorWidth
 
 // 设置语言
 locale.use(lang)

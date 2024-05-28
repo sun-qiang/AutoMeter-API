@@ -209,7 +209,8 @@ export const asyncRouterMap = [
     name: '执行中心',
     icon: 'execute',
     children: [
-      { path: 'testscene/list', name: '测试场景', component: _import('executecenter/testscene/index'), meta: { title: '测试场景', permission: ['testscene:list'] }},
+      { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
+      { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
       { path: 'executeplan/list', name: '测试集合', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
       // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
       // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true" style="width: 900px">
         <el-form-item>
           <el-button
             type="success"
@@ -46,13 +46,15 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="服务名" align="center" prop="deployunitname" width="120"/>
-      <el-table-column label="协议" align="center" prop="protocal" width="50"/>
+
+      <el-table-column :show-overflow-tooltip="true"  label="服务名" align="center" prop="deployunitname" width="150"/>
+      <el-table-column label="协议" align="center" prop="protocal" width="80"/>
       <el-table-column label="访问端口" align="center" prop="port" width="80"/>
-      <el-table-column label="基础路径" align="center" prop="baseurl" width="100"/>
+      <el-table-column :show-overflow-tooltip="true"  label="基础路径" align="center" prop="baseurl" width="150"/>
       <el-table-column label="API数" align="center" prop="apicounts" sortable width="80"/>
-      <el-table-column label="描述" align="center" prop="memo" width="100"/>
       <el-table-column label="维护人" align="center" prop="creator" width="80"/>
+      <el-table-column :show-overflow-tooltip="true"  label="描述" align="center" prop="memo" width="150"/>
+
       <el-table-column label="创建时间" align="center" prop="createTime" sortable width="140">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -60,28 +62,30 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-
-      <el-table-column label="管理" align="center"
+      <el-table-column label="管理" align="center"   :min-width="dynamicWidth"
                        v-if="hasPermission('depunit:update')  || hasPermission('depunit:delete')">
         <template slot-scope="scope">
-          <el-button
-            type="warning"
-            size="mini"
-            v-if="hasPermission('depunit:update') && scope.row.id !== id"
-            @click.native.prevent="showUpdatedepunitDialog(scope.$index)"
-          >修改</el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            v-if="hasPermission('depunit:delete') && scope.row.id !== id"
-            @click.native.prevent="removedepunit(scope.$index)"
-          >删除</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            v-if="hasPermission('depunit:delete') && scope.row.id !== id"
-            @click.native.prevent="showmodelsDialog(scope.$index)"
-          >模块</el-button>
+          <div class="optionDiv" style="white-space: nowrap; display: inline-block">
+
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('depunit:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedepunitDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('depunit:delete') && scope.row.id !== id"
+              @click.native.prevent="removedepunit(scope.$index)"
+            >删除</el-button>
+            <el-button
+              type="primary"
+              size="mini"
+              v-if="hasPermission('depunit:delete') && scope.row.id !== id"
+              @click.native.prevent="showmodelsDialog(scope.$index)"
+            >模块</el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -94,7 +98,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -105,7 +109,7 @@
         ref="tmpdepunit"
       >
         <el-form-item label="服务名" prop="deployunitname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -114,13 +118,13 @@
           />
         </el-form-item>
         <el-form-item label="协议" prop="protocal" required>
-          <el-select v-model="tmpdepunit.protocal" style="width:100%" placeholder="协议">
+          <el-select v-model="tmpdepunit.protocal" style="width: 500px"  placeholder="协议">
             <el-option label="http" value="http"></el-option>
             <el-option label="https" value="https"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="端口" prop="port" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-message"
@@ -130,7 +134,7 @@
         </el-form-item>
 
         <el-form-item label="基础路径" prop="baseurl" >
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-message"
@@ -139,7 +143,7 @@
           />
         </el-form-item>
         <el-form-item label="备注" prop="memo">
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="300"
             prefix-icon="el-icon-message"
@@ -170,7 +174,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="模块管理" :visible.sync="ModelsFormVisible">
+    <el-dialog title="模块管理" width="800px" :visible.sync="ModelsFormVisible">
       <div class="filter-container">
         <el-form :inline="true">
           <el-form-item>
@@ -198,7 +202,8 @@
             <span v-text="modelgetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="模块名" align="center" prop="modelname" width="280"/>
+        <el-table-column :show-overflow-tooltip="true"  label="模块名" align="center" prop="modelname" width="300"/>
+        <el-table-column :show-overflow-tooltip="true"  label="备注" align="center" prop="memo" width="200"/>
         <el-table-column label="管理" align="center">
           <template slot-scope="scope">
             <el-button
@@ -216,7 +221,7 @@
       </el-table>
     </el-dialog>
 
-    <el-dialog :title="modeltextMap[modeldialogStatus]" :visible.sync="modeldialogFormVisible">
+    <el-dialog :title="modeltextMap[modeldialogStatus]" width="800px"  :visible.sync="modeldialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -227,7 +232,7 @@
         ref="tmpmodel"
       >
         <el-form-item label="模块名" prop="modelname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -235,8 +240,8 @@
             v-model="tmpmodel.modelname"
           />
         </el-form-item>
-        <el-form-item label="备注" prop="memo" required>
-          <el-input
+        <el-form-item label="备注" prop="memo" >
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -293,6 +298,7 @@
         }
       }
       return {
+        dynamicWidth: 0,
         id: null,
         itemKey: null,
         itemmodelKey: null,
@@ -372,9 +378,31 @@
       this.getdepunitList()
     },
 
+    updated() {
+      this.dynamicWidth = this.$getOperatorWidth()
+    },
+
     methods: {
       unix2CurrentTime,
-
+      renderHeader(h, { column, $index }) {
+        // 获取操作按钮组的元素
+        const opts = document.getElementsByClassName('optionDiv')
+        const widthArr = []
+        // 取操作组的最大宽度
+        Array.prototype.forEach.call(opts, function(item) {
+          if (item.innerText) {
+            widthArr.push(item.offsetWidth)
+          }
+        })
+        // 重新设置列标题及宽度属性
+        if (widthArr.length > 0) {
+          column.width = Math.max(...widthArr) + 24
+          return h('span', column.label)
+        } else {
+          column.width = 0
+          return h('span', column.label)
+        }
+      },
       /**
        * 获取服务列表
        */
@@ -627,3 +655,4 @@
     }
   }
 </script>
+

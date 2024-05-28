@@ -3,11 +3,11 @@
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened" />
     <Levelbar />
 
-    <el-select class="project-container" v-model="projectname"   placeholder="默认项目" @change="exectypeselectChanged($event)" >
-      <div v-for="(project, index) in pList" :key="index">
-        <el-option :label="project.projectname" :value="project.projectname" required />
-      </div>
-    </el-select>
+      <el-select  class="project-container" v-model="projectname"   placeholder="默认项目" @change="exectypeselectChanged($event)" >
+        <div v-for="(project, index) in pList" :key="index">
+          <el-option :label="project.projectname" :value="project.projectname" required />
+        </div>
+      </el-select>
 
     <el-dropdown class="account-container">
       <span class="el-dropdown-link">
@@ -139,9 +139,10 @@ export default {
   }
   .project-container {
     height: 45px;
+    width: 200px;
     display: inline-block;
     position: absolute;
-    right: 100px;
+    right: 120px;
     .el-dropdown-link {
       cursor: pointer;
       color: #409eff;

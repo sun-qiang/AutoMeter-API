@@ -1,7 +1,31 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true" style="width: 1200px">
+        <span v-if="hasPermission('api:search')">
+          <el-form-item  label="API名:">
+            <el-input style="width: 130px" v-model="search.apiname" clearable @keyup.enter.native="searchBy" placeholder="API名"></el-input>
+          </el-form-item>
+          <el-form-item  label="微服务名:">
+            <el-input style="width: 130px" v-model="search.deployunitname" clearable @keyup.enter.native="searchBy" placeholder="微服务名"></el-input>
+          </el-form-item>
+          <el-form-item  label="模块名:">
+            <el-input style="width: 130px" v-model="search.modelname" clearable @keyup.enter.native="searchBy" placeholder="模块名"></el-input>
+          </el-form-item>
+           <el-form-item  label="Url路径:">
+            <el-input style="width: 180px" v-model="search.path" clearable @keyup.enter.native="searchBy" placeholder="Url路径"></el-input>
+          </el-form-item>
+          <el-form-item  label="范围:">
+            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
+              <el-option label="我的" value="我的" />
+              <el-option label="全部" value="全部" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
+          </el-form-item>
+
+        </span>
         <el-form-item>
           <el-button
             type="success"
@@ -48,32 +72,6 @@
           >批量删除
           </el-button>
         </el-form-item>
-
-        <span v-if="hasPermission('api:search')">
-          <el-form-item  label="API名:">
-            <el-input style="width: 130px" v-model="search.apiname" clearable @keyup.enter.native="searchBy" placeholder="API名"></el-input>
-          </el-form-item>
-          <el-form-item  label="微服务名:">
-            <el-input style="width: 130px" v-model="search.deployunitname" clearable @keyup.enter.native="searchBy" placeholder="微服务名"></el-input>
-          </el-form-item>
-          <el-form-item  label="模块名:">
-            <el-input style="width: 130px" v-model="search.modelname" clearable @keyup.enter.native="searchBy" placeholder="模块名"></el-input>
-          </el-form-item>
-           <el-form-item  label="Url路径:">
-            <el-input style="width: 130px" v-model="search.path" clearable @keyup.enter.native="searchBy" placeholder="Url路径"></el-input>
-          </el-form-item>
-          <el-form-item  label="范围:">
-            <el-select v-model="search.nickname" clearable placeholder="范围"  @change="creatorselectChanged($event)">
-              <el-option label="我的" value="我的" />
-              <el-option label="全部" value="全部" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
-          </el-form-item>
-
-        </span>
-
 
       </el-form>
     </div>
@@ -123,9 +121,11 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="240"
+      <el-table-column label="管理" align="center"  :min-width="dynamicWidth"
                        v-if="hasPermission('api:update')  || hasPermission('api:delete')">
         <template slot-scope="scope">
+          <div class="optionDiv" style="white-space: nowrap; display: inline-block">
+
           <el-button
             type="warning"
             size="mini"
@@ -154,6 +154,7 @@
             @click.native.prevent="ShowNewParamsDialog(scope.$index)"
           >API参数
           </el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -166,7 +167,7 @@
       :page-sizes="[10, 20, 30, 40]"
       layout="total, sizes, prev, pager, next, jumper"
     ></el-pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]"  width="800px"  :visible.sync="dialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -177,7 +178,7 @@
         ref="tmpapi"
       >
         <el-form-item label="API名称:" prop="apiname" required>
-          <el-input
+          <el-input style="width: 500px"
             placeholder="API名称"
             type="text"
             maxlength="40"
@@ -187,7 +188,7 @@
           />
         </el-form-item>
         <el-form-item label="请求方法:" prop="visittype" required>
-          <el-select v-model="tmpapi.visittype" placeholder="请求方法" style="width:100%"
+          <el-select v-model="tmpapi.visittype" style="width: 500px" placeholder="请求方法"
                      @change="visitypeselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(vistype, index) in visittypeList" :key="index">
@@ -196,13 +197,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="API风格:" prop="apistyle" required>
-          <el-select v-model="tmpapi.apistyle" placeholder="api风格" style="width:100%">
+          <el-select v-model="tmpapi.apistyle" style="width: 500px" placeholder="api风格">
             <el-option label="传统方式" value="传统方式"></el-option>
             <el-option label="Restful" value="Restful"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="Url路径:" prop="path" >
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             placeholder="不用填写域名或者IP，例如：/user/login"
             maxlength="200"
@@ -212,7 +213,7 @@
           />
         </el-form-item>
         <el-form-item label="微服务:" prop="deployunitname" required>
-          <el-select v-model="tmpapi.deployunitname" filterable clearable placeholder="微服务" style="width:100%"
+          <el-select v-model="tmpapi.deployunitname" style="width: 500px" filterable clearable placeholder="微服务"
                      @change="selectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(depunitname, index) in deployunitList" :key="index">
@@ -222,7 +223,7 @@
         </el-form-item>
 
         <el-form-item label="模块:" prop="modelname" >
-          <el-select v-model="tmpapi.modelname" filterable clearable placeholder="模块" style="width:100%"
+          <el-select v-model="tmpapi.modelname" filterable clearable placeholder="模块"  style="width: 500px"
                      @change="modelselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(model, index) in modelList" :key="index">
@@ -241,7 +242,7 @@
 
         <div v-if="requestcontenttypeVisible">
           <el-form-item label="请求数据格式:" prop="requestcontenttype" required>
-            <el-select v-model="tmpapi.requestcontenttype" placeholder="请求数据格式" style="width:100%">
+            <el-select v-model="tmpapi.requestcontenttype" placeholder="请求数据格式" style="width: 500px">
               <el-option label="请选择" value="''" style="display: none"/>
               <div v-for="(type, index) in requestcontentList" :key="index">
                 <el-option :label="type.dicitmevalue" :value="type.dicitmevalue" required/>
@@ -260,7 +261,7 @@
         <!--        </el-form-item>-->
 
         <el-form-item label="维护人:" prop="mnickname" required>
-          <el-select v-model="tmpapi.mnickname" filterable clearable placeholder="维护人" style="width:100%"
+          <el-select v-model="tmpapi.mnickname" filterable clearable placeholder="维护人"  style="width: 500px"
                      @change="mnicknameselectChanged($event)">
             <div v-for="(mnickname, index) in accountList" :key="index">
               <el-option :label="mnickname.nickname" :value="mnickname.nickname" required/>
@@ -269,7 +270,7 @@
         </el-form-item>
 
         <el-form-item label="备注:" prop="memo">
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="100"
             prefix-icon="el-icon-message"
@@ -302,7 +303,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="CopyApi" :visible.sync="CopydialogFormVisible">
+    <el-dialog :title="CopyApi"  width="800px"  :visible.sync="CopydialogFormVisible">
       <el-form
         status-icon
         class="small-space"
@@ -313,7 +314,7 @@
         ref="tmpcopyapi"
       >
         <el-form-item label="源微服务" prop="sourcedeployunitname" required>
-          <el-select v-model="tmpcopyapi.sourcedeployunitname" placeholder="微服务" style="width:100%"
+          <el-select v-model="tmpcopyapi.sourcedeployunitname" placeholder="微服务"  style="width: 500px"
                      @change="CopyAPISourceDeployselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(depunitname, index) in deployunitList" :key="index">
@@ -323,7 +324,7 @@
         </el-form-item>
 
         <el-form-item label="API来源名" prop="sourceapiname" required>
-          <el-select v-model="tmpcopyapi.sourceapiname" placeholder="api" style="width:100%"
+          <el-select v-model="tmpcopyapi.sourceapiname" placeholder="api"  style="width: 500px"
                      @change="CopySourceAPIChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(testapi, index) in sourceapiList" :key="index">
@@ -333,7 +334,7 @@
         </el-form-item>
 
         <el-form-item label="目标微服务" prop="objectdeployunitname" required>
-          <el-select v-model="tmpcopyapi.objectdeployunitname" placeholder="微服务" style="width:100%"
+          <el-select v-model="tmpcopyapi.objectdeployunitname" placeholder="微服务"  style="width: 500px"
                      @change="CopyObjectAPIDeployUnitChanged($event)">
             <el-option label="请选择" value="''" style="display: none"/>
             <div v-for="(depunitname, index) in deployunitList" :key="index">
@@ -343,7 +344,7 @@
         </el-form-item>
 
         <el-form-item label="目标API名" prop="newapiname" required>
-          <el-input
+          <el-input style="width: 500px"
             type="text"
             maxlength="40"
             prefix-icon="el-icon-edit"
@@ -671,7 +672,7 @@
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog title='导入PostMan(V2.1)' :visible.sync="dialogAddFile">
+    <el-dialog title='导入PostMan(V2.1)' width="600px"  :visible.sync="dialogAddFile">
       <el-form
         :model="uploadData"
         ref="uploadData"
@@ -719,7 +720,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog title='导入Swagger(V2.0)' :visible.sync="SwaggerdialogAddFile">
+    <el-dialog title='导入Swagger(V2.0)' width="600px"  :visible.sync="SwaggerdialogAddFile">
       <el-form
         :model="uploadData"
         ref="uploadData"
@@ -807,6 +808,7 @@ export default {
   },
   data() {
     return {
+      dynamicWidth: 0,
       EncrytypeList: [],
       accountList: [],
       id: null,
@@ -1015,7 +1017,30 @@ export default {
     this.getdepunitLists()
     this.getencrytypeList()
   },
+
+  updated() {
+    this.dynamicWidth = this.$getOperatorWidth()
+  },
   methods: {
+    renderHeader(h, { column, $index }) {
+      // 获取操作按钮组的元素
+      const opts = document.getElementsByClassName('optionDiv')
+      const widthArr = []
+      // 取操作组的最大宽度
+      Array.prototype.forEach.call(opts, function(item) {
+        if (item.innerText) {
+          widthArr.push(item.offsetWidth)
+        }
+      })
+      // 重新设置列标题及宽度属性
+      if (widthArr.length > 0) {
+        column.width = Math.max(...widthArr) + 24
+        return h('span', column.label)
+      } else {
+        column.width = 0
+        return h('span', column.label)
+      }
+    },
     getencrytypeList() {
       getdatabydiccodeList(this.dicEncryQuery).then(response => {
         this.EncrytypeList = response.data.list
