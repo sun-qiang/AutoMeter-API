@@ -85,8 +85,9 @@ else
 fi
 #echo "配置AutoMeter后端服务IP成功。。。。。。。"
 
+sed -i 's/\r$//' ../AutoMeter/slaverservice/apache-jmeter-5.3/bin/jmeter
  
- cd ../AutoMeter/conditionservice
+cd ../AutoMeter/conditionservice
 conditionservicejar=conditionservice.jar
 conditionserviceyml=config/application.yml
 

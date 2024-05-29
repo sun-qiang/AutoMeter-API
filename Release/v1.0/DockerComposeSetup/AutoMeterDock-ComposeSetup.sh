@@ -104,6 +104,7 @@ else
     sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterservice/config/application.yml 
     sed -i  "s/[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}/${local_ip}/g" ../AutoMeter/testcenterapp/dist/static/config.js
 fi
+sed -i 's/\r$//' ../AutoMeter/slaverservice/apache-jmeter-5.3/bin/jmeter
 #echo "修改IP成功"
 docker-compose -f docker-compose.yaml up -d 
 echo "AutoMeter-docker-compose方式部署成功，请执行完/AutoMeter/sql/update-sql目录下的增量sql后，访问入口 http://$local_ip:8084  默认账户密码为admin admin123"

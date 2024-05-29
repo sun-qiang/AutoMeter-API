@@ -147,6 +147,7 @@
     <el-table
       :data="apicasesList"
       :key="itemKey"
+      height=""
       @selection-change="handleSelectionChange"
       v-loading.body="listLoading"
       element-loading-text="loading"

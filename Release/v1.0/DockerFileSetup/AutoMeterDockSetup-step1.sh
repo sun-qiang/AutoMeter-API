@@ -94,5 +94,6 @@ else
 		sed -i  "s@127.0.0.1@${local_ip}@" ../AutoMeter/testcenterapp/dist/static/config.js
 
 fi
+sed -i 's/\r$//' ../AutoMeter/slaverservice/apache-jmeter-5.3/bin/jmeter
 #echo "修改IP成功"
 echo "AutoMeter系统配置成功，如果部署在云服务器以公网访问，请务必执行如下操作，将Release/v1.0/AutoMeter/testcenterapp/dist/static/config.js中的ip替换为服务器的公网访问ip，然后执行AutoMeterDockSetup-step2.sh"
