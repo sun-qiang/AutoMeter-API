@@ -1,4 +1,5 @@
 FROM openjdk:8
+ENV TZ=Asia/Shanghai
 USER root
 WORKDIR /home/slaverservice
 COPY ./slaverservice.jar slaverservice.jar

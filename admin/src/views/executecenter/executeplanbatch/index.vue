@@ -46,12 +46,11 @@
       <el-table-column label="测试集合名" align="center" prop="executeplanname" width="150"/>
       <el-table-column label="执行计划" :show-overflow-tooltip="true" align="center" prop="batchname" width="150"/>
       <el-table-column label="测试场景" :show-overflow-tooltip="true" align="center" prop="scenename" width="150"/>
-      <el-table-column label="状态" align="center" prop="status" width="70"/>
-      <el-table-column label="来源" align="center" prop="source" width="60"/>
-      <el-table-column label="执行类型" align="center" prop="exectype" width="80"/>
+      <el-table-column label="状态" align="center" prop="status" width="80"/>
+      <el-table-column label="来源" align="center" prop="source" width="80"/>
+      <el-table-column label="执行类型" align="center" prop="exectype" width="90"/>
       <el-table-column label="执行时间" align="center" :show-overflow-tooltip="true" prop="execdate" width="140"/>
       <el-table-column label="维护人" align="center" prop="creator" width="70"/>
-      <el-table-column :show-overflow-tooltip="true"  label="备注" align="center" prop="memo" width="70"/>
       <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="130">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -59,6 +58,7 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
+      <el-table-column :show-overflow-tooltip="true"  label="备注" align="center" prop="memo" width="550"/>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"

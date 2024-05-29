@@ -7,6 +7,8 @@ services:
       context: ../AutoMeter/conditionservice
       dockerfile: Dockerfile
     image: conditionservice:1.0
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - "8083:8083"
     restart: always
@@ -25,6 +27,8 @@ services:
       context: ../AutoMeter/dispatchservice
       dockerfile: Dockerfile
     image: dispatchservice:1.0
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - "8082:8082"
     restart: always
@@ -43,6 +47,8 @@ services:
       context: ../AutoMeter/mockservice
       dockerfile: Dockerfile
     image: mockservice:1.0
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - "8085:8084"
     restart: always
@@ -60,6 +66,8 @@ services:
       context: ../AutoMeter/slaverservice
       dockerfile: Dockerfile
     image: slaverservice:1.0
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - "8081:8081"
     restart: always
@@ -80,6 +88,8 @@ services:
       context: ../AutoMeter/testcenterservice
       dockerfile: Dockerfile
     image: testcenterservice:1.0
+    environment:
+      - TZ=Asia/Shanghai
     ports:
       - "8080:8080"
     restart: always
