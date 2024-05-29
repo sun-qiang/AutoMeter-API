@@ -5815,57 +5815,57 @@
           this.BodyDataVisible = true
           this.BodyParamDataVisible = false
           this.getbodytextdatabycaseidandtype()
-          // 调试
-          this.tmptestdata.caseid = this.apicasesList[index].id
-          console.log('调试获取caseid完成：' + this.tmptestdata.caseid)
-          this.tmptestdata.conditionid = this.tmptest.conditionid
-          this.tmptestdata.globalheaderid = this.tmptest.globalheaderid
-          this.checked = false
-          this.tmptestdata.prixflag = this.checked
-          this.tmpapicases.casename = this.apicasesList[index].casename
-          this.activeName = 'zero'
-          this.tmptest.globalheaderid = 0
-          this.tmptest.conditionid = 0
-          this.tmptest.globalheadername = ''
-          this.tmptest.conditionname = ''
-          this.tmptest.general = ''
-          this.headerList = null
-          this.cookies = null
-          this.requestHeadList = null
-          this.tmptest.size = ''
-          this.tmptest.code = ''
-          this.tmptest.responeTime = ''
-          this.tmptest.enviromentname = ''
-          this.tmptest.respone = ''
-          // this.TestdialogFormVisible = true
-          this.tmpapicondition.conditionid = this.apicasesList[index].id
-          this.tmpapicondition.conditionname = this.apicasesList[index].casename
-          this.tmpapicondition.conditiontype = 'case'
-          this.searchapicondition.conditiontype = 'case'
-          this.searchapicondition.conditionid = this.apicasesList[index].id
-          this.searchdbcondition.conditiontype = 'case'
-          this.searchdbcondition.conditionid = this.apicasesList[index].id
-          this.tmpdbcondition.conditionid = this.apicasesList[index].id
-          this.tmpdbcondition.conditionname = this.apicasesList[index].casename
-          this.tmpdbcondition.conditiontype = 'case'
-          this.Scenedelaysearch.conditionid = this.apicasesList[index].id
-          this.tmpscriptcondition.conditionid = this.apicasesList[index].id
-          this.tmpscriptcondition.conditionname = this.apicasesList[index].casename
-          this.tmpscriptcondition.conditiontype = 'case'
-          this.searchscriptcondition.conditiontype = 'case'
-          this.searchscriptcondition.conditionid = this.apicasesList[index].id
-          // 断言
-          this.assertactiveName = 'zero'
-          this.tmpapicases.id = this.apicasesList[index].id
-          this.tmpassert.caseid = this.tmpapicases.id
-          this.tmpdbassert.caseid = this.apicasesList[index].id
-          this.searchassert.caseid = this.tmpassert.caseid
-          this.searchdbassert.caseid = this.apicasesList[index].id
-          this.getassertbycaseid(this.searchassert)
-          this.getdbassertbycaseid(this.searchdbassert)
-          // this.AssertdialogFormVisible = true
-          this.searchassert.asserttype = ''
         }
+        // 调试
+        this.tmptestdata.caseid = this.apicasesList[index].id
+        console.log('调试获取caseid完成：' + this.tmptestdata.caseid)
+        this.tmptestdata.conditionid = this.tmptest.conditionid
+        this.tmptestdata.globalheaderid = this.tmptest.globalheaderid
+        this.checked = false
+        this.tmptestdata.prixflag = this.checked
+        this.tmpapicases.casename = this.apicasesList[index].casename
+        this.activeName = 'zero'
+        this.tmptest.globalheaderid = 0
+        this.tmptest.conditionid = 0
+        this.tmptest.globalheadername = ''
+        this.tmptest.conditionname = ''
+        this.tmptest.general = ''
+        this.headerList = null
+        this.cookies = null
+        this.requestHeadList = null
+        this.tmptest.size = ''
+        this.tmptest.code = ''
+        this.tmptest.responeTime = ''
+        this.tmptest.enviromentname = ''
+        this.tmptest.respone = ''
+        // this.TestdialogFormVisible = true
+        this.tmpapicondition.conditionid = this.apicasesList[index].id
+        this.tmpapicondition.conditionname = this.apicasesList[index].casename
+        this.tmpapicondition.conditiontype = 'case'
+        this.searchapicondition.conditiontype = 'case'
+        this.searchapicondition.conditionid = this.apicasesList[index].id
+        this.searchdbcondition.conditiontype = 'case'
+        this.searchdbcondition.conditionid = this.apicasesList[index].id
+        this.tmpdbcondition.conditionid = this.apicasesList[index].id
+        this.tmpdbcondition.conditionname = this.apicasesList[index].casename
+        this.tmpdbcondition.conditiontype = 'case'
+        this.Scenedelaysearch.conditionid = this.apicasesList[index].id
+        this.tmpscriptcondition.conditionid = this.apicasesList[index].id
+        this.tmpscriptcondition.conditionname = this.apicasesList[index].casename
+        this.tmpscriptcondition.conditiontype = 'case'
+        this.searchscriptcondition.conditiontype = 'case'
+        this.searchscriptcondition.conditionid = this.apicasesList[index].id
+        // 断言
+        this.assertactiveName = 'zero'
+        this.tmpapicases.id = this.apicasesList[index].id
+        this.tmpassert.caseid = this.tmpapicases.id
+        this.tmpdbassert.caseid = this.apicasesList[index].id
+        this.searchassert.caseid = this.tmpassert.caseid
+        this.searchdbassert.caseid = this.apicasesList[index].id
+        this.getassertbycaseid(this.searchassert)
+        this.getdbassertbycaseid(this.searchdbassert)
+        // this.AssertdialogFormVisible = true
+        this.searchassert.asserttype = ''
         this.searchresponesetting()
       },
       /**
