@@ -3284,6 +3284,7 @@ export default {
         scenename: '',
         usetype: '',
         creator: '',
+        creatorid: '',
         memo: '',
         projectid: ''
       },
@@ -5168,6 +5169,7 @@ export default {
       this.tmptestscene.usetype = ''
       this.tmptestscene.memo = ''
       this.tmptestscene.creator = this.name
+      this.tmptestscene.creatorid = this.accountId
       this.tmptestscene.projectid = window.localStorage.getItem('pid')
     },
 
@@ -5375,6 +5377,7 @@ export default {
       this.tmptestscene.usetype = this.testsceneList[index].usetype
       this.tmptestscene.memo = this.testsceneList[index].memo
       this.tmptestscene.creator = this.name
+      this.tmptestscene.creatorid = this.accountId
       this.tmptestscene.projectid = window.localStorage.getItem('pid')
     },
 

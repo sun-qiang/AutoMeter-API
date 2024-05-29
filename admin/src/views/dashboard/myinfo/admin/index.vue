@@ -4,33 +4,33 @@
       <div>
         <label>我创建的:</label>
       </div>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">
+<!--      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 1200}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">-->
         <mycreateinfo />
-      </el-col>
+<!--      </el-col>-->
     </el-row>
     <el-row :gutter="1">
       <div>
         <label>我运行的:</label>
       </div>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">
+<!--      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">-->
         <RunTable />
-      </el-col>
+<!--      </el-col>-->
     </el-row>
     <el-row :gutter="1">
       <div>
         <label>最近的功能测试:</label>
       </div>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">
+<!--      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">-->
         <myrecentfunctioninfo />
-      </el-col>
+<!--      </el-col>-->
     </el-row>
     <el-row :gutter="1">
       <div>
         <label>最近的性能测试:</label>
       </div>
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">
+<!--      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 100}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:5px;">-->
         <myrecentperformanceinfo />
-      </el-col>
+<!--      </el-col>-->
     </el-row>
   </div>
 </template>

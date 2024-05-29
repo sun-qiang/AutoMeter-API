@@ -1,7 +1,7 @@
 <template>
   <div id="12" class="chart-wrapper">
     <el-table
-      style="width: 290vh"
+      style="width: 1200vh"
       :data="list"
       v-loading.body="listLoading"
       element-loading-text="loading"
@@ -9,12 +9,12 @@
       fit
       highlight-current-row
     >
-      <el-table-column label="测试集合" align="center" prop="execplanname" width="180"/>
-      <el-table-column label="执行计划" align="center" prop="batchname" width="180"/>
-      <el-table-column label="用例数" align="center" prop="totalcasenums" width="200"/>
-      <el-table-column label="成功数" align="center" prop="totalsuccessnums" width="200"/>
-      <el-table-column label="失败数" align="center" prop="totalfailnums" width="200"/>
-      <el-table-column label="未执行数" align="center" prop="totalunexecnums" width="200"/>
+      <el-table-column label="测试集合" align="center" prop="execplanname" width="380"/>
+      <el-table-column label="执行计划" align="center" prop="batchname" width="380"/>
+      <el-table-column label="用例数" align="center" prop="totalcasenums" width="380"/>
+      <el-table-column label="成功数" align="center" prop="totalsuccessnums" width="380"/>
+      <el-table-column label="失败数" align="center" prop="totalfailnums" width="380"/>
+      <el-table-column label="未执行数" align="center" prop="totalunexecnums" width="380"/>
     </el-table>
   </div>
 </template>
@@ -41,16 +41,17 @@ export default {
       listLoading: false, // 数据加载等待动画
       list: null,
       tmpcreator: {
-        creator: '',
+        creatorid: '',
         projectid: ''
       }
     }
   },
   computed: {
-    ...mapGetters(['name', 'sidebar', 'avatar'])
+    ...mapGetters(['name', 'sidebar', 'avatar', 'accountId'])
   },
   created() {
     this.tmpcreator.projectid = window.localStorage.getItem('pid')
+    this.tmpcreator.creatorid = this.accountId
     this.fetchData()
   },
   methods: {

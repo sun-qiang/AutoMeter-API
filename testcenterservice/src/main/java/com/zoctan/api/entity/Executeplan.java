@@ -14,6 +14,18 @@ public class Executeplan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    public Long getCreatorid() {
+        return creatorid;
+    }
+
+    public void setCreatorid(Long creatorid) {
+        this.creatorid = creatorid;
+    }
+
+    private Long creatorid;
+
+
     public Long getScenenums() {
         return scenenums;
     }

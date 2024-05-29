@@ -34,6 +34,8 @@ public class MyInfoController {
     private ExecuteplanService executeplanService;
 
     @Resource
+    private TestsceneService testsceneService;
+    @Resource
     private TestconditionService testconditionService;
     @Resource
     private ConditionApiService conditionApiService;
@@ -70,21 +72,21 @@ public class MyInfoController {
      */
     @PostMapping("/mycreateinfo")
     public Result mycreateinfo(@RequestBody final Map<String, Object> param) {
-        String creator= param.get("creator").toString();
+        Long creatorid= Long.parseLong(param.get("creatorid").toString());
         long projectid=Long.parseLong(param.get("projectid").toString());
 
         List<MyCreateInfo> myCreateInfoList=new ArrayList<>();
         MyCreateInfo myCreateInfo=new MyCreateInfo();
         Condition con=new Condition(Api.class);
         con.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
+                .andCondition("creatorid = " + creatorid );
         List<Api> apiList= apiService.listByCondition(con);
         int apinums=apiList.size();
         myCreateInfo.setApiNums(apinums);
 
         Condition casefuncon=new Condition(Apicases.class);
         casefuncon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid )
         .andCondition("casetype = '功能" + "'");
         List<Apicases>apicasesfunctionList=apicasesService.listByCondition(casefuncon);
         int apicasefunnum=apicasesfunctionList.size();
@@ -92,7 +94,7 @@ public class MyInfoController {
 
         Condition caseperformancecon=new Condition(Apicases.class);
         caseperformancecon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid )
                 .andCondition("casetype = '性能" + "'");
         List<Apicases>apicasesperformanceList=apicasesService.listByCondition(caseperformancecon);
         int apicaseperformancenums=apicasesperformanceList.size();
@@ -100,7 +102,7 @@ public class MyInfoController {
 
         Condition functionexecplancon=new Condition(Executeplan.class);
         functionexecplancon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid )
                 .andCondition("usetype = '功能" + "'");
         List<Executeplan> functionexecuteplanList= executeplanService.listByCondition(functionexecplancon);
         int functionexecplannums=functionexecuteplanList.size();
@@ -108,65 +110,69 @@ public class MyInfoController {
 
         Condition performanceexecplancon=new Condition(Executeplan.class);
         performanceexecplancon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid )
                 .andCondition("usetype = '性能" + "'");
         List<Executeplan> performanceexecuteplanList= executeplanService.listByCondition(performanceexecplancon);
         int performanceexecplannums=performanceexecuteplanList.size();
         myCreateInfo.setExecplanPerformancenums(performanceexecplannums);
 
 
-        int conidtionsallnums=0;
-        Condition parentcondition=new Condition(Testcondition.class);
-        parentcondition.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
-        List<Testcondition>testconditionList= testconditionService.listByCondition(parentcondition);
-        int parentconditions=testconditionList.size();
-        conidtionsallnums=conidtionsallnums+parentconditions;
 
-        Condition conditionapi=new Condition(ConditionApi.class);
-        conditionapi.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
-        List<ConditionApi>conditionApiList= conditionApiService.listByCondition(conditionapi);
-        int conditionsapinums=conditionApiList.size();
-        conidtionsallnums=conidtionsallnums+conditionsapinums;
-
-        Condition conditiondb=new Condition(ConditionDb.class);
-        conditiondb.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
-        List<ConditionDb>conditionDbList= conditionDbService.listByCondition(conditiondb);
-        int conditionsdbnums=conditionDbList.size();
-        conidtionsallnums=conidtionsallnums+conditionsdbnums;
-
-
-        Condition conditionscript=new Condition(ConditionScript.class);
-        conditionscript.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
-        List<ConditionScript>conditionScriptList= conditionScriptService.listByCondition(conditionscript);
-        int conditionsscriptnums=conditionScriptList.size();
-        conidtionsallnums=conidtionsallnums+conditionsscriptnums;
-
-        Condition conditiondelay=new Condition(ConditionDelay.class);
-        conditiondelay.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'");
-        List<ConditionDelay>conditionDelayList= conditionDelayService.listByCondition(conditiondelay);
-        int conditionsdelaynums=conditionDelayList.size();
-        conidtionsallnums=conidtionsallnums+conditionsdelaynums;
-
+        Condition testscenecon=new Condition(Testscene.class);
+        testscenecon.createCriteria().andCondition("projectid="+projectid)
+                .andCondition("creatorid = " + creatorid );
+        List<Testscene> testsceneList= testsceneService.listByCondition(testscenecon);
+        int conidtionsallnums=testsceneList.size();
         myCreateInfo.setTestConditions(conidtionsallnums);
 
+//        Condition parentcondition=new Condition(Testcondition.class);
+//        parentcondition.createCriteria().andCondition("projectid="+projectid)
+//                .andCondition("creator = '" + creator + "'");
+//        List<Testcondition>testconditionList= testconditionService.listByCondition(parentcondition);
+//        int parentconditions=testconditionList.size();
+//        conidtionsallnums=conidtionsallnums+parentconditions;
+//
+//        Condition conditionapi=new Condition(ConditionApi.class);
+//        conditionapi.createCriteria().andCondition("projectid="+projectid)
+//                .andCondition("creator = '" + creator + "'");
+//        List<ConditionApi>conditionApiList= conditionApiService.listByCondition(conditionapi);
+//        int conditionsapinums=conditionApiList.size();
+//        conidtionsallnums=conidtionsallnums+conditionsapinums;
+//
+//        Condition conditiondb=new Condition(ConditionDb.class);
+//        conditiondb.createCriteria().andCondition("projectid="+projectid)
+//                .andCondition("creator = '" + creator + "'");
+//        List<ConditionDb>conditionDbList= conditionDbService.listByCondition(conditiondb);
+//        int conditionsdbnums=conditionDbList.size();
+//        conidtionsallnums=conidtionsallnums+conditionsdbnums;
+//
+//
+//        Condition conditionscript=new Condition(ConditionScript.class);
+//        conditionscript.createCriteria().andCondition("projectid="+projectid)
+//                .andCondition("creator = '" + creator + "'");
+//        List<ConditionScript>conditionScriptList= conditionScriptService.listByCondition(conditionscript);
+//        int conditionsscriptnums=conditionScriptList.size();
+//        conidtionsallnums=conidtionsallnums+conditionsscriptnums;
+//
+//        Condition conditiondelay=new Condition(ConditionDelay.class);
+//        conditiondelay.createCriteria().andCondition("projectid="+projectid)
+//                .andCondition("creator = '" + creator + "'");
+//        List<ConditionDelay>conditionDelayList= conditionDelayService.listByCondition(conditiondelay);
+//        int conditionsdelaynums=conditionDelayList.size();
+//        conidtionsallnums=conidtionsallnums+conditionsdelaynums;
         myCreateInfoList.add(myCreateInfo);
         return ResultGenerator.genOkResult(myCreateInfoList);
     }
 
     @PostMapping("/myruninfo")
     public Result myruninfo(@RequestBody final Map<String, Object> param) {
-        String creator= param.get("creator").toString();
+        Long creatorid= Long.parseLong(param.get("creatorid").toString());
         long projectid=Long.parseLong(param.get("projectid").toString());
         MyRunInfo myRunInfo=new MyRunInfo();
 
         Condition functionexecplancon=new Condition(Executeplan.class);
         functionexecplancon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid)
                 .andCondition("usetype = '功能" + "'");
         List<Executeplan> functionexecuteplanList= executeplanService.listByCondition(functionexecplancon);
         MyInfoController.log.info("myruninfo..........功能测试集合数："+functionexecuteplanList.size());
@@ -211,7 +217,7 @@ public class MyInfoController {
 
 
         Condition performanceexecplancon=new Condition(Executeplan.class);
-        performanceexecplancon.createCriteria().andCondition("creator = '" + creator + "'")
+        performanceexecplancon.createCriteria().andCondition("creatorid = " + creatorid)
                 .andCondition("usetype = '性能" + "'");
         List<Executeplan> performanceexecuteplanList= executeplanService.listByCondition(performanceexecplancon);
         long perallruncase=0;
@@ -247,11 +253,11 @@ public class MyInfoController {
 
     @PostMapping("/myrecentfunctioninfo")
     public Result myrecentfunctioninfo(@RequestBody final Map<String, Object> param) {
-        String creator= param.get("creator").toString();
+        Long creatorid= Long.parseLong(param.get("creatorid").toString());
         long projectid=Long.parseLong(param.get("projectid").toString());
         Condition functionexecplancon=new Condition(Executeplan.class);
         functionexecplancon.createCriteria().andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid)
                 .andCondition("usetype = '功能" + "'");
         List<Executeplan> functionexecuteplanList= executeplanService.listByCondition(functionexecplancon);
         List<MyFunctionRecentInfo> myFunctionRecentInfoList=new ArrayList<>();
@@ -295,7 +301,7 @@ public class MyInfoController {
 
     @PostMapping("/myrecentperfermanceinfo")
     public Result myrecentperfermanceinfo(@RequestBody final Map<String, Object> param) {
-        String creator= param.get("creator").toString();
+        Long creatorid= Long.parseLong(param.get("creatorid").toString());
         long projectid=Long.parseLong(param.get("projectid").toString());
 
         List<ApicasesPerformancestatistics> allresult=new ArrayList<>();
@@ -303,7 +309,7 @@ public class MyInfoController {
         Condition perexecplancon=new Condition(Executeplan.class);
         perexecplancon.createCriteria().andCondition("projectid="+projectid)
                 .andCondition("projectid="+projectid)
-                .andCondition("creator = '" + creator + "'")
+                .andCondition("creatorid = " + creatorid)
                 .andCondition("usetype = '性能" + "'");
         List<Executeplan> perctionexecuteplanList= executeplanService.listByCondition(perexecplancon);
 

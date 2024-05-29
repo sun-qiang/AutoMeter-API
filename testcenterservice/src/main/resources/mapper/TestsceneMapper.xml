@@ -14,6 +14,7 @@
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="casenums" jdbcType="BIGINT" property="casenums" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
   </resultMap>
 
 
@@ -30,7 +31,7 @@
 
 
   <update id="updatescene" parameterType="com.zoctan.api.entity.Testscene">
-    update testscene set scenename = #{scenename},usetype = #{usetype},creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    update testscene set scenename = #{scenename},usetype = #{usetype},creator = #{creator},creatorid = #{creatorid}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 

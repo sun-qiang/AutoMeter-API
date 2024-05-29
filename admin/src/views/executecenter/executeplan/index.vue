@@ -2927,6 +2927,7 @@
           ip: '',
           memo: '',
           creator: '',
+          creatorid: '',
           dingdingtoken: '',
           runmode: '',
           projectid: '',
@@ -5378,6 +5379,7 @@
         this.tmpexecuteplan.creator = this.name
         this.tmpexecuteplan.runmode = ''
         this.tmpexecuteplan.dingdingtoken = ''
+        this.tmpexecuteplan.creatorid = this.accountId
         this.tmpexecuteplan.projectid = window.localStorage.getItem('pid')
       },
 
@@ -5676,6 +5678,7 @@
         this.tmpexecuteplan.enviromentname = this.executeplanList[index].enviromentname
         this.tmpexecuteplan.businesstype = this.executeplanList[index].businesstype
         this.tmpexecuteplan.creator = this.name
+        this.tmpexecuteplan.creatorid = this.accountId
         this.tmpexecuteplan.runmode = this.executeplanList[index].runmode
         this.tmpexecuteplan.dingdingtoken = this.executeplanList[index].dingdingtoken
         this.tmpexecuteplan.projectid = window.localStorage.getItem('pid')

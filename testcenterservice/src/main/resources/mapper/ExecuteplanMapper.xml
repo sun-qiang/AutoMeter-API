@@ -6,7 +6,8 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <id column="envid" jdbcType="BIGINT" property="envid" />
+    <result column="envid" jdbcType="BIGINT" property="envid" />
+    <result column="creatorid" jdbcType="BIGINT" property="creatorid" />
     <result column="enviromentname" jdbcType="VARCHAR" property="enviromentname" />
     <result column="executeplanname" jdbcType="VARCHAR" property="executeplanname" />
     <result column="status" jdbcType="VARCHAR" property="status" />
@@ -57,7 +58,7 @@
 
   <update id="updateexecuteplanname" parameterType="com.zoctan.api.entity.Executeplan">
     update executeplan set executeplanname = #{executeplanname},envid = #{envid},businesstype=#{businesstype},enviromentname=#{enviromentname},
-     usetype=#{usetype}, memo = #{memo},runmode = #{runmode},dingdingtoken= #{dingdingtoken}, creator = #{creator}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+     usetype=#{usetype}, memo = #{memo},runmode = #{runmode},dingdingtoken= #{dingdingtoken}, creator = #{creator},creatorid = #{creatorid}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where id = #{id};
   </update>
 

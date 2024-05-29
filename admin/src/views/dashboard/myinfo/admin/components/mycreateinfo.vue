@@ -1,7 +1,7 @@
 <template>
   <div id="12" class="chart-wrapper">
     <el-table
-      style="width: 290vh"
+      style="width: 1200vh"
       :data="list"
       v-loading.body="listLoading"
       element-loading-text="loading"
@@ -11,11 +11,11 @@
     >
       <el-table-column label="API数" align="center" prop="apiNums" width="180">
       </el-table-column>
-      <el-table-column label="功能用例数" align="center" prop="apiFunctionCaseNums" width="180"/>
-      <el-table-column label="性能用例数" align="center" prop="apiPerformanceCaseNums" width="180"/>
-      <el-table-column label="功能测试集合数" align="center" prop="execplanFunnums" width="200"/>
-      <el-table-column label="性能测试集合数" align="center" prop="execplanPerformancenums" width="200"/>
-      <el-table-column label="前置条件数" align="center" prop="testConditions" width="220"/>
+      <el-table-column label="功能用例数" align="center" prop="apiFunctionCaseNums" width="300"/>
+      <el-table-column label="性能用例数" align="center" prop="apiPerformanceCaseNums" width="300"/>
+      <el-table-column label="功能测试集合数" align="center" prop="execplanFunnums" width="300"/>
+      <el-table-column label="性能测试集合数" align="center" prop="execplanPerformancenums" width="300"/>
+      <el-table-column label="场景数" align="center" prop="testConditions" width="380"/>
     </el-table>
   </div>
 </template>
@@ -31,16 +31,17 @@ export default {
       list: null,
       tmpcreator: {
         id: '',
-        creator: '',
+        creatorid: '',
         projectid: ''
       }
     }
   },
   computed: {
-    ...mapGetters(['name', 'sidebar', 'avatar'])
+    ...mapGetters(['name', 'sidebar', 'avatar', 'accountId'])
   },
   created() {
     this.tmpcreator.projectid = window.localStorage.getItem('pid')
+    this.tmpcreator.creatorid = this.accountId
     this.fetchData()
   },
   methods: {
