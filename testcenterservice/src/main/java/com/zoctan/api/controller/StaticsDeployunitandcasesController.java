@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author SeasonFan
@@ -61,29 +60,90 @@ public class StaticsDeployunitandcasesController {
 
     @GetMapping("/getdeployunitstatics")
     public Result getplanstatics(@RequestParam long projectid) {
-        Condition con=new Condition(StaticsDeployunitandcases.class);
-        con.createCriteria().andCondition("projectid = "+projectid);
-        List<StaticsDeployunitandcases> list = staticsDeployunitandcasesService.listByCondition(con);//.listAll();
-        List<StaticsDataForLine> staticsDataForLineList=new ArrayList<>();
-        HashMap<String,List<Double>> tmp=new HashMap<>();
-        for (StaticsDeployunitandcases staticsDeployunitandcases: list) {
-            if(!tmp.containsKey(staticsDeployunitandcases.getDeployunitname()))
+        List<String> lastdaylist = new ArrayList<>();
+        for (int i = 15; i > 0; i--) {
+            Date date = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            calendar.add(Calendar.DATE, -i);
+            int Year = calendar.get(Calendar.YEAR);
+            int MONTH = calendar.get(Calendar.MONTH) + 1;
+            int Day = calendar.get(Calendar.DAY_OF_MONTH);
+            String MONTHS="";
+            if(MONTH<10)
             {
-                List<Double> planstaticsdatelist=new ArrayList<>();
-                planstaticsdatelist.add(staticsDeployunitandcases.getPassrate());
-                tmp.put(staticsDeployunitandcases.getDeployunitname(),planstaticsdatelist);
+                MONTHS="0"+MONTH;
             }
-            else
-            {
-                tmp.get(staticsDeployunitandcases.getDeployunitname()).add(staticsDeployunitandcases.getPassrate());
+            lastdaylist.add(Year + "-" + MONTHS + "-" + Day + " 00:00:00");
+        }
+
+        Condition con = new Condition(StaticsDeployunitandcases.class);
+        con.createCriteria().andCondition("projectid = " + projectid)
+                .andCondition("statics_date>='" + lastdaylist.get(0) + "'")
+                .andCondition("statics_date<='" + lastdaylist.get(14) + "'");
+        List<StaticsDeployunitandcases> listrange = staticsDeployunitandcasesService.listByCondition(con);//.listAll();
+        List<String> depList = new ArrayList<>();
+        for (StaticsDeployunitandcases s : listrange) {
+            if (!depList.contains(s.getDeployunitname())) {
+                depList.add(s.getDeployunitname());
             }
         }
-        for (String PlanName:tmp.keySet()) {
-            StaticsDataForLine staticsDataForLine=new StaticsDataForLine();
-            staticsDataForLine.setExecPlanName(PlanName);
-            staticsDataForLine.setPassPecent(tmp.get(PlanName));
+        List<StaticsDataForLine> staticsDataForLineList = new ArrayList<>();
+        for (String depststis : depList) {
+            HashMap<String, List<Double>> tmp = new HashMap<>();
+            List<Double> planstaticsdatelist = new ArrayList<>();
+            tmp.put(depststis, planstaticsdatelist);
+            for (String statisdate : lastdaylist) {
+                StaticsDeployunitandcases tmpstatis = existornot(statisdate, depststis, listrange);
+                if (tmpstatis == null) {
+                    tmp.get(depststis).add(0.0);
+                } else {
+                    tmp.get(depststis).add(tmpstatis.getPassrate());
+                }
+
+
+//                Condition con = new Condition(StaticsDeployunitandcases.class);
+//                con.createCriteria().andCondition("projectid = " + projectid)
+//                        .andCondition("statics_date=" + statisdate + "'");
+//                List<StaticsDeployunitandcases> list = staticsDeployunitandcasesService.listByCondition(con);//.listAll();
+//                HashMap<String, List<Double>> tmp = new HashMap<>();
+//                for (StaticsDeployunitandcases staticsDeployunitandcases : list) {
+//                    if (!tmp.containsKey(staticsDeployunitandcases.getDeployunitname())) {
+//                        List<Double> planstaticsdatelist = new ArrayList<>();
+//                        planstaticsdatelist.add(staticsDeployunitandcases.getPassrate());
+//                        tmp.put(staticsDeployunitandcases.getDeployunitname(), planstaticsdatelist);
+//                    } else {
+//                        tmp.get(staticsDeployunitandcases.getDeployunitname()).add(staticsDeployunitandcases.getPassrate());
+//                    }
+//                }
+//                for (String PlanName : tmp.keySet()) {
+//                    StaticsDataForLine staticsDataForLine = new StaticsDataForLine();
+//                    staticsDataForLine.setExecPlanName(PlanName);
+//                    staticsDataForLine.setPassPecent(tmp.get(PlanName));
+//                    staticsDataForLineList.add(staticsDataForLine);
+//                }
+            }
+            StaticsDataForLine staticsDataForLine = new StaticsDataForLine();
+            staticsDataForLine.setExecPlanName(depststis);
+            staticsDataForLine.setPassPecent(tmp.get(depststis));
             staticsDataForLineList.add(staticsDataForLine);
         }
+
+
         return ResultGenerator.genOkResult(staticsDataForLineList);
+    }
+
+    private StaticsDeployunitandcases existornot(String day, String deploname, List<StaticsDeployunitandcases> range) {
+        StaticsDeployunitandcases reeturn = null;
+        for (StaticsDeployunitandcases ss : range) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = sdf.format(ss.getStaticsDate());
+            if (formattedDate.equals(day) && ss.getDeployunitname().equals(deploname)) {
+                reeturn = ss;
+                break;
+            }
+
+        }
+        return reeturn;
     }
 }
