@@ -95,6 +95,16 @@
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="HttpFunctionJavaRequest" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
+              <elementProp name="planid" elementType="Argument">
+                <stringProp name="Argument.name">planid</stringProp>
+                <stringProp name="Argument.value">${planid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchname" elementType="Argument">
+                <stringProp name="Argument.name">batchname</stringProp>
+                <stringProp name="Argument.value">${batchname}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
               <elementProp name="DispatchIds" elementType="Argument">
                 <stringProp name="Argument.name">DispatchIds</stringProp>
                 <stringProp name="Argument.value">${DispatchIds}</stringProp>
@@ -120,19 +130,9 @@
                 <stringProp name="Argument.value">${mysqlpassword}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="batchname" elementType="Argument">
-                <stringProp name="Argument.name">batchname</stringProp>
-                <stringProp name="Argument.value">${batchname}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="planid" elementType="Argument">
-                <stringProp name="Argument.name">planid</stringProp>
-                <stringProp name="Argument.value">${planid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.test.httpapitestcase.HttpApiFunction</stringProp>
+          <stringProp name="classname">com.api.autohttpf.test.httpapitestcase.HttpApiFunction</stringProp>
         </JavaSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">

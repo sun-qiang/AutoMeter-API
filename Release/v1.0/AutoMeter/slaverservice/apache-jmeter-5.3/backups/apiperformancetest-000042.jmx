@@ -130,7 +130,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.core.precondition</stringProp>
+          <stringProp name="classname">com.api.autoengine.core.precondition</stringProp>
         </JavaSampler>
         <hashTree/>
         <JDBCPostProcessor guiclass="TestBeanGUI" testclass="JDBCPostProcessor" testname="查询前置条件处理结果" enabled="true">
@@ -393,7 +393,7 @@ log.info(&quot;===resource===&quot;+resource);
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.test.${testdeployunit}.${testclass}</stringProp>
+            <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -525,7 +525,7 @@ log.info(&quot;===resource===&quot;+resource);
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.core.postcondition</stringProp>
+            <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

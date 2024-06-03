@@ -130,7 +130,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.core.precondition</stringProp>
+          <stringProp name="classname">com.api.autoengine.core.precondition</stringProp>
         </JavaSampler>
         <hashTree/>
         <JDBCPostProcessor guiclass="TestBeanGUI" testclass="JDBCPostProcessor" testname="查询前置条件处理结果" enabled="true">
@@ -254,11 +254,11 @@ log.info(&quot;===status===&quot;+status);</stringProp>
             <boolProp name="resetInterpreter">false</boolProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
-            <stringProp name="script">import com.api.autotest.core.Testcore;
-import com.api.autotest.dto.RequestObject;
+            <stringProp name="script">import com.api.autoengine.core.Testcore;
+import com.api.autoengine.dto.RequestObject;
 import com.alibaba.fastjson.JSON;
-import com.api.autotest.common.utils.HttpHeader;
-import com.api.autotest.common.utils.HttpParamers;
+import com.api.autoengine.common.utils.HttpHeader;
+import com.api.autoengine.common.utils.HttpParamers;
 
 
 Testcore core=new Testcore();
@@ -342,7 +342,7 @@ String RequestmMthod= ob.getRequestmMthod();
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.test.${testdeployunit}.${testclass}</stringProp>
+            <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -474,7 +474,7 @@ String RequestmMthod= ob.getRequestmMthod();
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.core.postcondition</stringProp>
+            <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

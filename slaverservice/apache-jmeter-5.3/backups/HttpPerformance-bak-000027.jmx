@@ -562,7 +562,7 @@ Map dubbomap = new HashMap();
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.test.${testdeployunit}.${testclass}</stringProp>
+          <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
         </JavaSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="report" enabled="true">
@@ -681,7 +681,7 @@ Map dubbomap = new HashMap();
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.core.postcondition</stringProp>
+          <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>

@@ -102,7 +102,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.test.httpapitestcase.HttpApiFunction</stringProp>
+          <stringProp name="classname">com.api.autoengine.test.httpapitestcase.HttpApiFunction</stringProp>
         </JavaSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="察看结果树" enabled="true">

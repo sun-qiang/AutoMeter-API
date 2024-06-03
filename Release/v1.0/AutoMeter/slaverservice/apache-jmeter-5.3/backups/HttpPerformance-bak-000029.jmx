@@ -322,7 +322,7 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.test.${testdeployunit}.${testclass}</stringProp>
+          <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
         </JavaSampler>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="report" enabled="true">
@@ -441,7 +441,7 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.core.postcondition</stringProp>
+          <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>

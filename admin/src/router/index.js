@@ -72,6 +72,21 @@ export const asyncRouterMap = [
       { path: 'project/list', name: '项目管理', component: _import('assets/project/index'), meta: { title: '项目管理', permission: ['project:list'] }, icon: 'testmanager' }
     ]
   },
+  {
+    path: '/assets',
+    component: Layout,
+    name: '测试管理',
+    alwaysShow: true,
+    activeMenu: '/assets',
+    icon: 'testmanager',
+    children: [
+      { path: 'apicases/list', name: '业务集合', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+      { path: 'apicases/list', name: '测试场景', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+      { path: 'apicases/list', name: '功能用例', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+      { path: 'apicases/list', name: '执行计划', component: _import('assets/cases/apicases/index'), meta: { title: '执行计划', permission: ['apicases:list'] }, icon: 'testmanager' }
+      // { path: 'apiparams/list', name: 'API参数', component: _import('deployunit/apiparams/index'), meta: { title: 'API参数', permission: ['apiparams:list'] }}
+    ]
+  },
   // {
   //   path: '/enviroment',
   //   component: Layout,
@@ -101,20 +116,6 @@ export const asyncRouterMap = [
   //   component: Layout,
   //   name: '分支管理',
   //   icon: 'branches',
-  //   children: [
-  //     { path: 'machine/list', name: '服务器管理', component: _import('assets/machine/index'), meta: { title: '服务器管理', permission: ['machine:list'] }},
-  //     { path: 'testenviroment/list', name: '环境管理', component: _import('enviroment/testenviroment/index'), meta: { title: '环境管理', permission: ['enviroment:list'] }},
-  //     // { path: 'envmachine/list', name: '环境服务器', component: _import('enviroment/envmachine/index'), meta: { title: '环境服务器', permission: ['envmachine:list'] }},
-  //     { path: 'enviromentassemble/list', name: '环境组件', component: _import('enviroment/enviromentassemble/index'), meta: { title: '环境组件', permission: ['enviroment_assemble:list'] }},
-  //     { path: 'macdepunit/list', name: '环境部署', component: _import('enviroment/macdepunit/index'), meta: { title: '环境部署', permission: ['macdepunit:list'] }
-  //     }
-  //   ]
-  // },
-  // {
-  //   path: '/enviroment',
-  //   component: Layout,
-  //   name: '缺陷管理',
-  //   icon: 'bug',
   //   children: [
   //     { path: 'machine/list', name: '服务器管理', component: _import('assets/machine/index'), meta: { title: '服务器管理', permission: ['machine:list'] }},
   //     { path: 'testenviroment/list', name: '环境管理', component: _import('enviroment/testenviroment/index'), meta: { title: '环境管理', permission: ['enviroment:list'] }},
@@ -179,18 +180,7 @@ export const asyncRouterMap = [
   //     { path: 'delaycondition/list', name: '延时子条件', component: _import('condition/delaycondition/index'), meta: { title: '延时子条件', permission: ['delaycondition:list'] }}
   //   ]
   // },
-  {
-    path: '/assets',
-    component: Layout,
-    name: '测试管理',
-    alwaysShow: true,
-    activeMenu: '/assets',
-    icon: 'testmanager',
-    children: [
-      { path: 'apicases/list', name: '用例库', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' }
-      // { path: 'apiparams/list', name: 'API参数', component: _import('deployunit/apiparams/index'), meta: { title: 'API参数', permission: ['apiparams:list'] }}
-    ]
-  },
+
   // nestedRouterTestManager,
   // nestedRouterSubCondition,
   {
@@ -209,6 +199,7 @@ export const asyncRouterMap = [
     name: '执行中心',
     icon: 'execute',
     children: [
+      { path: 'apicases/list', name: '接口用例库', component: _import('assets/cases/apicases/index'), meta: { title: '接口用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
       { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
       { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
       { path: 'executeplan/list', name: '测试集合管理', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
@@ -231,6 +222,15 @@ export const asyncRouterMap = [
       // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
       // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
       { path: 'apiperformancestatistics/list', name: '性能统计报告', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能统计报告', permission: ['apiperformancestatistics:list'] }}
+    ]
+  },
+  {
+    path: '/enviroment',
+    component: Layout,
+    name: '缺陷管理',
+    icon: 'bug',
+    children: [
+      { path: 'machine/list', name: 'Bug管理', component: _import('assets/machine/index'), meta: { title: 'Bug管理', permission: ['machine:list'] }}
     ]
   },
   // {

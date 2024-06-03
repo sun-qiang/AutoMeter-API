@@ -189,7 +189,7 @@ String apiid=&quot;&quot;;
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.core.precondition</stringProp>
+          <stringProp name="classname">com.api.autoengine.core.precondition</stringProp>
         </JavaSampler>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="获取前置条件结果sql" enabled="true">
@@ -758,7 +758,7 @@ Map dubbomap = new HashMap();
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.test.${testdeployunit}.${testclass}</stringProp>
+            <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>
@@ -869,7 +869,7 @@ Map dubbomap = new HashMap();
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.core.postcondition</stringProp>
+            <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

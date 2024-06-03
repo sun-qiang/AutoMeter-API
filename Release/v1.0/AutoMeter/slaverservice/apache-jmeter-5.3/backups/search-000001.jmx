@@ -121,7 +121,7 @@ vars.put(&quot;caseid&quot;,caseIdArr[${num}]);
                 </elementProp>
               </collectionProp>
             </elementProp>
-            <stringProp name="classname">com.api.autotest.test.demo.Sample</stringProp>
+            <stringProp name="classname">com.api.autoengine.test.demo.Sample</stringProp>
           </JavaSampler>
           <hashTree/>
         </hashTree>

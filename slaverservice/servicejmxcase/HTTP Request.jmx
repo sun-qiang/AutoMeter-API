@@ -75,7 +75,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autotest.test.cornerservice.getInfoByLocationtestlalo</stringProp>
+          <stringProp name="classname">com.api.autoengine.test.cornerservice.getInfoByLocationtestlalo</stringProp>
         </JavaSampler>
         <hashTree/>
         <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">

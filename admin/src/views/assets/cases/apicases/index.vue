@@ -174,7 +174,7 @@
       <!--      <el-table-column label="线程" align="center" prop="threadnum" width="50"/>-->
 <!--      <el-table-column label="循环" align="center" prop="loops" width="50"/>-->
       <el-table-column :show-overflow-tooltip="true" label="用例描述" align="center" prop="casecontent" width="80"/>
-      <el-table-column :show-overflow-tooltip="true"  label="维护人" align="center" prop="mnickname" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试维护人" align="center" prop="mnickname" width="90"/>
       <el-table-column :show-overflow-tooltip="true"  label="操作人" align="center" prop="creator" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>

@@ -94,9 +94,9 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="API" align="center" prop="apiname" width="120"/>
-      <el-table-column label="微服务" align="center" prop="deployunitname" width="130"/>
-      <el-table-column label="模块" align="center" prop="modelname" width="80"/>
+      <el-table-column :show-overflow-tooltip="true"  label="API" align="center" prop="apiname" width="120"/>
+      <el-table-column :show-overflow-tooltip="true"  label="微服务" align="center" prop="deployunitname" width="130"/>
+      <el-table-column :show-overflow-tooltip="true"  label="模块" align="center" prop="modelname" width="80"/>
       <el-table-column label="风格" align="center" prop="apistyle" width="80"/>
       <el-table-column label="访问方式" align="center" prop="visittype" width="80"/>
       <el-table-column label="Url路径" align="center" prop="path" width="80">
@@ -111,7 +111,8 @@
       </el-table-column>
       <el-table-column label="请求格式" align="center" prop="requestcontenttype" width="80"/>
       <el-table-column label="用例数" align="center" prop="casecounts" width="60"/>
-      <el-table-column :show-overflow-tooltip="true"   label="维护人" align="center" prop="mnickname" width="60"/>
+      <el-table-column :show-overflow-tooltip="true"   label="测试维护人" align="center" prop="mnickname" width="90"/>
+      <el-table-column :show-overflow-tooltip="true"   label="开发维护人" align="center" prop="mnickname" width="90"/>
       <el-table-column :show-overflow-tooltip="true"   label="操作人" align="center" prop="creator" width="60"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="140">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
