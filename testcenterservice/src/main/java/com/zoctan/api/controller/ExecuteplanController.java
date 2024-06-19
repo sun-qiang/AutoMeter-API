@@ -153,7 +153,7 @@ public class ExecuteplanController {
     public Result delete(@PathVariable Long id) {
         Condition con = new Condition(Executeplanbatch.class);
         con.createCriteria().andCondition("executeplanid = " + id)
-                .andCondition("status != '已完成'");
+                .andCondition("status = '执行中'").orCondition("status = '停止中'");
         List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
         if (executeplanbatchList.size() > 0) {
             return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法删除！！");

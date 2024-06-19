@@ -63,7 +63,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center"
+      <el-table-column label="管理" align="center" width="480"
                        v-if="hasPermission('testscene:update')  || hasPermission('testscene:delete')">
         <template slot-scope="scope">
           <el-button
@@ -81,7 +81,12 @@
           <el-button
             type="primary"
             size="mini"用例前置条件
-            icon="el-icon-plus"
+            v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
+            @click.native.prevent="showtestscenestressDialog(scope.$index)"
+          >性能配置</el-button>
+          <el-button
+            type="primary"
+            size="mini"用例前置条件
             v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
             @click.native.prevent="showtestsceneCaseDialog(scope.$index)"
           >装载用例</el-button>
@@ -2889,6 +2894,168 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog width="1000px" title='性能设置' :visible.sync="stresstestlistDialogFormVisible">
+      <div class="filter-container">
+        <el-form :inline="true">
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="mini"
+              icon="el-icon-plus"
+              v-if="hasPermission('apicasesdbassertvalue:add')"
+              @click.native.prevent="showAddStressDialog"
+            >新增性能设置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <el-table
+        :data="ApicasesdbassertvalueList"
+        element-loading-text="loading"
+        border
+        fit
+        highlight-current-row
+      >
+        <el-table-column label="编号" align="center" width="60">
+          <template slot-scope="scope">
+            <span v-text="ApicasesdbassertvaluegetIndex(scope.$index)"></span>
+          </template>
+        </el-table-column>
+        <el-table-column :show-overflow-tooltip="true" label="测试场景" align="center" prop="scenename" width="90"/>
+        <el-table-column :show-overflow-tooltip="true" label="并发线程" align="center" prop="targetconcurrency" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="启动时间" align="center" prop="rampuptime" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="阶梯次数" align="center" prop="stepscount" width="80"/>
+        <el-table-column :show-overflow-tooltip="true" label="持续时间" align="center" prop="holdtime" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="时间单位" align="center" prop="timeunit" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="循环次数" align="center" prop="iterations" width="70"/>
+        <el-table-column :show-overflow-tooltip="true" label="创建时间" align="center" prop="createTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
+        </el-table-column>
+        <el-table-column :show-overflow-tooltip="true" label="最后修改时间" align="center" prop="lastmodifyTime" width="140">
+          <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="管理" align="center" width="180"
+                         v-if="hasPermission('apicasesdbassertvalue:update')  || hasPermission('apicasesdbassertvalue:delete')">
+          <template slot-scope="scope">
+            <el-button
+              type="warning"
+              size="mini"
+              v-if="hasPermission('apicasesdbassertvalue:update') && scope.row.id !== id"
+              @click.native.prevent="showUpdatedbassertvalueDialog(scope.$index)"
+            >修改</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              v-if="hasPermission('apicasesdbassertvalue:delete') && scope.row.id !== id"
+              @click.native.prevent="removedbassertvalue(scope.$index)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @size-change="dbassertvaluehandleSizeChange"
+        @current-change="dbassertvaluehandleCurrentChange"
+        :current-page="searchdbassertvalue.page"
+        :page-size="searchdbassertvalue.size"
+        :total="dbassertvaluetotal"
+        :page-sizes="[10, 20, 30, 40]"
+        layout="total, sizes, prev, pager, next, jumper"
+      ></el-pagination>
+    </el-dialog>
+    <el-dialog :title="stresstesttextMap[stresstestdialogStatus]" width="800px" :visible.sync="stresstestdialogFormVisible">
+      <el-form
+        status-icon
+        class="small-space"
+        label-position="left"
+        label-width="150px"
+        style="width: 400px; margin-left:50px;"
+        :model="tmpperformance"
+        ref="tmpperformance"
+      >
+        <el-form-item label="并发线程" prop="targetconcurrency" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpperformance.targetconcurrency"
+          />
+        </el-form-item>
+        <el-form-item label="启动时间" prop="rampuptime" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.rampuptime"
+          />
+        </el-form-item>
+
+        <el-form-item label="阶梯次数" prop="stepscount" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.stepscount"
+          />
+        </el-form-item>
+        <el-form-item label="持续时间" prop="holdtime" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.holdtime"
+          />
+        </el-form-item>
+        <el-form-item label="时间单位" prop="timeunit" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.timeunit"
+          />
+        </el-form-item>
+
+        <el-form-item label="循环次数" prop="iterations" required>
+          <el-input style="width:500px"
+                    oninput="value=value.replace(/[^\d]/g,'')"
+                    maxLength='10'
+                    type="number"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model="tmpdbassert.iterations"
+          />
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native.prevent="dbAssertAUdialogFormVisible = false">取消</el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertdialogStatus === 'add'"
+          @click.native.prevent="adddbassert"
+        >保存
+        </el-button>
+        <el-button
+          type="success"
+          v-if="dbAssertdialogStatus === 'update'"
+          @click.native.prevent="updatedbassert"
+        >更新
+        </el-button>
+      </div>
+    </el-dialog>
+
+
   </div>
 </template>
 <script>
@@ -2945,6 +3112,24 @@ export default {
   },
   data() {
     return {
+      stresstestlistDialogFormVisible: false,
+      stresstestdialogFormVisible: false,
+      stresstestdialogStatus: 'add',
+      stresstesttextMap: {
+        update: '修改性能设置',
+        add: '添加性能设置'
+      },
+      tmpperformance: {
+        id: '',
+        testsceneid: '',
+        scenename: '',
+        targetconcurrency: '',
+        rampuptime: '',
+        stepscount: '',
+        holdtime: '',
+        timeunit: '',
+        iterations: ''
+      },
       dicEncryQuery: {
         page: 1, // 页码
         size: 30, // 每页数量
@@ -3582,6 +3767,18 @@ export default {
       this.tmpdbassertvalue.expectvalue = this.ApicasesdbassertvalueList[index].expectvalue
       this.tmpdbassertvalue.memo = this.ApicasesdbassertvalueList[index].memo
       this.tmpdbassertvalue.creator = this.name
+    },
+    showAddStressDialog() {
+      // 显示新增对话框
+      this.stresstestdialogStatus = 'add'
+      this.stresstestdialogFormVisible = true
+      this.tmpperformance.id = ''
+      this.tmpperformance.targetconcurrency = ''
+      this.tmpperformance.rampuptime = ''
+      this.tmpperformance.stepscount = ''
+      this.tmpperformance.holdtime = ''
+      this.tmpperformance.iterations = ''
+      this.tmpperformance.timeunit = ''
     },
     showAddApicasesdbassertvalueDialog() {
       // 显示新增对话框
@@ -5296,6 +5493,12 @@ export default {
      * 显示用例对话框
      * @param index 测试集合下标
      */
+    showtestscenestressDialog(index) {
+      this.stresstestlistDialogFormVisible = true
+      this.tmpperformance.testsceneid = this.testsceneList[index].id
+      this.tmpperformance.scenename = this.testsceneList[index].scenename
+      this.gettestscenecaseList()
+    },
     showtestsceneCaseDialog(index) {
       this.addtestcaselastList = null
       this.testscenecasedialogFormVisible = true

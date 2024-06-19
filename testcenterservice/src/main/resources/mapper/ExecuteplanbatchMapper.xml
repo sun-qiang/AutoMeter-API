@@ -82,7 +82,7 @@
   </insert>
 
   <update id="updatebatchstatus">
-    update executeplanbatch set status = '停止中', lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    update executeplanbatch set status = #{status}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
     where
           executeplanid = #{executeplanid} and batchname=#{batchname} and status!='已完成';
   </update>

@@ -213,10 +213,30 @@ public class ExecuteplanbatchController {
     public Result updatebatchstatus(@RequestBody final Map<String, Object> param) {
         Long planid= Long.parseLong(param.get("executeplanid").toString());
         String batchname= param.get("batchname").toString();
-        this.executeplanbatchService.updatebatchstatus(planid,batchname);
-        return ResultGenerator.genOkResult();
+        Condition con=new Condition(Executeplanbatch.class);
+        con.createCriteria().andCondition("executeplanid = "+planid)
+                .andCondition("batchname = '" + batchname + "'");
+        List<Executeplanbatch>executeplanbatchList= executeplanbatchService.listByCondition(con);
+        if(executeplanbatchList.size()>0)
+        {
+            if(executeplanbatchList.get(0).getStatus().equals("初始"))
+            {
+                this.executeplanbatchService.updatebatchstatus(planid,batchname,"已停止");
+                return ResultGenerator.genOkResult();
+            }
+            if(executeplanbatchList.get(0).getStatus().equals("进行中"))
+            {
+                this.executeplanbatchService.updatebatchstatus(planid,batchname,"停止中");
+                return ResultGenerator.genOkResult();
+            }
+            if(executeplanbatchList.get(0).getStatus().equals("已完成"))
+            {
+                return ResultGenerator.genFailedResult("当前执行计划已完成，不能停止");
+            }
+            return ResultGenerator.genFailedResult("当前执行计划无效状态");
+        }else
+        {
+            return ResultGenerator.genFailedResult("不存在当前执行计划");
+        }
     }
-
-
-
 }

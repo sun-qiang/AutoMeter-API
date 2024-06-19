@@ -19,11 +19,11 @@ public interface ExecuteplanbatchMapper extends MyMapper<Executeplanbatch> {
 
     List<Executeplanbatch> getbatchbyexectype(@Param("exectype") String exectype);
 
-    Executeplanbatch getrecentbatch(@Param("status") String status,@Param("exectype") String exectype);
+    Executeplanbatch getrecentbatch(@Param("status") String status,@Param("exectype") String exectype,@Param("usetype") String usetype);
 
     Executeplanbatch getrecentsinglebatch(@Param("status") String status,@Param("exectype") String exectype,@Param("executeplanid") Long executeplanid, @Param("batchname") String batchname);
 
-    List<Executeplanbatch> getrecentallbatch(@Param("status") String status,@Param("exectype") String exectype);
+    List<Executeplanbatch> getrecentallbatch(@Param("status") String status,@Param("exectype") String exectype,@Param("usetype") String usetype);
 
     List<Executeplanbatch> getbatchtestscene(@Param("status") String status,@Param("executeplanid") Long executeplanid, @Param("batchname") String batchname, @Param("exectype") String exectype);
 

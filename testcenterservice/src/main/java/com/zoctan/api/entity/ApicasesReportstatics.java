@@ -27,10 +27,42 @@ public class ApicasesReportstatics {
 
     private Long deployunitid;
 
+    private String batchname;
+
+    public String getDeployunitname() {
+        return deployunitname;
+    }
+
+    public void setDeployunitname(String deployunitname) {
+        this.deployunitname = deployunitname;
+    }
+
+    public Long getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(Long projectid) {
+        this.projectid = projectid;
+    }
+
+    public String getExecuteplanname() {
+        return executeplanname;
+    }
+
+    public void setExecuteplanname(String executeplanname) {
+        this.executeplanname = executeplanname;
+    }
+
+    private String deployunitname;
+
+    private Long projectid;
+    private String executeplanname;
+
+
+
     /**
      * 批次
      */
-    private String batchname;
 
     /**
      * 执行机id

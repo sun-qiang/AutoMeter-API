@@ -58,8 +58,8 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
     }
 
     @Override
-    public void updatebatchstatus(Long id,String batchname) {
-        executeplanbatchMapper.updatebatchstatus(id,batchname);
+    public void updatebatchstatus(Long id,String batchname,String status) {
+        executeplanbatchMapper.updatebatchstatus(id,batchname,status);
     }
 
 }

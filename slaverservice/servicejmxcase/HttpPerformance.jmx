@@ -350,9 +350,19 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
                 <stringProp name="Argument.value">${bodyjson}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
+              <elementProp name="postdata" elementType="Argument">
+                <stringProp name="Argument.name">postdata</stringProp>
+                <stringProp name="Argument.value">${postdata}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
               <elementProp name="dubbojson" elementType="Argument">
                 <stringProp name="Argument.name">dubbojson</stringProp>
                 <stringProp name="Argument.value">${dubbojson}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="variablesjson" elementType="Argument">
+                <stringProp name="Argument.name">variablesjson</stringProp>
+                <stringProp name="Argument.value">${variablesjson}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="mysqlurl" elementType="Argument">
@@ -380,34 +390,14 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
                 <stringProp name="Argument.value">${deployvisitytype}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="variablesjson" elementType="Argument">
-                <stringProp name="Argument.name">variablesjson</stringProp>
-                <stringProp name="Argument.value">${variablesjson}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="postdata" elementType="Argument">
-                <stringProp name="Argument.name">postdata</stringProp>
-                <stringProp name="Argument.value">${postdata}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="creator" elementType="Argument">
-                <stringProp name="Argument.name">creator</stringProp>
-                <stringProp name="Argument.value">${creator}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
               <elementProp name="reportlogfolder" elementType="Argument">
                 <stringProp name="Argument.name">reportlogfolder</stringProp>
                 <stringProp name="Argument.value">${reportlogfolder}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="projectid" elementType="Argument">
-                <stringProp name="Argument.name">projectid</stringProp>
-                <stringProp name="Argument.value">${projectid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autoengine.test.${testdeployunit}.${testclass}</stringProp>
+          <stringProp name="classname">com.api.autohttpf.test.httpapitestcase.HttpApiPerformance</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>
@@ -495,7 +485,7 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="classname">com.api.autoengine.core.postcondition</stringProp>
+          <stringProp name="classname">com.api.autohttpf.core.postcondition</stringProp>
         </JavaSampler>
         <hashTree/>
       </hashTree>

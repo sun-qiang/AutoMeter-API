@@ -69,12 +69,16 @@ public class StaticsDeployunitandcasesController {
             int Year = calendar.get(Calendar.YEAR);
             int MONTH = calendar.get(Calendar.MONTH) + 1;
             int Day = calendar.get(Calendar.DAY_OF_MONTH);
-            String MONTHS="";
-            if(MONTH<10)
-            {
-                MONTHS="0"+MONTH;
+            String MONTHS = "";
+            String DayS = "";
+
+            if (MONTH < 10) {
+                MONTHS = "0" + MONTH;
             }
-            lastdaylist.add(Year + "-" + MONTHS + "-" + Day + " 00:00:00");
+            if (Day < 10) {
+                DayS = "0" + Day;
+            }
+            lastdaylist.add(Year + "-" + MONTHS + "-" + DayS + " 00:00:00");
         }
 
         Condition con = new Condition(StaticsDeployunitandcases.class);

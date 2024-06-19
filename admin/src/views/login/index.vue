@@ -40,7 +40,7 @@
       </el-form-item>
       <el-form-item>
         <el-button
-          type="success"
+          type="primary"
           style="width:100%;"
           :loading="btnLoading"
           @click.native.prevent="handleLogin"
@@ -129,9 +129,9 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 @import '../../../src/styles/mixin.scss';
 
-$bg: #3b52c6;
-$dark_gray: #889aa4;
-$light_gray: #eee;
+$bg: #1b7963;
+$dark_gray: #01070a;
+$light_gray: #050000;
 
 .login-container {
   @include relative;
@@ -139,7 +139,7 @@ $light_gray: #eee;
   overflow-y: hidden;
   background-color: $bg;
   input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 1000px #374cd0 inset !important;
+    -webkit-box-shadow: 0 0 0 1000px $bg inset !important;
     -webkit-text-fill-color: #fff !important;
   }
   input {
@@ -188,7 +188,7 @@ $light_gray: #eee;
   }
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    background: $bg;
     border-radius: 5px;
     color: #454545;
   }

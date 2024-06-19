@@ -85,57 +85,62 @@ public class TestPlanCaseController {
             HashMap<String, Object> sceneparams = new HashMap<>();
             sceneparams.put("testplanid", execplanid);
             List<TestplanTestscene> testplanTestsceneList = testplanTestsceneMapper.findscenebyexecplanid(sceneparams);
-            List<Executeplanbatch> executeplanbatchList = new ArrayList<>();
-            for (TestplanTestscene testscene : testplanTestsceneList) {
-                Executeplanbatch newplanbatch = new Executeplanbatch();
-                newplanbatch.setId(null);
-                long testsceneid = testscene.getTestscenenid();
-                String testscenename = testscene.getScenename();
-                newplanbatch.setStatus("初始");
-                newplanbatch.setSource(planbatch.getSource());
-                newplanbatch.setSceneid(testsceneid);
-                newplanbatch.setScenename(testscenename);
-                newplanbatch.setExectype(planbatch.getExectype());
-                newplanbatch.setExecdate(planbatch.getExecdate());
-                newplanbatch.setSlaverid(planbatch.getSlaverid());
-                newplanbatch.setProjectid(planbatch.getProjectid());
-                newplanbatch.setCreator(planbatch.getCreator());
-                newplanbatch.setBatchname(planbatch.getBatchname());
-                newplanbatch.setMemo("");
-                newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
-                newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
-                newplanbatch.setCreateTime(new Date());
-                newplanbatch.setLastmodifyTime(new Date());
-                executeplanbatchList.add(newplanbatch);
-            }
-            executeplanbatchService.save(executeplanbatchList);
 
-            //save dispatch
-            if (ep.getUsetype().equals("功能")) {
-                if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
-                    List<Slaver> singleslaverlist = new ArrayList<>();
-                    singleslaverlist.add(slaverlist.get(0));
-                    HashMap<Long, List<TestplanTestscene>> longListHashMap = new HashMap<>();
-                    longListHashMap.put(singleslaverlist.get(0).getId(), testplanTestsceneList);
-                    SaveFuntionDispatch(longListHashMap, ep, batchname);
-                }
-                if (ep.getRunmode().equalsIgnoreCase("多机并行") || ep.getRunmode().equalsIgnoreCase("多机执行")) {
-                    TestPlanCaseController.log.info("多机并行slaver：");
-                    HashMap<Long, List<TestplanTestscene>> longListHashMap = TestsceneDispatch(slaverlist, testplanTestsceneList);
-                    SaveFuntionDispatch(longListHashMap, ep, batchname);
-                }
-            }
-            if (ep.getUsetype().equals("性能")) {
+            List<Executeplanbatch> executeplanbatchList = new ArrayList<>();
+            if(ep.getUsetype().equals("功能"))
+            {
                 for (TestplanTestscene testscene : testplanTestsceneList) {
-                    long testsceneid = testscene.getId();
-                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
-                    TestPlanCaseController.log.info("测试集合id" + execplanid + " 批次为：" + batchname + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
-                    Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(execplanid, batchname, testsceneid);
-                    List<List<Dispatch>> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, ep, epb);
-                    TestPlanCaseController.log.info("单机运行slaver：" + slaverlist.get(0).getSlavername());
-                    for (List<Dispatch> li : dispatchList) {
-                        dispatchMapper.insertBatchDispatch(li);
-                        TestPlanCaseController.log.info("保存成功调度用例条数：" + li.size());
+                    Executeplanbatch newplanbatch = new Executeplanbatch();
+                    newplanbatch.setId(null);
+                    long testsceneid = testscene.getTestscenenid();
+                    String testscenename = testscene.getScenename();
+                    newplanbatch.setStatus("初始");
+                    newplanbatch.setSource(planbatch.getSource());
+                    newplanbatch.setSceneid(testsceneid);
+                    newplanbatch.setScenename(testscenename);
+                    newplanbatch.setExectype(planbatch.getExectype());
+                    newplanbatch.setExecdate(planbatch.getExecdate());
+                    newplanbatch.setSlaverid(planbatch.getSlaverid());
+                    newplanbatch.setProjectid(planbatch.getProjectid());
+                    newplanbatch.setCreator(planbatch.getCreator());
+                    newplanbatch.setBatchname(planbatch.getBatchname());
+                    newplanbatch.setMemo("");
+                    newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
+                    newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
+                    newplanbatch.setCreateTime(new Date());
+                    newplanbatch.setLastmodifyTime(new Date());
+                    executeplanbatchList.add(newplanbatch);
+                }
+                executeplanbatchService.save(executeplanbatchList);
+                if (ep.getUsetype().equals("功能")) {
+                    if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
+                        List<Slaver> singleslaverlist = new ArrayList<>();
+                        singleslaverlist.add(slaverlist.get(0));
+                        HashMap<Long, List<TestplanTestscene>> longListHashMap = new HashMap<>();
+                        longListHashMap.put(singleslaverlist.get(0).getId(), testplanTestsceneList);
+                        SaveFuntionDispatch(longListHashMap, ep, batchname);
+                    }
+                    if (ep.getRunmode().equalsIgnoreCase("多机并行") || ep.getRunmode().equalsIgnoreCase("多机执行")) {
+                        TestPlanCaseController.log.info("多机并行slaver：");
+                        HashMap<Long, List<TestplanTestscene>> longListHashMap = TestsceneDispatch(slaverlist, testplanTestsceneList);
+                        SaveFuntionDispatch(longListHashMap, ep, batchname);
+                    }
+                }
+            }else
+            {
+                //save dispatch
+                if (ep.getUsetype().equals("性能")) {
+                    for (TestplanTestscene testscene : testplanTestsceneList) {
+                        long testsceneid = testscene.getId();
+                        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
+                        TestPlanCaseController.log.info("测试集合id" + execplanid + " 批次为：" + batchname + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
+                        Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(execplanid, batchname, testsceneid);
+                        List<List<Dispatch>> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, ep, epb);
+                        TestPlanCaseController.log.info("单机运行slaver：" + slaverlist.get(0).getSlavername());
+                        for (List<Dispatch> li : dispatchList) {
+                            dispatchMapper.insertBatchDispatch(li);
+                            TestPlanCaseController.log.info("保存成功调度用例条数：" + li.size());
+                        }
                     }
                 }
             }
@@ -169,6 +174,7 @@ public class TestPlanCaseController {
                     dispatchMapper.insertBatchDispatch(dispatchList);
                     epb.setSlaverid(slaverid);
                     executeplanbatchService.update(epb);
+                    //slaver状态已分配
                     TestPlanCaseController.log.info("测试集合：" + epb.getExecuteplanname() + " 计划：" + epb.getBatchname() + " 成功保存测试场景：" + testscene.getScenename() + " 调度用例条数：" + dispatchList.size());
                 }
             }

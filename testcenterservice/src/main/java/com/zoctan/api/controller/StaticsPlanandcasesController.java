@@ -61,16 +61,15 @@ public class StaticsPlanandcasesController {
 
     @GetMapping("/getlastdays")
     public Result getlastdays() {
-        List<String> lastdaylist=new ArrayList<>();
-        for(int i=15;i>0;i--)
-        {
+        List<String> lastdaylist = new ArrayList<>();
+        for (int i = 15; i > 0; i--) {
             Date date = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(date);
-            calendar.add(Calendar.DATE,-i);
-            int MONTH = calendar.get(Calendar.MONTH)+1;
+            calendar.add(Calendar.DATE, -i);
+            int MONTH = calendar.get(Calendar.MONTH) + 1;
             int Day = calendar.get(Calendar.DAY_OF_MONTH);
-            lastdaylist.add(MONTH+"-"+Day);
+            lastdaylist.add(MONTH + "-" + Day);
         }
         return ResultGenerator.genOkResult(lastdaylist);
     }
@@ -87,12 +86,15 @@ public class StaticsPlanandcasesController {
             int Year = calendar.get(Calendar.YEAR);
             int MONTH = calendar.get(Calendar.MONTH) + 1;
             int Day = calendar.get(Calendar.DAY_OF_MONTH);
-            String MONTHS="";
-            if(MONTH<10)
-            {
-                MONTHS="0"+MONTH;
+            String MONTHS = "";
+            String DayS = "";
+            if (MONTH < 10) {
+                MONTHS = "0" + MONTH;
             }
-            lastdaylist.add(Year + "-" + MONTHS + "-" + Day );
+            if (Day < 10) {
+                DayS = "0" + Day;
+            }
+            lastdaylist.add(Year + "-" + MONTHS + "-" + DayS);
         }
 
         Condition con = new Condition(StaticsDeployunitandcases.class);
@@ -190,12 +192,12 @@ public class StaticsPlanandcasesController {
     public static void main(String[] args) throws ParseException {
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,-1);
-        int Year=calendar.get(Calendar.YEAR);
-        int MONTH = calendar.get(Calendar.MONTH)+1;
+        calendar.add(Calendar.DATE, -1);
+        int Year = calendar.get(Calendar.YEAR);
+        int MONTH = calendar.get(Calendar.MONTH) + 1;
         int Day = calendar.get(Calendar.DATE);
-        String StaticsDay=Year+"-"+MONTH+"-"+Day;
-            System.out.println("MONTH Day is "+StaticsDay);
+        String StaticsDay = Year + "-" + MONTH + "-" + Day;
+        System.out.println("MONTH Day is " + StaticsDay);
 
 //        for(int i=15;i>0;i--)
 //        {

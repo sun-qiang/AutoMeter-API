@@ -62,7 +62,7 @@ public class SomeDayExecScheduleTask {
             boolean lock = redisUtils.tryLock(redisKey, "SomeDayExecScheduleTask", redis_default_expire_time);
             if (lock) {
                 try {
-                    List<Executeplanbatch> executeplanbatchallList = executeplanbatchMapper.getrecentallbatch("初始", "某天定时");
+                    List<Executeplanbatch> executeplanbatchallList = executeplanbatchMapper.getrecentallbatch("初始", "某天定时","功能");
                     for (Executeplanbatch executeplanbatchtmp : executeplanbatchallList) {
                         Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentsinglebatch("初始", "某天定时", executeplanbatchtmp.getExecuteplanid(), executeplanbatchtmp.getBatchname());
                         if (executeplanbatch != null) {

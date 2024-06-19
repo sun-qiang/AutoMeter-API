@@ -49,7 +49,7 @@
 
 
   <select id="getrecentbatch" resultMap="BaseResultMap">
-    select * from executeplanbatch a where a.status =#{status} and exectype=#{exectype} order by a.create_time ASC limit 1
+    select * from executeplanbatch a inner join executeplan b on a.executeplanid=b.id where a.status =#{status} and a.exectype=#{exectype} and b.usetype=#{usetype} order by a.create_time ASC limit 1
   </select>
 
   <select id="getrecentsinglebatch" resultMap="BaseResultMap">
@@ -58,7 +58,7 @@
   </select>
 
   <select id="getrecentallbatch" resultMap="BaseResultMap">
-    select DISTINCT executeplanid,batchname from executeplanbatch a where a.status =#{status} and exectype=#{exectype}
+    select DISTINCT executeplanid,batchname from executeplanbatch a inner join executeplan b  where a.status =#{status} and a.exectype=#{exectype} and  b.usetype=#{usetype}
   </select>
 
 

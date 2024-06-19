@@ -78,7 +78,7 @@ public class EveryDayExecScheduleTask {
                     String CurrentTime = HourData + ":" + MinitesData + ":00";
 //                    String CurrentTime = cal.get(Calendar.YEAR) + "-" + MonthData + "-" + DateData + " " + HourData + ":" + MinitesData + ":00";
                     EveryDayExecScheduleTask.log.info("【每天定时执行任务开始】-============当前CurrentTime=======================" + CurrentTime);
-                    List<Executeplanbatch> executeplanbatchallList = executeplanbatchMapper.getrecentallbatch("初始", "每天定时");
+                    List<Executeplanbatch> executeplanbatchallList = executeplanbatchMapper.getrecentallbatch("初始", "每天定时","功能");
                     for (Executeplanbatch executeplanbatchtmp : executeplanbatchallList) {
                         Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentsinglebatch("初始", "每天定时", executeplanbatchtmp.getExecuteplanid(), executeplanbatchtmp.getBatchname());
                         if (executeplanbatch != null) {

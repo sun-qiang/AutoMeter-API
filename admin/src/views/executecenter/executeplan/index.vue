@@ -4398,7 +4398,6 @@
           updatebatchstatus(this.tmpstopplanbatch).then(() => {
             this.$message.success('停止成功')
             this.stopbatchdialogFormVisible = false
-            this.getdelayconditionList()
           })
         }).catch(() => {
           this.$message.info('已取消停止')

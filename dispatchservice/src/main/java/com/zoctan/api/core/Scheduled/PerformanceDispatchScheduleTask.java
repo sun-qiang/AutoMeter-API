@@ -77,10 +77,12 @@ public class PerformanceDispatchScheduleTask {
             boolean lock = redisUtils.tryLock(redisKey, "PerformanceDispatchScheduleTask", redis_default_expire_time);
             if (lock) {
                 try {
+                    Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "立即执行","性能");
+
                     Dispatch dispatch = dispatchMapper.getrecentdispatchbyusetype("待分配", "性能");
-                    if (dispatch != null) {
+                    if (executeplanbatch != null) {
                         Long PlanID = dispatch.getExecplanid();
-                        String BatchName = dispatch.getBatchname();
+                        String BatchName = executeplanbatch.getBatchname();
                         Long caseid = dispatch.getTestcaseid();
                         //判断计划的所有前置条件是否已经完成，并且全部成功，否则更新Dispatch状态为前置条件失败
                         boolean flag = ConditionRequest(PlanID, BatchName, dispatch);   //IsConditionFinish(PlanID,BatchName);

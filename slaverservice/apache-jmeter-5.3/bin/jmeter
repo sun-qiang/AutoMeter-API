@@ -163,7 +163,7 @@ esac
 
 # This is the base heap size -- you may increase or decrease it to fit your
 # system's memory availability:
-: "${HEAP:="-Xms256m -Xmx256m -XX:MaxMetaspaceSize=128m"}"
+: "${HEAP:="-Xms512m -Xmx512m -XX:MaxMetaspaceSize=256m"}"
 
 # Set language
 # Default to en_EN
