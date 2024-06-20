@@ -72,21 +72,21 @@ export const asyncRouterMap = [
       { path: 'project/list', name: '项目管理', component: _import('assets/project/index'), meta: { title: '项目管理', permission: ['project:list'] }, icon: 'testmanager' }
     ]
   },
-  {
-    path: '/assets',
-    component: Layout,
-    name: '测试管理',
-    alwaysShow: true,
-    activeMenu: '/assets',
-    icon: 'testmanager',
-    children: [
-      { path: 'apicases/list', name: '业务集合', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
-      { path: 'apicases/list', name: '测试场景', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
-      { path: 'apicases/list', name: '功能用例', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
-      { path: 'apicases/list', name: '执行计划', component: _import('assets/cases/apicases/index'), meta: { title: '执行计划', permission: ['apicases:list'] }, icon: 'testmanager' }
-      // { path: 'apiparams/list', name: 'API参数', component: _import('deployunit/apiparams/index'), meta: { title: 'API参数', permission: ['apiparams:list'] }}
-    ]
-  },
+  // {
+  //   path: '/assets',
+  //   component: Layout,
+  //   name: '测试管理',
+  //   alwaysShow: true,
+  //   activeMenu: '/assets',
+  //   icon: 'testmanager',
+  //   children: [
+  //     { path: 'apicases/list', name: '业务集合', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+  //     { path: 'apicases/list', name: '测试场景', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+  //     { path: 'apicases/list', name: '功能用例', component: _import('assets/cases/apicases/index'), meta: { title: '用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+  //     { path: 'apicases/list', name: '执行计划', component: _import('assets/cases/apicases/index'), meta: { title: '执行计划', permission: ['apicases:list'] }, icon: 'testmanager' }
+  //     // { path: 'apiparams/list', name: 'API参数', component: _import('deployunit/apiparams/index'), meta: { title: 'API参数', permission: ['apiparams:list'] }}
+  //   ]
+  // },
   // {
   //   path: '/enviroment',
   //   component: Layout,
@@ -201,7 +201,7 @@ export const asyncRouterMap = [
     children: [
       { path: 'apicases/list', name: '接口用例库', component: _import('assets/cases/apicases/index'), meta: { title: '接口用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
       { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
-      { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
+      // { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
       { path: 'executeplan/list', name: '测试集合管理', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
       // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
       // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},
@@ -224,15 +224,15 @@ export const asyncRouterMap = [
       { path: 'apiperformancestatistics/list', name: '性能统计报告', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能统计报告', permission: ['apiperformancestatistics:list'] }}
     ]
   },
-  {
-    path: '/enviroment',
-    component: Layout,
-    name: '缺陷管理',
-    icon: 'bug',
-    children: [
-      { path: 'machine/list', name: 'Bug管理', component: _import('assets/machine/index'), meta: { title: 'Bug管理', permission: ['machine:list'] }}
-    ]
-  },
+  // {
+  //   path: '/enviroment',
+  //   component: Layout,
+  //   name: '缺陷管理',
+  //   icon: 'bug',
+  //   children: [
+  //     { path: 'machine/list', name: 'Bug管理', component: _import('assets/machine/index'), meta: { title: 'Bug管理', permission: ['machine:list'] }}
+  //   ]
+  // },
   // {
   //   path: '/executecenter',
   //   component: Layout,

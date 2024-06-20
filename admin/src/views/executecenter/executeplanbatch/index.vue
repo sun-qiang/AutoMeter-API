@@ -51,6 +51,11 @@
       <el-table-column label="执行类型" align="center" prop="exectype" width="90"/>
       <el-table-column label="执行时间" align="center" :show-overflow-tooltip="true" prop="execdate" width="140"/>
       <el-table-column label="维护人" align="center" prop="creator" width="70"/>
+      <el-table-column :show-overflow-tooltip="true"  label="备注" align="center" prop="memo" width="150">
+        <template slot-scope="scope">
+          <span v-if="scope.row.memo !== ''" style="color:red">{{ scope.row.memo }}</span>
+        </template>
+      </el-table-column>>
       <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
@@ -58,7 +63,7 @@
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true"  label="备注" align="center" prop="memo" width="550"/>
+
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"

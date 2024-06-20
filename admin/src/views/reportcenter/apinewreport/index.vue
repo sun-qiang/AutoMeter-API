@@ -111,7 +111,7 @@
     </div>
 
     <el-tabs v-model="activeName"  type="card" ref="tabs">
-      <el-tab-pane label="执行计划结果" name="four">
+      <el-tab-pane label="执行计划结果" name="zero">
         <template>
           <el-table
             ref="fileTable"
@@ -133,9 +133,14 @@
             <el-table-column label="状态" align="center" prop="status" width="70"/>
             <el-table-column label="来源" align="center" prop="source" width="60"/>
             <el-table-column label="执行类型" align="center" prop="exectype" width="80"/>
-            <el-table-column label="执行时间" align="center" :show-overflow-tooltip="true" prop="execdate" width="140"/>
+            <el-table-column label="执行时间" align="center" :show-overflow-tooltip="true" prop="execdate" width="120"/>
             <el-table-column label="操作人" align="center" prop="creator" width="70"/>
-            <el-table-column label="备注" align="center" prop="memo" width="70"/>
+            <el-table-column label="备注" align="center" prop="memo" width="120">
+            <template slot-scope="scope">
+              <span v-if="scope.row.memo !== ''" style="color:red">{{ scope.row.memo }}</span>
+            </template>
+            </el-table-column>>
+
             <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="130">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
             </el-table-column>
@@ -208,7 +213,7 @@
           ></el-pagination>
         </template>
       </el-tab-pane>
-      <el-tab-pane label="用例执行报告" name="zero">
+      <el-tab-pane label="用例执行报告" name="four">
         <div class="filter-container">
           <el-form :inline="true">
           <el-form-item label="状态:" prop="testplanname" >
