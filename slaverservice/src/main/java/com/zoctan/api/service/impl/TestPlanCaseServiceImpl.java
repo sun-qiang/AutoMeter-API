@@ -131,6 +131,75 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
     }
 
     @Override
+    public void ExecuteHttpPerformancePlanScene(String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException {
+        String os = System.getProperty("os.name");
+        String CaseReportFolder = "";
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            CaseReportFolder = JmeterPerformanceReportPath + "\\" + SlaverId + "-" + PlanId + "-" + Sceneid + "-" + BatchName.trim();
+        } else {
+            CaseReportFolder = JmeterPerformanceReportPath + "/" + SlaverId + "-" + PlanId + "-" + Sceneid + "-" + BatchName.trim();
+        }
+        File dir = new File(CaseReportFolder);
+        if (!dir.exists()) {// 判断目录是否存在
+            dir.mkdir();
+            TestPlanCaseServiceImpl.log.info("创建性能报告目录完成 :" + CaseReportFolder);
+        }
+
+        String ReportSlaverLogFolder = "";
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            ReportSlaverLogFolder = JmeterPerformanceReportLogFilePath + "\\" + SlaverId;
+        } else {
+            ReportSlaverLogFolder = JmeterPerformanceReportLogFilePath + "/" + SlaverId;
+        }
+        File logdir = new File(ReportSlaverLogFolder);
+        if (!logdir.exists()) {// 判断目录是否存在
+            logdir.mkdir();
+            TestPlanCaseServiceImpl.log.info("创建性能报告SlaverId日志目录完成 :" + ReportSlaverLogFolder);
+        }
+
+        String ReportSlaverPlanLogFolder = "";
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            ReportSlaverPlanLogFolder = ReportSlaverLogFolder + "\\" + PlanId;
+        } else {
+            ReportSlaverPlanLogFolder = ReportSlaverLogFolder + "/" + PlanId;
+        }
+        File slaverplanlogdir = new File(ReportSlaverPlanLogFolder);
+        if (!slaverplanlogdir.exists()) {// 判断目录是否存在
+            slaverplanlogdir.mkdir();
+            TestPlanCaseServiceImpl.log.info("创建性能报告SlaverId-Planid日志目录完成 :" + slaverplanlogdir);
+        }
+
+        String JmeterCmd = "";
+        TestPlanCaseServiceImpl.log.info("性能测试当前系统版本是  is :" + os);
+        Date current = new Date();
+        String jmeterlogfilename = PlanName + "-" + BatchName + "-" + SceneName;
+        //截取_之前字符串
+        String JdbcMysqlUrl = MysqlUrl.substring(0, MysqlUrl.indexOf("?"));
+        String Jmeterbin="";
+        String JmeterJmx="";
+        String CaseReportF="";
+        //Windows操作系统
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            Jmeterbin = "\\jmeter.bat -n -t ";
+            JmeterJmx = "\\HttpPerformanceNew.jmx";
+            CaseReportF = CaseReportFolder+"/";
+        } else {
+            Jmeterbin = "/jmeter.bat -n -t ";
+            JmeterJmx = "/HttpPerformanceNew.jmx";
+            CaseReportF = CaseReportFolder+"\\";
+        }
+            JmeterCmd = JmeterPath + Jmeterbin + JmxPath +JmeterJmx+" -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword="
+                + MysqlPassword + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId + " -Jsceneid=" + Sceneid + " -Jcaseid=" + caseid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
+                + " -Jreportlogfolder=" + ReportSlaverPlanLogFolder + " -Jcasereportfolder=" + CaseReportFolder  + " -l  " + CaseReportF + caseid + ".jtl -e -o " + CaseReportFolder + " -j jmeter-pt" + jmeterlogfilename + ".log ";
+
+
+        TestPlanCaseServiceImpl.log.info("性能JmeterCmd is :" + JmeterCmd);
+        ExecShell(JmeterCmd);
+        TestPlanCaseServiceImpl.log.info("性能JmeterCmd finish。。。。。。。。。。。。。。。。。。。。。。。。。。。。。 :");
+
+    }
+
+    @Override
     public void ExecuteHttpPlanFunctionCase(Long Slaverid, Long planid, String batchname, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUsername, String MysqlPassword, long JmeterLogFileNum) throws IOException {
         String JmeterCmd = "";
         String os = System.getProperty("os.name");

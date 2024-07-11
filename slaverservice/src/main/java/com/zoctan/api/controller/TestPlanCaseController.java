@@ -111,6 +111,12 @@ public class TestPlanCaseController {
     @Autowired(required = false)
     private GlobalvariablesService globalvariablesService;
 
+    @Autowired(required = false)
+    private TestsceneDispatchService testsceneDispatchService;
+
+    @Autowired(required = false)
+    private TestsceneTestcaseService testsceneTestcaseService;
+
     @PostMapping("/exec")
     //    public Result exec(@RequestBody List<TestplanCase> plancaseList) {
     public Result exec(@RequestBody Testplanandbatch planbatch) throws Exception {
@@ -206,8 +212,9 @@ public class TestPlanCaseController {
     }
 
     @PostMapping("/execperformancetest")
-    public Result execperformancetest(@RequestBody Dispatch dispatch) throws Exception {
-        long Execplanid = dispatch.getExecplanid();
+    public Result execperformancetest(@RequestBody Executeplanbatch dispatch) throws Exception {
+        long Execplanid = dispatch.getExecuteplanid();
+        String Batchname = dispatch.getBatchname();
         Executeplan executeplan = executeplanService.getBy("id", Execplanid);
         String property = System.getProperty("os.name");
         String ip = null;
@@ -218,6 +225,8 @@ public class TestPlanCaseController {
             return ResultGenerator.genFailedResult("未找到ip为：" + ip + "的slaver");
         }
         Long SlaverId = slaverlist.get(0).getId();
+
+
         String ProjectPath = System.getProperty("user.dir");
         String JmeterPath = "";
         String JmxPath = "";
@@ -236,11 +245,6 @@ public class TestPlanCaseController {
                 JmeterPerformanceReportPath = ProjectPath + "/performancereport";
                 JmeterPerformanceReportLogFilePath = ProjectPath + "/performancereportlogfile";
             }
-//            JmeterPath = ProjectPath + "\\apache-jmeter-5.3\\bin";
-//            JmxPath = ProjectPath + "\\servicejmxcase";
-//            JmeterPerformanceReportPath = ProjectPath + "\\performancereport";
-//            JmeterPerformanceReportLogFilePath = ProjectPath + "\\performancereportlogfile";
-
         } else {
             if (property.toLowerCase().startsWith("win")) {
                 JmeterPath = ProjectPath + "\\slaverservice\\apache-jmeter-5.3\\bin";
@@ -254,7 +258,6 @@ public class TestPlanCaseController {
                 JmeterPerformanceReportLogFilePath = ProjectPath + "/slaverservice/performancereportlogfile";
             }
         }
-
         File dir = new File(JmeterPerformanceReportPath);
         if (!dir.exists()) {// 判断目录是否存在
             dir.mkdir();
@@ -265,54 +268,64 @@ public class TestPlanCaseController {
             dirlog.mkdir();
             TestPlanCaseController.log.info("创建性能报告日志目录performancereport完成 :" + JmeterPerformanceReportLogFilePath);
         }
-        String JmxCaseName = dispatch.getCasejmxname();
-        String DeployUnitName = dispatch.getDeployunitname();
-        String CaseName = dispatch.getTestcasename();
-        TestPlanCaseController.log.info("性能任务-执行多机并行性能用例名 is......." + CaseName);
-        Deployunit Deployunit = deployunitService.findDeployNameValueWithCode(DeployUnitName, executeplan.getProjectid());
-        if (Deployunit == null) {
-            return ResultGenerator.genFailedResult("未找到微服务为：" + DeployUnitName);
-        }
-        String Protocal = Deployunit.getProtocal();
-        //如果是http,https，直接使用httpapitestcase下的functionhttpapi或者performancehttpapi来执行测试
-        String JmeterClassName = "";
-        String ClassName = "";
-        String DeployUnitNameForJmeter = "";
-        if (Protocal.equals("http") || Protocal.equals("https")) {
-            DeployUnitNameForJmeter = "httpapitestcase";
-            JmeterClassName = "HttpApiPerformance";
-            ClassName = "com.api.autotest.test." + DeployUnitNameForJmeter + "." + JmeterClassName;
-        }
-        if (Protocal.equals("rpc")) {
-            DeployUnitNameForJmeter = dispatch.getDeployunitname();
-            JmeterClassName = DeployUnitName;
-            ClassName = "com.api.autotest.test." + DeployUnitName + "." + JmxCaseName;
-        }
-        TestPlanCaseController.log.info("性能任务-DeployUnitNameForJmeter is......." + DeployUnitNameForJmeter + " JmeterClassName is........" + JmeterClassName);
-        if (!JmeterClassExist(ClassName, JmeterPath)) {
-            JmeterClassNotExist(dispatch, ClassName, CaseName);
-            String memo = CaseName + "未开发对应的JmeterClass：" + ClassName;
-            dispatchMapper.updatedispatchstatusandmemo("调度异常", memo, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
-        } else {
-            JmeterPerformanceObject jmeterPerformanceObject = null;
+//        String JmxCaseName = dispatch.getCasejmxname();
+//        String DeployUnitName = dispatch.getDeployunitname();
+//        String CaseName = dispatch.getTestcasename();
+//        TestPlanCaseController.log.info("性能任务-执行多机并行性能用例名 is......." + CaseName);
+//        Deployunit Deployunit = deployunitService.findDeployNameValueWithCode(DeployUnitName, executeplan.getProjectid());
+//        if (Deployunit == null) {
+//            return ResultGenerator.genFailedResult("未找到微服务为：" + DeployUnitName);
+//        }
+//        String Protocal = Deployunit.getProtocal();
+//        //如果是http,https，直接使用httpapitestcase下的functionhttpapi或者performancehttpapi来执行测试
+//        String JmeterClassName = "";
+//        String ClassName = "";
+//        String DeployUnitNameForJmeter = "";
+//        if (Protocal.equals("http") || Protocal.equals("https")) {
+//            DeployUnitNameForJmeter = "httpapitestcase";
+//            JmeterClassName = "HttpApiPerformance";
+//            ClassName = "com.api.autotest.test." + DeployUnitNameForJmeter + "." + JmeterClassName;
+//        }
+//        if (Protocal.equals("rpc")) {
+//            DeployUnitNameForJmeter = dispatch.getDeployunitname();
+//            JmeterClassName = DeployUnitName;
+//            ClassName = "com.api.autotest.test." + DeployUnitName + "." + JmxCaseName;
+//        }
+//        TestPlanCaseController.log.info("性能任务-DeployUnitNameForJmeter is......." + DeployUnitNameForJmeter + " JmeterClassName is........" + JmeterClassName);
+//        if (!JmeterClassExist(ClassName, JmeterPath)) {
+//            JmeterClassNotExist(dispatch, ClassName, CaseName);
+//            String memo = CaseName + "未开发对应的JmeterClass：" + ClassName;
+//            dispatchMapper.updatedispatchstatusandmemo("调度异常", memo, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
+//        } else {
+//            JmeterPerformanceObject jmeterPerformanceObject = null;
+        List<TestsceneDispatch> testsceneDispatchList= testsceneDispatchService.findscenebypbs(Execplanid,Batchname,SlaverId);
+
+        String Scenename=testsceneDispatchList.get(0).getScenename();
+        Long Sceneid=testsceneDispatchList.get(0).getTestsceneid();
+        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.findcasebyscenenid(Sceneid);
+        long threads=testsceneDispatchList.get(0).getTargetconcurrency();
+        long loops=testsceneDispatchList.get(0).getIterations();
+
+        long caseid=testsceneTestcaseList.get(0).getTestcaseid();
             try {
-                jmeterPerformanceObject = GetJmeterPerformance(dispatch);
-                if (jmeterPerformanceObject != null) {
+//                jmeterPerformanceObject = GetJmeterPerformance(dispatch);
+//                if (jmeterPerformanceObject != null) {
                     // 增加逻辑 获取计划的当前状态，如果为stop，放弃整个循环执行,return 掉
-                    tpcservice.ExecuteHttpPerformancePlanCase(jmeterPerformanceObject, DeployUnitNameForJmeter, JmeterPath, JmxPath, JmeterClassName, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, dispatch.getThreadnum(), dispatch.getLoops(), dispatch.getCreator());
+
+                tpcservice.ExecuteHttpPerformancePlanScene(url.trim(),username.trim(),password.trim(),executeplan.getExecuteplanname(),Scenename,SlaverId,executeplan.getId(),Sceneid,caseid,Batchname, JmeterPath, JmxPath, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, threads, loops, executeplan.getCreator());
                     // 更新调度表对应用例状态为已分配
-                    dispatchMapper.updatedispatchstatus("已分配", dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
+                    dispatchMapper.updatedispatchstatusbyname("已分配", dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, Sceneid);
                     TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。更新dispatch状态为已分配.....开始调用jmeter..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
                     slaverMapper.updateSlaverStaus(SlaverId, "运行中");
-                    executeplanbatchMapper.updatebatchstatus(dispatch.getExecplanid(), dispatch.getBatchname(), "运行中");
+                    executeplanbatchMapper.updatebatchstatus(dispatch.getExecuteplanid(), dispatch.getBatchname(), "运行中");
                     TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。调用jmeter完成..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
-                }
+                //}
             } catch (Exception ex) {
-                dispatchMapper.updatedispatchstatusandmemo("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
+                dispatchMapper.updatedispatchstatusandmemobyname("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, caseid);
                 ex.printStackTrace();
                 TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。获取 JmeterPerformanceObject对象异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
             }
-        }
+        //}
         return ResultGenerator.genOkResult();
     }
 
@@ -354,14 +367,14 @@ public class TestPlanCaseController {
         long planid = 0;
         String batchname = "";
         for (Executeplanbatch executeplanbatch : executeplanbatchList) {
-            planid= executeplanbatch.getExecuteplanid();
+            planid = executeplanbatch.getExecuteplanid();
             batchname = executeplanbatch.getBatchname();
             Long Sceneid = executeplanbatch.getSceneid();
             SceneIDs = SceneIDs + Sceneid + ",";
             SlaverId = executeplanbatch.getSlaverid();
         }
         try {
-            tpcservice.ExecuteHttpPlanFunctionCase(SlaverId,planid,batchname,JmeterPath, JmxPath, SceneIDs, url, username, password, SlaverId);
+            tpcservice.ExecuteHttpPlanFunctionCase(SlaverId, planid, batchname, JmeterPath, JmxPath, SceneIDs, url, username, password, SlaverId);
             for (Executeplanbatch executeplanbatch : executeplanbatchList) {
                 Long Sceneid = executeplanbatch.getSceneid();
                 Long batchid = executeplanbatch.getId();

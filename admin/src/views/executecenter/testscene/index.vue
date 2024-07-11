@@ -3344,6 +3344,7 @@ export default {
         page: 1,
         size: 10,
         scenename: null,
+        usetype: '功能',
         accountId: null,
         projectid: ''
       },

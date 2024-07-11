@@ -63,6 +63,12 @@ public class TestPlanCaseController {
     @Resource
     private TestsceneTestcaseService testsceneTestcaseService;
 
+    @Resource
+    private TestscenePerformanceService testscenePerformanceService;
+
+    @Resource
+    private TestsceneDispatchService testsceneDispatchService;
+
 
     @PostMapping("/exec")
     public Result exec(@RequestBody Executeplanbatch planbatch) throws Exception {
@@ -87,65 +93,76 @@ public class TestPlanCaseController {
             List<TestplanTestscene> testplanTestsceneList = testplanTestsceneMapper.findscenebyexecplanid(sceneparams);
 
             List<Executeplanbatch> executeplanbatchList = new ArrayList<>();
-            if(ep.getUsetype().equals("功能"))
-            {
-                for (TestplanTestscene testscene : testplanTestsceneList) {
-                    Executeplanbatch newplanbatch = new Executeplanbatch();
-                    newplanbatch.setId(null);
-                    long testsceneid = testscene.getTestscenenid();
-                    String testscenename = testscene.getScenename();
-                    newplanbatch.setStatus("初始");
-                    newplanbatch.setSource(planbatch.getSource());
-                    newplanbatch.setSceneid(testsceneid);
-                    newplanbatch.setScenename(testscenename);
-                    newplanbatch.setExectype(planbatch.getExectype());
-                    newplanbatch.setExecdate(planbatch.getExecdate());
-                    newplanbatch.setSlaverid(planbatch.getSlaverid());
-                    newplanbatch.setProjectid(planbatch.getProjectid());
-                    newplanbatch.setCreator(planbatch.getCreator());
-                    newplanbatch.setBatchname(planbatch.getBatchname());
-                    newplanbatch.setMemo("");
-                    newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
-                    newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
-                    newplanbatch.setCreateTime(new Date());
-                    newplanbatch.setLastmodifyTime(new Date());
-                    executeplanbatchList.add(newplanbatch);
+//            if (ep.getUsetype().equals("功能")) {
+            for (TestplanTestscene testscene : testplanTestsceneList) {
+                Executeplanbatch newplanbatch = new Executeplanbatch();
+                newplanbatch.setId(null);
+                long testsceneid = testscene.getTestscenenid();
+                String testscenename = testscene.getScenename();
+                newplanbatch.setStatus("初始");
+                newplanbatch.setSource(planbatch.getSource());
+                newplanbatch.setSceneid(testsceneid);
+                newplanbatch.setScenename(testscenename);
+                newplanbatch.setExectype(planbatch.getExectype());
+                newplanbatch.setExecdate(planbatch.getExecdate());
+                newplanbatch.setSlaverid(planbatch.getSlaverid());
+                newplanbatch.setProjectid(planbatch.getProjectid());
+                newplanbatch.setCreator(planbatch.getCreator());
+                newplanbatch.setBatchname(planbatch.getBatchname());
+                newplanbatch.setMemo("");
+                newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
+                newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
+                newplanbatch.setCreateTime(new Date());
+                newplanbatch.setLastmodifyTime(new Date());
+                executeplanbatchList.add(newplanbatch);
+            }
+            executeplanbatchService.save(executeplanbatchList);
+            if (ep.getUsetype().equals("功能")) {
+                if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
+                    List<Slaver> singleslaverlist = new ArrayList<>();
+                    singleslaverlist.add(slaverlist.get(0));
+                    HashMap<Long, List<TestplanTestscene>> longListHashMap = new HashMap<>();
+                    longListHashMap.put(singleslaverlist.get(0).getId(), testplanTestsceneList);
+                    SaveFuntionDispatch(longListHashMap, ep, batchname);
                 }
-                executeplanbatchService.save(executeplanbatchList);
-                if (ep.getUsetype().equals("功能")) {
-                    if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
-                        List<Slaver> singleslaverlist = new ArrayList<>();
-                        singleslaverlist.add(slaverlist.get(0));
-                        HashMap<Long, List<TestplanTestscene>> longListHashMap = new HashMap<>();
-                        longListHashMap.put(singleslaverlist.get(0).getId(), testplanTestsceneList);
-                        SaveFuntionDispatch(longListHashMap, ep, batchname);
-                    }
-                    if (ep.getRunmode().equalsIgnoreCase("多机并行") || ep.getRunmode().equalsIgnoreCase("多机执行")) {
-                        TestPlanCaseController.log.info("多机并行slaver：");
-                        HashMap<Long, List<TestplanTestscene>> longListHashMap = TestsceneDispatch(slaverlist, testplanTestsceneList);
-                        SaveFuntionDispatch(longListHashMap, ep, batchname);
-                    }
-                }
-            }else
-            {
-                //save dispatch
-                if (ep.getUsetype().equals("性能")) {
-                    for (TestplanTestscene testscene : testplanTestsceneList) {
-                        long testsceneid = testscene.getId();
-                        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
-                        TestPlanCaseController.log.info("测试集合id" + execplanid + " 批次为：" + batchname + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
-                        Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(execplanid, batchname, testsceneid);
-                        List<List<Dispatch>> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, ep, epb);
-                        TestPlanCaseController.log.info("单机运行slaver：" + slaverlist.get(0).getSlavername());
-                        for (List<Dispatch> li : dispatchList) {
-                            dispatchMapper.insertBatchDispatch(li);
-                            TestPlanCaseController.log.info("保存成功调度用例条数：" + li.size());
-                        }
-                    }
+                if (ep.getRunmode().equalsIgnoreCase("多机并行") || ep.getRunmode().equalsIgnoreCase("多机执行")) {
+                    TestPlanCaseController.log.info("多机并行slaver：");
+                    HashMap<Long, List<TestplanTestscene>> longListHashMap = TestsceneDispatch(slaverlist, testplanTestsceneList);
+                    SaveFuntionDispatch(longListHashMap, ep, batchname);
                 }
             }
+//            } else {
+            //save dispatch
+            if (ep.getUsetype().equals("性能")) {
+                List<Slaver> dispatchslaver = new ArrayList<>();
+                if (ep.getRunmode().equalsIgnoreCase("单机运行")) {
+                    dispatchslaver.add(slaverlist.get(0));
+                } else {
+                    dispatchslaver = slaverlist;
+                }
+                //dispatch secne
+                List<List<TestsceneDispatch>> TestscenedispatchList = PerformanceDispatchScene(dispatchslaver, testplanTestsceneList, ep, batchname);
+                for (List<TestsceneDispatch> li : TestscenedispatchList) {
+                    testsceneDispatchService.insertBatchDispatch(li);
+                    TestPlanCaseController.log.info("性能保存成功场景调度条数：" + li.size());
+                }
+                TestPlanCaseController.log.info("性能保存成功场景调度完成。。。。。。。。。。。。。。。。。" );
+                for (TestplanTestscene testscene : testplanTestsceneList) {
+                    long testsceneid = testscene.getId();
+                    Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(execplanid, batchname, testsceneid);
+                    //dispatch secnecase
+                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
+                    TestPlanCaseController.log.info("性能测试集合id" + execplanid + " 批次为：" + batchname + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
+                    List<Dispatch> dispatchList = PerformanceDispatch(dispatchslaver, testsceneTestcaseList, ep, epb);
+                    dispatchMapper.insertBatchDispatch(dispatchList);
+                    TestPlanCaseController.log.info("性能保存成功调度用例条数：" + dispatchList.size());
+
+                }
+                TestPlanCaseController.log.info("性能保存成功场景用例调度完成。。。。。。。。。。。。。。。。。" );
+            }
+            //}
         }
-        TestPlanCaseController.log.info("完成保存调度用例。。。。。。。。。。。。。。。。。。。。。。。。");
+        TestPlanCaseController.log.info("完成保存调度。。。。。。。。。。。。。。。。。。。。。。。。");
         return ResultGenerator.genOkResult();
     }
 
@@ -265,12 +282,14 @@ public class TestPlanCaseController {
                         List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, executeplan.getUsetype());
                         TestPlanCaseController.log.info("CI测试集合id" + executeplan.getId() + " 批次为：" + BatchName + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
                         Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(executeplan.getId(), BatchName, testsceneid);
-                        List<List<Dispatch>> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, executeplan, epb);
-                        TestPlanCaseController.log.info("CI单机运行slaver：" + slaverlist.get(0).getSlavername());
-                        for (List<Dispatch> li : dispatchList) {
-                            dispatchMapper.insertBatchDispatch(li);
-                            TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + li.size());
-                        }
+                        List<Dispatch> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, executeplan, epb);
+                        dispatchMapper.insertBatchDispatch(dispatchList);
+                        TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + dispatchList.size());
+//                        TestPlanCaseController.log.info("CI单机运行slaver：" + slaverlist.get(0).getSlavername());
+//                        for (List<Dispatch> li : dispatchList) {
+//                            dispatchMapper.insertBatchDispatch(li);
+//                            TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + li.size());
+//                        }
                     }
                 }
                 TestPlanCaseController.log.info("CI完成保存调度用例。。。。。。。。。。。。。。。。。。。。。。。。");
@@ -379,6 +398,27 @@ public class TestPlanCaseController {
         return dis;
     }
 
+    public TestsceneDispatch gettestscenedispatch(Long slaverid, Long caseorder, String slavername, TestscenePerformance testscenePerformance, Executeplan ep, Executeplanbatch epb, long ThreadNum, Long Loops) {
+        TestsceneDispatch testsceneDispatch = new TestsceneDispatch();
+        testsceneDispatch.setTestsceneid(testscenePerformance.getTestsceneid());
+        testsceneDispatch.setExecplanid(ep.getId());
+        testsceneDispatch.setExecplanname(ep.getExecuteplanname());
+        testsceneDispatch.setBatchid(epb.getId());
+        testsceneDispatch.setBatchname(epb.getBatchname());
+        testsceneDispatch.setHoldtime(testscenePerformance.getHoldtime());
+        testsceneDispatch.setIterations(Loops);
+        testsceneDispatch.setRampuptime(testscenePerformance.getRampuptime());
+        testsceneDispatch.setSlaverid(slaverid);
+        testsceneDispatch.setSlavername(slavername);
+        testsceneDispatch.setScenename(testscenePerformance.getScenename());
+        testsceneDispatch.setStepscount(testscenePerformance.getStepscount());
+        testsceneDispatch.setTargetconcurrency(ThreadNum);
+        testsceneDispatch.setCreateTime(new Date());
+        testsceneDispatch.setLastmodifyTime(new Date());
+        testsceneDispatch.setOrdernum(caseorder);
+        return testsceneDispatch;
+    }
+
     public List<List<String>> SplitList(List<String> sList, int num) {
 
         if (sList.size() < num) {
@@ -411,28 +451,67 @@ public class TestPlanCaseController {
     }
 
     //性能用例拆分线程和循环
-    public List<List<Dispatch>> PerformanceDispatch(List<Slaver> slaverlist, List<TestsceneTestcase> caselist, Executeplan ep, Executeplanbatch epb) {
-        int slavernums = slaverlist.size();
-        List<List<Dispatch>> LastDispatchList = new ArrayList<List<Dispatch>>();
+    public List<Dispatch> PerformanceDispatch(List<Slaver> slaverlist, List<TestsceneTestcase> caselist, Executeplan ep, Executeplanbatch epb) {
         List<Dispatch> splitdispatchList = new ArrayList<>();
         for (TestsceneTestcase testcase : caselist) {
-            Long ThreadNUms = testcase.getThreadnums();
-            Long Loops = testcase.getLoopnums();
+            Dispatch dis = getdispatch(slaverlist.get(0).getId(), testcase.getCaseorder(), slaverlist.get(0).getSlavername(), testcase, ep, epb, 1, new Long(1));
+            splitdispatchList.add(dis);
+        }
+
+
+
+//        int slavernums = slaverlist.size();
+//        List<List<Dispatch>> LastDispatchList = new ArrayList<List<Dispatch>>();
+//        List<Dispatch> splitdispatchList = new ArrayList<>();
+//        for (TestsceneTestcase testcase : caselist) {
+//            Long ThreadNUms = testcase.getThreadnums();
+//            Long Loops = testcase.getLoopnums();
+//            Long Threadmode = ThreadNUms / slavernums;
+//            Long Loopsmode = Loops / slavernums;
+//            Long Threadleft = ThreadNUms % slavernums;
+//            Long Loopleft = Loops % slavernums;
+//            //拆分每个case线程和循环取模平均分配到slaver
+//            for (int i = 0; i < slaverlist.size(); i++) {
+//                Dispatch dis = getdispatch(slaverlist.get(i).getId(), testcase.getCaseorder(), slaverlist.get(i).getSlavername(), testcase, ep, epb, Threadmode, Loopsmode);
+//                splitdispatchList.add(dis);
+//            }
+//            //如果线程数或者循环数取余不为0，则把剩余的都分给最后一个slaver
+//            if (Threadleft != 0 || Loopleft != 0) {
+//                Dispatch dis = splitdispatchList.get(slaverlist.size() - 1);
+//                dis.setThreadnum(dis.getThreadnum() + Threadleft);
+//                dis.setLoops(dis.getLoops() + Loopleft);
+//                splitdispatchList.set(slaverlist.size() - 1, dis);
+//            }
+//        }
+//        LastDispatchList.add(splitdispatchList);
+        return splitdispatchList;
+    }
+
+    public List<List<TestsceneDispatch>> PerformanceDispatchScene(List<Slaver> slaverlist, List<TestplanTestscene> caselist, Executeplan ep, String batchname) {
+        int slavernums = slaverlist.size();
+        List<List<TestsceneDispatch>> LastDispatchList = new ArrayList<List<TestsceneDispatch>>();
+        List<TestsceneDispatch> splitdispatchList = new ArrayList<>();
+        for (TestplanTestscene testplanTestscene : caselist) {
+            long sceneid = testplanTestscene.getTestscenenid();
+            Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(ep.getId(), batchname, sceneid);
+            TestscenePerformance testscenePerformance = testscenePerformanceService.getBy("id", sceneid);
+            Long ThreadNUms = testscenePerformance.getTargetconcurrency();
+            Long Loops = testscenePerformance.getIterations();
             Long Threadmode = ThreadNUms / slavernums;
             Long Loopsmode = Loops / slavernums;
             Long Threadleft = ThreadNUms % slavernums;
             Long Loopleft = Loops % slavernums;
             //拆分每个case线程和循环取模平均分配到slaver
             for (int i = 0; i < slaverlist.size(); i++) {
-                Dispatch dis = getdispatch(slaverlist.get(i).getId(), new Long(2), slaverlist.get(i).getSlavername(), testcase, ep, epb, Threadmode, Loopsmode);
-                splitdispatchList.add(dis);
+                TestsceneDispatch testsceneDispatch = gettestscenedispatch(slaverlist.get(i).getId(), testplanTestscene.getOrdernum(), slaverlist.get(i).getSlavername(), testscenePerformance, ep, epb,Threadmode,Loopsmode);
+                splitdispatchList.add(testsceneDispatch);
             }
             //如果线程数或者循环数取余不为0，则把剩余的都分给最后一个slaver
             if (Threadleft != 0 || Loopleft != 0) {
-                Dispatch dis = splitdispatchList.get(slaverlist.size() - 1);
-                dis.setThreadnum(dis.getThreadnum() + Threadleft);
-                dis.setLoops(dis.getLoops() + Loopleft);
-                splitdispatchList.set(slaverlist.size() - 1, dis);
+                TestsceneDispatch testsceneDispatch = splitdispatchList.get(slaverlist.size() - 1);
+                testsceneDispatch.setTargetconcurrency(testsceneDispatch.getTargetconcurrency() + Threadleft);
+                testsceneDispatch.setIterations(testsceneDispatch.getIterations() + Loopleft);
+                splitdispatchList.set(slaverlist.size() - 1, testsceneDispatch);
             }
         }
         LastDispatchList.add(splitdispatchList);

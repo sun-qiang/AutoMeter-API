@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestsceneTestcaseMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.TestsceneTestcase">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="testscenenid" jdbcType="BIGINT" property="testscenenid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="apiid" jdbcType="BIGINT" property="apiid" />
+    <result column="deployunitid" jdbcType="BIGINT" property="deployunitid" />
+    <result column="deployunitname" jdbcType="VARCHAR" property="deployunitname" />
+    <result column="modelid" jdbcType="BIGINT" property="modelid" />
+    <result column="modelname" jdbcType="VARCHAR" property="modelname" />
+    <result column="apiname" jdbcType="VARCHAR" property="apiname" />
+    <result column="testcaseid" jdbcType="BIGINT" property="testcaseid" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
+    <result column="caseorder" jdbcType="BIGINT" property="caseorder" />
+    <result column="projectid" jdbcType="BIGINT" property="projectid" />
+    <result column="threadnums" jdbcType="BIGINT" property="threadnums" />
+    <result column="loopnums" jdbcType="BIGINT" property="loopnums" />
+    <result column="stopflag" jdbcType="VARCHAR" property="stopflag" />
+  </resultMap>
+
+  <select id="findCasebyscenenid" resultMap="BaseResultMap">
+    SELECT b.deployunitname,c.casename, a.*
+    FROM testscene_testcase a inner join  deployunit b  inner join apicases c on a.deployunitid=b.id and a.testcaseid=c.id
+    <where>
+      <if test="deployunitid != null  and deployunitid != ''">and a.deployunitid =#{deployunitid}</if>
+      <if test="modelid != null  and modelid != ''">and a.modelid =#{modelid}</if>
+      <if test="apiid != null  and apiid != ''">and a.apiid =#{apiid}</if>
+      and a.testscenenid=#{testscenenid}
+    </where>
+    order by a.caseorder
+  </select>
+
+
+  <select id="findtestscenencasebyid" resultMap="BaseResultMap">
+    SELECT *
+    FROM testscene_testcase a where a.id=#{id}
+  </select>
+
+  <select id="finddeployunitbyscenenid" resultMap="BaseResultMap">
+    SELECT distinct (deployunitid),deployunitname
+    FROM testscene_testcase a where a.testscenenid=#{testscenenid}
+  </select>
+
+  <select id="findcasebyscenenid" resultMap="BaseResultMap">
+    SELECT b.casename,a.*
+    FROM testscene_testcase a INNER JOIN apicases b on a.testcaseid=b.id
+    where a.testscenenid=#{testscenenid} order by a.caseorder ASC
+  </select>
+
+
+
+  <insert id="savetestscenencase">
+    INSERT INTO testscene_testcase (testscenenid,scenename,apiid,deployunitid,deployunitname,modelid,modelname,apiname,
+    testcaseid,casename,create_time,lastmodify_time,
+    creator,caseorder,projectid)
+    VALUES
+    <foreach collection="casedataList" item="item" index="index" separator=",">
+      (#{item.testscenenid},#{item.scenename},#{item.apiid}, #{item.deployunitid},#{item.deployunitname},
+      #{item.modelid},#{item.modelname},#{item.apiname},
+      #{item.testcaseid}, #{item.casename},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),
+      DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'), #{item.creator},#{item.caseorder},#{item.projectid})
+    </foreach>
+  </insert>
+
+  <update id="updatescenenCaseorder" >
+    update testscene_testcase set caseorder = #{caseorder},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+  <update id="updatescenecaselogic" >
+    update testscene_testcase set loopnums = #{loopnums},stopflag = #{stopflag},lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
+
+
+
+</mapper>

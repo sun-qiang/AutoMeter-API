@@ -209,7 +209,7 @@ public class TestconditionController {
                 if (conditionOrder.getSubconditiontype().equals("前置接口条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
                     ConditionApi conditionApi= conditionApiService.getBy("id",conditionid);
-                    conditionApi(conditionApi, executeplan, dispatch.getBatchname(), dispatch.getSlaverid());
+                    conditionApi(conditionApi, executeplan, dispatch.getBatchname());
 //                    APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
                     TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
                 }
@@ -243,7 +243,7 @@ public class TestconditionController {
             long ConditionID = testconditionList.get(0).getId();
             //处理接口条件
             TestconditionController.log.info("开始处理用例前置条件-API子条件-============：");
-            VariablesNameVlaueMap = APICondition(ConditionID, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
+            VariablesNameVlaueMap = APICondition(ConditionID, dispatch.getBatchname(), executeplan);
             TestconditionController.log.info("完成处理用例前置条件-API子条件-============：");
             //处理数据库条件
             DBCondition(ConditionID, dispatch);
@@ -256,8 +256,8 @@ public class TestconditionController {
         return ResultGenerator.genOkResult(VariablesNameVlaueMap);
     }
 
-    //接口子条件
-    private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname, Long Slaverid) {
+    //接口子条件, Long Slaverid
+    private HashMap<String, String> conditionApi(ConditionApi conditionApi, Executeplan executeplan, String Batchname) {
         TestconditionController.log.info("接口条件名Subconditionname-============：" + conditionApi.getSubconditionname() + " 执行用例名:" + conditionApi.getCasename());
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
         TestconditionReport testconditionReport = new TestconditionReport();
@@ -333,7 +333,8 @@ public class TestconditionController {
         RequestObject requestObject = new RequestObject();
         try {
             requestObject = testCaseHelp.GetCaseRequestData(executeplan.getId(), Batchname, apiCasedataList, api, apicases, deployunit, macdepunit, machine,executeplan.getEnvid());
-            requestObject.setSlaverid(Slaverid.toString());
+            requestObject.setSlaverid(new Long(0).toString());
+//            requestObject.setSlaverid(Slaverid.toString());
             requestObject.setTestplanname(executeplan.getExecuteplanname());
             requestObject.setBatchname(Batchname);
         } catch (Exception ex) {
@@ -390,14 +391,14 @@ public class TestconditionController {
         return VariableNameValueMap;
     }
 
-    //接口子条件入口
-    public HashMap<String, String> APICondition(long ConditionID, String Batchname, Executeplan executeplan, Long Slaverid) {
+    //接口子条件入口, Long Slaverid
+    public HashMap<String, String> APICondition(long ConditionID, String Batchname, Executeplan executeplan) {
         HashMap<String, String> VariableNameValueMap = new HashMap<>();
         List<ConditionApi> conditionApiList = conditionApiService.GetCaseListByConditionID(ConditionID, "execplan");
         TestconditionController.log.info("接口子条件条件报告API子条件数量-============：" + conditionApiList.size());
         for (ConditionApi conditionApi : conditionApiList) {
             HashMap<String, String> apiVariableNameValueMap = new HashMap<>();
-            apiVariableNameValueMap = conditionApi(conditionApi, executeplan, Batchname, Slaverid);
+            apiVariableNameValueMap = conditionApi(conditionApi, executeplan, Batchname);
             for (String keyname : apiVariableNameValueMap.keySet()) {
                 VariableNameValueMap.put(keyname, apiVariableNameValueMap.get(keyname));
             }

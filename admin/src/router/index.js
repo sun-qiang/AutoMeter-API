@@ -201,7 +201,7 @@ export const asyncRouterMap = [
     children: [
       { path: 'apicases/list', name: '接口用例库', component: _import('assets/cases/apicases/index'), meta: { title: '接口用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
       { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
-      // { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
+      { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
       { path: 'executeplan/list', name: '测试集合管理', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
       // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
       // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},

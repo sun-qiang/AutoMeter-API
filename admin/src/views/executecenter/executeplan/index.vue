@@ -755,7 +755,7 @@
             <el-button
               type="primary"
               size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
+              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id && planusetype === '功能'"
               @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"
             >前置条件</el-button>
           </template>
@@ -2629,6 +2629,7 @@
     },
     data() {
       return {
+        planusetype: '功能',
         dynamicWidth: 0,
         activeName: 'zero',
         modifyplanaddmaildialogFormVisible: false,
@@ -5409,6 +5410,9 @@
       },
       showtestsceneDialog(index) {
         // 显示新增对话框
+        this.planusetype = this.executeplanList[index].usetype
+        console.log(1231)
+        console.log(this.planusetype)
         this.testscenedialogFormVisible = true
         this.tmpexecplan.execplanid = this.executeplanList[index].id
         this.tmpexecplan.execplanname = this.executeplanList[index].executeplanname

@@ -48,9 +48,21 @@
     and execplanid = #{execplanid} and sceneid = #{sceneid} and batchid = #{batchid}
   </update>
 
+  <update id="updatedispatchstatusbyname">
+    update  dispatch set status=#{status} , lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where slaverid = #{slaverid}
+                                                                                                       and execplanid = #{execplanid} and sceneid = #{sceneid} and batchname = #{batchname}
+  </update>
+
+
+
   <update id="updatedispatchstatusandmemo">
     update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where slaverid = #{slaverid}
     and execplanid = #{execplanid} and testcaseid = #{testcaseid} and batchid = #{batchid}
+  </update>
+
+  <update id="updatedispatchstatusandmemobyname">
+    update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where slaverid = #{slaverid}
+                                                                                                                     and execplanid = #{execplanid} and testcaseid = #{testcaseid} and batchname = #{batchname}
   </update>
 
   <insert id="insertBatchDispatch"  parameterType="com.zoctan.api.entity.Dispatch">

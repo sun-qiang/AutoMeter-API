@@ -67,6 +67,18 @@
                        v-if="hasPermission('testscene:update')  || hasPermission('testscene:delete')">
         <template slot-scope="scope">
           <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
+            @click.native.prevent="showtestscenestressDialog(scope.$index)"
+          >性能配置</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
+            @click.native.prevent="showtestsceneCaseDialog(scope.$index)"
+          >装载用例</el-button>
+          <el-button
             type="warning"
             size="mini"
             v-if="hasPermission('testscene:update') && scope.row.id !== id"
@@ -78,18 +90,6 @@
             v-if="hasPermission('testscene:delete') && scope.row.id !== id"
             @click.native.prevent="removetestscene(scope.$index)"
           >删除</el-button>
-          <el-button
-            type="primary"
-            size="mini"用例前置条件
-            v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
-            @click.native.prevent="showtestscenestressDialog(scope.$index)"
-          >性能配置</el-button>
-          <el-button
-            type="primary"
-            size="mini"用例前置条件
-            v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
-            @click.native.prevent="showtestsceneCaseDialog(scope.$index)"
-          >装载用例</el-button>
           <el-button
             type="primary"
             size="mini"
@@ -209,7 +209,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog width="1200px" title='场景用例' :visible.sync="testscenecasedialogFormVisible">
+    <el-dialog width="1000px" title='场景用例' :visible.sync="testscenecasedialogFormVisible">
       <div class="filter-container" >
         <el-form :inline="true"  >
           <el-form-item  label="微服务:" prop="deployunitname" >
@@ -262,11 +262,11 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="130"/>
-        <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="130"/>
-        <el-table-column label="用例名" align="center" prop="casename" width="110"/>
-        <el-table-column label="微服务" align="center" prop="deployunitname" width="110"/>
-        <el-table-column label="API" align="center" prop="apiname" width="110"/>
+        <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="150"/>
+        <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="150"/>
+        <el-table-column label="用例名" align="center" prop="casename" width="150"/>
+        <el-table-column label="微服务" align="center" prop="deployunitname" width="150"/>
+        <el-table-column label="API" align="center" prop="apiname" width="120"/>
 
         <el-table-column width="90" align="center" label="执行步骤">
           <template slot-scope="{row}">
@@ -310,7 +310,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="管理" align="center" width="570"
+        <el-table-column label="管理" align="center" width="270"
                          v-if="hasPermission('testscene:deletecase')  || hasPermission('testscene:scenecondition')">
           <template slot-scope="scope">
             <el-button
@@ -319,38 +319,24 @@
               v-if="hasPermission('testscene:deletecase') && scope.row.id !== id"
               @click.native.prevent="removetestscenecase(scope.$index)"
             >删除</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
-              @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"
-            >前置条件</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
-              @click.native.prevent="showtestscenecaseLogicDialog(scope.$index)"
-            >逻辑设置</el-button>
+<!--            <el-button-->
+<!--              type="primary"-->
+<!--              size="mini"-->
+<!--              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"-->
+<!--              @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"-->
+<!--            >前置条件</el-button>-->
+<!--            <el-button-->
+<!--              type="primary"-->
+<!--              size="mini"-->
+<!--              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"-->
+<!--              @click.native.prevent="showtestscenecaseLogicDialog(scope.$index)"-->
+<!--            >逻辑设置</el-button>-->
             <el-button
               type="primary"
               size="mini"
               v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
               @click.native.prevent="showtestcasedataDialog(scope.$index)"
             >用例数据</el-button>
-
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
-              @click.native.prevent="showtestcasedataDialog(scope.$index)"
-            >准备数据</el-button>
-            <el-button
-              type="primary"
-              size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
-              @click.native.prevent="showtestcasedataDialog(scope.$index)"
-            >性能模型</el-button>
-
           </template>
         </el-table-column>
       </el-table>
@@ -3543,6 +3529,7 @@ export default {
         page: 1,
         size: 10,
         scenename: null,
+        usetype: '性能',
         accountId: null,
         projectid: ''
       },

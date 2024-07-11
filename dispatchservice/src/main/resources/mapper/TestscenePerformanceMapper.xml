@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestscenePerformanceMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.TestscenePerformance">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="testsceneid" jdbcType="BIGINT" property="testsceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="targetconcurrency" jdbcType="BIGINT" property="targetconcurrency" />
+    <result column="rampuptime" jdbcType="BIGINT" property="rampuptime" />
+    <result column="stepscount" jdbcType="BIGINT" property="stepscount" />
+    <result column="holdtime" jdbcType="BIGINT" property="holdtime" />
+    <result column="timeunit" jdbcType="VARCHAR" property="timeunit" />
+    <result column="iterations" jdbcType="BIGINT" property="iterations" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+  </resultMap>
+</mapper>

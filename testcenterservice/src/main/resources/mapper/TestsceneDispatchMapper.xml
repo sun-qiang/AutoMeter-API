@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zoctan.api.mapper.TestsceneDispatchMapper">
+  <resultMap id="BaseResultMap" type="com.zoctan.api.entity.TestsceneDispatch">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="execplanid" jdbcType="BIGINT" property="execplanid" />
+    <result column="execplanname" jdbcType="VARCHAR" property="execplanname" />
+    <result column="batchid" jdbcType="BIGINT" property="batchid" />
+    <result column="batchname" jdbcType="VARCHAR" property="batchname" />
+    <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
+    <result column="slavername" jdbcType="VARCHAR" property="slavername" />
+    <result column="testsceneid" jdbcType="BIGINT" property="testsceneid" />
+    <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="targetconcurrency" jdbcType="BIGINT" property="targetconcurrency" />
+    <result column="rampuptime" jdbcType="BIGINT" property="rampuptime" />
+    <result column="stepscount" jdbcType="BIGINT" property="stepscount" />
+    <result column="ordernum" jdbcType="BIGINT" property="ordernum" />
+    <result column="holdtime" jdbcType="BIGINT" property="holdtime" />
+    <result column="timeunit" jdbcType="VARCHAR" property="timeunit" />
+    <result column="iterations" jdbcType="BIGINT" property="iterations" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
+  </resultMap>
+</mapper>
