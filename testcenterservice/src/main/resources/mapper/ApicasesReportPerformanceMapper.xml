@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
     <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
@@ -48,8 +49,8 @@
 
 
   <select id="finddynamicresult" resultMap="BaseResultMap">
-    SELECT b.casename,b.apiname,a.status,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
-    FROM ${tableName}  a inner join apicases b on a.caseid=b.id
+    SELECT c.scenename, b.casename,b.apiname,a.status,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
+    FROM ${tableName}  a inner join apicases b inner join testscene c on a.caseid=b.id and a.sceneid = c.id
     <where>
       <if test="testplanid != null and testplanid != ''">a.testplanid =#{testplanid}</if>
       <if test="batchname != null  and batchname != ''">and a.batchname =#{batchname}</if>
@@ -60,9 +61,13 @@
 
 
   <select id="finddynamicresultbystatus" resultMap="BaseResultMap">
-    SELECT b.casename,b.apiname,a.status,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
-    FROM ${tableName}  a inner join apicases b on a.caseid=b.id where a.testplanid =#{testplanid} and  a.batchname =#{batchname}
-    and status =#{status}
+    SELECT c.scenename, b.casename,b.apiname,a.status,a.url,a.requestmethod,a.batchname,b.deployunitname,a.respone,a.assertvalue,a.runtime,a.expect,a.errorinfo,a.create_time,a.requestheader,a.requestdatas
+    FROM ${tableName}  a inner join apicases b inner join testscene c  on a.caseid=b.id  and a.sceneid = c.id
+    <where>
+      <if test="testplanid != null and testplanid != ''">a.testplanid =#{testplanid}</if>
+      <if test="batchname != null  and batchname != ''">and a.batchname =#{batchname}</if>
+      <if test="status != null  and status != ''">and a.status =#{status}</if>
+    </where>
     order by a.lastmodify_time  DESC
   </select>
 

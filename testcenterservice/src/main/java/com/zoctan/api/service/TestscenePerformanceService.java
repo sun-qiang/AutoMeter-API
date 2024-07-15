@@ -8,11 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* @author SeasonFan
-* @date 2024/07/08
-*/
+ * @author SeasonFan
+ * @date 2024/07/08
+ */
 public interface TestscenePerformanceService extends Service<TestscenePerformance> {
-List<TestscenePerformance> findDicWithName(final Map<String, Object> params);
-int ifexist(Condition condition);
-void updateDic(TestscenePerformance params);
+    List<TestscenePerformance> findDicWithName(final Map<String, Object> params);
+    int ifexist(Condition condition);
+
+    void updateDic(TestscenePerformance params);
 }

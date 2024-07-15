@@ -78,12 +78,12 @@ public class PerformanceDispatchScheduleTask {
             if (lock) {
                 try {
                     Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "立即执行", "性能");
-                    Dispatch dispatch = new Dispatch();
-                    dispatch.setExecplanid(executeplanbatch.getExecuteplanid());
-                    dispatch.setBatchname(executeplanbatch.getBatchname());
-                    dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
 //                    Dispatch dispatch = dispatchMapper.getrecentdispatchbyusetype("待分配", "性能");
                     if (executeplanbatch != null) {
+                        Dispatch dispatch = new Dispatch();
+                        dispatch.setExecplanid(executeplanbatch.getExecuteplanid());
+                        dispatch.setBatchname(executeplanbatch.getBatchname());
+                        dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
                         Long PlanID = dispatch.getExecplanid();
                         String BatchName = executeplanbatch.getBatchname();
 //                        Long caseid = dispatch.getTestcaseid();

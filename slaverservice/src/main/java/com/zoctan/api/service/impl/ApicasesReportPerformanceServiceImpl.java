@@ -33,8 +33,8 @@ private ApicasesReportPerformanceMapper apicasesReportPerformanceMapper;
     }
 
     @Override
-    public void adddynamiccaseperformancereport(long caseid, long testplanid, String batchname, long slaverid, String status, String respone, String assertvalue, long runtime, String expect, String errorinfo, Date create_time, Date lastmodify_time, String creator, String requestheader, String requestdatas, String url, String requestmethod, String tablename,long projectid) {
-        apicasesReportPerformanceMapper.adddynamiccaseperformancereport(caseid, testplanid, batchname, slaverid, status, respone, assertvalue, runtime, expect, errorinfo, create_time, lastmodify_time, creator, requestheader, requestdatas, url, requestmethod, tablename,projectid);
+    public void adddynamiccaseperformancereport(long caseid, long testplanid, String batchname, long slaverid, String status, String respone, String assertvalue, long runtime, String expect, String errorinfo, Date create_time, Date lastmodify_time, String creator, String requestheader, String requestdatas, String url, String requestmethod, String tablename,long projectid,long sceneid) {
+        apicasesReportPerformanceMapper.adddynamiccaseperformancereport(caseid, testplanid, batchname, slaverid, status, respone, assertvalue, runtime, expect, errorinfo, create_time, lastmodify_time, creator, requestheader, requestdatas, url, requestmethod, tablename,projectid,sceneid);
     }
 
 

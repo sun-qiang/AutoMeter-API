@@ -160,7 +160,7 @@ public class FixPerformanceResultFileScheduleTask {
         String[] array = Content.split("\\$\\$");
         FixPerformanceResultFileScheduleTask.log.info("收集性能报告数据文件每行长度：=======================" + array.length);
         boolean caseresultstatus = true;
-        if (array.length == 18) {
+        if (array.length == 19) {
             ApicasesReportPerformance apicasesReportPerformance = new ApicasesReportPerformance();
             long caseid = Long.parseLong(array[0]);
             apicasesReportPerformance.setCaseid(caseid);
@@ -208,7 +208,9 @@ public class FixPerformanceResultFileScheduleTask {
             apicasesReportPerformance.setRequestmethod(Requestmethod);
             long peojectid=Long.parseLong(array[17]);
             apicasesReportPerformance.setProjectid(peojectid);
-            apicasesReportPerformanceService.adddynamiccaseperformancereport(caseid, planid, batchname, slaverid, status, respone, Assertvalue, runtime, Expect, Errorinfo, dateNowStr, dateNowStr, Creator, Requestheader, Requestdatas, Url, Requestmethod, TableName,peojectid);
+            long sceneid=Long.parseLong(array[18]);
+            apicasesReportPerformance.setSceneid(sceneid);
+            apicasesReportPerformanceService.adddynamiccaseperformancereport(caseid, planid, batchname, slaverid, status, respone, Assertvalue, runtime, Expect, Errorinfo, dateNowStr, dateNowStr, Creator, Requestheader, Requestdatas, Url, Requestmethod, TableName,peojectid,sceneid);
         }
         return caseresultstatus;
     }

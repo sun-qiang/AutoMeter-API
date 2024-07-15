@@ -268,7 +268,7 @@ public class TestPlanCaseController {
             dirlog.mkdir();
             TestPlanCaseController.log.info("创建性能报告日志目录performancereport完成 :" + JmeterPerformanceReportLogFilePath);
         }
-//        String JmxCaseName = dispatch.getCasejmxname();
+//        String JmxCaseName = dispatch1.getCasejmxname();
 //        String DeployUnitName = dispatch.getDeployunitname();
 //        String CaseName = dispatch.getTestcasename();
 //        TestPlanCaseController.log.info("性能任务-执行多机并行性能用例名 is......." + CaseName);
@@ -298,33 +298,36 @@ public class TestPlanCaseController {
 //            dispatchMapper.updatedispatchstatusandmemo("调度异常", memo, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
 //        } else {
 //            JmeterPerformanceObject jmeterPerformanceObject = null;
-        List<TestsceneDispatch> testsceneDispatchList= testsceneDispatchService.findscenebypbs(Execplanid,Batchname,SlaverId);
+        List<TestsceneDispatch> testsceneDispatchList = testsceneDispatchService.findscenebypbs(Execplanid, Batchname, SlaverId);
 
-        String Scenename=testsceneDispatchList.get(0).getScenename();
-        Long Sceneid=testsceneDispatchList.get(0).getTestsceneid();
-        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.findcasebyscenenid(Sceneid);
-        long threads=testsceneDispatchList.get(0).getTargetconcurrency();
-        long loops=testsceneDispatchList.get(0).getIterations();
+        String Scenename = testsceneDispatchList.get(0).getScenename();
+        Long Sceneid = testsceneDispatchList.get(0).getTestsceneid();
+        Long Batchid = testsceneDispatchList.get(0).getBatchid();
 
-        long caseid=testsceneTestcaseList.get(0).getTestcaseid();
-            try {
+        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebyscenenid(Sceneid);
+        long threads = testsceneDispatchList.get(0).getTargetconcurrency();
+        long loops = testsceneDispatchList.get(0).getIterations();
+
+        long caseid = testsceneTestcaseList.get(0).getTestcaseid();
+        String classname=testsceneTestcaseList.get(0).getCasename();
+        try {
 //                jmeterPerformanceObject = GetJmeterPerformance(dispatch);
 //                if (jmeterPerformanceObject != null) {
-                    // 增加逻辑 获取计划的当前状态，如果为stop，放弃整个循环执行,return 掉
+            // 增加逻辑 获取计划的当前状态，如果为stop，放弃整个循环执行,return 掉
 
-                tpcservice.ExecuteHttpPerformancePlanScene(url.trim(),username.trim(),password.trim(),executeplan.getExecuteplanname(),Scenename,SlaverId,executeplan.getId(),Sceneid,caseid,Batchname, JmeterPath, JmxPath, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, threads, loops, executeplan.getCreator());
-                    // 更新调度表对应用例状态为已分配
-                    dispatchMapper.updatedispatchstatusbyname("已分配", dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, Sceneid);
-                    TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。更新dispatch状态为已分配.....开始调用jmeter..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
-                    slaverMapper.updateSlaverStaus(SlaverId, "运行中");
-                    executeplanbatchMapper.updatebatchstatus(dispatch.getExecuteplanid(), dispatch.getBatchname(), "运行中");
-                    TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。调用jmeter完成..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
-                //}
-            } catch (Exception ex) {
-                dispatchMapper.updatedispatchstatusandmemobyname("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, caseid);
-                ex.printStackTrace();
-                TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。获取 JmeterPerformanceObject对象异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
-            }
+            tpcservice.ExecuteHttpPerformancePlanScene(classname,url.trim(), username.trim(), password.trim(), executeplan.getExecuteplanname(), Scenename, SlaverId, executeplan.getId(), Sceneid, caseid, Batchid, Batchname, JmeterPath, JmxPath, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, threads, loops, executeplan.getCreator());
+            // 更新调度表对应用例状态为已分配
+            dispatchMapper.updatedispatchstatusbyname("已分配", dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, Sceneid);
+            TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。更新dispatch状态为已分配.....开始调用jmeter..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
+            slaverMapper.updateSlaverStaus(SlaverId, "运行中");
+            executeplanbatchMapper.updatebatchstatus(dispatch.getExecuteplanid(), dispatch.getBatchname(), "运行中");
+            TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。调用jmeter完成..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
+            //}
+        } catch (Exception ex) {
+            dispatchMapper.updatedispatchstatusandmemobyname("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, caseid);
+            ex.printStackTrace();
+            TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。获取 JmeterPerformanceObject对象异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
+        }
         //}
         return ResultGenerator.genOkResult();
     }

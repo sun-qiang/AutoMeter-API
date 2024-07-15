@@ -22,6 +22,17 @@ public class ApicasesReportPerformance extends Apicases {
 
     private Long projectid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    private Long sceneid;
+
+
     /**
      * 用例id
      */

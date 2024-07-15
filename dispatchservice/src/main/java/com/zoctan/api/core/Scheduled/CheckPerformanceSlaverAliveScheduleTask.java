@@ -95,17 +95,17 @@ public class CheckPerformanceSlaverAliveScheduleTask {
                     CheckPerformanceSlaverAliveScheduleTask.log.info("调度服务检查性能Slaver检测：" + ServerUrl + "请求响应结果。。。。。。。。。。。。。。。。。。。。。。。。：" + respon);
                 } catch (Exception e) {
                     //1.置为已下线
-                    slaverMapper.updateSlaverStatus(slaver.getId(), "已下线");
-                    CheckPerformanceSlaverAliveScheduleTask.log.info("调度服务检查性能Slaver：" + slaver.getSlavername() + " 更新为已下线。。。。。。。。。。。。。。。。。。。。。。。。" );
-                    List<Dispatch> dispatchList= dispatchMapper.getdispatchsbyslaverid(slaver.getId(),"已分配","性能");
-                    if(dispatchList.size()>0)
-                    {
-                        long planid=dispatchList.get(0).getExecplanid();
-                        long batchid=dispatchList.get(0).getBatchid();
-                        //2.更新dispatch为已取消
-                        dispatchMapper.updatedispatchcancel("已取消",planid,batchid,"性能测试执行过程中，有执行机："+slaver.getSlavername()+" 异常下线，导致性能测试集合执行计划取消");
-                        CheckPerformanceSlaverAliveScheduleTask.log.info("调度服务检查性能更新集合id： "+planid + " 计划id ：" + batchid + " 状态为已取消。。。。。。。。。。。。。。。。。。。。。。。。" );
-                    }
+//                    slaverMapper.updateSlaverStatus(slaver.getId(), "已下线");
+//                    CheckPerformanceSlaverAliveScheduleTask.log.info("调度服务检查性能Slaver：" + slaver.getSlavername() + " 更新为已下线。。。。。。。。。。。。。。。。。。。。。。。。" );
+//                    List<Dispatch> dispatchList= dispatchMapper.getdispatchsbyslaverid(slaver.getId(),"已分配","性能");
+//                    if(dispatchList.size()>0)
+//                    {
+//                        long planid=dispatchList.get(0).getExecplanid();
+//                        long batchid=dispatchList.get(0).getBatchid();
+//                        //2.更新dispatch为已取消
+//                        dispatchMapper.updatedispatchcancel("已取消",planid,batchid,"性能测试执行过程中，有执行机："+slaver.getSlavername()+" 异常下线，导致性能测试集合执行计划取消");
+//                        CheckPerformanceSlaverAliveScheduleTask.log.info("调度服务检查性能更新集合id： "+planid + " 计划id ：" + batchid + " 状态为已取消。。。。。。。。。。。。。。。。。。。。。。。。" );
+//                    }
                 }
             }
         }

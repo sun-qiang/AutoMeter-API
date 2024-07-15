@@ -70,6 +70,7 @@
   <update id="createNewTable" parameterType="String">
     CREATE TABLE ${tableName} (
         `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Id',
+        `sceneid` bigint(20) unsigned NOT NULL COMMENT '场景id',
         `caseid` bigint(20) unsigned NOT NULL COMMENT '用例id',
         `testplanid` bigint(20) unsigned NOT NULL COMMENT '执行计划id',
         `batchname` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '批次',

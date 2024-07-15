@@ -224,8 +224,6 @@ public class GeneralPerformancestatisticsScheduleTask {
         {
             GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- "+testclass+" ：保存性能统计结果异常...........: "+ex.getMessage());
         }
-
-
     }
 
     @PostConstruct

@@ -17,4 +17,22 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="lastmodify_time" jdbcType="TIMESTAMP" property="lastmodifyTime" />
   </resultMap>
+
+
+  <select id="findDicWithName" resultMap="BaseResultMap">
+    SELECT a.*
+    FROM testscene_performance a
+    <where>
+      <if test="testsceneid != null  and testsceneid != ''">and a.testsceneid =#{testsceneid}</if>
+    </where>
+    order by lastmodify_time  DESC
+  </select>
+
+
+  <update id="updateDic" parameterType="com.zoctan.api.entity.TestscenePerformance">
+    update testscene_performance set targetconcurrency = #{targetconcurrency},rampuptime=#{rampuptime},stepscount=#{stepscount},
+                                     holdtime=#{holdtime},
+                                     timeunit = #{timeunit},iterations = #{iterations}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s')
+    where id = #{id};
+  </update>
 </mapper>

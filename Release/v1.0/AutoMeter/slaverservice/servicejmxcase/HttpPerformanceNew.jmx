@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="HttpPerformance" enabled="true">
+      <stringProp name="TestPlan.comments">HttpPerformanceParams</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="用户定义的变量" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="thread" elementType="Argument">
+            <stringProp name="Argument.name">thread</stringProp>
+            <stringProp name="Argument.value">${__P(thread,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="loops" elementType="Argument">
+            <stringProp name="Argument.name">loops</stringProp>
+            <stringProp name="Argument.value">${__P(loops,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="caseid" elementType="Argument">
+            <stringProp name="Argument.name">caseid</stringProp>
+            <stringProp name="Argument.value">${__P(caseid,2)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="testplanid" elementType="Argument">
+            <stringProp name="Argument.name">testplanid</stringProp>
+            <stringProp name="Argument.value">${__P(testplanid,13)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="batchname" elementType="Argument">
+            <stringProp name="Argument.name">batchname</stringProp>
+            <stringProp name="Argument.value">${__P(batchname,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="sceneid" elementType="Argument">
+            <stringProp name="Argument.name">sceneid</stringProp>
+            <stringProp name="Argument.value">${__P(sceneid,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="slaverid" elementType="Argument">
+            <stringProp name="Argument.name">slaverid</stringProp>
+            <stringProp name="Argument.value">${__P(slaverid,5)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="batchid" elementType="Argument">
+            <stringProp name="Argument.name">batchid</stringProp>
+            <stringProp name="Argument.value">${__P(batchid,25)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="casereportfolder" elementType="Argument">
+            <stringProp name="Argument.name">casereportfolder</stringProp>
+            <stringProp name="Argument.value">${__P(casereportfolder,/Users/fanseasn/Desktop/testresult/13-2-vvvvvv1111111)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="mysqlurl" elementType="Argument">
+            <stringProp name="Argument.name">mysqlurl</stringProp>
+            <stringProp name="Argument.value">${__P(mysqlurl,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="mysqlusername" elementType="Argument">
+            <stringProp name="Argument.name">mysqlusername</stringProp>
+            <stringProp name="Argument.value">${__P(mysqlusername,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="mysqlpassword" elementType="Argument">
+            <stringProp name="Argument.name">mysqlpassword</stringProp>
+            <stringProp name="Argument.value">${__P(mysqlpassword,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="creator" elementType="Argument">
+            <stringProp name="Argument.name">creator</stringProp>
+            <stringProp name="Argument.value">${__P(creator,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="reportlogfolder" elementType="Argument">
+            <stringProp name="Argument.name">reportlogfolder</stringProp>
+            <stringProp name="Argument.value">${__P(reportlogfolder,)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="projectid" elementType="Argument">
+            <stringProp name="Argument.name">projectid</stringProp>
+            <stringProp name="Argument.value">${__P(projectid,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="testclass" elementType="Argument">
+            <stringProp name="Argument.name">testclass</stringProp>
+            <stringProp name="Argument.value">${__P(testclass,25)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="db" enabled="true">
+        <boolProp name="autocommit">true</boolProp>
+        <stringProp name="checkQuery">Select 1</stringProp>
+        <stringProp name="connectionAge">5000</stringProp>
+        <stringProp name="dataSource">testcenter</stringProp>
+        <stringProp name="dbUrl">${mysqlurl}</stringProp>
+        <stringProp name="driver">com.mysql.jdbc.Driver</stringProp>
+        <boolProp name="keepAlive">true</boolProp>
+        <stringProp name="password">${mysqlpassword}</stringProp>
+        <stringProp name="poolMax">10</stringProp>
+        <stringProp name="timeout">10000</stringProp>
+        <stringProp name="transactionIsolation">DEFAULT</stringProp>
+        <stringProp name="trimInterval">60000</stringProp>
+        <stringProp name="username">${mysqlusername}</stringProp>
+        <boolProp name="preinit">false</boolProp>
+        <stringProp name="initQuery"></stringProp>
+        <stringProp name="connectionProperties"></stringProp>
+      </JDBCDataSource>
+      <hashTree/>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="InitialThread" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="getstart" enabled="true">
+          <stringProp name="BeanShellSampler.query">import java.util; 
+ 
+ long startnums = new Date().getTime();
+String starttime=String.valueOf(startnums);
+props.setProperty(&quot;start&quot;,starttime);
+log.error(&quot;===starttime-------------------------------------&quot;+starttime);
+
+   
+
+
+
+
+
+
+
+
+
+
+</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="performance" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${loops}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${thread}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1502182031000</longProp>
+        <longProp name="ThreadGroup.end_time">1502182031000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="${testclass}" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="mysqlurl" elementType="Argument">
+                <stringProp name="Argument.name">mysqlurl</stringProp>
+                <stringProp name="Argument.value">${mysqlurl}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="mysqlusername" elementType="Argument">
+                <stringProp name="Argument.name">mysqlusername</stringProp>
+                <stringProp name="Argument.value">${mysqlusername}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="mysqlpassword" elementType="Argument">
+                <stringProp name="Argument.name">mysqlpassword</stringProp>
+                <stringProp name="Argument.value">${mysqlpassword}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="slaverId" elementType="Argument">
+                <stringProp name="Argument.name">slaverId</stringProp>
+                <stringProp name="Argument.value">${slaverid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="planid" elementType="Argument">
+                <stringProp name="Argument.name">planid</stringProp>
+                <stringProp name="Argument.value">${testplanid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchname" elementType="Argument">
+                <stringProp name="Argument.name">batchname</stringProp>
+                <stringProp name="Argument.value">${batchname}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sceneid" elementType="Argument">
+                <stringProp name="Argument.name">sceneid</stringProp>
+                <stringProp name="Argument.value">${sceneid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchid" elementType="Argument">
+                <stringProp name="Argument.name">batchid</stringProp>
+                <stringProp name="Argument.value">${batchid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="caseId" elementType="Argument">
+                <stringProp name="Argument.name">caseId</stringProp>
+                <stringProp name="Argument.value">${caseid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="reportlogfolder" elementType="Argument">
+                <stringProp name="Argument.name">reportlogfolder</stringProp>
+                <stringProp name="Argument.value">${reportlogfolder}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">com.api.autohttpf.test.httpapitestcase.HttpApiPerformance</stringProp>
+        </JavaSampler>
+        <hashTree/>
+      </hashTree>
+      <PostThreadGroup guiclass="PostThreadGroupGui" testclass="PostThreadGroup" testname="postconditionThread" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </PostThreadGroup>
+      <hashTree>
+        <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="postconditionclass" enabled="true">
+          <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="testplanid" elementType="Argument">
+                <stringProp name="Argument.name">testplanid</stringProp>
+                <stringProp name="Argument.value">${testplanid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="caseid" elementType="Argument">
+                <stringProp name="Argument.name">caseid</stringProp>
+                <stringProp name="Argument.value">${caseid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sceneid" elementType="Argument">
+                <stringProp name="Argument.name">sceneid</stringProp>
+                <stringProp name="Argument.value">${sceneid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchid" elementType="Argument">
+                <stringProp name="Argument.name">batchid</stringProp>
+                <stringProp name="Argument.value">${batchid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="slaverid" elementType="Argument">
+                <stringProp name="Argument.name">slaverid</stringProp>
+                <stringProp name="Argument.value">${slaverid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchname" elementType="Argument">
+                <stringProp name="Argument.name">batchname</stringProp>
+                <stringProp name="Argument.value">${batchname}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="casetype" elementType="Argument">
+                <stringProp name="Argument.name">casetype</stringProp>
+                <stringProp name="Argument.value">${casetype}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="casereportfolder" elementType="Argument">
+                <stringProp name="Argument.name">casereportfolder</stringProp>
+                <stringProp name="Argument.value">${casereportfolder}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="testclass" elementType="Argument">
+                <stringProp name="Argument.name">testclass</stringProp>
+                <stringProp name="Argument.value">${testclass}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="start" elementType="Argument">
+                <stringProp name="Argument.name">start</stringProp>
+                <stringProp name="Argument.value">${__property(start)}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="mysqlurl" elementType="Argument">
+                <stringProp name="Argument.name">mysqlurl</stringProp>
+                <stringProp name="Argument.value">${mysqlurl}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="mysqlusername" elementType="Argument">
+                <stringProp name="Argument.name">mysqlusername</stringProp>
+                <stringProp name="Argument.value">${mysqlusername}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="mysqlpassword" elementType="Argument">
+                <stringProp name="Argument.name">mysqlpassword</stringProp>
+                <stringProp name="Argument.value">${mysqlpassword}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="creator" elementType="Argument">
+                <stringProp name="Argument.name">creator</stringProp>
+                <stringProp name="Argument.value">admin</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="classname">com.api.autohttpf.core.postcondition</stringProp>
+        </JavaSampler>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

@@ -2896,17 +2896,12 @@
         </el-form>
       </div>
       <el-table
-        :data="ApicasesdbassertvalueList"
+        :data="testsceneperformanceList"
         element-loading-text="loading"
         border
         fit
         highlight-current-row
       >
-        <el-table-column label="编号" align="center" width="60">
-          <template slot-scope="scope">
-            <span v-text="ApicasesdbassertvaluegetIndex(scope.$index)"></span>
-          </template>
-        </el-table-column>
         <el-table-column :show-overflow-tooltip="true" label="测试场景" align="center" prop="scenename" width="90"/>
         <el-table-column :show-overflow-tooltip="true" label="并发线程" align="center" prop="targetconcurrency" width="70"/>
         <el-table-column :show-overflow-tooltip="true" label="启动时间" align="center" prop="rampuptime" width="80"/>
@@ -2929,26 +2924,17 @@
               type="warning"
               size="mini"
               v-if="hasPermission('apicasesdbassertvalue:update') && scope.row.id !== id"
-              @click.native.prevent="showUpdatedbassertvalueDialog(scope.$index)"
+              @click.native.prevent="showtestsceneperformanceDialog(scope.$index)"
             >修改</el-button>
             <el-button
               type="danger"
               size="mini"
               v-if="hasPermission('apicasesdbassertvalue:delete') && scope.row.id !== id"
-              @click.native.prevent="removedbassertvalue(scope.$index)"
+              @click.native.prevent="removetestsceneperformance(scope.$index)"
             >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination
-        @size-change="dbassertvaluehandleSizeChange"
-        @current-change="dbassertvaluehandleCurrentChange"
-        :current-page="searchdbassertvalue.page"
-        :page-size="searchdbassertvalue.size"
-        :total="dbassertvaluetotal"
-        :page-sizes="[10, 20, 30, 40]"
-        layout="total, sizes, prev, pager, next, jumper"
-      ></el-pagination>
     </el-dialog>
     <el-dialog :title="stresstesttextMap[stresstestdialogStatus]" width="800px" :visible.sync="stresstestdialogFormVisible">
       <el-form
@@ -2977,7 +2963,7 @@
                     type="number"
                     prefix-icon="el-icon-edit"
                     auto-complete="off"
-                    v-model="tmpdbassert.rampuptime"
+                    v-model="tmpperformance.rampuptime"
           />
         </el-form-item>
 
@@ -2988,7 +2974,7 @@
                     type="number"
                     prefix-icon="el-icon-edit"
                     auto-complete="off"
-                    v-model="tmpdbassert.stepscount"
+                    v-model="tmpperformance.stepscount"
           />
         </el-form-item>
         <el-form-item label="持续时间" prop="holdtime" required>
@@ -2998,7 +2984,7 @@
                     type="number"
                     prefix-icon="el-icon-edit"
                     auto-complete="off"
-                    v-model="tmpdbassert.holdtime"
+                    v-model="tmpperformance.holdtime"
           />
         </el-form-item>
         <el-form-item label="时间单位" prop="timeunit" required>
@@ -3008,7 +2994,7 @@
                     type="number"
                     prefix-icon="el-icon-edit"
                     auto-complete="off"
-                    v-model="tmpdbassert.timeunit"
+                    v-model="tmpperformance.timeunit"
           />
         </el-form-item>
 
@@ -3019,23 +3005,23 @@
                     type="number"
                     prefix-icon="el-icon-edit"
                     auto-complete="off"
-                    v-model="tmpdbassert.iterations"
+                    v-model="tmpperformance.iterations"
           />
         </el-form-item>
 
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native.prevent="dbAssertAUdialogFormVisible = false">取消</el-button>
+        <el-button @click.native.prevent="stresstestdialogFormVisible = false">取消</el-button>
         <el-button
           type="success"
-          v-if="dbAssertdialogStatus === 'add'"
-          @click.native.prevent="adddbassert"
+          v-if="stresstestdialogStatus === 'add'"
+          @click.native.prevent="addtestsceneperformance"
         >保存
         </el-button>
         <el-button
           type="success"
-          v-if="dbAssertdialogStatus === 'update'"
-          @click.native.prevent="updatedbassert"
+          v-if="stresstestdialogStatus === 'update'"
+          @click.native.prevent="updatetestsceneperformance"
         >更新
         </el-button>
       </div>
@@ -3076,6 +3062,7 @@ import { addapicasesassert, getassertbycaseid as getassertbycaseid, searchassert
 import { addapicasesdbassert, searchdbassert as searchdbassert, removeapicasesdbassert, updateapicasesdbassert } from '@/api/assets/apicasesdbassert'
 import { searchdbassertvalue, addapicasesdbassertvalue, updateapicasesdbassertvalue, removeapicasesdbassertvalue } from '@/api/assets/apicasesdbassertvalue'
 import { getdatabydiccodeList as getdatabydiccodeList } from '@/api/system/dictionary'
+import { search as searchtestsceneperformance, addtestsceneperformance, updatetestsceneperformance, removetestsceneperformance } from '@/api/executecenter/testsceneperformance'
 
 export default {
   name: '测试场景',
@@ -3098,6 +3085,10 @@ export default {
   },
   data() {
     return {
+      testsceneperformanceList: [],
+      searchperformance: {
+        testsceneid: ''
+      },
       stresstestlistDialogFormVisible: false,
       stresstestdialogFormVisible: false,
       stresstestdialogStatus: 'add',
@@ -3695,6 +3686,69 @@ export default {
   },
 
   methods: {
+    addtestsceneperformance() {
+      this.$refs.tmpperformance.validate(valid => {
+        if (valid) {
+          addtestsceneperformance(this.tmpperformance).then(() => {
+            this.$message.success('添加性能配置成功')
+            this.searchtestsceneperformance()
+            this.stresstestdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('添加性能配置失败')
+          })
+        }
+      })
+    },
+
+    searchtestsceneperformance() {
+      searchtestsceneperformance(this.searchperformance).then(response => {
+        this.testsceneperformanceList = response.data
+      }).catch(res => {
+        this.$message.error('搜索失败')
+      })
+    },
+
+    updatetestsceneperformance() {
+      this.$refs.tmpperformance.validate(valid => {
+        if (valid) {
+          updatetestsceneperformance(this.tmpperformance).then(() => {
+            this.$message.success('更新成功')
+            this.searchtestsceneperformance()
+            this.stresstestdialogFormVisible = false
+          }).catch(res => {
+            this.$message.error('更新失败')
+          })
+        }
+      })
+    },
+    removetestsceneperformance(index) {
+      this.$confirm('删除该性能配置？', '警告', {
+        confirmButtonText: '是',
+        cancelButtonText: '否',
+        type: 'warning'
+      }).then(() => {
+        const id = this.testsceneperformanceList[index].id
+        removetestsceneperformance(id).then(() => {
+          this.$message.success('删除成功')
+          this.searchtestsceneperformance()
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
+      })
+    },
+
+    showtestsceneperformanceDialog(index) {
+      this.stresstestdialogStatus = 'update'
+      this.stresstestdialogFormVisible = true
+      this.tmpperformance.id = this.testsceneperformanceList[index].id
+      this.tmpperformance.timeunit = this.testsceneperformanceList[index].timeunit
+      this.tmpperformance.iterations = this.testsceneperformanceList[index].iterations
+      this.tmpperformance.holdtime = this.testsceneperformanceList[index].holdtime
+      this.tmpperformance.stepscount = this.testsceneperformanceList[index].stepscount
+      this.tmpperformance.rampuptime = this.testsceneperformanceList[index].rampuptime
+      this.tmpperformance.targetconcurrency = this.testsceneperformanceList[index].targetconcurrency
+    },
+
     getencrytypeList() {
       getdatabydiccodeList(this.dicEncryQuery).then(response => {
         this.EncrytypeList = response.data.list
@@ -5367,6 +5421,7 @@ export default {
       this.tmptestscene.usetype = ''
       this.tmptestscene.memo = ''
       this.tmptestscene.creator = this.name
+      this.tmptestscene.creatorid = this.accountId
       this.tmptestscene.projectid = window.localStorage.getItem('pid')
     },
 
@@ -5484,7 +5539,8 @@ export default {
       this.stresstestlistDialogFormVisible = true
       this.tmpperformance.testsceneid = this.testsceneList[index].id
       this.tmpperformance.scenename = this.testsceneList[index].scenename
-      this.gettestscenecaseList()
+      this.searchperformance.testsceneid = this.testsceneList[index].id
+      this.searchtestsceneperformance()
     },
     showtestsceneCaseDialog(index) {
       this.addtestcaselastList = null

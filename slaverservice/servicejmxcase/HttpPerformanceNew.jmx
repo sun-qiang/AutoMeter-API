@@ -32,14 +32,9 @@
             <stringProp name="Argument.value">${__P(batchname,)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="testclass" elementType="Argument">
-            <stringProp name="Argument.name">testclass</stringProp>
-            <stringProp name="Argument.value">${__P(testclass,retrySendSmsOrFindShortUrl)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="testdeployunit" elementType="Argument">
-            <stringProp name="Argument.name">testdeployunit</stringProp>
-            <stringProp name="Argument.value">${__P(testdeployunit,marketingservice)}</stringProp>
+          <elementProp name="sceneid" elementType="Argument">
+            <stringProp name="Argument.name">sceneid</stringProp>
+            <stringProp name="Argument.value">${__P(sceneid,1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="slaverid" elementType="Argument">
@@ -72,96 +67,6 @@
             <stringProp name="Argument.value">${__P(mysqlpassword,)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="executeplanname" elementType="Argument">
-            <stringProp name="Argument.name">executeplanname</stringProp>
-            <stringProp name="Argument.value">${__P(executeplanname,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="casename" elementType="Argument">
-            <stringProp name="Argument.name">casename</stringProp>
-            <stringProp name="Argument.value">${__P(casename,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="expect" elementType="Argument">
-            <stringProp name="Argument.name">expect</stringProp>
-            <stringProp name="Argument.value">${__P(expect,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="protocal" elementType="Argument">
-            <stringProp name="Argument.name">protocal</stringProp>
-            <stringProp name="Argument.value">${__P(protocal,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="RequestmMthod" elementType="Argument">
-            <stringProp name="Argument.name">RequestmMthod</stringProp>
-            <stringProp name="Argument.value">${__P(RequestmMthod,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="casetype" elementType="Argument">
-            <stringProp name="Argument.name">casetype</stringProp>
-            <stringProp name="Argument.value">${__P(casetype,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="resource" elementType="Argument">
-            <stringProp name="Argument.name">resource</stringProp>
-            <stringProp name="Argument.value">${__P(resource,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="apistyle" elementType="Argument">
-            <stringProp name="Argument.name">apistyle</stringProp>
-            <stringProp name="Argument.value">${__P(apistyle,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="requestcontenttype" elementType="Argument">
-            <stringProp name="Argument.name">requestcontenttype</stringProp>
-            <stringProp name="Argument.value">${__P(requestcontenttype,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="responecontenttype" elementType="Argument">
-            <stringProp name="Argument.name">responecontenttype</stringProp>
-            <stringProp name="Argument.value">${__P(responecontenttype,1)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="headjson" elementType="Argument">
-            <stringProp name="Argument.name">headjson</stringProp>
-            <stringProp name="Argument.value">${__P(headjson,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="paramsjson" elementType="Argument">
-            <stringProp name="Argument.name">paramsjson</stringProp>
-            <stringProp name="Argument.value">${__P(paramsjson,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="bodyjson" elementType="Argument">
-            <stringProp name="Argument.name">bodyjson</stringProp>
-            <stringProp name="Argument.value">${__P(bodyjson,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="dubbojson" elementType="Argument">
-            <stringProp name="Argument.name">dubbojson</stringProp>
-            <stringProp name="Argument.value">${__P(dubbojson,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="machineip" elementType="Argument">
-            <stringProp name="Argument.name">machineip</stringProp>
-            <stringProp name="Argument.value">${__P(machineip,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="deployvisitytype" elementType="Argument">
-            <stringProp name="Argument.name">deployvisitytype</stringProp>
-            <stringProp name="Argument.value">${__P(deployvisitytype,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="variablesjson" elementType="Argument">
-            <stringProp name="Argument.name">variablesjson</stringProp>
-            <stringProp name="Argument.value">${__P(variablesjson,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="postdata" elementType="Argument">
-            <stringProp name="Argument.name">postdata</stringProp>
-            <stringProp name="Argument.value">${__P(postdata,)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
           <elementProp name="creator" elementType="Argument">
             <stringProp name="Argument.name">creator</stringProp>
             <stringProp name="Argument.value">${__P(creator,)}</stringProp>
@@ -175,6 +80,11 @@
           <elementProp name="projectid" elementType="Argument">
             <stringProp name="Argument.name">projectid</stringProp>
             <stringProp name="Argument.value">${__P(projectid,1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="testclass" elementType="Argument">
+            <stringProp name="Argument.name">testclass</stringProp>
+            <stringProp name="Argument.value">${__P(testclass,25)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -260,111 +170,6 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
         <JavaSampler guiclass="JavaTestSamplerGui" testclass="JavaSampler" testname="${testclass}" enabled="true">
           <elementProp name="arguments" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" enabled="true">
             <collectionProp name="Arguments.arguments">
-              <elementProp name="testplanid" elementType="Argument">
-                <stringProp name="Argument.name">testplanid</stringProp>
-                <stringProp name="Argument.value">${testplanid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="caseid" elementType="Argument">
-                <stringProp name="Argument.name">caseid</stringProp>
-                <stringProp name="Argument.value">${caseid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="batchid" elementType="Argument">
-                <stringProp name="Argument.name">batchid</stringProp>
-                <stringProp name="Argument.value">${batchid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="slaverid" elementType="Argument">
-                <stringProp name="Argument.name">slaverid</stringProp>
-                <stringProp name="Argument.value">${slaverid}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="batchname" elementType="Argument">
-                <stringProp name="Argument.name">batchname</stringProp>
-                <stringProp name="Argument.value">${batchname}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="executeplanname" elementType="Argument">
-                <stringProp name="Argument.name">executeplanname</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="casename" elementType="Argument">
-                <stringProp name="Argument.name">casename</stringProp>
-                <stringProp name="Argument.value">${casename}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="expect" elementType="Argument">
-                <stringProp name="Argument.name">expect</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="protocal" elementType="Argument">
-                <stringProp name="Argument.name">protocal</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="RequestmMthod" elementType="Argument">
-                <stringProp name="Argument.name">RequestmMthod</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="casetype" elementType="Argument">
-                <stringProp name="Argument.name">casetype</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="resource" elementType="Argument">
-                <stringProp name="Argument.name">resource</stringProp>
-                <stringProp name="Argument.value">15</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="apistyle" elementType="Argument">
-                <stringProp name="Argument.name">apistyle</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="requestcontenttype" elementType="Argument">
-                <stringProp name="Argument.name">requestcontenttype</stringProp>
-                <stringProp name="Argument.value">15</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="responecontenttype" elementType="Argument">
-                <stringProp name="Argument.name">responecontenttype</stringProp>
-                <stringProp name="Argument.value">cornerservice2020-10-21-tag-100</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="headjson" elementType="Argument">
-                <stringProp name="Argument.name">headjson</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="paramsjson" elementType="Argument">
-                <stringProp name="Argument.name">paramsjson</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="bodyjson" elementType="Argument">
-                <stringProp name="Argument.name">bodyjson</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="postdata" elementType="Argument">
-                <stringProp name="Argument.name">postdata</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="dubbojson" elementType="Argument">
-                <stringProp name="Argument.name">dubbojson</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-              <elementProp name="variablesjson" elementType="Argument">
-                <stringProp name="Argument.name">variablesjson</stringProp>
-                <stringProp name="Argument.value">/opt/</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
               <elementProp name="mysqlurl" elementType="Argument">
                 <stringProp name="Argument.name">mysqlurl</stringProp>
                 <stringProp name="Argument.value">${mysqlurl}</stringProp>
@@ -380,14 +185,34 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
                 <stringProp name="Argument.value">${mysqlpassword}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="machineip" elementType="Argument">
-                <stringProp name="Argument.name">machineip</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
+              <elementProp name="slaverId" elementType="Argument">
+                <stringProp name="Argument.name">slaverId</stringProp>
+                <stringProp name="Argument.value">${slaverid}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
-              <elementProp name="deployvisitytype" elementType="Argument">
-                <stringProp name="Argument.name">deployvisitytype</stringProp>
-                <stringProp name="Argument.value">11</stringProp>
+              <elementProp name="planid" elementType="Argument">
+                <stringProp name="Argument.name">planid</stringProp>
+                <stringProp name="Argument.value">${testplanid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchname" elementType="Argument">
+                <stringProp name="Argument.name">batchname</stringProp>
+                <stringProp name="Argument.value">${batchname}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sceneid" elementType="Argument">
+                <stringProp name="Argument.name">sceneid</stringProp>
+                <stringProp name="Argument.value">${sceneid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="batchid" elementType="Argument">
+                <stringProp name="Argument.name">batchid</stringProp>
+                <stringProp name="Argument.value">${batchid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="caseId" elementType="Argument">
+                <stringProp name="Argument.name">caseId</stringProp>
+                <stringProp name="Argument.value">${caseid}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="reportlogfolder" elementType="Argument">
@@ -426,6 +251,11 @@ log.error(&quot;===starttime-------------------------------------&quot;+starttim
               <elementProp name="caseid" elementType="Argument">
                 <stringProp name="Argument.name">caseid</stringProp>
                 <stringProp name="Argument.value">${caseid}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+              <elementProp name="sceneid" elementType="Argument">
+                <stringProp name="Argument.name">sceneid</stringProp>
+                <stringProp name="Argument.value">${sceneid}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
               <elementProp name="batchid" elementType="Argument">

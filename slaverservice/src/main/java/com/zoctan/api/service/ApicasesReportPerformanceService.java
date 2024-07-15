@@ -23,7 +23,7 @@ public interface ApicasesReportPerformanceService extends Service<ApicasesReport
 
     List<ApicasesReportPerformance> listallresult();
 
-    void adddynamiccaseperformancereport(long caseid, long testplanid, String batchname, long slaverid, String status, String respone, String assertvalue, long runtime, String expect, String errorinfo, Date create_time, Date lastmodify_time, String creator, String requestheader, String requestdatas, String url, String requestmethod, String tablename,long projectid);
+    void adddynamiccaseperformancereport(long caseid, long testplanid, String batchname, long slaverid, String status, String respone, String assertvalue, long runtime, String expect, String errorinfo, Date create_time, Date lastmodify_time, String creator, String requestheader, String requestdatas, String url, String requestmethod, String tablename,long projectid,long sceneid );
 
 
 }

@@ -38,13 +38,13 @@
     values
     <foreach collection="dispatchList" item="dispatch" index="index" separator=",">
       (#{dispatch.execplanid}, #{dispatch.execplanname}, #{dispatch.batchid},#{dispatch.batchname},#{dispatch.slaverid},
-      #{dispatch.slavername},#{dispatch.testsceneid},#{dispatch.scenename},#{dispatch.targetconcurrency},#{dispatch.deployunitname},#{dispatch.rampuptime},
+      #{dispatch.slavername},#{dispatch.testsceneid},#{dispatch.scenename},#{dispatch.targetconcurrency},#{dispatch.stepscount},#{dispatch.rampuptime},
       #{dispatch.holdtime},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),#{dispatch.timeunit},#{dispatch.iterations},
-      #{dispatch.ordernum}
+      #{dispatch.ordernum})
     </foreach>
   </insert>
 
   <select id="getdistinctslaver" resultMap="BaseResultMap">
-    select distinct(slaverid) from testscene_dispatch a where  executeplanid = #{executeplanid}  and batchname = #{batchname}
+    select distinct(slaverid) from testscene_dispatch a where  execplanid = #{execplanid}  and batchname = #{batchname}
   </select>
 </mapper>

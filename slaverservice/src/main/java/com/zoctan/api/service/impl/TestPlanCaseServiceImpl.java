@@ -131,7 +131,7 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
     }
 
     @Override
-    public void ExecuteHttpPerformancePlanScene(String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException {
+    public void ExecuteHttpPerformancePlanScene(String classname,String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,long batchid,String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException {
         String os = System.getProperty("os.name");
         String CaseReportFolder = "";
         if (os != null && os.toLowerCase().startsWith("windows")) {
@@ -184,12 +184,12 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
             JmeterJmx = "\\HttpPerformanceNew.jmx";
             CaseReportF = CaseReportFolder+"/";
         } else {
-            Jmeterbin = "/jmeter.bat -n -t ";
+            Jmeterbin = "/jmeter -n -t ";
             JmeterJmx = "/HttpPerformanceNew.jmx";
             CaseReportF = CaseReportFolder+"\\";
         }
             JmeterCmd = JmeterPath + Jmeterbin + JmxPath +JmeterJmx+" -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword="
-                + MysqlPassword + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId + " -Jsceneid=" + Sceneid + " -Jcaseid=" + caseid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
+                + MysqlPassword+ " -Jtestclass=" + classname + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId+ " -Jbatchid=" +batchid+ " -Jsceneid=" + Sceneid + " -Jcaseid=" + caseid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
                 + " -Jreportlogfolder=" + ReportSlaverPlanLogFolder + " -Jcasereportfolder=" + CaseReportFolder  + " -l  " + CaseReportF + caseid + ".jtl -e -o " + CaseReportFolder + " -j jmeter-pt" + jmeterlogfilename + ".log ";
 
 

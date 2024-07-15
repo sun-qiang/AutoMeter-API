@@ -4,12 +4,9 @@ import com.zoctan.api.core.response.Result;
 import com.zoctan.api.core.response.ResultGenerator;
 import com.zoctan.api.dto.StaticsDataForPie;
 import com.zoctan.api.entity.*;
-import com.zoctan.api.service.ExecuteplanService;
-import com.zoctan.api.service.ExecuteplanbatchService;
-import com.zoctan.api.service.TestplanTestsceneService;
+import com.zoctan.api.service.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.zoctan.api.service.TestsceneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
@@ -35,9 +32,11 @@ public class TestplanTestsceneController {
     @Resource
     private TestsceneService testsceneService;
 
-
     @Autowired
     private ExecuteplanbatchService executeplanbatchService;
+
+    @Autowired
+    private TestscenePerformanceService testscenePerformanceService;
 
     @PostMapping
     public Result add(@RequestBody TestplanTestscene testplanTestscene) {
@@ -118,10 +117,30 @@ public class TestplanTestsceneController {
                 long sceneid = tsc.getTestscenenid();
                 Testscene testscene = testsceneService.getById(sceneid);
                 if (testscene.getCasenums() == 0) {
-                    return ResultGenerator.genFailedResult("添加失败，测试场景: "+testscene.getScenename()+" 中还没有用例，请先加载用例");
+                    return ResultGenerator.genFailedResult("添加失败，测试场景: " + testscene.getScenename() + " 中还没有用例，请先加载用例");
                 } else {
                     plancasenums = plancasenums + testscene.getCasenums();
                     planscenenums = planscenenums + 1;
+                }
+            }
+            String eptype = executeplan.getUsetype();
+            if (eptype.equals("性能")) {
+                if (testsceneTestcaseList.size() > 1) {
+                    return ResultGenerator.genFailedResult("当前版本性能测试只支持单场景");
+                } else {
+                    Condition con = new Condition(TestplanTestscene.class);
+                    con.createCriteria().andCondition("testplanid = " + executeplan.getId());
+                    List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
+                    if (testplanTestsceneList.size() > 0) {
+                        return ResultGenerator.genFailedResult("当前版本性能测试只支持单场景");
+                    } else {
+                        TestplanTestscene testplanTestscene = testsceneTestcaseList.get(0);
+                        long sceneid = testplanTestscene.getTestscenenid();
+                        TestscenePerformance testscenePerformance = testscenePerformanceService.getBy("testsceneid", sceneid);
+                        if (testscenePerformance == null) {
+                            return ResultGenerator.genFailedResult("当前场景还没配置性能，请先完成配置");
+                        }
+                    }
                 }
             }
             executeplan.setCasecounts(plancasenums);
@@ -156,9 +175,9 @@ public class TestplanTestsceneController {
     @GetMapping("/getstaticsplancases")
     public Result getstaticsplancases(@RequestParam long projectid) {
         List<TestplanTestscene> list = testplanTestsceneService.getstaticsplancases(projectid);
-        List<StaticsDataForPie> result=new ArrayList<>();
-        for (TestplanTestscene executeplanTestcase: list) {
-            StaticsDataForPie staticsDataForPie =new StaticsDataForPie();
+        List<StaticsDataForPie> result = new ArrayList<>();
+        for (TestplanTestscene executeplanTestcase : list) {
+            StaticsDataForPie staticsDataForPie = new StaticsDataForPie();
             staticsDataForPie.setValue(executeplanTestcase.getId());
             staticsDataForPie.setName(executeplanTestcase.getPlanname());
             result.add(staticsDataForPie);

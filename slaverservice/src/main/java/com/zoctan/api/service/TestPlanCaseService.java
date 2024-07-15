@@ -13,7 +13,7 @@ import java.io.IOException;
 public interface TestPlanCaseService extends Service<TestplanCase> {
 
     void ExecuteHttpPerformancePlanCase(JmeterPerformanceObject jmeterPerformanceObject, String DeployName, String JmeterPath, String JmxPath, String JmxCaseName, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop,String creator) throws IOException;
-    void ExecuteHttpPerformancePlanScene(String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,String BatchName,String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop,String creator) throws IOException;
+    void ExecuteHttpPerformancePlanScene(String classname,String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,long batchid,String BatchName,String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop,String creator) throws IOException;
 
     void ExecuteHttpPlanFunctionCase(Long Slaverid,Long planid,String batchname ,String JmeterPath,String JmxPath,String DispatchIds,String MysqlUrl,String MysqlUsername,String MysqlPassword,long JmeterLogFileNum) throws IOException;
 

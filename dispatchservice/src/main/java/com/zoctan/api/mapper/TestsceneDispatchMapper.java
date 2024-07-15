@@ -11,6 +11,6 @@ import java.util.List;
 public interface TestsceneDispatchMapper extends MyMapper<TestsceneDispatch> {
     List<TestsceneDispatch> findDicWithName(@Param("execplanid") Long planid, @Param("batchid")Long batchid, @Param("slaverid")Long Slaverid);
     void insertBatchDispatch(@Param("dispatchList") final List<TestsceneDispatch> dispatchList);
-    List<TestsceneDispatch> getdistinctslaver(@Param("executeplanid") Long executeplanid, @Param("batchname") String batchname);
+    List<TestsceneDispatch> getdistinctslaver(@Param("execplanid") Long executeplanid, @Param("batchname") String batchname);
 
 }

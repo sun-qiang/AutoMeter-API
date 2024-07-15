@@ -148,7 +148,7 @@ public class TestPlanCaseController {
                 }
                 TestPlanCaseController.log.info("性能保存成功场景调度完成。。。。。。。。。。。。。。。。。" );
                 for (TestplanTestscene testscene : testplanTestsceneList) {
-                    long testsceneid = testscene.getId();
+                    long testsceneid = testscene.getTestscenenid();
                     Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(execplanid, batchname, testsceneid);
                     //dispatch secnecase
                     List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, ep.getUsetype());
@@ -494,7 +494,7 @@ public class TestPlanCaseController {
         for (TestplanTestscene testplanTestscene : caselist) {
             long sceneid = testplanTestscene.getTestscenenid();
             Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(ep.getId(), batchname, sceneid);
-            TestscenePerformance testscenePerformance = testscenePerformanceService.getBy("id", sceneid);
+            TestscenePerformance testscenePerformance = testscenePerformanceService.getBy("testsceneid", sceneid);
             Long ThreadNUms = testscenePerformance.getTargetconcurrency();
             Long Loops = testscenePerformance.getIterations();
             Long Threadmode = ThreadNUms / slavernums;

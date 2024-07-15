@@ -215,10 +215,10 @@ export const asyncRouterMap = [
     icon: 'report',
     children: [
       // { path: 'testconditionreport/list', name: '条件执行报告', component: _import('reportcenter/testconditionreport/index'), meta: { title: '条件执行报告', permission: ['testconditionreport:list'] }},
-      { path: 'apinewreport/list', name: '集合功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
+      { path: 'apinewreport/list', name: '功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
       // { path: 'apinewtmpreport/list', alwaysShow: false, name: '集合功能报告11', component: _import('reportcenter/apinewtmpreport/index'), meta: { title: '集合功能报告1', permission: ['apireport:list'] }},
       { path: 'apireport/list', name: '功能报告明细', component: _import('reportcenter/apireport/index'), meta: { title: '功能报告明细', permission: ['apireport:list'] }},
-      { path: 'apinewperreport/list', name: '集合性能报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '集合性能报告', permission: ['apireport:list'] }},
+      { path: 'apinewperreport/list', name: '性能报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '集合性能报告', permission: ['apireport:list'] }},
       // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
       // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
       { path: 'apiperformancestatistics/list', name: '性能统计报告', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能统计报告', permission: ['apiperformancestatistics:list'] }}
