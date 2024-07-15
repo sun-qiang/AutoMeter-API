@@ -3,7 +3,28 @@
     <div class="filter-container">
       <el-form :inline="true" style="width: 1200px">
 
-
+        <el-form-item>
+          <el-button
+            type="success"
+            size="mini"
+            icon="el-icon-refresh"
+            v-if="hasPermission('executeplan:list')"
+            @click.native.prevent="getexecuteplanList"
+          >刷新</el-button>
+          <el-button
+            type="success"
+            size="mini"
+            v-if="hasPermission('executeplan:list')"
+            @click.native.prevent="showplanbatchDialog"
+          >运行</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            icon="el-icon-plus"
+            v-if="hasPermission('executeplan:add')"
+            @click.native.prevent="showAddexecuteplanDialog"
+          >添加测试集合</el-button>
+        </el-form-item>
         <span v-if="hasPermission('executeplan:search')">
           <el-form-item label="测试集合:">
             <el-input v-model="search.executeplanname" clearable @keyup.enter.native="searchBy" placeholder="测试集合"></el-input>
@@ -29,28 +50,7 @@
             <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
           </el-form-item>
 
-           <el-form-item>
-          <el-button
-            type="success"
-            size="mini"
-            icon="el-icon-refresh"
-            v-if="hasPermission('executeplan:list')"
-            @click.native.prevent="getexecuteplanList"
-          >刷新</el-button>
-          <el-button
-            type="success"
-            size="mini"
-            v-if="hasPermission('executeplan:list')"
-            @click.native.prevent="showplanbatchDialog"
-          >运行</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-plus"
-            v-if="hasPermission('executeplan:add')"
-            @click.native.prevent="showAddexecuteplanDialog"
-          >添加测试集合</el-button>
-        </el-form-item>
+
         </span>
       </el-form>
     </div>

@@ -18,13 +18,13 @@
             @click.native.prevent="showAddtestsceneDialog"
           >添加测试场景</el-button>
 
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-plus"
-            v-if="hasPermission('testscene:add')"
-            @click.native.prevent="showCopytestsceneDialog"
-          >复制测试场景</el-button>
+<!--          <el-button-->
+<!--            type="primary"-->
+<!--            size="mini"-->
+<!--            icon="el-icon-plus"-->
+<!--            v-if="hasPermission('testscene:add')"-->
+<!--            @click.native.prevent="showCopytestsceneDialog"-->
+<!--          >复制测试场景</el-button>-->
         </el-form-item>
 
         <span v-if="hasPermission('testscene:search')">
