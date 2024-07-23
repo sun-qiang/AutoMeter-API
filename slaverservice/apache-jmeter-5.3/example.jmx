@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan testname="Create JMeter Script From Java Code"/>
+    <hashTree>
+      <ThreadGroup testname="Example Thread Group">
+        <intProp name="ThreadGroup.num_threads">2</intProp>
+        <intProp name="ThreadGroup.ramp_time">1</intProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController">
+          <intProp name="LoopController.loops">5</intProp>
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+        </elementProp>
+        <stringProp name="test thread">org.apache.jmeter.threads.ThreadGroup</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy testname="Open baidu.com">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">baidu.com</stringProp>
+          <intProp name="HTTPSampler.port">80</intProp>
+          <stringProp name="HTTPSampler.path">/</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="baidu">org.apache.jmeter.protocol.http.sampler.HTTPSamplerProxy</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

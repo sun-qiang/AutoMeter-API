@@ -60,6 +60,13 @@
     and execplanid = #{execplanid} and testcaseid = #{testcaseid} and batchid = #{batchid}
   </update>
 
+  <update id="updatescenedispatchstatusandmemo">
+    update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where slaverid = #{slaverid}
+                                                                                                                     and execplanid = #{execplanid} and sceneid = #{sceneid} and batchid = #{batchid}
+  </update>
+
+
+
   <update id="updatedispatchstatusandmemobyname">
     update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%m:%s') where slaverid = #{slaverid}
                                                                                                                      and execplanid = #{execplanid} and testcaseid = #{testcaseid} and batchname = #{batchname}

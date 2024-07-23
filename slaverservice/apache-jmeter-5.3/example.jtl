@@ -1,0 +1,11 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1721466141846,98,Open baidu.com,200,OK,Example Thread Group 1-1,text,true,,381,109,1,1,http://baidu.com/,93,0,51
+1721466141945,75,Open baidu.com,200,OK,Example Thread Group 1-1,text,true,,381,109,1,1,http://baidu.com/,75,0,36
+1721466142020,72,Open baidu.com,200,OK,Example Thread Group 1-1,text,true,,381,109,1,1,http://baidu.com/,72,0,33
+1721466142093,69,Open baidu.com,200,OK,Example Thread Group 1-1,text,true,,381,109,1,1,http://baidu.com/,69,0,33
+1721466142164,76,Open baidu.com,Non HTTP response code: org.apache.http.NoHttpResponseException,Non HTTP response message: baidu.com:80 failed to respond,Example Thread Group 1-1,text,false,,2055,0,1,1,http://baidu.com/,0,0,38
+1721466142306,73,Open baidu.com,Non HTTP response code: org.apache.http.NoHttpResponseException,Non HTTP response message: baidu.com:80 failed to respond,Example Thread Group 1-2,text,false,,2055,0,1,1,http://baidu.com/,0,0,36
+1721466142380,66,Open baidu.com,Non HTTP response code: org.apache.http.NoHttpResponseException,Non HTTP response message: baidu.com:80 failed to respond,Example Thread Group 1-2,text,false,,2055,0,1,1,http://baidu.com/,0,0,31
+1721466142448,84,Open baidu.com,200,OK,Example Thread Group 1-2,text,true,,381,109,1,1,http://baidu.com/,83,0,46
+1721466142533,71,Open baidu.com,200,OK,Example Thread Group 1-2,text,true,,381,109,1,1,http://baidu.com/,71,0,33
+1721466142605,72,Open baidu.com,200,OK,Example Thread Group 1-2,text,true,,381,109,1,1,http://baidu.com/,72,0,35

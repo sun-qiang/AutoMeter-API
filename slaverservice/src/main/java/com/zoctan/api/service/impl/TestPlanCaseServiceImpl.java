@@ -131,7 +131,7 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
     }
 
     @Override
-    public void ExecuteHttpPerformancePlanScene(String classname,String MysqlUrl,String MysqlUserName,String MysqlPassword, String PlanName,String SceneName, long SlaverId,long PlanId,long Sceneid,long caseid,long batchid,String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException {
+    public void ExecuteHttpPerformancePlanScene(String JmxFile, String MysqlUrl, String MysqlUserName, String MysqlPassword, String PlanName, String SceneName, long SlaverId, long PlanId, long Sceneid, long batchid, String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException {
         String os = System.getProperty("os.name");
         String CaseReportFolder = "";
         if (os != null && os.toLowerCase().startsWith("windows")) {
@@ -175,22 +175,17 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
         String jmeterlogfilename = PlanName + "-" + BatchName + "-" + SceneName;
         //截取_之前字符串
         String JdbcMysqlUrl = MysqlUrl.substring(0, MysqlUrl.indexOf("?"));
-        String Jmeterbin="";
-        String JmeterJmx="";
-        String CaseReportF="";
+        String Jmeterbin = "";
+        String CaseReportF = CaseReportFolder;
         //Windows操作系统
         if (os != null && os.toLowerCase().startsWith("windows")) {
             Jmeterbin = "\\jmeter.bat -n -t ";
-            JmeterJmx = "\\HttpPerformanceNew.jmx";
-            CaseReportF = CaseReportFolder+"/";
         } else {
             Jmeterbin = "/jmeter -n -t ";
-            JmeterJmx = "/HttpPerformanceNew.jmx";
-            CaseReportF = CaseReportFolder+"\\";
         }
-            JmeterCmd = JmeterPath + Jmeterbin + JmxPath +JmeterJmx+" -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword="
-                + MysqlPassword+ " -Jtestclass=" + classname + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId+ " -Jbatchid=" +batchid+ " -Jsceneid=" + Sceneid + " -Jcaseid=" + caseid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
-                + " -Jreportlogfolder=" + ReportSlaverPlanLogFolder + " -Jcasereportfolder=" + CaseReportFolder  + " -l  " + CaseReportF + caseid + ".jtl -e -o " + CaseReportFolder + " -j jmeter-pt" + jmeterlogfilename + ".log ";
+        JmeterCmd = JmeterPath + Jmeterbin  + JmxFile + " -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword="
+                + MysqlPassword + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId + " -Jbatchid=" + batchid + " -Jsceneid=" + Sceneid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
+                + " -Jreportlogfolder=" + ReportSlaverPlanLogFolder + " -Jcasereportfolder=" + CaseReportFolder + " -l  " + CaseReportF + ".jtl -e -o " + CaseReportFolder + " -j jmeter-pt" + jmeterlogfilename + ".log ";
 
 
         TestPlanCaseServiceImpl.log.info("性能JmeterCmd is :" + JmeterCmd);

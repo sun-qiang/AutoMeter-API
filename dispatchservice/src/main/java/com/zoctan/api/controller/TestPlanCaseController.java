@@ -404,6 +404,7 @@ public class TestPlanCaseController {
         testsceneDispatch.setExecplanid(ep.getId());
         testsceneDispatch.setExecplanname(ep.getExecuteplanname());
         testsceneDispatch.setBatchid(epb.getId());
+        testsceneDispatch.setStatus("待执行");
         testsceneDispatch.setBatchname(epb.getBatchname());
         testsceneDispatch.setHoldtime(testscenePerformance.getHoldtime());
         testsceneDispatch.setIterations(Loops);

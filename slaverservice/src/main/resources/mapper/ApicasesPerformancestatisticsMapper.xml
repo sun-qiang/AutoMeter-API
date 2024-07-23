@@ -9,6 +9,7 @@
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
     <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
+    <result column="casename" jdbcType="VARCHAR" property="casename" />
     <result column="runtime" jdbcType="DOUBLE" property="runtime" />
     <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
     <result column="samples" jdbcType="BIGINT" property="samples" />

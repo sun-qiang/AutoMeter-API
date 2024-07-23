@@ -11,6 +11,7 @@
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
     <result column="slaverid" jdbcType="BIGINT" property="slaverid" />
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="testclass" jdbcType="VARCHAR" property="testclass" />
     <result column="runtime" jdbcType="DOUBLE" property="runtime" />
     <result column="source" jdbcType="VARCHAR" property="source" />

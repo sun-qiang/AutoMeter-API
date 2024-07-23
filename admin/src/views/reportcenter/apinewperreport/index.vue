@@ -83,6 +83,7 @@
               border
               highlight-current-row
             >
+              <el-table-column :show-overflow-tooltip="true"   label="用例" align="center" prop="casename" width="80"/>
               <el-table-column label="TPS" align="center" prop="tps" width="80"/>
               <el-table-column label="运行次数" align="center" prop="samples" width="80"/>
               <el-table-column label="错误次数" align="center" prop="errorcount" width="80"/>
@@ -693,6 +694,8 @@
           if (this.planbatchList[i].batchname === e) {
             this.tmpquery.batchid = this.planbatchList[i].id
             this.tmpconditionquery.batchid = this.planbatchList[i].id
+            console.log('-----------------------------------------------')
+            console.log(this.tmpconditionquery.batchid)
             this.tmpdispatchquery.batchid = this.planbatchList[i].id
             this.tmpdispatchquery.batchname = e
             this.tmpconditionquery.batchname = e

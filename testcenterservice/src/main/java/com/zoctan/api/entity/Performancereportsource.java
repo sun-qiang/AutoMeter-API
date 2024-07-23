@@ -21,6 +21,19 @@ public class Performancereportsource {
      */
     private Long batchid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    private Long sceneid;
+
+
+
+
     /**
      * 批次
      */

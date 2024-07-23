@@ -32,6 +32,18 @@ public class TestsceneDispatch {
      */
     private String execplanname;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    private String status;
+
+
+
     /**
      * 批次Id
      */

@@ -14,6 +14,7 @@
     <result column="slavername" jdbcType="VARCHAR" property="slavername" />
     <result column="testsceneid" jdbcType="BIGINT" property="testsceneid" />
     <result column="scenename" jdbcType="VARCHAR" property="scenename" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="targetconcurrency" jdbcType="BIGINT" property="targetconcurrency" />
     <result column="rampuptime" jdbcType="BIGINT" property="rampuptime" />
     <result column="stepscount" jdbcType="BIGINT" property="stepscount" />
@@ -34,13 +35,13 @@
 
   <insert id="insertBatchDispatch"  parameterType="com.zoctan.api.entity.TestsceneDispatch">
     insert into testscene_dispatch (execplanid, execplanname,batchid,batchname,slaverid,slavername,testsceneid,scenename,targetconcurrency,
-    rampuptime,stepscount,holdtime,create_time,lastmodify_time,timeunit,iterations,ordernum)
+    rampuptime,stepscount,holdtime,create_time,lastmodify_time,timeunit,iterations,ordernum,status)
     values
     <foreach collection="dispatchList" item="dispatch" index="index" separator=",">
       (#{dispatch.execplanid}, #{dispatch.execplanname}, #{dispatch.batchid},#{dispatch.batchname},#{dispatch.slaverid},
       #{dispatch.slavername},#{dispatch.testsceneid},#{dispatch.scenename},#{dispatch.targetconcurrency},#{dispatch.stepscount},#{dispatch.rampuptime},
       #{dispatch.holdtime},DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s'),#{dispatch.timeunit},#{dispatch.iterations},
-      #{dispatch.ordernum})
+      #{dispatch.ordernum},#{dispatch.status})
     </foreach>
   </insert>
 

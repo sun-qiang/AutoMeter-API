@@ -43,3 +43,6 @@ CREATE TABLE `testscene_dispatch` (
   `lastmodify_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '上一次修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='测试场景调度';
+
+ALTER TABLE testcenter.apicases_performancestatistics add COLUMN `casename` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '用例名' ;
+ALTER TABLE testcenter.performancereportsource add COLUMN `sceneid` bigint(20) unsigned NOT NULL COMMENT '场景id' ;

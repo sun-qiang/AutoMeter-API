@@ -196,6 +196,7 @@ public class GeneralPerformancestatisticsScheduleTask {
 
             ApicasesPerformancestatistics apicasesPerformancestatistics=new ApicasesPerformancestatistics();
             apicasesPerformancestatistics.setCaseid(Long.parseLong(caseid));
+            apicasesPerformancestatistics.setCasename(testclass);
             apicasesPerformancestatistics.setTestplanid(Long.parseLong(testplanid));
             apicasesPerformancestatistics.setBatchname(batchname);
             apicasesPerformancestatistics.setNzpct(Double.parseDouble(nzth));

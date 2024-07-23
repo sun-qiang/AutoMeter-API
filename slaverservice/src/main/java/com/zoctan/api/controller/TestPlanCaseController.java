@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
@@ -213,6 +214,9 @@ public class TestPlanCaseController {
 
     @PostMapping("/execperformancetest")
     public Result execperformancetest(@RequestBody Executeplanbatch dispatch) throws Exception {
+
+        String javasample = "";
+
         long Execplanid = dispatch.getExecuteplanid();
         String Batchname = dispatch.getBatchname();
         Executeplan executeplan = executeplanService.getBy("id", Execplanid);
@@ -268,36 +272,7 @@ public class TestPlanCaseController {
             dirlog.mkdir();
             TestPlanCaseController.log.info("创建性能报告日志目录performancereport完成 :" + JmeterPerformanceReportLogFilePath);
         }
-//        String JmxCaseName = dispatch1.getCasejmxname();
-//        String DeployUnitName = dispatch.getDeployunitname();
-//        String CaseName = dispatch.getTestcasename();
-//        TestPlanCaseController.log.info("性能任务-执行多机并行性能用例名 is......." + CaseName);
-//        Deployunit Deployunit = deployunitService.findDeployNameValueWithCode(DeployUnitName, executeplan.getProjectid());
-//        if (Deployunit == null) {
-//            return ResultGenerator.genFailedResult("未找到微服务为：" + DeployUnitName);
-//        }
-//        String Protocal = Deployunit.getProtocal();
-//        //如果是http,https，直接使用httpapitestcase下的functionhttpapi或者performancehttpapi来执行测试
-//        String JmeterClassName = "";
-//        String ClassName = "";
-//        String DeployUnitNameForJmeter = "";
-//        if (Protocal.equals("http") || Protocal.equals("https")) {
-//            DeployUnitNameForJmeter = "httpapitestcase";
-//            JmeterClassName = "HttpApiPerformance";
-//            ClassName = "com.api.autotest.test." + DeployUnitNameForJmeter + "." + JmeterClassName;
-//        }
-//        if (Protocal.equals("rpc")) {
-//            DeployUnitNameForJmeter = dispatch.getDeployunitname();
-//            JmeterClassName = DeployUnitName;
-//            ClassName = "com.api.autotest.test." + DeployUnitName + "." + JmxCaseName;
-//        }
-//        TestPlanCaseController.log.info("性能任务-DeployUnitNameForJmeter is......." + DeployUnitNameForJmeter + " JmeterClassName is........" + JmeterClassName);
-//        if (!JmeterClassExist(ClassName, JmeterPath)) {
-//            JmeterClassNotExist(dispatch, ClassName, CaseName);
-//            String memo = CaseName + "未开发对应的JmeterClass：" + ClassName;
-//            dispatchMapper.updatedispatchstatusandmemo("调度异常", memo, dispatch.getSlaverid(), dispatch.getExecplanid(), dispatch.getBatchid(), dispatch.getTestcaseid());
-//        } else {
-//            JmeterPerformanceObject jmeterPerformanceObject = null;
+
         List<TestsceneDispatch> testsceneDispatchList = testsceneDispatchService.findscenebypbs(Execplanid, Batchname, SlaverId);
 
         String Scenename = testsceneDispatchList.get(0).getScenename();
@@ -308,14 +283,42 @@ public class TestPlanCaseController {
         long threads = testsceneDispatchList.get(0).getTargetconcurrency();
         long loops = testsceneDispatchList.get(0).getIterations();
 
-        long caseid = testsceneTestcaseList.get(0).getTestcaseid();
-        String classname=testsceneTestcaseList.get(0).getCasename();
-        try {
-//                jmeterPerformanceObject = GetJmeterPerformance(dispatch);
-//                if (jmeterPerformanceObject != null) {
-            // 增加逻辑 获取计划的当前状态，如果为stop，放弃整个循环执行,return 掉
+        List<String> javasamplelist = new ArrayList<>();
+        for (TestsceneTestcase tesc : testsceneTestcaseList) {
+            long caseid = tesc.getTestcaseid();
+            String classname = tesc.getCasename();
+            String jsample = GetJavaSample(classname, String.valueOf(caseid));
+            javasamplelist.add(jsample);
+        }
+        String jmxcontent = GetJmxFile(javasamplelist);
+        TestPlanCaseController.log.info(" jmxcontent： " + jmxcontent);
 
-            tpcservice.ExecuteHttpPerformancePlanScene(classname,url.trim(), username.trim(), password.trim(), executeplan.getExecuteplanname(), Scenename, SlaverId, executeplan.getId(), Sceneid, caseid, Batchid, Batchname, JmeterPath, JmxPath, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, threads, loops, executeplan.getCreator());
+        FileWriter fw = null;
+        String Filepath = "";
+        String JmxFileName = Execplanid + "-" + Batchid + "-" + Sceneid;
+        try {
+            String os = System.getProperty("os.name");
+            if (os != null && os.toLowerCase().startsWith("windows")) {
+                Filepath = JmxPath + "\\" + JmxFileName + ".jmx";
+            } else {
+                Filepath = JmxPath + "/" + JmxFileName + ".jmx";
+            }
+            fw = new FileWriter(Filepath, true);
+            fw.write(jmxcontent);
+        } catch (Exception ex) {
+            TestPlanCaseController.log.error("保存jmx文件发生异常，请检查!" + ex.getMessage());
+        } finally {
+            if (null != fw) {
+                try {
+                    fw.close();
+                } catch (IOException ex) {
+                    TestPlanCaseController.log.error("保存jmx文件close发生异常，请检查!" + ex.getMessage());
+                }
+            }
+        }
+        try {
+            // 增加逻辑 获取计划的当前状态，如果为stop，放弃整个循环执行,return 掉
+            tpcservice.ExecuteHttpPerformancePlanScene(Filepath, url.trim(), username.trim(), password.trim(), executeplan.getExecuteplanname(), Scenename, SlaverId, executeplan.getId(), Sceneid, Batchid, Batchname, JmeterPath, JmxPath, JmeterPerformanceReportPath, JmeterPerformanceReportLogFilePath, threads, loops, executeplan.getCreator());
             // 更新调度表对应用例状态为已分配
             dispatchMapper.updatedispatchstatusbyname("已分配", dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, Sceneid);
             TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。更新dispatch状态为已分配.....开始调用jmeter..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
@@ -324,9 +327,9 @@ public class TestPlanCaseController {
             TestPlanCaseController.log.info("性能任务-。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。调用jmeter完成..。。。。。。。。。。。。。。。。。。。。。。。。。" + dispatch.getId());
             //}
         } catch (Exception ex) {
-            dispatchMapper.updatedispatchstatusandmemobyname("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchname, caseid);
+            dispatchMapper.updatescenedispatchstatusandmemo("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchid, Sceneid);
             ex.printStackTrace();
-            TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。获取 JmeterPerformanceObject对象异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
+            TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。ExecuteHttpPerformancePlanScene异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
         }
         //}
         return ResultGenerator.genOkResult();
@@ -394,6 +397,198 @@ public class TestPlanCaseController {
         return ResultGenerator.genOkResult();
     }
 
+
+    private String GetJavaSample(String Classname,String caseid)
+    {
+        String InitBody="<JavaSampler guiclass=\"JavaTestSamplerGui\" testclass=\"JavaSampler\" testname=\"autometerpr\" enabled=\"true\">\n" +
+                "          <elementProp name=\"arguments\" elementType=\"Arguments\" guiclass=\"ArgumentsPanel\" testclass=\"Arguments\" enabled=\"true\">\n" +
+                "            <collectionProp name=\"Arguments.arguments\">\n" +
+                "              <elementProp name=\"mysqlurl\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">mysqlurl</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${mysqlurl}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"mysqlusername\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">mysqlusername</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${mysqlusername}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"mysqlpassword\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">mysqlpassword</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${mysqlpassword}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"slaverId\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">slaverId</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${slaverid}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"planid\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">planid</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${testplanid}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"batchname\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">batchname</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${batchname}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"sceneid\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">sceneid</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${sceneid}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"batchid\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">batchid</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${batchid}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"caseid\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">caseid</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">000</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"reportlogfolder\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">reportlogfolder</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${reportlogfolder}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "              <elementProp name=\"casereportfolder\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">casereportfolder</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${casereportfolder}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
+                "            </collectionProp>\n" +
+                "          </elementProp>\n" +
+                "          <stringProp name=\"classname\">com.api.autohttpf.test.httpapitestcase.HttpApiPerformance</stringProp>\n" +
+                "        </JavaSampler>\n" +
+                "        <hashTree/>";
+
+        String CaseValue=" <elementProp name=\"caseid\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">caseid</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">000</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>";
+        String NewCaseValue=CaseValue.replace("000",caseid);
+        String ClassValue="testname=\"autometerpr\"";
+        String NewClassValue=ClassValue.replace("autometerpr",Classname);
+        String Last=InitBody.replace(ClassValue,NewClassValue);
+        Last=Last.replace(CaseValue,NewCaseValue);
+        return Last;
+    }
+
+    private String GetJmxFile(List<String> Bodys) {
+        String Header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<jmeterTestPlan version=\"1.2\" properties=\"5.0\" jmeter=\"5.3\">\n" +
+                "  <hashTree>\n" +
+                "    <TestPlan guiclass=\"TestPlanGui\" testclass=\"TestPlan\" testname=\"HttpPerformance\" enabled=\"true\">\n" +
+                "      <stringProp name=\"TestPlan.comments\">HttpPerformanceParams</stringProp>\n" +
+                "      <boolProp name=\"TestPlan.functional_mode\">false</boolProp>\n" +
+                "      <boolProp name=\"TestPlan.serialize_threadgroups\">true</boolProp>\n" +
+                "      <elementProp name=\"TestPlan.user_defined_variables\" elementType=\"Arguments\" guiclass=\"ArgumentsPanel\" testclass=\"Arguments\" testname=\"用户定义的变量\" enabled=\"true\">\n" +
+                "        <collectionProp name=\"Arguments.arguments\">\n" +
+                "          <elementProp name=\"thread\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">thread</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(thread,1)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"loops\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">loops</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(loops,1)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"testplanid\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">testplanid</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(testplanid,13)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"batchname\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">batchname</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(batchname,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"sceneid\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">sceneid</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(sceneid,1)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"slaverid\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">slaverid</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(slaverid,5)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"batchid\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">batchid</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(batchid,25)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"casereportfolder\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">casereportfolder</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(casereportfolder,/Users/fanseasn/Desktop/testresult/13-2-vvvvvv1111111)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"mysqlurl\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">mysqlurl</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(mysqlurl,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"mysqlusername\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">mysqlusername</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(mysqlusername,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"mysqlpassword\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">mysqlpassword</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(mysqlpassword,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"creator\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">creator</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(creator,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"reportlogfolder\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">reportlogfolder</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(reportlogfolder,)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"projectid\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">projectid</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(projectid,1)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "        </collectionProp>\n" +
+                "      </elementProp>\n" +
+                "      <stringProp name=\"TestPlan.user_define_classpath\"></stringProp>\n" +
+                "    </TestPlan>\n" +
+                "    <hashTree>\n" +
+                "      <ThreadGroup guiclass=\"ThreadGroupGui\" testclass=\"ThreadGroup\" testname=\"sceneperformance\" enabled=\"true\">\n" +
+                "        <stringProp name=\"ThreadGroup.on_sample_error\">continue</stringProp>\n" +
+                "        <elementProp name=\"ThreadGroup.main_controller\" elementType=\"LoopController\" guiclass=\"LoopControlPanel\" testclass=\"LoopController\" testname=\"循环控制器\" enabled=\"true\">\n" +
+                "          <boolProp name=\"LoopController.continue_forever\">false</boolProp>\n" +
+                "          <stringProp name=\"LoopController.loops\">${loops}</stringProp>\n" +
+                "        </elementProp>\n" +
+                "        <stringProp name=\"ThreadGroup.num_threads\">${thread}</stringProp>\n" +
+                "        <stringProp name=\"ThreadGroup.ramp_time\"></stringProp>\n" +
+                "        <longProp name=\"ThreadGroup.start_time\">1502182031000</longProp>\n" +
+                "        <longProp name=\"ThreadGroup.end_time\">1502182031000</longProp>\n" +
+                "        <boolProp name=\"ThreadGroup.scheduler\">false</boolProp>\n" +
+                "        <stringProp name=\"ThreadGroup.duration\"></stringProp>\n" +
+                "        <stringProp name=\"ThreadGroup.delay\"></stringProp>\n" +
+                "        <boolProp name=\"ThreadGroup.same_user_on_next_iteration\">true</boolProp>\n" +
+                "      </ThreadGroup>\n" +
+                "      <hashTree>";
+        String Tail = " </hashTree>\n" +
+                "    </hashTree>\n" +
+                "  </hashTree>\n" +
+                "</jmeterTestPlan>";
+
+        String BodyAll = "";
+        for (String body : Bodys) {
+            BodyAll = BodyAll + body;
+        }
+        return Header + BodyAll + Tail;
+    }
 
     public JmeterPerformanceObject GetJmeterPerformanceCaseData(Dispatch dispatch) throws Exception {
         JmeterPerformanceObject jmeterPerformanceObject = new JmeterPerformanceObject();

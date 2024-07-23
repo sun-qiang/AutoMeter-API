@@ -37,6 +37,18 @@ public class ApicasesPerformancestatistics {
      */
     private String batchname;
 
+    public String getCasename() {
+        return casename;
+    }
+
+    public void setCasename(String casename) {
+        this.casename = casename;
+    }
+
+    private String casename;
+
+
+
     /**
      * 运行时长,秒
      */
