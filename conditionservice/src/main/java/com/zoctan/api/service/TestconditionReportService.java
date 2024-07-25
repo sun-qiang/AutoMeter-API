@@ -16,6 +16,7 @@ public interface TestconditionReportService extends Service<TestconditionReport>
 
     List<TestconditionReport> findTestconditionReportWithName(final Map<String, Object> params);
     int ifexist(Condition condition);
+    List<TestconditionReport> getsubconditionnums(Long testplanid,  String batchname,  String status);
     List<TestconditionReport> getsubconditionnumswithstatus(Long testplanid,  String batchname,  String status,  String conditionstatus);
 
 }

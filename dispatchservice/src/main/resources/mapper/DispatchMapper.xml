@@ -126,6 +126,13 @@
     and execplanid = #{execplanid}  and batchid = #{batchid} and  sceneid = #{sceneid}
   </update>
 
+  <update id="updatedispatchstatusbypb">
+    update  dispatch set status=#{status} , memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') where
+        and execplanid = #{execplanid}  and batchid = #{batchid}
+  </update>
+
+
+
   <update id="updatedispatchnewslaver">
     update  dispatch set slaverid=#{2}, slavername=#{slavername} ,memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') where slaverid = #{1}
          and execplanid = #{execplanid}  and batchid = #{batchid} and  sceneid = #{sceneid}

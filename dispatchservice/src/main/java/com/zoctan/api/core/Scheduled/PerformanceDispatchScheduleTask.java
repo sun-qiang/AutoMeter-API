@@ -62,6 +62,9 @@ public class PerformanceDispatchScheduleTask {
     @Autowired(required = false)
     private TestsceneDispatchMapper testsceneDispatchMapper;
 
+    @Autowired(required = false)
+    private ExecuteplanbatchService executeplanbatchService;
+
 
     //3.添加定时任务,处理并行多机并发性能测试任务
     @Scheduled(cron = "0/5 * * * * ?")
@@ -78,7 +81,6 @@ public class PerformanceDispatchScheduleTask {
             if (lock) {
                 try {
                     Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "立即执行", "性能");
-//                    Dispatch dispatch = dispatchMapper.getrecentdispatchbyusetype("待分配", "性能");
                     if (executeplanbatch != null) {
                         Dispatch dispatch = new Dispatch();
                         dispatch.setExecplanid(executeplanbatch.getExecuteplanid());
@@ -86,7 +88,6 @@ public class PerformanceDispatchScheduleTask {
                         dispatch.setExecplanname(executeplanbatch.getExecuteplanname());
                         Long PlanID = dispatch.getExecplanid();
                         String BatchName = executeplanbatch.getBatchname();
-//                        Long caseid = dispatch.getTestcaseid();
                         //判断计划的所有前置条件是否已经完成，并且全部成功，否则更新Dispatch状态为前置条件失败
                         String RedayRespon = RequestConditionService(dispatch, "/testcondition/planconditionreday");
                         if (!RedayRespon.contains("\"code\":200")) {
@@ -96,11 +97,7 @@ public class PerformanceDispatchScheduleTask {
                             String FinishRespon = RequestConditionService(dispatch, "/testcondition/planconditionfinish");
                             PerformanceDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器..................PlanID:" + PlanID + " BatchName:" + BatchName + " 条件服务FinishRespon:" + FinishRespon);
                             if (FinishRespon.contains("\"code\":200")) {
-//                                boolean flag = ConditionRequest(PlanID, BatchName, dispatch);   //IsConditionFinish(PlanID,BatchName);
-//                                if (flag) {
-                                List<Executeplanbatch> executeplanbatchList = executeplanbatchMapper.getplanbatch("初始", "性能", PlanID, BatchName);
-                                List<TestsceneDispatch> testsceneDispatchList =testsceneDispatchMapper.getdistinctslaver(PlanID, BatchName);
-//                            List<Dispatch> SlaverIDList = dispatchMapper.getdistinctslaveridandcaaseid("待分配", "性能", PlanID, BatchName, caseid);
+                                List<TestsceneDispatch> testsceneDispatchList = testsceneDispatchMapper.getdistinctslaver(PlanID, BatchName);
                                 int SleepSlaverNums = slaverMapper.findbusyslavernums(testsceneDispatchList, "空闲", "性能");
                                 //判断SlaverIDList中的所有slaver都是空闲状态才请求slaver执行，多机并行执行性能的前提
                                 if (testsceneDispatchList.size() == SleepSlaverNums) {
@@ -110,24 +107,18 @@ public class PerformanceDispatchScheduleTask {
                                             PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器..................PlanID:" + PlanID + " BatchName:" + BatchName + " slaverid:" + Slaverid);
                                             Slaver slaver = slaverMapper.findslaverbyid(Slaverid);
                                             if (slaver != null) {
-                                               // if (slaver.getStatus().equals("空闲")) {
-//                                                    List<Dispatch> SlaverDispathcList = dispatchMapper.getfunctiondispatchsbyslaverid(Slaverid, "待分配", "性能", PlanID, BatchName);
-//                                                    PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器 slaverid:" + slaver + " 获取dispatch数-：" + SlaverDispathcList.size());
-//                                                    if (SlaverDispathcList.size() > 0) {
-                                                        String params = JSON.toJSONString(executeplanbatch);
-                                                        PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
-                                                        HttpHeader header = new HttpHeader();
-                                                        String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execperformancetest";
-                                                        String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
-                                                        PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器-============请求slaver响应结果：" + respon);
-                                                        if (respon.contains("未找到IP为")) {
-                                                            throw new Exception(respon);
-                                                        }
-                                                        if (respon.contains("未找到微服务为")) {
-                                                            throw new Exception(respon);
-                                                        }
-                                                    //}
-                                                //}
+                                                String params = JSON.toJSONString(executeplanbatch);
+                                                PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器-============执行机id：" + slaver.getId() + "  执行机名：" + slaver.getSlavername() + " 执行的dispatch：" + params);
+                                                HttpHeader header = new HttpHeader();
+                                                String ServerUrl = "http://" + slaver.getIp() + ":" + slaver.getPort() + "/exectestplancase/execperformancetest";
+                                                String respon = Httphelp.doPost(ServerUrl, params, header, 30000);
+                                                PerformanceDispatchScheduleTask.log.info("调度服务【性能】测试定时器-============请求slaver响应结果：" + respon);
+                                                if (!respon.contains("\"code\":200")) {
+                                                    executeplanbatch.setStatus("已停止");
+                                                    executeplanbatch.setMemo("请求slaverservice执行任务异常：" + respon);
+                                                    executeplanbatchService.update(executeplanbatch);
+                                                    dispatchMapper.updatedispatchfail("调度失败", "请求slaverservice执行任务异常：" + respon, executeplanbatch.getSlaverid(), executeplanbatch.getExecuteplanid(), executeplanbatch.getId(), executeplanbatch.getSceneid());
+                                                }
                                             }
                                         }
                                     } catch (Exception ex) {
@@ -136,10 +127,13 @@ public class PerformanceDispatchScheduleTask {
                                     }
                                 } else {
                                     //更新batch备注为分配的slaver未全部就绪，不能发起性能任务
+                                    executeplanbatchService.updateconditionstatus(executeplanbatch.getExecuteplanid(), executeplanbatch.getBatchname(), "已停止", "此集合所分配的执行机未全部就绪，无法并发执行测试，已停止该任务");
+                                    dispatchMapper.updatedispatchstatusbypb("已停止", "此集合所分配的执行机未全部就绪，无法并发执行测试，已停止该任务", executeplanbatch.getExecuteplanid(), executeplanbatch.getId());
                                 }
-                                //}
-                            } else {
-                                //更新batch前置条件未就绪，不能发起性能任务
+                            }
+                            if (FinishRespon.contains("\"code\":504")) {
+                                executeplanbatchService.updateconditionstatus(executeplanbatch.getExecuteplanid(), executeplanbatch.getBatchname(), "已停止", "集合前置条件执行失败，停止运行");
+                                dispatchMapper.updatedispatchstatusbypb("已停止", "集合前置条件执行失败，停止运行", executeplanbatch.getExecuteplanid(), executeplanbatch.getId());
                             }
                         }
                     }

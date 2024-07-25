@@ -40,6 +40,10 @@ public interface DispatchMapper extends MyMapper<Dispatch> {
 
     void updatedispatchfail(@Param("status") String status, @Param("memo") String memo, @Param("slaverid") Long slaverid, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
 
+    void updatedispatchstatusbypb(@Param("status") String status, @Param("memo") String memo,  @Param("execplanid") Long execplanid, @Param("batchid") Long batchid);
+
+
+
     void updatedispatchnewslaver( @Param("memo") String memo,@Param("slaverid") Long slaverid, @Param("slaverid") Long newslaverid,@Param("slavername") String slavername, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
     List<Dispatch> getcopydispatch( @Param("slaverid") Long slaverid,  @Param("execplanid") Long execplanid, @Param("batchid") Long batchid,@Param("sceneid") Long sceneid);
 

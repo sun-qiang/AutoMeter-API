@@ -12,6 +12,7 @@ public interface TestconditionReportMapper extends MyMapper<TestconditionReport>
     List<TestconditionReport> findTestconditionReportWithName(final Map<String, Object> params);
 
     int ifexist(Condition condition);
+    List<TestconditionReport> getsubconditionnums(@Param("testplanid") Long testplanid, @Param("batchname") String batchname, @Param("status") String status);
     List<TestconditionReport> getsubconditionnumswithstatus(@Param("testplanid") Long testplanid, @Param("batchname") String batchname, @Param("status") String status, @Param("conditionstatus") String conditionstatus);
 
 }

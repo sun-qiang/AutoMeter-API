@@ -42,5 +42,10 @@ private ExecuteplanbatchMapper executeplanbatchMapper;
         executeplanbatchMapper.updateconditionfail(executeplanid, batchname, memo);
     }
 
+    @Override
+    public void updateconditionstatus(Long executeplanid, String batchname, String status, String memo) {
+
+    }
+
 
 }

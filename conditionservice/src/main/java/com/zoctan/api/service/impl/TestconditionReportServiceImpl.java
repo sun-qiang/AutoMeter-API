@@ -31,6 +31,11 @@ private TestconditionReportMapper testconditionReportMapper;
     }
 
     @Override
+    public List<TestconditionReport> getsubconditionnums(Long testplanid, String batchname, String status) {
+        return testconditionReportMapper.getsubconditionnums(testplanid, batchname, status);
+    }
+
+    @Override
     public List<TestconditionReport> getsubconditionnumswithstatus(Long testplanid, String batchname, String status, String conditionstatus) {
         return testconditionReportMapper.getsubconditionnumswithstatus(testplanid, batchname, status, conditionstatus);
     }

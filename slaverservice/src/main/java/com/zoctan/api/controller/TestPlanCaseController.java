@@ -214,15 +214,11 @@ public class TestPlanCaseController {
 
     @PostMapping("/execperformancetest")
     public Result execperformancetest(@RequestBody Executeplanbatch dispatch) throws Exception {
-
-        String javasample = "";
-
         long Execplanid = dispatch.getExecuteplanid();
         String Batchname = dispatch.getBatchname();
         Executeplan executeplan = executeplanService.getBy("id", Execplanid);
         String property = System.getProperty("os.name");
-        String ip = null;
-        ip = IPHelpUtils.getInet4Address();
+        String ip =  IPHelpUtils.getInet4Address();
         List<Slaver> slaverlist = slaverMapper.findslaverbyip(ip);
         if (slaverlist.size() == 0) {
             TestPlanCaseController.log.error("性能任务-没有找到slaver。。。。。。。。" + "未找到ip为：" + ip + "的slaver，请检查调度中心-执行节点");
@@ -307,6 +303,7 @@ public class TestPlanCaseController {
             fw.write(jmxcontent);
         } catch (Exception ex) {
             TestPlanCaseController.log.error("保存jmx文件发生异常，请检查!" + ex.getMessage());
+            return ResultGenerator.genFailedResult("保存jmx文件发生异常，请检查!" + ex.getMessage());
         } finally {
             if (null != fw) {
                 try {
@@ -328,8 +325,8 @@ public class TestPlanCaseController {
             //}
         } catch (Exception ex) {
             dispatchMapper.updatescenedispatchstatusandmemo("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchid, Sceneid);
-            ex.printStackTrace();
             TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。ExecuteHttpPerformancePlanScene异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
+            return ResultGenerator.genFailedResult(ex.getMessage());
         }
         //}
         return ResultGenerator.genOkResult();

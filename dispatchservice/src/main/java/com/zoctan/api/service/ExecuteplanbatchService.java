@@ -21,5 +21,6 @@ public interface ExecuteplanbatchService extends Service<Executeplanbatch> {
 
 
     void updateconditionfail( Long executeplanid, String batchname, String memo);
+    void updateconditionstatus( Long executeplanid, String batchname,String status, String memo);
 
 }

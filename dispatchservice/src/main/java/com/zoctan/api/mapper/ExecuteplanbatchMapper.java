@@ -29,7 +29,10 @@ public interface ExecuteplanbatchMapper extends MyMapper<Executeplanbatch> {
 
     List<Executeplanbatch> getbatchtestscene(@Param("status") String status,@Param("executeplanid") Long executeplanid, @Param("batchname") String batchname, @Param("exectype") String exectype);
 
-    void updateconditionfail(@Param("executeplanid") Long executeplanid,@Param("executeplanid") String batchname,@Param("memo") String memo);
+    void updateconditionfail(@Param("executeplanid") Long executeplanid,@Param("batchname") String batchname,@Param("memo") String memo);
+
+    void updateconditionstatus( @Param("executeplanid") Long executeplanid,@Param("batchname") String batchname,@Param("memo") String memo,@Param("status")String status);
+
 
     void saveplanbatchscenen(@Param("casedataList")final List<Executeplanbatch> testcase);
 

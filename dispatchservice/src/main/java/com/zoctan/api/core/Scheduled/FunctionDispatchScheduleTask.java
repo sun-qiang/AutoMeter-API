@@ -86,7 +86,7 @@ public class FunctionDispatchScheduleTask {
             boolean lock = redisUtils.tryLock(redisKey, "FunctionDispatchScheduleTask", redis_default_expire_time);
             if (lock) {
                 FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】lock......................................................................");
-                Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "立即执行","功能");
+                Executeplanbatch executeplanbatch = executeplanbatchMapper.getrecentbatch("初始", "立即执行", "功能");
                 long PlanID = 0;
                 String BatchName = "";
                 try {
@@ -172,10 +172,20 @@ public class FunctionDispatchScheduleTask {
                                     }
                                 }
                             }
+                            if (FinishRespon.contains("\"code\":504")) {
+                                executeplanbatch.setStatus("已停止");
+                                executeplanbatch.setMemo("集合前置条件执行失败，停止运行");
+                                executeplanbatchService.update(executeplanbatch);
+                                dispatchMapper.updatedispatchstatusbypb("已停止", "集合前置条件执行失败，停止运行", executeplanbatch.getExecuteplanid(), executeplanbatch.getId());
+                            }
                         }
                     }
                 } catch (Exception ex) {
                     executeplanbatchService.updateconditionfail(PlanID, BatchName, "条件服务请求异常:" + ex.getMessage());
+                    executeplanbatch.setStatus("已停止");
+                    executeplanbatch.setMemo("条件服务请求异常:" + ex.getMessage());
+                    executeplanbatchService.update(executeplanbatch);
+                    dispatchMapper.updatedispatchstatusbypb("已停止", "集合前置条件服务请求异常，停止运行", executeplanbatch.getExecuteplanid(), executeplanbatch.getId());
                     //增加钉钉通知
                     FunctionDispatchScheduleTask.log.info("调度服务【立即执行功能】测试定时器条件服务请求异常=======================" + ex.getMessage());
                 } finally {

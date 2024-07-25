@@ -74,6 +74,12 @@
     update  executeplanbatch set status='已停止', memo=#{memo}  where executeplanid = #{executeplanid}  and batchname = #{batchname}
   </update>
 
+  <update id="updateconditionstatus" >
+    update  executeplanbatch set status=#{status}, memo=#{memo}  where executeplanid = #{executeplanid}  and batchname = #{batchname}
+  </update>
+
+
+
   <insert id="saveplanbatchscenen">
     INSERT INTO executeplanbatch (sceneid,scenename,executeplanid,projectid,status,source,executeplanname,batchname,
     creator,exectype,execdate,create_time,lastmodify_time)
