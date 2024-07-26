@@ -80,7 +80,7 @@
           >删除</el-button>
           <el-button
             type="primary"
-            size="mini"用例前置条件
+            size="mini"
             icon="el-icon-plus"
             v-if="hasPermission('testscene:loadcase') && scope.row.id !== id"
             @click.native.prevent="showtestsceneCaseDialog(scope.$index)"

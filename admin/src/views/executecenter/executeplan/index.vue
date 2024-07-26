@@ -755,7 +755,7 @@
             <el-button
               type="primary"
               size="mini"
-              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id && planusetype === '功能'"
+              v-if="hasPermission('testscene:scenecondition') && scope.row.id !== id"
               @click.native.prevent="showtestscenecaseConditionDialog(scope.$index)"
             >前置条件</el-button>
           </template>
@@ -4463,11 +4463,11 @@
         this.tmpscenedbcondition.conditionid = this.testplansceneList[index].testscenenid
         this.tmpscenedbcondition.conditionname = this.testplansceneList[index].scenename
         this.tmpscenedbcondition.conditiontype = 'scene'
-        this.tmpscriptcondition.conditionid = this.testplansceneList[index].id
+        this.tmpscriptcondition.conditionid = this.testplansceneList[index].testscenenid
         this.tmpscriptcondition.conditionname = this.testplansceneList[index].scenename
         this.tmpscriptcondition.conditiontype = 'scene'
         this.searchscriptcondition.conditiontype = 'scene'
-        this.searchscriptcondition.conditionid = this.testplansceneList[index].id
+        this.searchscriptcondition.conditionid = this.testplansceneList[index].testscenenid
         this.getsceneapiconditionList()
         this.getdelayconditionList()
         this.getscenedbconditionList()
