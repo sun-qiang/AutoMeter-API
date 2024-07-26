@@ -125,13 +125,13 @@ public class TestplanTestsceneController {
             }
             String eptype = executeplan.getUsetype();
             if (eptype.equals("性能")) {
-                if (testsceneTestcaseList.size() > 2) {
+                if (testsceneTestcaseList.size() > 1) {
                     return ResultGenerator.genFailedResult("当前版本性能测试只支持单场景");
                 } else {
                     Condition con = new Condition(TestplanTestscene.class);
                     con.createCriteria().andCondition("testplanid = " + executeplan.getId());
                     List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
-                    if (testplanTestsceneList.size() > 1) {
+                    if (testplanTestsceneList.size() > 0) {
                         return ResultGenerator.genFailedResult("当前版本性能测试只支持单场景");
                     } else {
                         TestplanTestscene testplanTestscene = testsceneTestcaseList.get(0);
