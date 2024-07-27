@@ -30,6 +30,13 @@
             <el-input v-model="search.executeplanname" clearable @keyup.enter.native="searchBy" placeholder="测试集合"></el-input>
           </el-form-item>
 
+            <el-form-item  label="类型:">
+            <el-select v-model="search.usetype" clearable placeholder="类型">
+              <el-option label="功能" value="功能" />
+              <el-option label="性能" value="性能" />
+            </el-select>
+          </el-form-item>
+
           <el-form-item  label="业务类型:">
             <el-select v-model="search.businesstype" clearable placeholder="业务类型">
               <el-option label="请选择" value />
@@ -2987,6 +2994,7 @@
           size: 10,
           executeplanname: null,
           businesstype: '',
+          usetype: '',
           creator: '',
           nickname: '',
           accountId: null,

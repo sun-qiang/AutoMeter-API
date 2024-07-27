@@ -31,6 +31,7 @@ CREATE TABLE `testscene_dispatch` (
   `slaverid` bigint(20) unsigned NOT NULL COMMENT '执行机Id',
   `slavername` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '执行机名',
   `testsceneid` bigint(20) unsigned NOT NULL COMMENT '场景id',
+  `status` varchar(10) DEFAULT NULL COMMENT '状态',
   `scenename` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '场景名',
   `targetconcurrency` bigint(20) unsigned NOT NULL default 0 COMMENT '并发线程',
   `rampuptime` bigint(20) unsigned NOT NULL default 0 COMMENT '启动时间',
@@ -46,3 +47,7 @@ CREATE TABLE `testscene_dispatch` (
 
 ALTER TABLE testcenter.apicases_performancestatistics add COLUMN `casename` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '用例名' ;
 ALTER TABLE testcenter.performancereportsource add COLUMN `sceneid` bigint(20) unsigned NOT NULL COMMENT '场景id' ;
+
+INSERT INTO testcenter.dictionary
+(dicname, diccode, dicitemname, dicitmevalue, create_time, lastmodify_time)
+VALUES('线程最大值', 'performancethreadmax', '执行机线程最大值', '10', '2024-07-27 17:27:59', '2024-07-27 17:27:59');

@@ -623,33 +623,37 @@ public class ApicasesController {
         caseassertcon.createCriteria().andCondition("caseid = " + id);
         apicasesAssertService.deleteByCondition(caseassertcon);
         //删除用例条件，子条件
-        Condition con = new Condition(Testcondition.class);
-        con.createCriteria().andCondition("objecttype = '测试用例'").andCondition("objectid = " + id).andCondition("conditiontype = '" + "前置条件'");
-        List<Testcondition> testconditionList = testconditionService.listByCondition(con);
-        if (testconditionList.size() > 0) {
-            Long ConditionID = testconditionList.get(0).getId();
-            conditionApiService.deleteBy("conditionid", ConditionID);
-            conditionDbService.deleteBy("conditionid", ConditionID);
-            conditionScriptService.deleteBy("conditionid", ConditionID);
-            conditionDelayService.deleteBy("conditionid", ConditionID);
-            conditionOrderService.deleteBy("conditionid", ConditionID);
-            testconditionService.deleteByCondition(con);
-        }
-        //删除测试集合中的用例
-        executeplanTestcaseService.removetestcase(id);
-        //删除调试集合中的用例
-        long ConditionID = 0;
-        ApicasesDebugCondition apicasesDebugCondition = apicasesDebugConditionService.getBy("caseid", id);
-        if (apicasesDebugCondition != null) {
-            ConditionID = apicasesDebugCondition.getConditionid();
-        }
-        apicasesDebugConditionService.deleteBy("caseid", id);
-        Condition ApicasesDebugCondition = new Condition(ApicasesDebugCondition.class);
-        ApicasesDebugCondition.createCriteria().andCondition("conditionid = " + ConditionID);
-        List<ApicasesDebugCondition> apicasesDebugConditionList = apicasesDebugConditionService.listByCondition(ApicasesDebugCondition);
-        if (apicasesDebugConditionList.size() == 0) {
-            testconditionService.deleteBy("id", ConditionID);
-        }
+//        Condition con = new Condition(Testcondition.class);
+//        con.createCriteria().andCondition("objecttype = '测试用例'").andCondition("objectid = " + id).andCondition("conditiontype = '" + "前置条件'");
+//        List<Testcondition> testconditionList = testconditionService.listByCondition(con);
+//        if (testconditionList.size() > 0) {
+//            Long ConditionID = testconditionList.get(0).getId();
+//            conditionApiService.deleteBy("conditionid", ConditionID);
+//            conditionDbService.deleteBy("conditionid", ConditionID);
+//            conditionScriptService.deleteBy("conditionid", ConditionID);
+//            conditionDelayService.deleteBy("conditionid", ConditionID);
+//            conditionOrderService.deleteBy("conditionid", ConditionID);
+//            testconditionService.deleteByCondition(con);
+//        }
+//        //删除测试集合中的用例
+//        executeplanTestcaseService.removetestcase(id);
+//        //删除调试集合中的用例
+//        long ConditionID = 0;
+//        ApicasesDebugCondition apicasesDebugCondition = apicasesDebugConditionService.getBy("caseid", id);
+//        if (apicasesDebugCondition != null) {
+//            ConditionID = apicasesDebugCondition.getConditionid();
+//        }
+//        apicasesDebugConditionService.deleteBy("caseid", id);
+//        Condition ApicasesDebugCondition = new Condition(ApicasesDebugCondition.class);
+//        ApicasesDebugCondition.createCriteria().andCondition("conditionid = " + ConditionID);
+//        List<ApicasesDebugCondition> apicasesDebugConditionList = apicasesDebugConditionService.listByCondition(ApicasesDebugCondition);
+//        if (apicasesDebugConditionList.size() == 0) {
+//            testconditionService.deleteBy("id", ConditionID);
+//        }
+
+        Condition testvariablesCondition = new Condition(Testvariables.class);
+        testvariablesCondition.createCriteria().andCondition("caseid = " + id);
+        testvariablesService.deleteByCondition(testvariablesCondition);
 
         Api api = apiService.getById(apicases.getApiid());
         long casecount = api.getCasecounts();

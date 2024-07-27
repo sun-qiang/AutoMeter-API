@@ -221,7 +221,7 @@ export const asyncRouterMap = [
       { path: 'apinewperreport/list', name: '性能报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '集合性能报告', permission: ['apireport:list'] }},
       // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
       // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
-      { path: 'apiperformancestatistics/list', name: '性能统计报告', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能统计报告', permission: ['apiperformancestatistics:list'] }}
+      { path: 'apiperformancestatistics/list', name: '性能回归对比', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能回归对比', permission: ['apiperformancestatistics:list'] }}
     ]
   },
   // {

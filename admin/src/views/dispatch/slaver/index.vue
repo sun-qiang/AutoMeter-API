@@ -118,7 +118,7 @@
         </el-form-item>
 
         <el-form-item label="类型" prop="stype" required >
-          <el-select v-model="tmpslaver.stype" placeholder="类型">
+          <el-select v-model="tmpslaver.stype" disabled placeholder="类型">
             <el-option label="功能" value="功能"/>
             <el-option label="性能" value="性能"></el-option>
           </el-select>
