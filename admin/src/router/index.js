@@ -218,7 +218,8 @@ export const asyncRouterMap = [
       { path: 'apinewreport/list', name: '功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
       // { path: 'apinewtmpreport/list', alwaysShow: false, name: '集合功能报告11', component: _import('reportcenter/apinewtmpreport/index'), meta: { title: '集合功能报告1', permission: ['apireport:list'] }},
       { path: 'apireport/list', name: '功能报告明细', component: _import('reportcenter/apireport/index'), meta: { title: '功能报告明细', permission: ['apireport:list'] }},
-      { path: 'apinewperreport/list', name: '性能报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '集合性能报告', permission: ['apireport:list'] }},
+      { path: 'apinewperreport/list', name: '性能总览报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '性能总览报告', permission: ['apireport:list'] }},
+      { path: 'apiperformancegrap/list', name: '性能图表总览', component: _import('reportcenter/apiperformancegrap/index'), meta: { title: '性能图表总览', permission: ['apiperformancegrap:list'] }},
       // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
       // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
       { path: 'apiperformancestatistics/list', name: '性能回归对比', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能回归对比', permission: ['apiperformancestatistics:list'] }}

@@ -435,6 +435,11 @@ public class TestPlanCaseController {
                 "                <stringProp name=\"Argument.value\">${sceneid}</stringProp>\n" +
                 "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
                 "              </elementProp>\n" +
+                "              <elementProp name=\"scenename\" elementType=\"Argument\">\n" +
+                "                <stringProp name=\"Argument.name\">scenename</stringProp>\n" +
+                "                <stringProp name=\"Argument.value\">${scenename}</stringProp>\n" +
+                "                <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "              </elementProp>\n" +
                 "              <elementProp name=\"batchid\" elementType=\"Argument\">\n" +
                 "                <stringProp name=\"Argument.name\">batchid</stringProp>\n" +
                 "                <stringProp name=\"Argument.value\">${batchid}</stringProp>\n" +
@@ -507,6 +512,11 @@ public class TestPlanCaseController {
                 "          <elementProp name=\"sceneid\" elementType=\"Argument\">\n" +
                 "            <stringProp name=\"Argument.name\">sceneid</stringProp>\n" +
                 "            <stringProp name=\"Argument.value\">${__P(sceneid,1)}</stringProp>\n" +
+                "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
+                "          </elementProp>\n" +
+                "          <elementProp name=\"scenename\" elementType=\"Argument\">\n" +
+                "            <stringProp name=\"Argument.name\">scenename</stringProp>\n" +
+                "            <stringProp name=\"Argument.value\">${__P(scenename,)}</stringProp>\n" +
                 "            <stringProp name=\"Argument.metadata\">=</stringProp>\n" +
                 "          </elementProp>\n" +
                 "          <elementProp name=\"slaverid\" elementType=\"Argument\">\n" +

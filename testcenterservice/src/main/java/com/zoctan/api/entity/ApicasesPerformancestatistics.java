@@ -26,6 +26,16 @@ public class ApicasesPerformancestatistics {
      */
     private Long caseid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    private Long sceneid;
+
     /**
      * 执行计划id
      */
@@ -35,6 +45,18 @@ public class ApicasesPerformancestatistics {
      * 批次
      */
     private String batchname;
+
+    public String getScenename() {
+        return scenename;
+    }
+
+    public void setScenename(String scenename) {
+        this.scenename = scenename;
+    }
+
+    private String scenename;
+
+
 
     public String getExecuteplanname() {
         return executeplanname;

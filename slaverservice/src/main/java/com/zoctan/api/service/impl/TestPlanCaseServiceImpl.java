@@ -184,7 +184,7 @@ public class TestPlanCaseServiceImpl extends AbstractService<TestplanCase> imple
             Jmeterbin = "/jmeter -n -t ";
         }
         JmeterCmd = JmeterPath + Jmeterbin  + JmxFile + " -Jmysqlurl=" + JdbcMysqlUrl + " -Jmysqlusername=" + MysqlUserName + " -Jmysqlpassword="
-                + MysqlPassword + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId + " -Jbatchid=" + batchid + " -Jsceneid=" + Sceneid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName
+                + MysqlPassword + " -Jthread=" + Thread + " -Jloops=" + Loop + " -Jtestplanid=" + PlanId + " -Jbatchid=" + batchid + " -Jsceneid=" + Sceneid + " -Jslaverid=" + SlaverId + " -Jbatchname=" + BatchName+ " -Jscenename=" + SceneName
                 + " -Jreportlogfolder=" + ReportSlaverPlanLogFolder + " -Jcasereportfolder=" + CaseReportFolder + " -l  " + CaseReportF + ".jtl -e -o " + CaseReportFolder + " -j jmeter-pt" + jmeterlogfilename + ".log ";
 
 

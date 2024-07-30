@@ -99,6 +99,10 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         long projectid = Long.parseLong(param.get("projectid").toString());
         String batchname = param.get("batchname").toString();
+        if(batchname.isEmpty())
+        {
+            return ResultGenerator.genFailedResult("请选择执行计划");
+        }
 
         Routeperformancereport routeperformancereport = routeperformancereportService.getBy("executeplanid", planid);
         List<ApicasesReportPerformance> list = new ArrayList<>();
@@ -122,6 +126,10 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         long projectid = Long.parseLong(param.get("projectid").toString());
         String batchname = param.get("batchname").toString();
+        if(batchname.isEmpty())
+        {
+            return ResultGenerator.genFailedResult("请选择执行计划");
+        }
         PageHelper.startPage(page, size);
         List<ApicasesPerformancestatistics> apicasesPerformancestatisticsList = apicasesPerformancestatisticsService.getresultbyidandname(planid, batchname, projectid);
         final PageInfo<ApicasesPerformancestatistics> pageInfo = new PageInfo<>(apicasesPerformancestatisticsList);
@@ -137,6 +145,10 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         String batchname = param.get("batchname").toString();
 
+        if(batchname.isEmpty())
+        {
+            return ResultGenerator.genFailedResult("请选择执行计划");
+        }
         List<PerformanceCaseStatis> performanceCaseStatisList = new ArrayList<>();
         PerformanceCaseStatis performanceCaseStatis = new PerformanceCaseStatis();
 
@@ -199,7 +211,10 @@ public class ApicasesReportPerformanceController {
     public Result getperformanceslaverstatics(@RequestBody final Map<String, Object> param) {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         String batchname = param.get("batchname").toString();
-
+        if(batchname.isEmpty())
+        {
+            return ResultGenerator.genFailedResult("请选择执行计划");
+        }
         List<PerformanceSlaverStatics> performanceSlaverStaticsList = new ArrayList<>();
 
         Condition perfcon = new Condition(Performancereportsource.class);
@@ -267,7 +282,10 @@ public class ApicasesReportPerformanceController {
         } else {
             Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
             String batchname = param.get("batchname").toString();
-
+            if(batchname.isEmpty())
+            {
+                return ResultGenerator.genFailedResult("请选择执行计划");
+            }
             List<FunctionCaseSandF> functionCaseSandFList = new ArrayList<>();
             Condition con = new Condition(Performancereportsource.class);
             con.createCriteria().andCondition("planid = " + executeplanid).andCondition("batchname = '" + batchname + "'");
@@ -302,7 +320,10 @@ public class ApicasesReportPerformanceController {
         Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
         String status = param.get("caseststus").toString();
         String batchname = param.get("batchname").toString();
-
+        if(batchname.isEmpty())
+        {
+            return ResultGenerator.genFailedResult("请选择执行计划");
+        }
         Routeperformancereport routeperformancereport = routeperformancereportService.getBy("executeplanid", executeplanid);
         List<ApicasesReportPerformance> list = new ArrayList<>();
         if (routeperformancereport != null) {

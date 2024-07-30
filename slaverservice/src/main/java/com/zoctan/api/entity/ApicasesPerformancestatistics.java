@@ -32,6 +32,18 @@ public class ApicasesPerformancestatistics {
      */
     private Long testplanid;
 
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    private Long sceneid;
+
+
+
     /**
      * 批次
      */

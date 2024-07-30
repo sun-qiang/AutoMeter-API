@@ -51,3 +51,6 @@ ALTER TABLE testcenter.performancereportsource add COLUMN `sceneid` bigint(20) u
 INSERT INTO testcenter.dictionary
 (dicname, diccode, dicitemname, dicitmevalue, create_time, lastmodify_time)
 VALUES('线程最大值', 'performancethreadmax', '执行机线程最大值', '10', '2024-07-27 17:27:59', '2024-07-27 17:27:59');
+
+ALTER TABLE testcenter.apicases_performancestatistics add COLUMN `sceneid` bigint(20) unsigned NOT NULL COMMENT '场景id' ;
+

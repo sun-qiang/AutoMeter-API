@@ -3,15 +3,14 @@ package com.zoctan.api.core.Scheduled;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zoctan.api.core.config.RedisUtils;
-import com.zoctan.api.entity.ApicasesPerformancestatistics;
-import com.zoctan.api.entity.Executeplan;
-import com.zoctan.api.entity.Performancereportsource;
-import com.zoctan.api.entity.Slaver;
+import com.zoctan.api.entity.*;
 import com.zoctan.api.mapper.DictionaryMapper;
 import com.zoctan.api.mapper.PerformancereportsourceMapper;
 import com.zoctan.api.mapper.SlaverMapper;
 import com.zoctan.api.service.ApicasesPerformancestatisticsService;
 import com.zoctan.api.service.ExecuteplanService;
+import com.zoctan.api.service.PerformancereportCaseinfoService;
+import com.zoctan.api.service.PerformancereportThreadService;
 import com.zoctan.api.util.IPHelpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.client.Origin;
@@ -20,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
@@ -48,6 +48,10 @@ public class GeneralPerformancestatisticsScheduleTask {
     @Autowired(required = false)
     private ApicasesPerformancestatisticsService apicasesPerformancestatisticsService;
     @Autowired(required = false)
+    private PerformancereportThreadService performancereportThreadService;
+    @Autowired(required = false)
+    private PerformancereportCaseinfoService performancereportCaseinfoService;
+    @Autowired(required = false)
     private SlaverMapper slaverMapper;
     @Autowired(required = false)
     private ExecuteplanService epservice;
@@ -69,26 +73,42 @@ public class GeneralPerformancestatisticsScheduleTask {
             // redis_default_expire_time 不能设置为永久，避免死锁
             boolean lock = redisUtils.tryLock(redisKey, ip, redis_default_expire_time);
             if (lock) {
-                try
-                {
+                try {
                     List<Slaver> slaverlist = slaverMapper.findslaverbyip(ip);
                     if (slaverlist.size() == 0) {
                         GeneralPerformancestatisticsScheduleTask.log.error("性能报告解析任务-没有找到slaver。。。。。。。。" + "未找到ip为：" + ip + "的slaver，请检查调度中心-执行节点");
                         throw new Exception("性能报告解析任务-没有找到slaver。。。。。。。。未找到ip为：" + ip + "的slaver，请检查调度中心-执行节点");
                     }
                     Long SlaverId = slaverlist.get(0).getId();
-                    List<Performancereportsource> performancereportsourcelist= performancereportsourceMapper.findperformancereportsource(SlaverId);
-                    for (Performancereportsource per:performancereportsourcelist)
-                    {
-                        fixperformancestatistics(per.getTestclass(),per.getBatchname(),per.getPlanid().toString(),per.getBatchid().toString(),per.getSlaverid().toString(),per.getCaseid().toString(),per.getSource(),per.getRuntime(),per.getCreator());
-                        GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-ID："+per.getId()+" 解析完成");
+                    List<Performancereportsource> performancereportsourcelist = performancereportsourceMapper.findperformancereportsource(SlaverId);
+                    for (Performancereportsource per : performancereportsourcelist) {
+                        fixperformancestatistics(per.getSceneid(), per.getTestclass(), per.getBatchname(), per.getPlanid().toString(), per.getBatchid().toString(), per.getSlaverid().toString(), per.getCaseid().toString(), per.getSource(), per.getRuntime(), per.getCreator());
+                        GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-ID：" + per.getId() + " 解析完成");
+
+
+                        Condition percon = new Condition(PerformancereportThread.class);
+                        percon.createCriteria().andCondition("execplanid = " + per.getPlanid())
+                                .andCondition("batchname = '" + per.getBatchname() + "'")
+                                .andCondition("slaverid = " + per.getSlaverid())
+                                .andCondition("testsceneid =" + per.getSceneid());
+                        List<PerformancereportThread> performancereportThreadList = performancereportThreadService.listByCondition(percon);
+                        if (performancereportThreadList.size() == 0) {
+                            fixperformanceactiveThreadsOverTimeInfos(per.getSceneid(), per.getBatchname(), per.getPlanid().toString(), per.getSlaverid().toString(), per.getSource());
+                            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformanceactiveThreadsOverTimeInfos：" + per.getId() + " 解析完成");
+
+                        }
+                        fixperformanceresponetimeOverTimeInfos(per.getTestclass(), per.getSceneid(), per.getBatchname(), per.getPlanid().toString(), per.getSlaverid().toString(), per.getSource());
+                        GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformanceresponetimeOverTimeInfos：" + per.getId() + " 解析完成");
+
+                        fixperformancetransactionsPerSecondInfos(per.getTestclass(), per.getSceneid(), per.getBatchname(), per.getPlanid().toString(), per.getSlaverid().toString(), per.getSource());
+                        GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformancetransactionsPerSecondInfos：" + per.getId() + " 解析完成");
+
+                        performancereportsourceMapper.updateperformancereportsourcedone(per.getPlanid(), per.getSlaverid(), per.getBatchid(), per.getCaseid());
+                        GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-ID：" + per.getId() + " 更新状态为已解析完成");
                     }
-                }
-                catch (Exception ex)
-                {
-                    GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask性能报告解析异常======================="+ex.getMessage());
-                }
-                finally {
+                } catch (Exception ex) {
+                    GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask性能报告解析异常=======================" + ex.getMessage());
+                } finally {
                     redisUtils.deletekey(redisKey);
                 }
                 //TODO 执行任务结束后需要释放锁
@@ -96,30 +116,29 @@ public class GeneralPerformancestatisticsScheduleTask {
                 //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============释放分布式锁成功=======================");
             } else {
                 //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============获得分布式锁失败=======================");
-                ip =  redisUtils.getkey(redisKey);
+                ip = redisUtils.getkey(redisKey);
                 //GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask============{}机器上占用分布式锁，正在执行中======================="+redisKey+" ip:"+ip);
                 return;
             }
         } catch (Exception ex) {
-            GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask调度定时器异常: "+ex.getMessage());
+            GeneralPerformancestatisticsScheduleTask.log.info("GeneralPerformancestatisticsScheduleTask调度定时器异常: " + ex.getMessage());
         }
     }
 
 
-    public void fixperformancestatistics(String testclass,String batchname,String testplanid,String batchid,String slaverid,String caseid,String casereportfolder,Double costtime,String Creator)  {
+    public void fixperformancestatistics(long sceneid, String testclass, String batchname, String testplanid, String batchid, String slaverid, String caseid, String casereportfolder, Double costtime, String Creator) {
         try {
 
-            Executeplan executeplan=epservice.getBy("id",Long.parseLong(testplanid));
-            long projectid=executeplan.getProjectid();
-            String casereport="";
+            Executeplan executeplan = epservice.getBy("id", Long.parseLong(testplanid));
+            long projectid = executeplan.getProjectid();
+            String casereport = "";
             String property = System.getProperty("os.name");
-            if(property.toLowerCase().startsWith("win")) {
-                casereport=casereportfolder+"\\content\\js\\dashboard.js";
-            }else
-            {
-                casereport=casereportfolder+"/content/js/dashboard.js";
+            if (property.toLowerCase().startsWith("win")) {
+                casereport = casereportfolder + "\\content\\js\\dashboard.js";
+            } else {
+                casereport = casereportfolder + "/content/js/dashboard.js";
             }
-            GeneralPerformancestatisticsScheduleTask.log.info("参数为 is:"+testclass+"，"+batchname+"，"+testplanid+"，"+batchid+","+slaverid+","+caseid+","+casereportfolder+","+costtime);
+            GeneralPerformancestatisticsScheduleTask.log.info("参数为 is:" + testclass + "，" + batchname + "，" + testplanid + "，" + batchid + "," + slaverid + "," + caseid + "," + casereportfolder + "," + costtime);
             BufferedReader reader = new BufferedReader(new FileReader(casereport));
 //            try {
 //                reader = new BufferedReader(new FileReader(casereport));
@@ -133,14 +152,14 @@ public class GeneralPerformancestatisticsScheduleTask {
                     sb.append(line);
                 }
             } catch (IOException e) {
-                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- "+e.getMessage());
+                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + e.getMessage());
             }
             try {
                 reader.close();
             } catch (IOException e) {
-                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- "+e.getMessage());
+                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + e.getMessage());
             }
-            String statisticsTableStr="";
+            String statisticsTableStr = "";
             String sourceStr = sb.substring(sb.indexOf("{"), sb.lastIndexOf("}") + 1);
             if (sourceStr != null && sourceStr.contains("statisticsTable")) {
                 statisticsTableStr = (sourceStr.substring(sourceStr.indexOf("createTable($(\"#statisticsTable\"), ") + 35, sourceStr.length())).split(", function")[0];
@@ -148,10 +167,9 @@ public class GeneralPerformancestatisticsScheduleTask {
                 GeneralPerformancestatisticsScheduleTask.log.info("There is no statisticsTable!,未找到性能数据");
             }
 
-            GeneralPerformancestatisticsScheduleTask.log.info("statisticsTableStr is:"+statisticsTableStr);
-            statisticsTableStr=statisticsTableStr.replace("Infinity","0.0");
-            statisticsTableStr=statisticsTableStr.replace("NaN","0.0");
-
+            GeneralPerformancestatisticsScheduleTask.log.info("statisticsTableStr is:" + statisticsTableStr);
+            statisticsTableStr = statisticsTableStr.replace("Infinity", "0.0");
+            statisticsTableStr = statisticsTableStr.replace("NaN", "0.0");
 
 
             JSONObject statisticsTableJson = JSONObject.parseObject(statisticsTableStr);
@@ -159,14 +177,13 @@ public class GeneralPerformancestatisticsScheduleTask {
             JSONArray dataArr = statisticsTableJson.getJSONObject("overall").getJSONArray("data");
             JSONArray itemArr = statisticsTableJson.getJSONArray("items");
 
-            JSONArray testclassdataarray=null;
+            JSONArray testclassdataarray = null;
             for (int i = 0; i < itemArr.size(); i++) {
-                JSONObject data=(JSONObject)itemArr.get(i);
+                JSONObject data = (JSONObject) itemArr.get(i);
                 JSONArray itemdataArr = data.getJSONArray("data");
                 for (int j = 0; j < itemdataArr.size(); j++) {
-                    if(String.valueOf(itemdataArr.get(j)).equals(testclass))
-                    {
-                        testclassdataarray =itemdataArr;
+                    if (String.valueOf(itemdataArr.get(j)).equals(testclass)) {
+                        testclassdataarray = itemdataArr;
                         break;
                     }
                 }
@@ -175,27 +192,27 @@ public class GeneralPerformancestatisticsScheduleTask {
             for (int i = 0; i < titlesArr.size(); i++) {
                 reportMap.put(String.valueOf(titlesArr.get(i)), String.valueOf(testclassdataarray.get(i)));
             }
-            String Samples=reportMap.get("#Samples");
-            String KO=reportMap.get("KO");
-            String Error=reportMap.get("Error %");
-            String Average=reportMap.get("Average");
-            String Min=reportMap.get("Min");
-            String Max=reportMap.get("Max");
-            String Median=reportMap.get("Median");
-            String nzth=reportMap.get("90th pct");
-            String nfth=reportMap.get("95th pct");
-            String nnth=reportMap.get("99th pct");
-            String Throughput=reportMap.get("Transactions/s");
-            if(Throughput.contains("."))
-            {
-                Throughput=Throughput.substring(0,Throughput.indexOf('.')+2);
+            String Samples = reportMap.get("#Samples");
+            String KO = reportMap.get("KO");
+            String Error = reportMap.get("Error %");
+            String Average = reportMap.get("Average");
+            String Min = reportMap.get("Min");
+            String Max = reportMap.get("Max");
+            String Median = reportMap.get("Median");
+            String nzth = reportMap.get("90th pct");
+            String nfth = reportMap.get("95th pct");
+            String nnth = reportMap.get("99th pct");
+            String Throughput = reportMap.get("Transactions/s");
+            if (Throughput.contains(".")) {
+                Throughput = Throughput.substring(0, Throughput.indexOf('.') + 2);
             }
-            String Received=reportMap.get("Received");
-            String Sent=reportMap.get("Sent");
+            String Received = reportMap.get("Received");
+            String Sent = reportMap.get("Sent");
 
 
-            ApicasesPerformancestatistics apicasesPerformancestatistics=new ApicasesPerformancestatistics();
+            ApicasesPerformancestatistics apicasesPerformancestatistics = new ApicasesPerformancestatistics();
             apicasesPerformancestatistics.setCaseid(Long.parseLong(caseid));
+            apicasesPerformancestatistics.setSceneid(sceneid);
             apicasesPerformancestatistics.setCasename(testclass);
             apicasesPerformancestatistics.setTestplanid(Long.parseLong(testplanid));
             apicasesPerformancestatistics.setBatchname(batchname);
@@ -218,14 +235,186 @@ public class GeneralPerformancestatisticsScheduleTask {
             apicasesPerformancestatistics.setProjectid(projectid);
             apicasesPerformancestatisticsService.save(apicasesPerformancestatistics);
 
-            performancereportsourceMapper.updateperformancereportsourcedone(Long.parseLong(testplanid),Long.parseLong(slaverid),Long.parseLong(batchid),Long.parseLong(caseid));
-            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- "+testclass+" ：保存性能统计结果完成...........: ");
-        }
-        catch (Exception ex)
-        {
-            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- "+testclass+" ：保存性能统计结果异常...........: "+ex.getMessage());
+//            performancereportsourceMapper.updateperformancereportsourcedone(Long.parseLong(testplanid),Long.parseLong(slaverid),Long.parseLong(batchid),Long.parseLong(caseid));
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + testclass + " ：保存性能统计结果完成...........: ");
+        } catch (Exception ex) {
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + testclass + " ：保存性能统计结果异常...........: " + ex.getMessage());
         }
     }
+
+
+    public void fixperformanceactiveThreadsOverTimeInfos(long sceneid, String batchname, String testplanid, String slaverid, String casereportfolder) {
+        try {
+
+            Executeplan executeplan = epservice.getBy("id", Long.parseLong(testplanid));
+            long projectid = executeplan.getProjectid();
+            String casereport = "";
+            String property = System.getProperty("os.name");
+            if (property.toLowerCase().startsWith("win")) {
+                casereport = casereportfolder + "\\content\\js\\graph.js";
+            } else {
+                casereport = casereportfolder + "/content/js/graph.js";
+            }
+            GeneralPerformancestatisticsScheduleTask.log.info("fixperformanceactiveThreadsOverTimeInfos参数为 is:" + "，" + batchname + "，" + testplanid + "，" + "," + slaverid + "," + "," + casereportfolder + ",");
+            BufferedReader reader = new BufferedReader(new FileReader(casereport));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + e.getMessage());
+            }
+            try {
+                reader.close();
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务- " + e.getMessage());
+            }
+            String statisticsTableStr = "";
+            String sourceStr = sb.substring(sb.indexOf("{"), sb.lastIndexOf("}") + 1);
+            if (sourceStr != null && sourceStr.contains("var activeThreadsOverTimeInfos")) {
+                int finish = sourceStr.indexOf("\"Active Threads Over Time\"}}") + 28;
+                statisticsTableStr = sourceStr.substring(sourceStr.indexOf("var activeThreadsOverTimeInfos") + 48, finish);
+            } else {
+                GeneralPerformancestatisticsScheduleTask.log.info("There is no statisticsTable!,未找到性能数据");
+            }
+
+            GeneralPerformancestatisticsScheduleTask.log.info("statisticsTableStr is:" + statisticsTableStr);
+            statisticsTableStr = statisticsTableStr.replace("Infinity", "0.0");
+            statisticsTableStr = statisticsTableStr.replace("NaN", "0.0");
+
+            PerformancereportThread performancereportThread = new PerformancereportThread();
+            performancereportThread.setTestsceneid(sceneid);
+            performancereportThread.setContenttype("Threads");
+            performancereportThread.setExecplanid(Long.parseLong(testplanid));
+            performancereportThread.setBatchname(batchname);
+            performancereportThread.setSlaverid(Long.parseLong(slaverid));
+            performancereportThread.setContent(statisticsTableStr);
+            performancereportThreadService.save(performancereportThread);
+
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-PerformancereportThread " + " ：保存性能统计结果完成...........: ");
+        } catch (Exception ex) {
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-PerformancereportThread " + " ：保存性能统计结果异常...........: " + ex.getMessage());
+        }
+    }
+
+
+    public void fixperformanceresponetimeOverTimeInfos(String casename, long sceneid, String batchname, String testplanid, String slaverid, String casereportfolder) {
+        try {
+
+            Executeplan executeplan = epservice.getBy("id", Long.parseLong(testplanid));
+            long projectid = executeplan.getProjectid();
+            String casereport = "";
+            String property = System.getProperty("os.name");
+            if (property.toLowerCase().startsWith("win")) {
+                casereport = casereportfolder + "\\content\\js\\graph.js";
+            } else {
+                casereport = casereportfolder + "/content/js/graph.js";
+            }
+            GeneralPerformancestatisticsScheduleTask.log.info("fixperformanceresponetimeOverTimeInfos参数为 is:" + "，" + batchname + "，" + testplanid + "，" + "," + slaverid + "," + "," + casereportfolder + ",");
+            BufferedReader reader = new BufferedReader(new FileReader(casereport));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("fixperformanceresponetimeOverTimeInfos性能报告解析任务- " + e.getMessage());
+            }
+            try {
+                reader.close();
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("fixperformanceresponetimeOverTimeInfos性能报告解析任务- " + e.getMessage());
+            }
+            String statisticsTableStr = "";
+            String sourceStr = sb.substring(sb.indexOf("{"), sb.lastIndexOf("}") + 1);
+            if (sourceStr != null && sourceStr.contains("var responseTimesOverTimeInfos")) {
+                int finish = sourceStr.indexOf("\"Response Time Over Time\"}}") + 27;
+                statisticsTableStr = sourceStr.substring(sourceStr.indexOf("var responseTimesOverTimeInfos") + 48, finish);
+            } else {
+                GeneralPerformancestatisticsScheduleTask.log.info("There is no responseTimesOverTimeInfos!,未找到性能数据");
+            }
+
+            GeneralPerformancestatisticsScheduleTask.log.info(" fixperformanceresponetimeOverTimeInfos，statisticsTableStr is:" + statisticsTableStr);
+            statisticsTableStr = statisticsTableStr.replace("Infinity", "0.0");
+            statisticsTableStr = statisticsTableStr.replace("NaN", "0.0");
+
+            PerformancereportCaseinfo performancereportCaseinfo = new PerformancereportCaseinfo();
+            performancereportCaseinfo.setTestsceneid(sceneid);
+            performancereportCaseinfo.setContenttype("ResponeTimesOver");
+            performancereportCaseinfo.setExecplanid(Long.parseLong(testplanid));
+            performancereportCaseinfo.setBatchname(batchname);
+            performancereportCaseinfo.setCasename(casename);
+            performancereportCaseinfo.setSlaverid(Long.parseLong(slaverid));
+            performancereportCaseinfo.setContent(statisticsTableStr);
+            performancereportCaseinfoService.save(performancereportCaseinfo);
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformanceresponetimeOverTimeInfos " + " ：保存性能统计结果完成...........: ");
+        } catch (Exception ex) {
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformanceresponetimeOverTimeInfos " + " ：保存性能统计结果异常...........: " + ex.getMessage());
+        }
+    }
+
+    public void fixperformancetransactionsPerSecondInfos(String casename, long sceneid, String batchname, String testplanid, String slaverid, String casereportfolder) {
+        try {
+
+            Executeplan executeplan = epservice.getBy("id", Long.parseLong(testplanid));
+            long projectid = executeplan.getProjectid();
+            String casereport = "";
+            String property = System.getProperty("os.name");
+            if (property.toLowerCase().startsWith("win")) {
+                casereport = casereportfolder + "\\content\\js\\graph.js";
+            } else {
+                casereport = casereportfolder + "/content/js/graph.js";
+            }
+            GeneralPerformancestatisticsScheduleTask.log.info("fixperformancetransactionsPerSecondInfos参数为 is:" + "，" + batchname + "，" + testplanid + "，" + "," + slaverid + "," + "," + casereportfolder + ",");
+            BufferedReader reader = new BufferedReader(new FileReader(casereport));
+
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("fixperformancetransactionsPerSecondInfos性能报告解析任务- " + e.getMessage());
+            }
+            try {
+                reader.close();
+            } catch (IOException e) {
+                GeneralPerformancestatisticsScheduleTask.log.info("fixperformanceresponetimeOverTimeInfos性能报告解析任务- " + e.getMessage());
+            }
+            String statisticsTableStr = "";
+            String sourceStr = sb.substring(sb.indexOf("{"), sb.lastIndexOf("}") + 1);
+            if (sourceStr != null && sourceStr.contains("var transactionsPerSecondInfos")) {
+                int finish = sourceStr.indexOf("\"Transactions Per Second\"}}") + 27;
+                statisticsTableStr = sourceStr.substring(sourceStr.indexOf("var transactionsPerSecondInfos") + 48, finish);
+            } else {
+                GeneralPerformancestatisticsScheduleTask.log.info("There is no transactionsPerSecondInfos!,未找到性能数据");
+            }
+
+            GeneralPerformancestatisticsScheduleTask.log.info(" fixperformancetransactionsPerSecondInfos，statisticsTableStr is:" + statisticsTableStr);
+            statisticsTableStr = statisticsTableStr.replace("Infinity", "0.0");
+            statisticsTableStr = statisticsTableStr.replace("NaN", "0.0");
+
+            PerformancereportCaseinfo performancereportCaseinfo = new PerformancereportCaseinfo();
+            performancereportCaseinfo.setTestsceneid(sceneid);
+            performancereportCaseinfo.setContenttype("TPS");
+            performancereportCaseinfo.setExecplanid(Long.parseLong(testplanid));
+            performancereportCaseinfo.setBatchname(batchname);
+            performancereportCaseinfo.setCasename(casename);
+            performancereportCaseinfo.setSlaverid(Long.parseLong(slaverid));
+            performancereportCaseinfo.setContent(statisticsTableStr);
+            performancereportCaseinfoService.save(performancereportCaseinfo);
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformancetransactionsPerSecondInfos " + " ：保存性能统计结果完成...........: ");
+        } catch (Exception ex) {
+            GeneralPerformancestatisticsScheduleTask.log.info("性能报告解析任务-fixperformancetransactionsPerSecondInfos " + " ：保存性能统计结果异常...........: " + ex.getMessage());
+        }
+    }
+
 
     @PostConstruct
     public void Init() {
@@ -236,7 +425,7 @@ public class GeneralPerformancestatisticsScheduleTask {
         } catch (UnknownHostException e) {
             GeneralPerformancestatisticsScheduleTask.log.info("性能统计报告-UnknownHostException is:" + e.getMessage());
         }
-        redisKey = "Performancestatistics"+ip+"GeneralPerformancestatistics"+ new Date();
+        redisKey = "Performancestatistics" + ip + "GeneralPerformancestatistics" + new Date();
         GeneralPerformancestatisticsScheduleTask.log.info("性能统计报告-redisKey is:" + redisKey);
     }
 
@@ -245,10 +434,10 @@ public class GeneralPerformancestatisticsScheduleTask {
         String ip = null;
         try {
             nis = NetworkInterface.getNetworkInterfaces();
-            for (; nis.hasMoreElements();) {
+            for (; nis.hasMoreElements(); ) {
                 NetworkInterface ni = nis.nextElement();
                 Enumeration<InetAddress> ias = ni.getInetAddresses();
-                for (; ias.hasMoreElements();) {
+                for (; ias.hasMoreElements(); ) {
                     InetAddress ia = ias.nextElement();
                     //ia instanceof Inet6Address && !ia.equals("")
                     if (ia instanceof Inet4Address && !ia.getHostAddress().equals("127.0.0.1")) {
@@ -257,7 +446,7 @@ public class GeneralPerformancestatisticsScheduleTask {
                 }
             }
         } catch (SocketException e) {
-            GeneralPerformancestatisticsScheduleTask.log.info("slaver-getInet4Address......................................................."+e.getMessage());
+            GeneralPerformancestatisticsScheduleTask.log.info("slaver-getInet4Address......................................................." + e.getMessage());
         }
         return ip;
     }

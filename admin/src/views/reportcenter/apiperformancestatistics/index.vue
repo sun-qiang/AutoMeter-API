@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-form :inline="true">
+      <el-form :inline="true" ref="search">
         <el-form-item>
           <el-button
             type="success"
@@ -13,18 +13,38 @@
         </el-form-item>
 
         <span v-if="hasPermission('apiperformancestatistics:search')">
-          <el-form-item label="测试集合" prop="testplanname" >
-          <el-select v-model="search.testplanname" filterable placeholder="测试集合" @change="testplanselectChanged($event)">
+          <el-form-item label="测试集合" prop="executeplanname"  >
+          <el-select v-model="search.executeplanname" filterable placeholder="测试集合" @change="testplanselectChanged($event)">
             <el-option label="请选择"/>
             <div v-for="(testplan, index) in execplanList" :key="index">
               <el-option :label="testplan.executeplanname" :value="testplan.executeplanname" />
             </div>
           </el-select>
         </el-form-item>
-          <el-form-item label="执行计划" prop="batchname" >
-            <el-select v-model="search.batchname" filterable placeholder="执行计划">
+
+          <el-form-item label="场景" prop="scenename" >
+          <el-select  v-model="search.scenename" filterable placeholder="测试场景" @change="testsceneselectChanged($event)">
             <el-option label="请选择"/>
-            <div v-for="(planbatch, index) in planbatchList" :key="index">
+            <div v-for="(testscene, index) in testsceneList" :key="index">
+              <el-option :label="testscene.scenename" :value="testscene.scenename" />
+            </div>
+          </el-select>
+        </el-form-item>
+
+          <el-form-item label="用例" prop="casename" >
+          <el-select  v-model="search.casename" filterable placeholder="测试用例" @change="testcaseselectChanged($event)">
+                        <el-option label="请选择"/>
+            <div v-for="(testcase, index) in testcaseList" :key="index">
+              <el-option :label="testcase.casename" :value="testcase.casename" />
+            </div>
+          </el-select>
+        </el-form-item>
+
+          <el-form-item label="执行计划" prop="batchname" >
+            <el-select  v-model="search.batchname" filterable placeholder="执行计划">
+                        <el-option label="请选择"/>
+
+              <div v-for="(planbatch, index) in planbatchList" :key="index">
               <el-option :label="planbatch.batchname" :value="planbatch.batchname" />
             </div>
           </el-select>
@@ -48,9 +68,10 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="测试集合" align="center" prop="executeplanname" width="120"/>
-      <el-table-column label="用例" align="center" prop="casename" width="120"/>
-      <el-table-column label="执行计划" align="center" prop="batchname" width="120"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试集合" align="center" prop="executeplanname" width="100"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试场景" align="center" prop="scenename" width="100"/>
+      <el-table-column :show-overflow-tooltip="true"  label="用例" align="center" prop="casename" width="100"/>
+      <el-table-column :show-overflow-tooltip="true"  label="执行计划" align="center" prop="batchname" width="100"/>
       <el-table-column label="TPS" align="center" prop="tps" width="80"/>
       <el-table-column label="运行次数" align="center" prop="samples" width="80"/>
       <el-table-column label="错误次数" align="center" prop="errorcount" width="80"/>
@@ -62,10 +83,10 @@
       <el-table-column label="90th pct(ms)" align="center" prop="nzpct" width="100"/>
       <el-table-column label="95th pct(ms)" align="center" prop="nfpct" width="100"/>
       <el-table-column label="99th pct(ms)" align="center" prop="nnpct" width="100"/>
-      <el-table-column label="消耗时间(s)" align="center" prop="runtime" width="120"/>
-      <el-table-column label="receivekbsec" align="center" prop="receivekbsec" width="80"/>
-      <el-table-column label="sendkbsec" align="center" prop="sendkbsec" width="80"/>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="120">
+      <el-table-column label="消耗时间(s)" align="center" prop="runtime" width="90"/>
+      <el-table-column label="receivekbsec" align="center" prop="receivekbsec" width="100"/>
+      <el-table-column label="sendkbsec" align="center" prop="sendkbsec" width="90"/>
+      <el-table-column :show-overflow-tooltip="true"   label="创建时间" align="center" prop="createTime" width="120">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
     </el-table>
@@ -162,6 +183,8 @@
   import { getdepunitList as getdepunitList } from '@/api/deployunit/depunit'
   import { getallexplanbytype as getallexplanbytype } from '@/api/executecenter/executeplan'
   import { getbatchbyplan as getbatchbyplan } from '@/api/executecenter/executeplanbatch'
+  import { findscenebyexecplanid as findscenebyexecplanid } from '@/api/executecenter/testplantestscene'
+  import { findcasebyscenenid as findcasebyscenenid } from '@/api/executecenter/testscenetestcase'
   import { unix2CurrentTime } from '@/utils'
   import { mapGetters } from 'vuex'
 
@@ -182,6 +205,8 @@
         tmptestplanname: '',
         tmptestplanid: null,
         tmpbatchname: null,
+        testsceneList: [],
+        testcaseList: [],
         visittypeList: [],
         apiperformancestatisticsList: [], // api报告列表
         apiList: [], // api列表
@@ -229,9 +254,13 @@
         search: {
           page: 1,
           size: 10,
-          testplanname: '',
-          testplanid: null,
-          batchname: null,
+          executeplanname: '',
+          testplanid: '',
+          batchname: '',
+          scenename: '',
+          testscenenid: '',
+          casename: '',
+          caseid: '',
           projectid: ''
         }
       }
@@ -260,9 +289,20 @@
        * 微服务下拉选择事件获取微服务id  e的值为options的选值
        */
       testplanselectChanged(e) {
+        this.search.testplanid = null
+        this.search.testscenenid = null
+        this.search.scenename = null
+        this.search.caseid = null
+        this.search.casename = null
+        this.search.batchname = null
+        this.tmpapiperformancestatistics.executeplanid = 0
+        this.testcaseList = null
+        this.testsceneList = null
+        this.planbatchList = null
         for (let i = 0; i < this.execplanList.length; i++) {
           if (this.execplanList[i].executeplanname === e) {
             this.tmpapiperformancestatistics.executeplanid = this.execplanList[i].id
+            this.search.testplanid = this.execplanList[i].id
           }
         }
         getbatchbyplan(this.tmpapiperformancestatistics).then(response => {
@@ -270,6 +310,37 @@
         }).catch(res => {
           this.$message.error('加载执行计划列表失败')
         })
+        findscenebyexecplanid(this.search).then(response => {
+          this.testsceneList = response.data.list
+        }).catch(res => {
+          this.$message.error('加载执行计划列表失败')
+        })
+      },
+
+      testsceneselectChanged(e) {
+        this.search.testscenenid = null
+        this.search.caseid = null
+        this.search.casename = null
+        this.testcaseList = null
+        for (let i = 0; i < this.testsceneList.length; i++) {
+          if (this.testsceneList[i].scenename === e) {
+            this.search.testscenenid = this.testsceneList[i].testscenenid
+          }
+          findcasebyscenenid(this.search).then(response => {
+            this.testcaseList = response.data.list
+          }).catch(res => {
+            this.$message.error('加载执行计划列表失败')
+          })
+        }
+      },
+
+      testcaseselectChanged(e) {
+        this.search.caseid = null
+        for (let i = 0; i < this.testcaseList.length; i++) {
+          if (this.testcaseList[i].casename === e) {
+            this.search.caseid = this.testcaseList[i].testcaseid
+          }
+        }
       },
 
       /**
@@ -339,7 +410,6 @@
         this.listLoading = false
         this.btnLoading = false
       },
-
       searchBypageing() {
         this.btnLoading = true
         this.listLoading = true

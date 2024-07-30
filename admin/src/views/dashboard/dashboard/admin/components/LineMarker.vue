@@ -76,6 +76,7 @@
       getStatics() {
         console.log('this.StaticsData...................')
         console.log(this.StaticsData)
+        this.PlanList = []
         for (let i = 0; i < this.StaticsData.length; i++) {
           var LineObject = {
             name: this.StaticsData[i].execPlanName,
@@ -86,14 +87,14 @@
             showSymbol: false,
             lineStyle: {
               normal: {
-                width: 1
+                width: 2
               }
             },
             areaStyle: {
               normal: {
                 color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
                   offset: 0,
-                  color: 'rgba(1, 189, 27, 0.3)'
+                  color: 'rgba(248,248,246,0.89)'
                 }, {
                   offset: 0.8,
                   color: 'rgba(1, 189, 27, 0)'
@@ -106,7 +107,7 @@
               normal: {
                 color: 'rgb(156,95,167)',
                 borderColor: 'rgba(300,189,2,0.27)',
-                borderWidth: 12
+                borderWidth: 6
 
               }
             },
@@ -123,14 +124,14 @@
         console.log('000000000000000000000000000000000000000000000000000')
         this.chart = echarts.init(document.getElementById(this.id))
         this.chart.setOption({
-          backgroundColor: 'rgba(245,245,238,0.99)',
+          backgroundColor: 'rgba(244,246,246,0.99)',
           title: {
             top: 20,
             text: this.LineName,
             textStyle: {
               fontWeight: 'normal',
               fontSize: 16,
-              color: '#6527a3'
+              color: '#090307'
             },
             left: '1%'
           },
@@ -138,7 +139,7 @@
             trigger: 'axis',
             axisPointer: {
               lineStyle: {
-                color: '#f6f6fa'
+                color: '#2121e2'
               }
             }
           },
@@ -152,7 +153,7 @@
             right: '4%',
             textStyle: {
               fontSize: 12,
-              color: '#b34227'
+              color: '#a50b52'
             }
           },
           grid: {
@@ -167,20 +168,20 @@
             boundaryGap: false,
             axisLine: {
               lineStyle: {
-                color: '#010310'
+                color: '#02030c'
               }
             },
             data: this.PlanDateData
           }],
           yAxis: [{
             type: 'value',
-            name: '(%)',
+            name: '(ms)',
             axisTick: {
               show: false
             },
             axisLine: {
               lineStyle: {
-                color: '#57617B'
+                color: '#93186a'
               }
             },
             axisLabel: {
@@ -191,7 +192,7 @@
             },
             splitLine: {
               lineStyle: {
-                color: '#57617B'
+                color: '#f5f3f0'
               }
             }
           }],

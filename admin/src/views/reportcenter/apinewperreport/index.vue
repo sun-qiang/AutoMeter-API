@@ -174,10 +174,10 @@
                 <span v-text="getIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column label="执行计划" align="center" prop="batchname" width="80"/>
+            <el-table-column :show-overflow-tooltip="true"   label="执行计划" align="center" prop="batchname" width="80"/>
 <!--            <el-table-column label="测试场景" align="center" prop="scenename" width="80"/>-->
-            <el-table-column label="用例名" align="center" prop="casename" width="120"/>
-            <el-table-column label="API" align="center" prop="apiname" width="80"/>
+            <el-table-column :show-overflow-tooltip="true"   label="用例名" align="center" prop="casename" width="120"/>
+            <el-table-column :show-overflow-tooltip="true"   label="API" align="center" prop="apiname" width="80"/>
             <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>
 
             <el-table-column label="状态" align="center" prop="status" width="50">
@@ -301,11 +301,10 @@
                 <span v-text="conditiongetIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column label="集合/用例名" align="center" prop="planname" width="150"/>
-            <el-table-column label="执行计划名" align="center" prop="batchname" width="120"/>
-            <el-table-column label="父条件名" align="center" prop="conditionname" width="120"/>
-            <el-table-column label="子条件名" align="center" prop="subconditionname" width="180"/>
-            <el-table-column label="子条件类型" align="center" prop="subconditiontype" width="100"/>
+            <el-table-column :show-overflow-tooltip="true"   label="集合/用例名" align="center" prop="planname" width="180"/>
+            <el-table-column :show-overflow-tooltip="true"   label="执行计划名" align="center" prop="batchname" width="180"/>
+            <el-table-column :show-overflow-tooltip="true"   label="条件名" align="center" prop="subconditionname" width="200"/>
+            <el-table-column label="条件类型" align="center" prop="subconditiontype" width="100"/>
             <el-table-column label="条件结果" align="center" prop="conditionresult" width="100">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
@@ -646,17 +645,22 @@
       },
 
       async getperformancestatics() {
-        // 明细
-        this.getapireportList()
-        this.getperformanceallstatics()
-        this.getperformanceslaverstatics()
-        // this.getfunctionconditionstatics()
-        await this.getperformanceCaseSandF()
-        this.drawLine()
-        // this.getapireportList()
-        this.getperformancecasestatics()
-        this.findconditionreport()
-        this.getDispatchWithstatus()
+        this.$refs.tmpquery.validate(valid => {
+          if (valid) {
+            // 明细
+            this.getapireportList()
+            this.getperformanceallstatics()
+            this.getperformanceslaverstatics()
+            // this.getfunctionconditionstatics()
+            // await
+            this.getperformanceCaseSandF()
+            this.drawLine()
+            // this.getapireportList()
+            this.getperformancecasestatics()
+            this.findconditionreport()
+            this.getDispatchWithstatus()
+          }
+        })
       },
 
       // tps等统计信息

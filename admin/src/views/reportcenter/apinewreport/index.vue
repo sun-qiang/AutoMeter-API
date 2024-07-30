@@ -679,7 +679,7 @@
       },
 
       async getfunctioncasestatics() {
-        this.getapireportList()
+        // this.getapireportList()
         this.$refs.tmpquery.validate(valid => {
           if (valid) {
             getfunctioncasestatics(this.tmpquery).then(response => {

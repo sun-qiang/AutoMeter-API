@@ -7,6 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="caseid" jdbcType="BIGINT" property="caseid" />
+    <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="testplanid" jdbcType="BIGINT" property="testplanid" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
     <result column="casename" jdbcType="VARCHAR" property="casename" />
@@ -32,10 +33,12 @@
   </resultMap>
 
   <select id="findApicasereportWithName" resultMap="BaseResultMap">
-    SELECT c.executeplanname,b.casename,a.batchname,a.runtime,a.samples,a.errorcount,a.errorrate,a.average,a.min,a.max,a.median,a.nzpct,a.nfpct,a.nnpct,a.tps,a.receivekbsec,a.sendkbsec,a.create_time
-    FROM apicases_performancestatistics a join apicases b join executeplan c  on a.caseid=b.id and a.testplanid=c.id
+    SELECT t.scenename , c.executeplanname,b.casename,a.batchname,a.runtime,a.samples,a.errorcount,a.errorrate,a.average,a.min,a.max,a.median,a.nzpct,a.nfpct,a.nnpct,a.tps,a.receivekbsec,a.sendkbsec,a.create_time
+    FROM apicases_performancestatistics a join apicases b join executeplan c join testscene t on a.caseid=b.id and a.testplanid=c.id  and a.sceneid =t.id
     <where>
       <if test="testplanid != null and testplanid != ''">a.testplanid =#{testplanid}</if>
+      <if test="caseid != null and caseid != ''">and a.caseid =#{caseid}</if>
+      <if test="testscenenid != null and testscenenid != ''">and a.sceneid =#{testscenenid}</if>
       <if test="batchname != null  and batchname != ''">and a.batchname =#{batchname}</if>
       and a.projectid =#{projectid}
     </where>

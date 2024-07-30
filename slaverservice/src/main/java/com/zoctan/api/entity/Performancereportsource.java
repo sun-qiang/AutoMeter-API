@@ -29,6 +29,19 @@ public class Performancereportsource {
      */
     private Long slaverid;
 
+
+    public Long getSceneid() {
+        return sceneid;
+    }
+
+    public void setSceneid(Long sceneid) {
+        this.sceneid = sceneid;
+    }
+
+    private Long sceneid;
+
+
+
     /**
      * 用例Id
      */
