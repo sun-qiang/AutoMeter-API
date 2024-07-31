@@ -35,7 +35,7 @@ public interface ApiMapper extends MyMapper<Api> {
 
     Integer getapinum(long projectid);
 
-    List<Api> getstaticsdeployapi(long projectid);
+    List<Api> getstaticsdeployapi(@Param("projectid")long projectid,@Param("apilimit")long apilimit);
 
     List<Api> getapibydeployunitid(@Param("deployunitid")Long deployunitid);
 }

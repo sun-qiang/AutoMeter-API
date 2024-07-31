@@ -10,22 +10,42 @@
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div id="11" class="chart-wrapper">
+          <el-select style="width: 350px" v-model="search.limitcasevalue"  placeholder="范围"  @change="topcaseselectChanged($event)">
+            <el-option label="top10" value="top10" />
+            <el-option label="top20" value="top20" />
+            <el-option label="top100" value="top100" />
+          </el-select>
           <PieChart BusinessName="微服务:测试用例" :typeData="piedeployunittypedata" :typeValueData="pietypedeployunitcaseValueData"/>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div id="12" class="chart-wrapper">
+          <el-select style="width: 350px" v-model="search.limitapivalue"  placeholder="范围"  @change="topapiselectChanged($event)">
+            <el-option label="top10" value="top10" />
+            <el-option label="top20" value="top20" />
+            <el-option label="top100" value="top100" />
+          </el-select>
           <PieChart BusinessName="微服务:API接口" :typeData="piedeployunittypedata"  :typeValueData="pietypedeployunitapiValueData"/>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
+          <el-select style="width: 350px" v-model="search.limitplanvalue"  placeholder="范围"  @change="topplanselectChanged($event)">
+            <el-option label="top10" value="top10" />
+            <el-option label="top20" value="top20" />
+            <el-option label="top100" value="top100" />
+          </el-select>
           <PieChart BusinessName="测试集合:场景" :typeData="pieplancasetypedata"  :typeValueData="pieplancaseValueData"/>
         </div>
       </el-col>
     </el-row>
 
     <el-row  style="background:#fff;padding:16px 16px 15px;margin-bottom:15px;">
+      <el-select style="width: 350px" v-model="search.linedeployvalue"  placeholder="范围"  @change="toplinedeployselectChanged($event)">
+        <el-option label="top10" value="top10" />
+        <el-option label="top20" value="top20" />
+        <el-option label="top100" value="top100" />
+      </el-select>
       <Chart className="deployunitchar" id="deployunit" LineName="微服务用例成功率" :PlanDateData="LineDateData" :StaticsData="DeployUnitStaticsData" height="300%" width="100%" />
     </el-row>
 
@@ -102,7 +122,17 @@ export default {
       DeployUnitStaticsData: [],
       LineDateData: [],
       search: {
-        projectid: ''
+        projectid: '',
+        limitapivalue: 'top10',
+        limitcasevalue: 'top10',
+        limitplanvalue: 'top10',
+        limit: 10,
+        apilimit: 10,
+        planlimit: 10,
+        linedeployvalue: 'top10',
+        deployratelimit: 10,
+        lineplanvalue: 'top10',
+        planratelimit: 10
       }
     }
   },
@@ -128,6 +158,58 @@ export default {
       this.lineChartData = lineChartData[type]
     },
 
+    topcaseselectChanged(e) {
+      if (e === 'top10') {
+        this.search.limit = 10
+      }
+      if (e === 'top20') {
+        this.search.limit = 20
+      }
+      if (e === 'top100') {
+        this.search.limit = 100
+      }
+      this.getstaticsdeployunitcases()
+    },
+
+    topapiselectChanged(e) {
+      if (e === 'top10') {
+        this.search.apilimit = 10
+      }
+      if (e === 'top20') {
+        this.search.apilimit = 20
+      }
+      if (e === 'top100') {
+        this.search.apilimit = 100
+      }
+      this.getstaticsdeployapi()
+    },
+
+    topplanselectChanged(e) {
+      if (e === 'top10') {
+        this.search.planlimit = 10
+      }
+      if (e === 'top20') {
+        this.search.planlimit = 20
+      }
+      if (e === 'top100') {
+        this.search.planlimit = 100
+      }
+      this.getstaticsplancases()
+    },
+
+    toplinedeployselectChanged(e) {
+      if (e === 'top10') {
+        this.search.deployratelimit = 10
+      }
+      if (e === 'top20') {
+        this.search.deployratelimit = 20
+      }
+      if (e === 'top100') {
+        this.search.deployratelimit = 100
+      }
+      this.getStaticsDeployUnitCasesList()
+      this.getStaticsPlanCasesList()
+    },
     /**
      * 获取统计执行计划X轴最近15天日期
      */

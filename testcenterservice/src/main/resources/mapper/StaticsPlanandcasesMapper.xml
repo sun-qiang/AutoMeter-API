@@ -25,6 +25,14 @@
     where statics_date>=#{statics_date}
   </select>
 
+  <select id="getplanpassratestatics" resultMap="BaseResultMap">
+    SELECT *
+    FROM statics_planandcases
+    where statics_date  <![CDATA[ >= ]]>  #{statics_startdate}
+      and  statics_date  <![CDATA[ <= ]]>  #{statics_enddate}
+      and projectid=#{projectid} order by passrate desc limit #{deployratelimit}
+  </select>
+
 
   <insert id="savestaticsplanandcases">
     INSERT INTO statics_planandcases (testplanid,testplanname,passrate, totalcases,totalpasscases,totalfailcases,runtime,statics_date,create_time,lastmodify_time,projectid)

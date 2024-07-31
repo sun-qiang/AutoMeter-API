@@ -87,8 +87,8 @@ private ApicasesMapper apicasesMapper;
     }
 
     @Override
-    public List<Apicases> getstaticsdeployunitcases(long projectid) {
-        return apicasesMapper.getstaticsdeployunitcases(projectid);
+    public List<Apicases> getstaticsdeployunitcases(long projectid,long limit) {
+        return apicasesMapper.getstaticsdeployunitcases(projectid,limit);
     }
 
     @Override

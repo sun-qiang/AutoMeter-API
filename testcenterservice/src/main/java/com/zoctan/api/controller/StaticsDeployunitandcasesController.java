@@ -59,7 +59,7 @@ public class StaticsDeployunitandcasesController {
     }
 
     @GetMapping("/getdeployunitstatics")
-    public Result getplanstatics(@RequestParam long projectid) {
+    public Result getplanstatics(@RequestParam long projectid,@RequestParam long deployratelimit) {
         List<String> lastdaylist = new ArrayList<>();
         for (int i = 15; i > 0; i--) {
             Date date = new Date();
@@ -81,11 +81,16 @@ public class StaticsDeployunitandcasesController {
             lastdaylist.add(Year + "-" + MONTHS + "-" + DayS + " 00:00:00");
         }
 
-        Condition con = new Condition(StaticsDeployunitandcases.class);
-        con.createCriteria().andCondition("projectid = " + projectid)
-                .andCondition("statics_date>='" + lastdaylist.get(0) + "'")
-                .andCondition("statics_date<='" + lastdaylist.get(14) + "'");
-        List<StaticsDeployunitandcases> listrange = staticsDeployunitandcasesService.listByCondition(con);//.listAll();
+//        Condition con = new Condition(StaticsDeployunitandcases.class);
+//        con.createCriteria().andCondition("projectid = " + projectid)
+//                .andCondition("statics_date>='" + lastdaylist.get(0) + "'")
+//                .andCondition("statics_date<='" + lastdaylist.get(14) + "'");
+//        con.orderBy("passrate desc");
+//        List<StaticsDeployunitandcases> listrange = staticsDeployunitandcasesService.listByCondition(con);//.listAll();
+        List<StaticsDeployunitandcases> listrange = staticsDeployunitandcasesService.getdeployunitpassratestatics(lastdaylist.get(0),lastdaylist.get(14),projectid,deployratelimit);//.listAll();
+
+
+
         List<String> depList = new ArrayList<>();
         for (StaticsDeployunitandcases s : listrange) {
             if (!depList.contains(s.getDeployunitname())) {

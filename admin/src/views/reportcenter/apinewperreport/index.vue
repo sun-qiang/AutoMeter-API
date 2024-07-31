@@ -144,7 +144,7 @@
     </div>
 
     <el-tabs v-model="activeName" type="card" ref="tabs">
-      <el-tab-pane label="用例执行报告" name="zero">
+      <el-tab-pane label="用例明细报告" name="zero">
         <div class="filter-container">
           <el-form :inline="true">
           <el-form-item label="状态:" prop="testplanname" >
@@ -285,7 +285,7 @@
           ></el-pagination>
         </template>
       </el-tab-pane>
-      <el-tab-pane label="前置条件执行结果" name="first">
+      <el-tab-pane label="前置条件报告" name="first">
         <template>
           <el-table
             :data="caseconditionreport"
@@ -338,53 +338,53 @@
           ></el-pagination>
         </template>
       </el-tab-pane>
-      <el-tab-pane label="异常用例" name="three">
-        <template>
-          <el-table
-            :data="dispatchdata"
-            :key="itemKey"
-            v-loading.body="listLoading"
-            element-loading-text="loading"
-            border
-            fit
-            highlight-current-row
-          >
-            <el-table-column label="编号" align="center" width="60">
-              <template slot-scope="scope">
-                <span v-text="dispatchgetIndex(scope.$index)"></span>
-              </template>
-            </el-table-column>
-            <el-table-column label="执行机" align="center" prop="slavername" width="150"/>
-            <el-table-column label="测试集合" align="center" prop="execplanname" width="150"/>
-            <el-table-column label="执行计划" align="center" prop="batchname" width="150"/>
-            <el-table-column label="执行用例" align="center" prop="testcasename" width="150"/>
-            <el-table-column label="状态" align="center" prop="status" width="100"/>
-            <el-table-column label="备注" align="center" prop="memo" width="150">
-              <template slot-scope="scope">
-                <span v-if="scope.row.memo !== ''" style="color:red">{{ scope.row.memo }}</span>
-              </template>
-            </el-table-column>>
+<!--      <el-tab-pane label="异常用例" name="three">-->
+<!--        <template>-->
+<!--          <el-table-->
+<!--            :data="dispatchdata"-->
+<!--            :key="itemKey"-->
+<!--            v-loading.body="listLoading"-->
+<!--            element-loading-text="loading"-->
+<!--            border-->
+<!--            fit-->
+<!--            highlight-current-row-->
+<!--          >-->
+<!--            <el-table-column label="编号" align="center" width="60">-->
+<!--              <template slot-scope="scope">-->
+<!--                <span v-text="dispatchgetIndex(scope.$index)"></span>-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+<!--            <el-table-column label="执行机" align="center" prop="slavername" width="150"/>-->
+<!--            <el-table-column label="测试集合" align="center" prop="execplanname" width="150"/>-->
+<!--            <el-table-column label="执行计划" align="center" prop="batchname" width="150"/>-->
+<!--            <el-table-column label="执行用例" align="center" prop="testcasename" width="150"/>-->
+<!--            <el-table-column label="状态" align="center" prop="status" width="100"/>-->
+<!--            <el-table-column label="备注" align="center" prop="memo" width="150">-->
+<!--              <template slot-scope="scope">-->
+<!--                <span v-if="scope.row.memo !== ''" style="color:red">{{ scope.row.memo }}</span>-->
+<!--              </template>-->
+<!--            </el-table-column>>-->
 
 
-            <el-table-column label="创建时间" align="center" prop="createTime" width="140">
-              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
-            </el-table-column>
-            <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="140">
-              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-pagination
-            @size-change="dispatchhandleSizeChange"
-            @current-change="dispatchhandleCurrentChange"
-            :current-page="tmpdispatchquery.page"
-            :page-size="tmpdispatchquery.size"
-            :total="dispatchtotal"
-            :page-sizes="[10, 20, 30, 40]"
-            layout="total, sizes, prev, pager, next, jumper"
-          ></el-pagination>
-        </template>
-      </el-tab-pane>
+<!--            <el-table-column label="创建时间" align="center" prop="createTime" width="140">-->
+<!--              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>-->
+<!--            </el-table-column>-->
+<!--            <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="140">-->
+<!--              <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}-->
+<!--              </template>-->
+<!--            </el-table-column>-->
+<!--          </el-table>-->
+<!--          <el-pagination-->
+<!--            @size-change="dispatchhandleSizeChange"-->
+<!--            @current-change="dispatchhandleCurrentChange"-->
+<!--            :current-page="tmpdispatchquery.page"-->
+<!--            :page-size="tmpdispatchquery.size"-->
+<!--            :total="dispatchtotal"-->
+<!--            :page-sizes="[10, 20, 30, 40]"-->
+<!--            layout="total, sizes, prev, pager, next, jumper"-->
+<!--          ></el-pagination>-->
+<!--        </template>-->
+<!--      </el-tab-pane>-->
 
     </el-tabs>
 
@@ -645,6 +645,7 @@
       },
 
       async getperformancestatics() {
+        this.activeName = 'first'
         this.$refs.tmpquery.validate(valid => {
           if (valid) {
             // 明细

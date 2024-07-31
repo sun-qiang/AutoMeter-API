@@ -10,5 +10,6 @@ public interface StaticsPlanandcasesMapper extends MyMapper<StaticsPlanandcases>
     List<StaticsPlanandcases> getplanstatics(@Param("statics_date") String StaticDate);
 
     void savestaticsplanandcases(@Param("casedataList") final List<StaticsPlanandcases> testcase);
+    List<StaticsPlanandcases> getplanpassratestatics(String statics_startdate, String statics_enddate, long projectid, long deployratelimit);
 
 }

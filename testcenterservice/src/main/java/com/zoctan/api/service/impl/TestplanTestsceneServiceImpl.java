@@ -52,7 +52,7 @@ private TestplanTestsceneMapper testplanTestsceneMapper;
     }
 
     @Override
-    public List<TestplanTestscene> getstaticsplancases(long projectid) {
-        return testplanTestsceneMapper.getstaticsplancases(projectid);
+    public List<TestplanTestscene> getstaticsplancases(long projectid,long planlimit) {
+        return testplanTestsceneMapper.getstaticsplancases(projectid,planlimit);
     }
 }

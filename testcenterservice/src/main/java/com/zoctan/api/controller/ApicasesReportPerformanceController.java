@@ -99,8 +99,7 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         long projectid = Long.parseLong(param.get("projectid").toString());
         String batchname = param.get("batchname").toString();
-        if(batchname.isEmpty())
-        {
+        if (batchname.isEmpty()) {
             return ResultGenerator.genFailedResult("请选择执行计划");
         }
 
@@ -126,13 +125,85 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         long projectid = Long.parseLong(param.get("projectid").toString());
         String batchname = param.get("batchname").toString();
-        if(batchname.isEmpty())
-        {
+        if (batchname.isEmpty()) {
             return ResultGenerator.genFailedResult("请选择执行计划");
         }
         PageHelper.startPage(page, size);
         List<ApicasesPerformancestatistics> apicasesPerformancestatisticsList = apicasesPerformancestatisticsService.getresultbyidandname(planid, batchname, projectid);
-        final PageInfo<ApicasesPerformancestatistics> pageInfo = new PageInfo<>(apicasesPerformancestatisticsList);
+        List<Long> slaverlist = new ArrayList<>();
+        List<Long> caselist = new ArrayList<>();
+        List<ApicasesPerformancestatistics> apicasesPerformancestatisticsListresult =new ArrayList<>();
+
+        for (ApicasesPerformancestatistics apicasesPerformancestatistics : apicasesPerformancestatisticsList) {
+            if (!slaverlist.contains(apicasesPerformancestatistics.getSlaverid())) {
+                slaverlist.add(apicasesPerformancestatistics.getSlaverid());
+            }
+            if (!caselist.contains(apicasesPerformancestatistics.getCaseid())) {
+                caselist.add(apicasesPerformancestatistics.getCaseid());
+            }
+        }
+        for (Long caseId : caselist) {
+            ApicasesPerformancestatistics apicasesPerformancestatistics = new ApicasesPerformancestatistics();
+            double tps = 0;
+            double runtime = 0;
+            long errorcount = 0;
+            double errorrate = 0;
+            double average = 0;
+            double min = 0;
+            double max = 0;
+            double median = 0;
+            double nzpct = 0;
+            double nfpct = 0;
+            double nnpct = 0;
+            double receivekbsec = 0;
+            double sendkbsec = 0;
+            long smaples = 0;
+            for (Long slaverId : slaverlist) {
+                for (ApicasesPerformancestatistics apicasesPerformancestatistics1 : apicasesPerformancestatisticsList) {
+                    if (apicasesPerformancestatistics1.getCaseid() == caseId && apicasesPerformancestatistics1.getSlaverid() == slaverId) {
+                        apicasesPerformancestatistics.setCaseid(apicasesPerformancestatistics1.getCaseid());
+                        apicasesPerformancestatistics.setCasename(apicasesPerformancestatistics1.getCasename());
+                        apicasesPerformancestatistics.setExecuteplanname(apicasesPerformancestatistics1.getExecuteplanname());
+                        apicasesPerformancestatistics.setSceneid(apicasesPerformancestatistics1.getSceneid());
+                        apicasesPerformancestatistics.setScenename(apicasesPerformancestatistics1.getScenename());
+                        apicasesPerformancestatistics.setProjectid(apicasesPerformancestatistics1.getProjectid());
+                        apicasesPerformancestatistics.setBatchname(apicasesPerformancestatistics1.getBatchname());
+                        apicasesPerformancestatistics.setTestplanid(apicasesPerformancestatistics1.getTestplanid());
+                        tps = tps + apicasesPerformancestatistics1.getTps();
+                        smaples = smaples + apicasesPerformancestatistics1.getSamples();
+                        runtime = runtime + apicasesPerformancestatistics1.getRuntime();
+                        errorcount = errorcount + apicasesPerformancestatistics1.getErrorcount();
+                        errorrate = errorrate + apicasesPerformancestatistics1.getErrorrate();
+                        average = average + apicasesPerformancestatistics1.getAverage();
+                        min = min + apicasesPerformancestatistics1.getMin();
+                        max = max + apicasesPerformancestatistics1.getMax();
+                        median = median + apicasesPerformancestatistics1.getMedian();
+                        nzpct = nzpct + apicasesPerformancestatistics1.getNzpct();
+                        nfpct = nfpct + apicasesPerformancestatistics1.getNfpct();
+                        nnpct = nnpct + apicasesPerformancestatistics1.getNnpct();
+                        receivekbsec = receivekbsec + apicasesPerformancestatistics1.getReceivekbsec();
+                        sendkbsec = sendkbsec + apicasesPerformancestatistics1.getSendkbsec();
+                    }
+                }
+            }
+            apicasesPerformancestatistics.setTps(Double.valueOf( new DecimalFormat("#.00").format(tps)));
+            apicasesPerformancestatistics.setSamples(smaples);
+            apicasesPerformancestatistics.setRuntime(runtime / slaverlist.size());
+            apicasesPerformancestatistics.setErrorcount(errorcount);
+            apicasesPerformancestatistics.setErrorrate(errorrate / slaverlist.size());
+            apicasesPerformancestatistics.setAverage(average / slaverlist.size());
+            apicasesPerformancestatistics.setMin(min / slaverlist.size());
+            apicasesPerformancestatistics.setMax(max / slaverlist.size());
+            apicasesPerformancestatistics.setMedian(median / slaverlist.size());
+            apicasesPerformancestatistics.setNzpct(nzpct / slaverlist.size());
+            apicasesPerformancestatistics.setNfpct(nfpct / slaverlist.size());
+            apicasesPerformancestatistics.setNnpct(nnpct / slaverlist.size());
+            apicasesPerformancestatistics.setReceivekbsec(receivekbsec / slaverlist.size());
+            apicasesPerformancestatistics.setSendkbsec(sendkbsec / slaverlist.size());
+            apicasesPerformancestatistics.setSlaverid(0L);
+            apicasesPerformancestatisticsListresult.add(apicasesPerformancestatistics);
+        }
+        final PageInfo<ApicasesPerformancestatistics> pageInfo = new PageInfo<>(apicasesPerformancestatisticsListresult);
         return ResultGenerator.genOkResult(pageInfo);
     }
 
@@ -145,8 +216,7 @@ public class ApicasesReportPerformanceController {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         String batchname = param.get("batchname").toString();
 
-        if(batchname.isEmpty())
-        {
+        if (batchname.isEmpty()) {
             return ResultGenerator.genFailedResult("请选择执行计划");
         }
         List<PerformanceCaseStatis> performanceCaseStatisList = new ArrayList<>();
@@ -211,8 +281,7 @@ public class ApicasesReportPerformanceController {
     public Result getperformanceslaverstatics(@RequestBody final Map<String, Object> param) {
         long planid = Long.parseLong(param.get("executeplanid").toString());
         String batchname = param.get("batchname").toString();
-        if(batchname.isEmpty())
-        {
+        if (batchname.isEmpty()) {
             return ResultGenerator.genFailedResult("请选择执行计划");
         }
         List<PerformanceSlaverStatics> performanceSlaverStaticsList = new ArrayList<>();
@@ -282,8 +351,7 @@ public class ApicasesReportPerformanceController {
         } else {
             Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
             String batchname = param.get("batchname").toString();
-            if(batchname.isEmpty())
-            {
+            if (batchname.isEmpty()) {
                 return ResultGenerator.genFailedResult("请选择执行计划");
             }
             List<FunctionCaseSandF> functionCaseSandFList = new ArrayList<>();
@@ -320,8 +388,7 @@ public class ApicasesReportPerformanceController {
         Long executeplanid = Long.parseLong(param.get("executeplanid").toString());
         String status = param.get("caseststus").toString();
         String batchname = param.get("batchname").toString();
-        if(batchname.isEmpty())
-        {
+        if (batchname.isEmpty()) {
             return ResultGenerator.genFailedResult("请选择执行计划");
         }
         Routeperformancereport routeperformancereport = routeperformancereportService.getBy("executeplanid", executeplanid);

@@ -26,7 +26,7 @@
 
   <select id="getstaticsplancases" resultMap="BaseResultMap">
     SELECT a.planname ,count(*) as id
-    FROM testplan_testscene a where a.projectid=#{projectid}  group by a.planname
+    FROM testplan_testscene a where a.projectid=#{projectid}  group by a.planname order by id desc limit #{planlimit}
   </select>
 
   <insert id="savetestplanscenen">

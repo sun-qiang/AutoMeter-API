@@ -24,4 +24,9 @@ private StaticsDeployunitandcasesMapper staticsDeployunitandcasesMapper;
     public List<StaticsDeployunitandcases> getdeployunitstatics(String StaticDate) {
         return staticsDeployunitandcasesMapper.getdeployunitstatics(StaticDate);
     }
+
+    @Override
+    public List<StaticsDeployunitandcases> getdeployunitpassratestatics(String statics_startdate, String statics_enddate,long projectid, long deployratelimit) {
+        return staticsDeployunitandcasesMapper.getdeployunitpassratestatics(statics_startdate,statics_enddate,projectid,deployratelimit);
+    }
 }

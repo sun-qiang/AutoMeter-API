@@ -24,4 +24,9 @@ private StaticsPlanandcasesMapper staticsPlanandcasesMapper;
     public List<StaticsPlanandcases> getplanstatics(String StaticDate) {
         return staticsPlanandcasesMapper.getplanstatics(StaticDate);
     }
+
+    @Override
+    public List<StaticsPlanandcases> getplanpassratestatics(String statics_startdate, String statics_enddate, long projectid, long deployratelimit) {
+        return staticsPlanandcasesMapper.getplanpassratestatics(statics_startdate, statics_enddate, projectid, deployratelimit);
+    }
 }

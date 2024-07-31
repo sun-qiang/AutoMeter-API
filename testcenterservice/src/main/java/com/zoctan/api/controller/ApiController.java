@@ -843,8 +843,8 @@ public class ApiController {
     }
 
     @GetMapping("/getstaticsdeployapi")
-    public Result getstaticsdeployapi(@RequestParam long projectid) {
-        List<Api> list = apiService.getstaticsdeployapi(projectid);
+    public Result getstaticsdeployapi(@RequestParam long projectid, @RequestParam long apilimit) {
+        List<Api> list = apiService.getstaticsdeployapi(projectid,apilimit);
         List<StaticsDataForPie> result = new ArrayList<>();
         for (Api api : list) {
             StaticsDataForPie staticsDataForPie = new StaticsDataForPie();

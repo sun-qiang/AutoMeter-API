@@ -25,6 +25,15 @@
     where statics_date>=#{statics_date}
   </select>
 
+
+  <select id="getdeployunitpassratestatics" resultMap="BaseResultMap">
+    SELECT *
+    FROM statics_deployunitandcases
+    where statics_date  <![CDATA[ >= ]]>  #{statics_startdate}
+      and  statics_date  <![CDATA[ <= ]]>  #{statics_enddate}
+      and projectid=#{projectid} order by passrate desc limit #{deployratelimit}
+  </select>
+
   <insert id="savestaticsdeployunitandcases">
     INSERT INTO statics_deployunitandcases (deployunitid,deployunitname,passrate, totalcases,totalpasscases,totalfailcases,runtime,statics_date,create_time,lastmodify_time,projectid)
     VALUES

@@ -75,7 +75,7 @@ public class StaticsPlanandcasesController {
     }
 
     @GetMapping("/getplanstatics")
-    public Result getplanstatics(@RequestParam long projectid) {
+    public Result getplanstatics(@RequestParam long projectid,@RequestParam long deployratelimit) {
 
         List<String> lastdaylist = new ArrayList<>();
         for (int i = 15; i > 0; i--) {
@@ -97,11 +97,15 @@ public class StaticsPlanandcasesController {
             lastdaylist.add(Year + "-" + MONTHS + "-" + DayS);
         }
 
-        Condition con = new Condition(StaticsDeployunitandcases.class);
-        con.createCriteria().andCondition("projectid = " + projectid)
-                .andCondition("statics_date>='" + lastdaylist.get(0) + "'")
-                .andCondition("statics_date<='" + lastdaylist.get(14) + "'");
-        List<StaticsPlanandcases> listrange = staticsPlanandcasesService.listByCondition(con);//.listAll();
+//        Condition con = new Condition(StaticsDeployunitandcases.class);
+//        con.createCriteria().andCondition("projectid = " + projectid)
+//                .andCondition("statics_date>='" + lastdaylist.get(0) + "'")
+//                .andCondition("statics_date<='" + lastdaylist.get(14) + "'");
+//        List<StaticsPlanandcases> listrange = staticsPlanandcasesService.listByCondition(con);//.listAll();
+
+        List<StaticsPlanandcases> listrange = staticsPlanandcasesService.getplanpassratestatics(lastdaylist.get(0),lastdaylist.get(14),projectid,deployratelimit);//.listAll();
+
+
         List<String> depList = new ArrayList<>();
         for (StaticsPlanandcases s : listrange) {
             if (!depList.contains(s.getTestplanname())) {

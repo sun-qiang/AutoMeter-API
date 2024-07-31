@@ -23,6 +23,6 @@ public interface TestplanTestsceneService extends Service<TestplanTestscene> {
 
     void removeexecuteplanalltestscene(final long planid);
 
-    List<TestplanTestscene> getstaticsplancases(long projectid);
+    List<TestplanTestscene> getstaticsplancases(long projectid,long planlimit);
 
 }

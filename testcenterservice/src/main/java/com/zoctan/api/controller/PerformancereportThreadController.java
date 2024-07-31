@@ -332,6 +332,8 @@ public class PerformancereportThreadController {
         List<PerformancereportCaseinfo> performancereportCaseinfoList = performancereportCaseinfoService.listByCondition(percon);
 
         List<StaticsDataForLine> staticsDataForLineList = new ArrayList<>();
+        List<StaticsDataForLine> staticsDataForLineListResult = new ArrayList<>();
+
         for (PerformancereportCaseinfo thread : performancereportCaseinfoList) {
             String Content = thread.getContent();
             String casename = thread.getCasename();
@@ -358,7 +360,36 @@ public class PerformancereportThreadController {
             staticsDataForLine.setPassPecent(ids);
             staticsDataForLineList.add(staticsDataForLine);
         }
-        return ResultGenerator.genOkResult(staticsDataForLineList);
+
+        List<String> tpsNameList = new ArrayList<>();
+        for (StaticsDataForLine staticsDataForLine : staticsDataForLineList) {
+            if (!tpsNameList.contains(staticsDataForLine.getExecPlanName())) {
+                tpsNameList.add(staticsDataForLine.getExecPlanName());
+            }
+        }
+        for (String tpsname : tpsNameList) {
+            StaticsDataForLine staticsDataForLinelast = new StaticsDataForLine();
+            List<List<Double>> allLists = new ArrayList<>();
+            for (StaticsDataForLine staticsDataForLine : staticsDataForLineList) {
+                if (tpsname.equals(staticsDataForLine.getExecPlanName())) {
+                    staticsDataForLinelast.setExecPlanName(staticsDataForLine.getExecPlanName());
+                    List<Double> tmp = staticsDataForLine.getPassPecent();
+                    allLists.add(tmp);
+                }
+            }
+            List<Double> result = new ArrayList<>(allLists.get(0).size());
+            for (int i = 0; i < allLists.get(0).size(); i++) {
+                double sum = 0;
+                for (List<Double> list : allLists) {
+                    sum += list.get(i);
+                }
+                result.add(sum);
+            }
+            staticsDataForLinelast.setPassPecent(result);
+            staticsDataForLineListResult.add(staticsDataForLinelast);
+        }
+
+        return ResultGenerator.genOkResult(staticsDataForLineListResult);
     }
 
 

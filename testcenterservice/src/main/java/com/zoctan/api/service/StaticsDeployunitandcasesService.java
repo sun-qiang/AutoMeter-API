@@ -11,6 +11,5 @@ import java.util.List;
 */
 public interface StaticsDeployunitandcasesService extends Service<StaticsDeployunitandcases> {
     List<StaticsDeployunitandcases> getdeployunitstatics(String StaticDate);
-
-
+    List<StaticsDeployunitandcases> getdeployunitpassratestatics(String statics_startdate,String statics_enddate,long projectid,long deployratelimit);
 }

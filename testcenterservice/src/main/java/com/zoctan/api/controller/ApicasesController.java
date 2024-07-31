@@ -772,8 +772,8 @@ public class ApicasesController {
     }
 
     @GetMapping("/getstaticsdeployunitcases")
-    public Result getstaticsdeployunitcases(@RequestParam long projectid) {
-        List<Apicases> list = apicasesService.getstaticsdeployunitcases(projectid);
+    public Result getstaticsdeployunitcases(@RequestParam long projectid,@RequestParam long limit) {
+        List<Apicases> list = apicasesService.getstaticsdeployunitcases(projectid,limit);
         List<StaticsDataForPie> result = new ArrayList<>();
         for (Apicases ac : list) {
             StaticsDataForPie staticsDataForPie = new StaticsDataForPie();

@@ -36,7 +36,7 @@ public interface ApicasesMapper extends MyMapper<Apicases> {
     Integer getcasenum(@Param("casetype") String casetype,@Param("projectid")long projectid);
 
 
-    List<Apicases> getstaticsdeployunitcases(@Param("projectid")long projectid);
+    List<Apicases> getstaticsdeployunitcases(@Param("projectid")long projectid,@Param("limit")long limit);
 
     List<Apicases> getcasebydeployunitid(Long deployunitid);
 

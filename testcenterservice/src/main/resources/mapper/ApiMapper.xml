@@ -81,7 +81,7 @@
 
   <select id="getstaticsdeployapi" resultMap="BaseResultMap">
     SELECT deployunitname ,count(*) as id
-    FROM api where projectid=#{projectid} group by deployunitname
+    FROM api where projectid=#{projectid} group by deployunitname order by id desc limit #{apilimit}
   </select>
 
   <select id="getapibydeployunitid" resultMap="BaseResultMap">

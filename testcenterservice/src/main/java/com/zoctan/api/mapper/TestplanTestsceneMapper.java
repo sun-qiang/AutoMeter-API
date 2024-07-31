@@ -15,6 +15,6 @@ public interface TestplanTestsceneMapper extends MyMapper<TestplanTestscene> {
     void updateplanscenename(@Param("testscenenid")final long testscenenid,@Param("scenename")String scenename);
     void removeexecuteplantestscene(@Param("testplanid")final long planid,@Param("testscenenid")final long sceneid);
     void removeexecuteplanalltestscene(final long planid);
-    List<TestplanTestscene> getstaticsplancases(@Param("projectid")long projectid);
+    List<TestplanTestscene> getstaticsplancases(@Param("projectid")long projectid,@Param("planlimit")long planlimit);
 
 }

@@ -36,7 +36,7 @@ public interface ApiService extends Service<Api> {
 
     Integer getapinum(long projectid);
 
-    List<Api> getstaticsdeployapi(long projectid);
+    List<Api> getstaticsdeployapi(long projectid,long apilimit);
 
     List<Api> getapibydeployunitid(Long deployunitid);
 

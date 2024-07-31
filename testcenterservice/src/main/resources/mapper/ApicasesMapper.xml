@@ -85,7 +85,7 @@
 
   <select id="getstaticsdeployunitcases" resultMap="BaseResultMap">
     SELECT deployunitname ,count(*) as apiid
-    FROM apicases where projectid =#{projectid} group by deployunitname
+    FROM apicases where projectid =#{projectid} group by deployunitname order by apiid desc limit #{limit}
   </select>
 
   <select id="getcasebydeployunitid" resultMap="BaseResultMap">

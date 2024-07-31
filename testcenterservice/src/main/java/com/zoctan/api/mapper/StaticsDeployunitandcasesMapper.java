@@ -10,6 +10,7 @@ public interface StaticsDeployunitandcasesMapper extends MyMapper<StaticsDeployu
     List<StaticsDeployunitandcases> getdeployunitstatics(@Param("statics_date") String StaticDate);
 
     void savestaticsdeployunitandcases(@Param("casedataList") final List<StaticsDeployunitandcases> testcase);
+    List<StaticsDeployunitandcases> getdeployunitpassratestatics(String statics_startdate,String statics_enddate,long projectid,long deployratelimit);
 
 
 }

@@ -44,8 +44,8 @@ private ApiMapper apiMapper;
     }
 
     @Override
-    public List<Api> getstaticsdeployapi(long projectid) {
-        return apiMapper.getstaticsdeployapi(projectid);
+    public List<Api> getstaticsdeployapi(long projectid,long apilimit) {
+        return apiMapper.getstaticsdeployapi(projectid,apilimit);
     }
 
     @Override

@@ -173,8 +173,8 @@ public class TestplanTestsceneController {
     }
 
     @GetMapping("/getstaticsplancases")
-    public Result getstaticsplancases(@RequestParam long projectid) {
-        List<TestplanTestscene> list = testplanTestsceneService.getstaticsplancases(projectid);
+    public Result getstaticsplancases(@RequestParam long projectid,long planlimit) {
+        List<TestplanTestscene> list = testplanTestsceneService.getstaticsplancases(projectid,planlimit);
         List<StaticsDataForPie> result = new ArrayList<>();
         for (TestplanTestscene executeplanTestcase : list) {
             StaticsDataForPie staticsDataForPie = new StaticsDataForPie();
