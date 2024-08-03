@@ -45,7 +45,8 @@ public class TestsceneController {
 
         Condition con = new Condition(Testscene.class);
         con.createCriteria().andCondition("projectid = " + testscene.getProjectid())
-                .andCondition("scenename = '" + testscene.getScenename().replace("'", "''") + "'");
+                .andCondition("scenename = '" + testscene.getScenename().replace("'", "''") + "'")
+                .andCondition("usetype = '" + testscene.getUsetype()+ "'");
         if (testsceneService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("测试场景名已经存在");
         } else {
@@ -104,6 +105,7 @@ public class TestsceneController {
         Condition con = new Condition(Testscene.class);
         con.createCriteria().andCondition("projectid = " + testscene.getProjectid())
                 .andCondition("scenename = '" + testscene.getScenename().replace("'", "''") + "'")
+                .andCondition("usetype = '" + testscene.getUsetype()+ "'")
                 .andCondition("id <> " + testscene.getId());
         if (testsceneService.ifexist(con) > 0) {
             return ResultGenerator.genFailedResult("测试场景名已经存在");

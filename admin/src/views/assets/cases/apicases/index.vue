@@ -166,8 +166,26 @@
       </el-table-column>
 
       <el-table-column label="用例名" :show-overflow-tooltip="true" align="center" prop="casename" width="100"/>
-      <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="140"/>
-      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="130"/>
+      <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="140">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            @click.native.prevent="showDeployUnit(scope.row)"
+          >{{scope.row.deployunitname}}
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="130">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            @click.native.prevent="showApi(scope.row)"
+          >{{scope.row.apiname}}
+          </el-button>
+        </template>
+      </el-table-column>
 <!--      <el-table-column label="Jmeter-Class" align="center" prop="casejmxname" width="100"/>-->
       <el-table-column label="类型" align="center" prop="casetype" width="60"/>
       <el-table-column :show-overflow-tooltip="true" label="模块" align="center" prop="modelname" width="100"/>
@@ -3840,6 +3858,8 @@
     },
 
     created() {
+      this.$route.query.casename = ''
+      this.$route.query.casetype = ''
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpconditionquery.projectid = window.localStorage.getItem('pid')
       this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3859,6 +3879,10 @@
     },
 
     activated() {
+      console.log('接收行：', this.$route.query.casename)
+      this.tmpcasename = this.$route.query.casename
+      this.tmpcasetype = this.$route.query.casetype
+      this.search.projectid = window.localStorage.getItem('pid')
       this.getencrytypeList()
       this.getDEcrytypeList()
       this.getapicasesList()
@@ -3876,6 +3900,14 @@
     },
 
     methods: {
+      showApi(e) {
+        console.log('当前行：', e.apiname)
+        this.$router.push({ path: '/deployunit/api/list', query: { apiname: e.apiname }})
+      },
+      showDeployUnit(e) {
+        console.log('当前行：', e.deployunitname)
+        this.$router.push({ path: '/deployunit/depunit/list', query: { deployunitname: e.deployunitname }})
+      },
       unix2CurrentTime,
       renderHeader(h, { column, $index }) {
         // 获取操作按钮组的元素

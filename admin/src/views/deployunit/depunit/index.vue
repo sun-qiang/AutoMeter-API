@@ -368,13 +368,18 @@
     created() {
       console.log(111111111111111)
       console.log(this.accountId)
+      this.$route.query.apicasedepunitname = ''
       this.search.accountId = this.accountId
-      this.getdepunitList()
       this.search.projectid = window.localStorage.getItem('pid')
+      this.getdepunitList()
       console.log(window.localStorage.getItem('pid'))
     },
 
     activated() {
+      console.log('接收行：', this.$route.query.deployunitname)
+      this.tmpdeployunitname = this.$route.query.deployunitname
+      this.search.projectid = window.localStorage.getItem('pid')
+      console.log(this.search)
       this.getdepunitList()
     },
 

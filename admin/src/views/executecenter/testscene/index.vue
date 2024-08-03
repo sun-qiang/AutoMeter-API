@@ -123,12 +123,12 @@
           />
         </el-form-item>
 
-        <el-form-item label="场景类型" prop="usetype" required >
-          <el-select v-model="tmptestscene.usetype" placeholder="场景类型"  style="width: 500px">
-            <el-option label="功能" value="功能"></el-option>
-            <el-option label="性能" value="性能"></el-option>
-          </el-select>
-        </el-form-item>
+<!--        <el-form-item label="场景类型" prop="usetype" required >-->
+<!--          <el-select v-model="tmptestscene.usetype" placeholder="场景类型"  style="width: 500px">-->
+<!--            <el-option label="功能" value="功能"></el-option>-->
+<!--            <el-option label="性能" value="性能"></el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
 
 
         <el-form-item label="备注" prop="memo">
@@ -259,9 +259,36 @@
 
         <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="130"/>
         <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="130"/>
-        <el-table-column label="用例名" align="center" prop="casename" width="110"/>
-        <el-table-column label="微服务" align="center" prop="deployunitname" width="110"/>
-        <el-table-column label="API" align="center" prop="apiname" width="110"/>
+        <el-table-column label="用例名" align="center" prop="casename" width="110">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showCase(scope.row)"
+            >{{scope.row.casename}}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="微服务" align="center" prop="deployunitname" width="110">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showDeployUnit(scope.row)"
+            >{{scope.row.deployunitname}}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="API" align="center" prop="apiname" width="110">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showApi(scope.row)"
+            >{{scope.row.apiname}}
+            </el-button>
+          </template>
+        </el-table-column>
 
         <el-table-column width="90" align="center" label="执行步骤">
           <template slot-scope="{row}">
@@ -1041,9 +1068,36 @@
         <el-table-column type="selection" prop="status" width="50"/>
         <el-table-column label="apiid" v-if="show" align="center" prop="apiid" width="120"/>
         <el-table-column label="deployunitid" v-if="show" align="center" prop="deployunitid" width="120"/>
-        <el-table-column label="用例名" align="center" prop="casename" width="250"/>
-        <el-table-column label="微服务" align="center" prop="deployunitname" width="180"/>
-        <el-table-column label="API" align="center" prop="apiname" width="250"/>
+        <el-table-column label="用例名" align="center" prop="casename" width="250">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showCase(scope.row)"
+            >{{scope.row.casename}}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="微服务" align="center" prop="deployunitname" width="180">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showDeployUnit(scope.row)"
+            >{{scope.row.deployunitname}}
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="API" align="center" prop="apiname" width="250">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showApi(scope.row)"
+            >{{scope.row.apiname}}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="类型" align="center" prop="casetype" width="70"/>
       </el-table>
       <el-pagination
@@ -3282,7 +3336,7 @@ export default {
       tmptestscene: {
         id: '',
         scenename: '',
-        usetype: '',
+        usetype: '功能',
         creator: '',
         creatorid: '',
         memo: '',
@@ -3479,6 +3533,7 @@ export default {
   },
 
   created() {
+    this.$route.query.scenename = ''
     this.search.accountId = this.accountId
     this.addsearchcase.projectid = window.localStorage.getItem('pid')
     this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3501,6 +3556,8 @@ export default {
   },
 
   activated() {
+    this.tmptestscenename = this.$route.query.scenename
+    this.search.projectid = window.localStorage.getItem('pid')
     this.getdepunitLists()
     this.gettestsceneList()
   },
@@ -3510,6 +3567,18 @@ export default {
   },
 
   methods: {
+    showApi(e) {
+      console.log('当前行：', e.apiname)
+      this.$router.push({ path: '/deployunit/api/list', query: { apiname: e.apiname }})
+    },
+    showCase(e) {
+      console.log('当前行：', e.casename)
+      this.$router.push({ path: '/executecenter/apicases/list', query: { casename: e.casename }})
+    },
+    showDeployUnit(e) {
+      console.log('当前行：', e.deployunitname)
+      this.$router.push({ path: '/deployunit/depunit/list', query: { deployunitname: e.deployunitname }})
+    },
     getencrytypeList() {
       getdatabydiccodeList(this.dicEncryQuery).then(response => {
         this.EncrytypeList = response.data.list
@@ -5167,7 +5236,7 @@ export default {
       this.dialogStatus = 'add'
       this.tmptestscene.id = ''
       this.tmptestscene.scenename = ''
-      this.tmptestscene.usetype = ''
+      this.tmptestscene.usetype = '功能'
       this.tmptestscene.memo = ''
       this.tmptestscene.creator = this.name
       this.tmptestscene.creatorid = this.accountId

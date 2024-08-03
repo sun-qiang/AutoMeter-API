@@ -95,7 +95,16 @@
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true"  label="API" align="center" prop="apiname" width="120"/>
-      <el-table-column :show-overflow-tooltip="true"  label="微服务" align="center" prop="deployunitname" width="130"/>
+      <el-table-column :show-overflow-tooltip="true"  label="微服务" align="center" prop="deployunitname" width="130">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            @click.native.prevent="showDeployUnit(scope.row)"
+          >{{scope.row.deployunitname}}
+          </el-button>
+        </template>
+      </el-table-column>
       <el-table-column :show-overflow-tooltip="true"  label="模块" align="center" prop="modelname" width="80"/>
       <el-table-column label="风格" align="center" prop="apistyle" width="80"/>
       <el-table-column label="访问方式" align="center" prop="visittype" width="80"/>
@@ -982,10 +991,16 @@ export default {
       }
     }
   },
+  mounted() {
+    // console.log('接收到的参数值：', this.$route.params)
+    //
+    // console.log('接收到的参数值：', this.$route.params.apiname)
+  },
   computed: {
     ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
   created() {
+    this.$route.query.apicaseapiname = ''
     this.getaccountLists()
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
@@ -1014,6 +1029,9 @@ export default {
   },
 
   activated() {
+    console.log('接收行：', this.$route.query.apiname)
+    this.tmpapiname = this.$route.query.apiname
+    this.search.projectid = window.localStorage.getItem('pid')
     this.getapiList()
     this.getdepunitLists()
     this.getencrytypeList()
@@ -1023,6 +1041,10 @@ export default {
     this.dynamicWidth = this.$getOperatorWidth()
   },
   methods: {
+    showDeployUnit(e) {
+      console.log('当前行：', e.deployunitname)
+      this.$router.push({ path: '/deployunit/depunit/list', query: { deployunitname: e.deployunitname }})
+    },
     renderHeader(h, { column, $index }) {
       // 获取操作按钮组的元素
       const opts = document.getElementsByClassName('optionDiv')

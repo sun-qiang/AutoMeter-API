@@ -707,7 +707,16 @@
             <span v-text="planscenegetIndex(scope.$index)"></span>
           </template>
         </el-table-column>
-        <el-table-column label="场景名" align="center" prop="scenename" width="280"/>
+        <el-table-column label="场景名" align="center" prop="scenename" width="280">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showScene(scope.row)"
+            >{{scope.row.scenename}}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column width="120" align="center" label="场景顺序">
           <template slot-scope="{row}">
             <template v-if="row.edit">
@@ -799,7 +808,16 @@
         </el-table-column>
 
         <el-table-column type="selection" prop="status" width="50"/>
-        <el-table-column label="场景名" align="center" prop="scenename" width="370"/>
+        <el-table-column label="场景名" align="center" prop="scenename" width="370">
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="mini"
+              @click.native.prevent="showScene(scope.row)"
+            >{{scope.row.scenename}}
+            </el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="场景类型" align="center" prop="usetype" width="140"/>
         <el-table-column label="用例数" align="center" prop="casenums" width="140"/>
       </el-table>
@@ -3286,6 +3304,14 @@
     },
 
     methods: {
+      showScene(e) {
+        console.log('当前行：', e.apiname)
+        if (this.planusetype === '功能') {
+          this.$router.push({ path: '/executecenter/testscene/list', query: { scenename: e.scenename }})
+        } else {
+          this.$router.push({ path: '/executecenter/testperscene/list', query: { scenename: e.scenename }})
+        }
+      },
       renderHeader(h, { column, $index }) {
         // 获取操作按钮组的元素
         const opts = document.getElementsByClassName('optionDiv')
