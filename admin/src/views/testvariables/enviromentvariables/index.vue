@@ -51,7 +51,7 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="环境变量名" align="center" prop="variablesname" width="180"/>
+      <el-table-column :show-overflow-tooltip="true"  label="环境变量名" align="center" prop="variablesname" width="180"/>
       <el-table-column label="环境名" align="center" prop="envname" width="120"/>
       <el-table-column :show-overflow-tooltip="true" label="变量值" align="center" prop="variablesvalue" width="350"/>
       <el-table-column label="维护人" align="center" prop="creator" width="70"/>
@@ -347,6 +347,7 @@
         this.dialogFormVisible = true
         this.dialogStatus = 'update'
         this.tmpenviromentvariables.id = this.enviromentvariablesList[index].id
+        this.tmpenviromentvariables.envid = this.enviromentvariablesList[index].envid
         this.tmpenviromentvariables.variablesname = this.enviromentvariablesList[index].variablesname
         this.tmpenviromentvariables.variablesvalue = this.enviromentvariablesList[index].variablesvalue
         this.tmpenviromentvariables.envname = this.enviromentvariablesList[index].envname

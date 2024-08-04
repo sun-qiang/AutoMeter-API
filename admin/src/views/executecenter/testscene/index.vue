@@ -51,7 +51,7 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="测试场景名" align="center" prop="scenename" width="150"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试场景名" align="center" prop="scenename" width="150"/>
       <el-table-column label="类型" align="center" prop="usetype" width="100"/>
       <el-table-column label="用例数" align="center" prop="casenums" width="100"/>
       <el-table-column label="维护人" align="center" prop="creator" width="100"/>

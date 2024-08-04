@@ -48,12 +48,12 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="服务器名" align="center" prop="machinename" width="120"/>
-      <el-table-column label="IP" align="center" prop="ip" width="120"/>
-      <el-table-column label="CPU" align="center" prop="cpu" width="80"/>
-      <el-table-column label="DISK" align="center" prop="disk" width="80"/>
-      <el-table-column label="MEM" align="center" prop="mem" width="80"/>
-      <el-table-column label="维护人" align="center" prop="creator" width="100"/>
+      <el-table-column :show-overflow-tooltip="true"  label="服务器名" align="center" prop="machinename" width="120"/>
+      <el-table-column :show-overflow-tooltip="true"  label="IP" align="center" prop="ip" width="120"/>
+      <el-table-column :show-overflow-tooltip="true"  label="CPU" align="center" prop="cpu" width="80"/>
+      <el-table-column :show-overflow-tooltip="true"  label="DISK" align="center" prop="disk" width="80"/>
+      <el-table-column :show-overflow-tooltip="true"  label="MEM" align="center" prop="mem" width="80"/>
+      <el-table-column :show-overflow-tooltip="true"  label="维护人" align="center" prop="creator" width="100"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="160">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>

@@ -50,9 +50,9 @@
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true"  label="执行机" align="center" prop="slavername" width="150"/>
-      <el-table-column label="测试集合" align="center" prop="execplanname" width="150"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试集合" align="center" prop="execplanname" width="150"/>
       <el-table-column :show-overflow-tooltip="true" label="执行计划" align="center" prop="batchname" width="150"/>
-      <el-table-column label="测试场景" align="center" prop="scenename" width="180"/>
+      <el-table-column :show-overflow-tooltip="true"  label="测试场景" align="center" prop="scenename" width="180"/>
       <el-table-column label="执行用例" align="center" prop="testcasename" width="180"/>
       <el-table-column label="用例顺序" align="center" prop="caseorder" width="80"/>
       <el-table-column label="状态" align="center" prop="status" width="100"/>

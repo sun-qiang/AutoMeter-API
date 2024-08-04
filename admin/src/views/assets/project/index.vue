@@ -52,7 +52,7 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="项目名称" align="center" prop="projectname" width="150"/>
+      <el-table-column :show-overflow-tooltip="true"  label="项目名称" align="center" prop="projectname" width="150"/>
       <el-table-column label="状态" align="center" prop="status" width="80"/>
       <el-table-column :show-overflow-tooltip="true" label="项目简介" align="center" prop="memo" width="250"/>
       <el-table-column label="创建人" align="center" prop="creator" width="80"/>
