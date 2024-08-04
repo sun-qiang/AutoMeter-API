@@ -2711,6 +2711,8 @@
         itemcaseKey: null,
         planbusinessdiclist: [], // 执行计划字典表业务类型列表
         tmpexecuteplanname: '',
+        tmpusetype: '',
+        tmpbusinesstype: '',
         tmpcasedeployunitname: null,
         tmpcaseapiname: null,
         tmpcaseexecuteplanid: null,
@@ -3265,6 +3267,8 @@
     },
 
     created() {
+      // this.$route.query.planname = ''
+      // this.$route.query.plantype = ''
       var url = window.location.href
       url = url.slice(0, url.indexOf('#') + 2)
       console.log('hostname url is:' + url)
@@ -3287,11 +3291,16 @@
     },
 
     activated() {
+      this.tmpexecplanname = this.$route.query.planname
+      console.log(this.tmpexecplanname)
+      this.tmpusetype = this.$route.query.plantype
+      this.search.projectid = window.localStorage.getItem('pid')
       var url = window.location.href
       url = url.slice(0, url.indexOf('#') + 2)
       console.log('hostname url is:' + url)
       this.tmpexecuteplan.domian = url
       // this.getapiList()
+      console.log(this.search)
       this.getexecuteplanList()
       this.getdepunitList()
       this.getenviromentallList()
@@ -5128,8 +5137,10 @@
        * 获取执行计划列表
        */
       getexecuteplanList() {
-        this.search.execplanname = this.tmpexecplanname
+        this.search.executeplanname = this.tmpexecplanname
         this.search.batchname = this.tmpbatchname
+        this.search.usetype = this.tmpusetype
+        this.search.businesstype = this.tmpbusinesstype
         this.search.creator = this.name
         this.listLoading = true
         search(this.search).then(response => {
@@ -5152,6 +5163,9 @@
           this.$message.error('搜索失败')
         })
         this.tmpexecuteplanname = this.search.executeplanname
+        this.tmpbatchname = this.search.batchname
+        this.tmpusetype = this.search.usetype
+        this.tmpbusinesstype = this.search.businesstype
         this.listLoading = false
         this.btnLoading = false
       },

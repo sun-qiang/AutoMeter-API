@@ -43,6 +43,18 @@ public class Executeplanbatch {
     private Long sceneid;
     private String scenename;
 
+    public String getUsetype() {
+        return usetype;
+    }
+
+    public void setUsetype(String usetype) {
+        this.usetype = usetype;
+    }
+
+    private String usetype;
+
+
+
 
     /**
      * 执行计划id

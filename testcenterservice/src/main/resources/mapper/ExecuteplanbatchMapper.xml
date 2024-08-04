@@ -8,6 +8,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="executeplanid" jdbcType="BIGINT" property="executeplanid" />
     <result column="executeplanname" jdbcType="VARCHAR" property="executeplanname" />
+    <result column="usetype" jdbcType="VARCHAR" property="usetype" />
     <result column="batchname" jdbcType="VARCHAR" property="batchname" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="source" jdbcType="VARCHAR" property="source" />
@@ -49,7 +50,7 @@
 
 
   <select id="findexplanbatchWithName" resultMap="BaseResultMap">
-    SELECT b.executeplanname, a.*
+    SELECT b.executeplanname,b.usetype, a.*
     FROM executeplanbatch a inner join executeplan b on a.executeplanid = b.id
     <where>
       <if test="batchname != null and batchname != ''">a.batchname = #{batchname} </if>

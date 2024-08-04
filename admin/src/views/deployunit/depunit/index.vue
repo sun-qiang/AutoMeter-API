@@ -368,10 +368,10 @@
     created() {
       console.log(111111111111111)
       console.log(this.accountId)
-      this.$route.query.apicasedepunitname = ''
+      // this.$route.query.apicasedepunitname = ''
       this.search.accountId = this.accountId
       this.search.projectid = window.localStorage.getItem('pid')
-      this.getdepunitList()
+      // this.getdepunitList()
       console.log(window.localStorage.getItem('pid'))
     },
 

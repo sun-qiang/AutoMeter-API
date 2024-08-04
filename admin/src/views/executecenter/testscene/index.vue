@@ -3533,7 +3533,8 @@ export default {
   },
 
   created() {
-    this.$route.query.scenename = ''
+    console.log('created...........................................')
+    // this.$route.query.scenename = this.search.scenename
     this.search.accountId = this.accountId
     this.addsearchcase.projectid = window.localStorage.getItem('pid')
     this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3548,7 +3549,7 @@ export default {
     this.searchdbvariables.projectid = window.localStorage.getItem('pid')
     this.searchscriptvariables.projectid = window.localStorage.getItem('pid')
     this.searchapicasevariables.projectid = window.localStorage.getItem('pid')
-    this.gettestsceneList()
+    // this.gettestsceneList()
     this.getassembleallnameList()
     this.getenviromentallList()
     this.getsceneallList()
@@ -3556,6 +3557,7 @@ export default {
   },
 
   activated() {
+    console.log('activated...........................................')
     this.tmptestscenename = this.$route.query.scenename
     this.search.projectid = window.localStorage.getItem('pid')
     this.getdepunitLists()
@@ -5039,6 +5041,9 @@ export default {
     gettestsceneList() {
       this.listLoading = true
       this.search.scenename = this.tmptestscenename
+      console.log('tmptestscenename....................................................')
+      console.log(this.tmptestscenename)
+      console.log(this.search.scenename)
       search(this.search).then(response => {
         this.testsceneList = response.data.list
         this.total = response.data.total

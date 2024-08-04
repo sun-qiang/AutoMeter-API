@@ -3708,7 +3708,7 @@ export default {
   },
 
   created() {
-    this.$route.query.scenename = ''
+    // this.$route.query.scenename = ''
     this.search.accountId = this.accountId
     this.addsearchcase.projectid = window.localStorage.getItem('pid')
     this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3723,7 +3723,7 @@ export default {
     this.searchdbvariables.projectid = window.localStorage.getItem('pid')
     this.searchscriptvariables.projectid = window.localStorage.getItem('pid')
     this.searchapicasevariables.projectid = window.localStorage.getItem('pid')
-    this.gettestsceneList()
+    // this.gettestsceneList()
     this.getassembleallnameList()
     this.getenviromentallList()
     this.getsceneallList()

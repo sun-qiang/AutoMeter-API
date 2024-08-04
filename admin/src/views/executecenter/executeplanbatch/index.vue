@@ -43,9 +43,27 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column label="测试集合名" align="center" prop="executeplanname" width="150"/>
+      <el-table-column label="测试集合名" align="center" prop="executeplanname" width="150">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            @click.native.prevent="showPlan(scope.row)"
+          >{{scope.row.executeplanname}}
+          </el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="执行计划" :show-overflow-tooltip="true" align="center" prop="batchname" width="150"/>
-      <el-table-column label="测试场景" :show-overflow-tooltip="true" align="center" prop="scenename" width="150"/>
+      <el-table-column label="测试场景" :show-overflow-tooltip="true" align="center" prop="scenename" width="150">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="mini"
+            @click.native.prevent="showScene(scope.row)"
+          >{{scope.row.scenename}}
+          </el-button>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="80"/>
       <el-table-column label="来源" align="center" prop="source" width="80"/>
       <el-table-column label="执行类型" align="center" prop="exectype" width="90"/>
@@ -145,6 +163,16 @@
     },
 
     methods: {
+      showPlan(e) {
+        this.$router.push({ path: '/executecenter/executeplan/list', query: { planname: e.executeplanname, plantype: e.usetype }})
+      },
+      showScene(e) {
+        if (e.usetype === '功能') {
+          this.$router.push({ path: '/executecenter/testscene/list', query: { scenename: e.scenename }})
+        } else {
+          this.$router.push({ path: '/executecenter/testperscene/list', query: { scenename: e.scenename }})
+        }
+      },
       unix2CurrentTime,
 
       /**

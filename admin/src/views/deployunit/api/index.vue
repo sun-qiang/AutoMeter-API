@@ -1000,7 +1000,7 @@ export default {
     ...mapGetters(['name', 'nickname', 'sidebar', 'projectlist', 'projectid', 'accountId'])
   },
   created() {
-    this.$route.query.apicaseapiname = ''
+    // this.$route.query.apiname = ''
     this.getaccountLists()
     this.search.projectid = window.localStorage.getItem('pid')
     this.Headertabledatas = [
@@ -1018,7 +1018,7 @@ export default {
       i.show = false
       return i
     })
-    this.getapiList()
+    // this.getapiList()
     this.getvisittypeList()
     this.getrequestcontenttypeList()
     this.getresponecontenttypeList()

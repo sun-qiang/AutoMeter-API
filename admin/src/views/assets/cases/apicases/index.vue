@@ -3858,8 +3858,8 @@
     },
 
     created() {
-      this.$route.query.casename = ''
-      this.$route.query.casetype = ''
+      // this.$route.query.casename = ''
+      // this.$route.query.casetype = ''
       this.search.projectid = window.localStorage.getItem('pid')
       this.tmpconditionquery.projectid = window.localStorage.getItem('pid')
       this.tmptestdata.projectid = window.localStorage.getItem('pid')
@@ -3870,7 +3870,7 @@
       this.Scenedelaysearch.projectid = window.localStorage.getItem('pid')
       this.getaccountLists()
       this.getenviromentallList()
-      this.getapicasesList()
+      // this.getapicasesList()
       this.getdepunitLists()
       this.getalltestcondition()
       this.getglobalheaderallList()
