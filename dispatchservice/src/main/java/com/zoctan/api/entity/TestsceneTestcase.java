@@ -1,7 +1,7 @@
 package com.zoctan.api.entity;
 
-import javax.persistence.*;
 import java.util.Date;
+import javax.persistence.*;
 
 @Table(name = "testscene_testcase")
 public class TestsceneTestcase {
@@ -11,6 +11,11 @@ public class TestsceneTestcase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * 测试场景id
+     */
+    private Long testscenenid;
 
     public String getStopflag() {
         return stopflag;
@@ -23,14 +28,6 @@ public class TestsceneTestcase {
     private String stopflag;
 
 
-    public Long getLoopnums() {
-        return loopnums;
-    }
-
-    public void setLoopnums(Long loopnums) {
-        this.loopnums = loopnums;
-    }
-
     public Long getThreadnums() {
         return threadnums;
     }
@@ -39,33 +36,18 @@ public class TestsceneTestcase {
         this.threadnums = threadnums;
     }
 
+    public Long getLoopnums() {
+        return loopnums;
+    }
+
+    public void setLoopnums(Long loopnums) {
+        this.loopnums = loopnums;
+    }
+
     private Long threadnums;
+
     private Long loopnums;
 
-    public String getCasejmxname() {
-        return casejmxname;
-    }
-
-    public void setCasejmxname(String casejmxname) {
-        this.casejmxname = casejmxname;
-    }
-
-    private String casejmxname;
-
-    public String getExpect() {
-        return expect;
-    }
-
-    public void setExpect(String expect) {
-        this.expect = expect;
-    }
-
-    private String expect;
-
-    /**
-     * 测试场景id
-     */
-    private Long testscenenid;
 
 
     public Long getModelid() {

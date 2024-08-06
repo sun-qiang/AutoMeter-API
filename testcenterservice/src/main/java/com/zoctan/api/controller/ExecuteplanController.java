@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -171,7 +172,7 @@ public class ExecuteplanController {
     public Result update(@RequestBody Executeplan executeplan) {
         Condition con = new Condition(Executeplanbatch.class);
         con.createCriteria().andCondition("executeplanid = " + executeplan.getId())
-                .andCondition("status != '已完成'");
+                .andCondition("status = '执行中'");
         List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
         if (executeplanbatchList.size() > 0) {
             return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
@@ -260,13 +261,14 @@ public class ExecuteplanController {
         } else {
             Condition con = new Condition(Executeplanbatch.class);
             con.createCriteria().andCondition("executeplanid = " + executeplan.getId())
-                    .andCondition("status != '已完成'");
+                    .andCondition("status = '执行中'");
             List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
             if (executeplanbatchList.size() > 0) {
                 return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
             } else
             {
                 Executeplan existexecuteplan=executeplanService.getBy("id",executeplan.getId());
+                executeplan.setLastmodifyTime(new Date());
                 if(!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype()))
                 {
                     Condition pscon = new Condition(TestplanTestscene.class);

@@ -54,6 +54,16 @@ public class Executeplanbatch {
 
     private String memo;
 
+    public String getUsetype() {
+        return usetype;
+    }
+
+    public void setUsetype(String usetype) {
+        this.usetype = usetype;
+    }
+
+    private String usetype;
+
 
 
 

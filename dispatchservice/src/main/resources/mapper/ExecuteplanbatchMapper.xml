@@ -16,6 +16,7 @@
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />
     <result column="exectype" jdbcType="VARCHAR" property="exectype" />
+    <result column="usetype" jdbcType="VARCHAR" property="usetype" />
     <result column="execdate" jdbcType="VARCHAR" property="execdate" />
     <result column="sceneid" jdbcType="BIGINT" property="sceneid" />
     <result column="projectid" jdbcType="BIGINT" property="projectid" />

@@ -110,6 +110,7 @@ public class TestPlanCaseController {
                 newplanbatch.setCreator(planbatch.getCreator());
                 newplanbatch.setBatchname(planbatch.getBatchname());
                 newplanbatch.setMemo("");
+                newplanbatch.setUsetype(ep.getUsetype());
                 newplanbatch.setExecuteplanid(planbatch.getExecuteplanid());
                 newplanbatch.setExecuteplanname(planbatch.getExecuteplanname());
                 newplanbatch.setCreateTime(new Date());
@@ -206,7 +207,6 @@ public class TestPlanCaseController {
         String BatchName = param.get("TestPlan").toString();
         String Source = param.get("Source").toString();
 
-
         Project project = projectService.getBy("projectname", ProjectName);
         if (project == null) {
             return ResultGenerator.genFailedResult("不存在该项目：" + ProjectName + "，请联系AutoMeter管理员使用正确的项目名");
@@ -220,14 +220,30 @@ public class TestPlanCaseController {
             return ResultGenerator.genFailedResult("该项目下不存在此测试集合: " + TestPlanName + "，请联系AutoMeter管理员使用正确的测试集合名");
         }
         Executeplan executeplan = executeplanList.get(0);
-        List<ExecuteplanTestcase> caselist = new ArrayList<>();
         if (executeplan != null) {
             PlanID = executeplan.getId();
             //根据集合获取场景用例
             HashMap<String, Object> paramsmap = new HashMap<>();
             paramsmap.put("testplanid", PlanID);
             List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.findscenebyexecplanid(paramsmap);
-            TestPlanCaseController.log.info("CI测试集合id" + PlanID + " 批次为：" + BatchName + " 获取场景数：" + caselist.size());
+            TestPlanCaseController.log.info("CI测试集合id" + PlanID + " 批次为：" + BatchName + " 获取场景数：" + testplanTestsceneList.size());
+            if (testplanTestsceneList.size() == 0) {
+                TestPlanCaseController.log.info("当前测试集合：" + executeplan.getExecuteplanname() + "中还没有测试场景，请联系AutoMeter管理员");
+                return ResultGenerator.genFailedResult("当前测试集合：" + executeplan.getExecuteplanname() + "中还没有测试场景，请联系AutoMeter管理员");
+            }
+
+            Integer casenum = 0;
+            for (TestplanTestscene tes : testplanTestsceneList) {
+                Condition scenecon = new Condition(TestsceneTestcase.class);
+                scenecon.createCriteria().andCondition("testscenenid = " + tes.getTestscenenid());
+                List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
+                casenum = casenum + testsceneTestcaseList.size();
+            }
+            if (casenum.intValue() == 0) {
+                return ResultGenerator.genFailedResult("该测试集合下还未装载测试用例，请先装载需要运行的测试用例");
+            }
+
+
             Condition con = new Condition(Executeplanbatch.class);
             con.createCriteria().andCondition("batchname = '" + BatchName + "'")
                     .andCondition("executeplanid = " + PlanID);
@@ -240,6 +256,7 @@ public class TestPlanCaseController {
                     executeplanbatch.setExectype("立即执行");
                     executeplanbatch.setExecdate(":00");
                     executeplanbatch.setStatus("初始");
+                    executeplanbatch.setUsetype(executeplan.getUsetype());
                     executeplanbatch.setSlaverid(null);
                     executeplanbatch.setSource(Source);
                     executeplanbatch.setSceneid(testscene.getTestscenenid());
@@ -249,17 +266,12 @@ public class TestPlanCaseController {
                     executeplanbatch.setExecuteplanname(TestPlanName);
                     executeplanbatchService.save(executeplanbatch);
                 }
-//                if (caselist.size() == 0) {
-//                    return ResultGenerator.genOkResult("此测试集合:" + executeplan.getExecuteplanname() + " 还没用例，请先装载用例");
-//                } else {
-//
-//                    }
                 //获取对应计划类型的所有slaver
                 List<Slaver> slaverlist = slaverMapper.findslaveralive(executeplan.getUsetype(), "已下线");
                 //增加检测slaver是否正常，在salver的control做个检测的请求返回
                 if (slaverlist.size() == 0) {
                     TestPlanCaseController.log.info("CI没有类型为" + executeplan.getUsetype() + "的可用的测试执行机，请联系AutoMeter管理员");
-                    return ResultGenerator.genOkResult("没有类型为" + executeplan.getUsetype() + "的可用的测试执行机，请联系AutoMeter管理员");
+                    return ResultGenerator.genFailedResult("没有类型为" + executeplan.getUsetype() + "的可用的测试执行机，请联系AutoMeter管理员");
                 } else {
                     if (executeplan.getUsetype().equals("功能")) {
                         if (executeplan.getRunmode().equalsIgnoreCase("单机运行")) {
@@ -275,23 +287,46 @@ public class TestPlanCaseController {
                             SaveFuntionDispatch(longListHashMap, executeplan, BatchName);
                         }
                     }
-                }
-                if (executeplan.getUsetype().equals("性能")) {
-                    for (TestplanTestscene testscene : testplanTestsceneList) {
-                        long testsceneid = testscene.getId();
-                        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, executeplan.getUsetype());
-                        TestPlanCaseController.log.info("CI测试集合id" + executeplan.getId() + " 批次为：" + BatchName + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
-                        Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(executeplan.getId(), BatchName, testsceneid);
-                        List<Dispatch> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, executeplan, epb);
-                        dispatchMapper.insertBatchDispatch(dispatchList);
-                        TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + dispatchList.size());
-//                        TestPlanCaseController.log.info("CI单机运行slaver：" + slaverlist.get(0).getSlavername());
-//                        for (List<Dispatch> li : dispatchList) {
-//                            dispatchMapper.insertBatchDispatch(li);
-//                            TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + li.size());
-//                        }
+
+                    if (executeplan.getUsetype().equals("性能")) {
+                        List<Slaver> dispatchslaver = new ArrayList<>();
+                        if (executeplan.getRunmode().equalsIgnoreCase("单机运行")) {
+                            dispatchslaver.add(slaverlist.get(0));
+                        } else {
+                            dispatchslaver = slaverlist;
+                        }
+                        //dispatch secne
+                        List<List<TestsceneDispatch>> TestscenedispatchList = PerformanceDispatchScene(dispatchslaver, testplanTestsceneList, executeplan, BatchName);
+                        for (List<TestsceneDispatch> li : TestscenedispatchList) {
+                            testsceneDispatchService.insertBatchDispatch(li);
+                            TestPlanCaseController.log.info("性能保存成功场景调度条数：" + li.size());
+                        }
+                        TestPlanCaseController.log.info("性能保存成功场景调度完成。。。。。。。。。。。。。。。。。" );
+                        for (TestplanTestscene testscene : testplanTestsceneList) {
+                            long testsceneid = testscene.getTestscenenid();
+                            Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(executeplan.getId(), BatchName, testsceneid);
+                            //dispatch secnecase
+                            List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, executeplan.getUsetype());
+                            TestPlanCaseController.log.info("性能测试集合id" + executeplan.getId() + " 批次为：" + testsceneid + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
+                            List<Dispatch> dispatchList = PerformanceDispatch(dispatchslaver, testsceneTestcaseList, executeplan, epb);
+                            dispatchMapper.insertBatchDispatch(dispatchList);
+                            TestPlanCaseController.log.info("性能保存成功调度用例条数：" + dispatchList.size());
+
+                        }
+                        TestPlanCaseController.log.info("性能保存成功场景用例调度完成。。。。。。。。。。。。。。。。。" );
                     }
                 }
+//                if (executeplan.getUsetype().equals("性能")) {
+//                    for (TestplanTestscene testscene : testplanTestsceneList) {
+//                        long testsceneid = testscene.getId();
+//                        List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.findcasebytestscenenid(testsceneid, executeplan.getUsetype());
+//                        TestPlanCaseController.log.info("CI测试集合id" + executeplan.getId() + " 批次为：" + BatchName + " 场景为：" + testscene.getScenename() + " 获取用例数：" + testsceneTestcaseList.size());
+//                        Executeplanbatch epb = executeplanbatchMapper.getbatchidbyplanidandbatchnameandsceneid(executeplan.getId(), BatchName, testsceneid);
+//                        List<Dispatch> dispatchList = PerformanceDispatch(slaverlist, testsceneTestcaseList, executeplan, epb);
+//                        dispatchMapper.insertBatchDispatch(dispatchList);
+//                        TestPlanCaseController.log.info("CI保存成功性能调度用例条数：" + dispatchList.size());
+//                    }
+//                }
                 TestPlanCaseController.log.info("CI完成保存调度用例。。。。。。。。。。。。。。。。。。。。。。。。");
                 return ResultGenerator.genOkResult();
             }
@@ -378,14 +413,16 @@ public class TestPlanCaseController {
         dis.setCaseorder(caseorder);
         dis.setSceneid(testcase.getTestscenenid());
         dis.setScenename(testcase.getScenename());
-        dis.setExpect(testcase.getExpect());
+        dis.setExpect("");
+//        dis.setExpect(testcase.getExpect());
         dis.setExecplanid(ep.getId());
         dis.setTestcaseid(testcase.getTestcaseid());
         dis.setDeployunitname(testcase.getDeployunitname());
         dis.setStatus("待分配");
         dis.setBatchname(epb.getBatchname());
         dis.setBatchid(epb.getId());
-        dis.setCasejmxname(testcase.getCasejmxname());
+//        dis.setCasejmxname(testcase.getCasejmxname());
+        dis.setCasejmxname("");
         dis.setExecplanname(ep.getExecuteplanname());
         dis.setCreator(ep.getCreator());
         dis.setSlaverid(slaverid);
