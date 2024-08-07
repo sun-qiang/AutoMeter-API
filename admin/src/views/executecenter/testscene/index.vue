@@ -2271,7 +2271,7 @@
                         type="primary"
                         size="mini"
                         v-if="hasPermission('testscene:scenecasecondition')"
-                        @click.native.prevent="showscenecaseconditionorderDialog"
+                        @click.native.prevent="showdebugconditionorderDialog"
                       >设置前置条件顺序</el-button>
                     </el-form-item>
                   </el-form>
@@ -4109,6 +4109,18 @@ export default {
       this.ConditionOrderdialogFormVisible = true
       this.searchconditionorder.subconditionid = this.tmpsubconditionid
       this.searchconditionorder.conditiontype = 'case'
+      this.searchConditionorder()
+    },
+
+    showdebugconditionorderDialog() {
+      // 显示新增对话框
+      this.ConditionOrderdialogFormVisible = true
+      this.searchconditionorder.subconditionid = this.tmpsubconditionid
+      if (this.tmpnode.level === 1) {
+        this.searchconditionorder.conditiontype = 'scene'
+      } else {
+        this.searchconditionorder.conditiontype = 'case'
+      }
       this.searchConditionorder()
     },
 

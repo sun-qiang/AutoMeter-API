@@ -86,8 +86,8 @@ public class StaticsPlanandcasesController {
             int Year = calendar.get(Calendar.YEAR);
             int MONTH = calendar.get(Calendar.MONTH) + 1;
             int Day = calendar.get(Calendar.DAY_OF_MONTH);
-            String MONTHS = "";
-            String DayS = "";
+            String MONTHS = String.valueOf(MONTH);
+            String DayS = String.valueOf(Day);;
             if (MONTH < 10) {
                 MONTHS = "0" + MONTH;
             }
