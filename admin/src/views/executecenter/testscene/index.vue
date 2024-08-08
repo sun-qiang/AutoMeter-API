@@ -4379,6 +4379,20 @@ export default {
       this.tmptestvariables.projectid = window.localStorage.getItem('pid')
     },
 
+    showUpdatetestvariablesDialog(index) {
+      this.caseaddvariablesdialogFormVisible = true
+      this.caseaddvariablesdialogStatus = 'update'
+      this.tmptestvariables.id = this.ApicasesVariablesList[index].id
+      this.tmptestvariables.testvariablesname = this.ApicasesVariablesList[index].testvariablesname
+      this.tmptestvariables.variablesdes = this.ApicasesVariablesList[index].variablesdes
+      this.tmptestvariables.testvariablestype = this.ApicasesVariablesList[index].testvariablestype
+      this.tmptestvariables.variablesexpress = this.ApicasesVariablesList[index].variablesexpress
+      this.tmptestvariables.tmptestvariables = this.ApicasesVariablesList[index].tmptestvariables
+      this.tmptestvariables.valuetype = this.ApicasesVariablesList[index].valuetype
+      this.tmptestvariables.memo = this.ApicasesVariablesList[index].memo
+      this.tmptestvariables.creator = this.name
+    },
+
     showCaseVariablesforConditionDialog(index) {
       this.caseVariablesDialogFormVisible = true
       this.tmptestvariables.caseid = this.apiconditioncaseList[index].caseid
