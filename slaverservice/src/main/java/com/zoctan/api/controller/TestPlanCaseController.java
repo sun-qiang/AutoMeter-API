@@ -369,15 +369,17 @@ public class TestPlanCaseController {
         long SlaverId = 0;
         long planid = 0;
         String batchname = "";
+        String planname = "";
         for (Executeplanbatch executeplanbatch : executeplanbatchList) {
             planid = executeplanbatch.getExecuteplanid();
             batchname = executeplanbatch.getBatchname();
+            planname = executeplanbatch.getExecuteplanname();
             Long Sceneid = executeplanbatch.getSceneid();
             SceneIDs = SceneIDs + Sceneid + ",";
             SlaverId = executeplanbatch.getSlaverid();
         }
         try {
-            tpcservice.ExecuteHttpPlanFunctionCase(SlaverId, planid, batchname, JmeterPath, JmxPath, SceneIDs, url, username, password, SlaverId);
+            tpcservice.ExecuteHttpPlanFunctionCase(SlaverId, planid,planname, batchname, JmeterPath, JmxPath, SceneIDs, url, username, password, SlaverId);
             for (Executeplanbatch executeplanbatch : executeplanbatchList) {
                 Long Sceneid = executeplanbatch.getSceneid();
                 Long batchid = executeplanbatch.getId();

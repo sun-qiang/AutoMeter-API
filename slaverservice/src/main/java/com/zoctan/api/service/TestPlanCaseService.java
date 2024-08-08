@@ -16,7 +16,7 @@ public interface TestPlanCaseService extends Service<TestplanCase> {
 
     void ExecuteHttpPerformancePlanScene(String JmxFile, String MysqlUrl, String MysqlUserName, String MysqlPassword, String PlanName, String SceneName, long SlaverId, long PlanId, long Sceneid, long batchid, String BatchName, String JmeterPath, String JmxPath, String JmeterPerformanceReportPath, String JmeterPerformanceReportLogFilePath, Long Thread, Long Loop, String creator) throws IOException;
 
-    void ExecuteHttpPlanFunctionCase(Long Slaverid, Long planid, String batchname, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUsername, String MysqlPassword, long JmeterLogFileNum) throws IOException;
+    void ExecuteHttpPlanFunctionCase(Long Slaverid, Long planid,String planname, String batchname, String JmeterPath, String JmxPath, String DispatchIds, String MysqlUrl, String MysqlUsername, String MysqlPassword, long JmeterLogFileNum) throws IOException;
 
 
 }

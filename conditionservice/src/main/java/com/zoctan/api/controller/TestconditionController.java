@@ -678,6 +678,10 @@ public class TestconditionController {
 
         TestconditionController.log.info("用例调试条件。。。。。subconditionidid-==================：" + conditionid);
 
+        //增加场景条件处理
+
+
+
         Map<String, Object> conditionmap = new HashMap<>();
         conditionmap.put("subconditionid", conditionid);
         conditionmap.put("conditiontype", conditiontype);

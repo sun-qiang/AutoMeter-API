@@ -2275,7 +2275,7 @@
                         type="primary"
                         size="mini"
                         v-if="hasPermission('testscene:scenecasecondition')"
-                        @click.native.prevent="showscenecaseconditionorderDialog"
+                        @click.native.prevent="showdebugconditionorderDialog"
                       >设置前置条件顺序</el-button>
                     </el-form-item>
                   </el-form>
@@ -3742,6 +3742,17 @@ export default {
   },
 
   methods: {
+    showdebugconditionorderDialog() {
+      // 显示新增对话框
+      this.ConditionOrderdialogFormVisible = true
+      this.searchconditionorder.subconditionid = this.tmpsubconditionid
+      if (this.tmpnode.level === 1) {
+        this.searchconditionorder.conditiontype = 'scene'
+      } else {
+        this.searchconditionorder.conditiontype = 'case'
+      }
+      this.searchConditionorder()
+    },
     showApi(e) {
       console.log('当前行：', e.apiname)
       this.$router.push({ path: '/deployunit/api/list', query: { apiname: e.apiname }})
