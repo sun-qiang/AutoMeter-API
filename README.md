@@ -96,7 +96,7 @@
 [GitHub](https://github.com/AutoMeter/AutoMeter-API)
 
  欢迎一起讨论
-![输入图片说明](img/fanfanxiao.png)
+![输入图片说明](https://gitee.com/season-fan/autometer-api/raw/master/img/fanfanxiao.png)
 
 ## License & Copyright
 License & Copyright
