@@ -31,34 +31,34 @@
 
 ### 3.设计测试用例
 
-![输入图片说明](img/case.jpg)
+![输入图片说明](https://foruda.gitee.com/images/1723102234128516762/6e13ddea_9168950.png)
 设计API接口用例基础要素：用例数据，用例的断言，快捷调试等基础，支持复制，批量复制，后续支持自动生成基础用例
 从个人或者公司的角度看，用例的数量和类型来决定需要做怎么样的执行，如果用例数量庞大，并且需要快速得到结果，本质上我们需要拆分用例由多机并行执行满足需求，也就是多点执行，如果需要性能的测试，执行性能的机器我们可以是低性能的多台机器发起或者是高性能的少量机器发起，所以说怎么运行是根据需要来定制执行用例的类型和机器数量
 
 ### 4.运行用例
-![输入图片说明](img/collection.jpg)
+![输入图片说明](https://foruda.gitee.com/images/1723102257152714878/a46623d5_9168950.png)
 
 根据测试业务需要，定义成多个测试集合来满足不同的测试需要，功能测试，性能测试，回归测试，CI对接自动化测试
 支持立即执行，定时执行，某天执行等多种方式
 
-![输入图片说明](img/jenkins.jpg)
+![输入图片说明](https://foruda.gitee.com/images/1723102271584420158/fd857d98_9168950.png)
 
 
 ### 5.获得什么样的反馈报告？
 
-![输入图片说明](img/reportnew.png)
+![输入图片说明](https://foruda.gitee.com/images/1723102281847345773/a3252703_9168950.png)
 
 对于用例执行完，我们希望看到什么反馈，对于开发，测试，或者其他技术人员，我们希望看到运行的统计信息
 以及用例详细信息：结果状态，运行时间，请求数据，API的具体响应，我的期望，断言的详细信息，以及用例运行时的信息
 对应性能来说，我们还希望能得到统计的信息，比如整体性能的时间，tps，响应时间，99%pct等，以及被测系统优化前后性能结果的多次对比
 
-![输入图片说明](img/performanceralleport.png)
+![输入图片说明](https://foruda.gitee.com/images/1723102293830868804/d48253a2_9168950.png)
 
-![输入图片说明](img/performancereport.jpg)
+![输入图片说明](https://foruda.gitee.com/images/1723102310267371952/ad61e9f0_9168950.png)
 
 ## 架构
 
- ![输入图片说明](img/架构图.jpg)
+ ![输入图片说明](https://foruda.gitee.com/images/1723102320850749023/8fa4c986_9168950.png)
 
  [架构设计](https://gitee.com/season-fan/autometer-api/wikis/%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0/%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84?sort_id=4936162)
 
@@ -98,7 +98,6 @@
  欢迎一起讨论
 ![输入图片说明](img/fanfanxiao.png)
 
-![输入图片说明](img/dy.jpeg)
 ## License & Copyright
 License & Copyright
 Copyright (c) 2020-2024 Season, All rights reserved.
