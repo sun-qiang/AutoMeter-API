@@ -49,9 +49,9 @@
           <span v-text="getIndex(scope.$index)"></span>
         </template>
       </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" label="执行计划" align="center" prop="batchname" width="80"/>
+      <el-table-column :show-overflow-tooltip="true" label="执行计划" align="center" prop="batchname" width="120"/>
       <el-table-column :show-overflow-tooltip="true" label="用例名" align="center" prop="casename" width="120"/>
-      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="80"/>
+      <el-table-column :show-overflow-tooltip="true" label="API" align="center" prop="apiname" width="120"/>
       <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>
 
       <el-table-column label="状态" align="center" prop="status" width="50">
@@ -62,7 +62,7 @@
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" label="微服务" align="center" prop="deployunitname" width="120"/>
 
-      <el-table-column label="请求地址" align="center" prop="url" width="80">
+      <el-table-column label="请求地址" align="center" prop="url" width="120">
         <template slot-scope="scope">
           <el-popover trigger="hover" placement="top">
             <p>{{ scope.row.url }}</p>
@@ -128,8 +128,8 @@
       </template>
       </el-table-column>
 
-      <el-table-column label="运行时间(ms)" align="center" prop="runtime" width="100"/>
-      <el-table-column label="异常信息" align="center" prop="errorinfo" width="80">
+      <el-table-column label="运行时间(ms)" align="center" prop="runtime" width="120"/>
+      <el-table-column label="异常信息" align="center" prop="errorinfo" width="120">
       <template slot-scope="scope">
         <el-popover trigger="hover" placement="top">
           <p>{{ scope.row.errorinfo }}</p>
@@ -143,7 +143,7 @@
       </template>
       </el-table-column>
 
-      <el-table-column label="创建时间" align="center" prop="createTime" width="120">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="380">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
     </el-table>

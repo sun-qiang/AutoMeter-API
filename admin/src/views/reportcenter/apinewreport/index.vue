@@ -58,13 +58,13 @@
               fit
               highlight-current-row
             >
-              <el-table-column label="场景数" align="center" prop="sceneNums" width="80"/>
-              <el-table-column label="用例总数" align="center" prop="caseNum" width="80"/>
-              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="80"/>
-              <el-table-column label="成功数" align="center" prop="successCaseNums" width="80"/>
-              <el-table-column label="失败数" align="center" prop="failCaseNums" width="80"/>
-              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="80"/>
-              <el-table-column label="停止执行数" align="center" prop="stopExecCaseNums" width="85"/>
+              <el-table-column label="场景数" align="center" prop="sceneNums" width="120"/>
+              <el-table-column label="用例总数" align="center" prop="caseNum" width="120"/>
+              <el-table-column label="执行中数" align="center" prop="execCaseNums" width="120"/>
+              <el-table-column label="成功数" align="center" prop="successCaseNums" width="120"/>
+              <el-table-column label="失败数" align="center" prop="failCaseNums" width="120"/>
+              <el-table-column label="未执行数" align="center" prop="notExecCaseNums" width="120"/>
+              <el-table-column label="停止执行数" align="center" prop="stopExecCaseNums" width="120"/>
               <el-table-column label="总耗时(秒)" align="center" prop="costtime" width="120"/>
             </el-table>
           </div>
@@ -81,9 +81,9 @@
               border
               highlight-current-row
             >
-              <el-table-column label="总成功率" align="center" prop="successrate" width="350">
+              <el-table-column label="总成功率" align="center" prop="successrate" width="550">
               </el-table-column>
-              <el-table-column label="总失败率" align="center" prop="failrate" width="340"/>
+              <el-table-column label="总失败率" align="center" prop="failrate" width="540"/>
             </el-table>
           </div>
         </el-col>
@@ -99,11 +99,11 @@
               border
               highlight-current-row
             >
-              <el-table-column label="测试集合前置条件数" align="center" prop="testCollectionConditionsNUms" width="220">
+              <el-table-column label="测试集合前置条件数" align="center" prop="testCollectionConditionsNUms" width="380">
               </el-table-column>
-              <el-table-column label="测试场景前置条件数" align="center" prop="sceneConditionNums" width="220"/>
+              <el-table-column label="测试场景前置条件数" align="center" prop="sceneConditionNums" width="380"/>
 
-              <el-table-column label="测试用例前置条件数" align="center" prop="caseConditionNums" width="220"/>
+              <el-table-column label="测试用例前置条件数" align="center" prop="caseConditionNums" width="380"/>
             </el-table>
           </div>
         </el-col>
@@ -130,8 +130,8 @@
             <el-table-column label="测试集合名" :show-overflow-tooltip="true"  align="center" prop="executeplanname" width="150"/>
             <el-table-column label="执行计划" :show-overflow-tooltip="true" align="center" prop="batchname" width="150"/>
             <el-table-column label="测试场景" :show-overflow-tooltip="true" align="center" prop="scenename" width="150"/>
-            <el-table-column label="状态" align="center" prop="status" width="70"/>
-            <el-table-column label="来源" align="center" prop="source" width="60"/>
+            <el-table-column label="状态" align="center" prop="status" width="80"/>
+            <el-table-column label="来源" align="center" prop="source" width="80"/>
             <el-table-column label="执行类型" align="center" prop="exectype" width="80"/>
             <el-table-column label="执行时间" align="center" :show-overflow-tooltip="true" prop="execdate" width="120"/>
             <el-table-column label="操作人" align="center" prop="creator" width="70"/>
@@ -141,10 +141,10 @@
             </template>
             </el-table-column>>
 
-            <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="130">
+            <el-table-column label="创建时间" :show-overflow-tooltip="true" align="center" prop="createTime" width="300">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
             </el-table-column>
-            <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="130">
+            <el-table-column label="最后修改时间" :show-overflow-tooltip="true" align="center" prop="lastmodifyTime" width="300">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
               </template>
             </el-table-column>
@@ -176,11 +176,11 @@
                 <span v-text="conditiongetIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column :show-overflow-tooltip="true"  label="集合/场景/用例名" align="center" prop="planname" width="180"/>
-            <el-table-column :show-overflow-tooltip="true"  label="执行计划名" align="center" prop="batchname" width="180"/>
-            <el-table-column :show-overflow-tooltip="true"  label="条件名" align="center" prop="subconditionname" width="180"/>
+            <el-table-column :show-overflow-tooltip="true"  label="集合/场景/用例名" align="center" prop="planname" width="280"/>
+            <el-table-column :show-overflow-tooltip="true"  label="执行计划" align="center" prop="batchname" width="180"/>
+            <el-table-column :show-overflow-tooltip="true"  label="条件名" align="center" prop="subconditionname" width="200"/>
             <el-table-column label="条件类型" align="center" prop="subconditiontype" width="100"/>
-            <el-table-column label="条件结果" align="center" prop="conditionresult" width="100">
+            <el-table-column :show-overflow-tooltip="true"  label="条件结果" align="center" prop="conditionresult" width="300">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                   <p>{{ scope.row.conditionresult }}</p>
@@ -197,7 +197,7 @@
               </template>
             </el-table-column>
             <el-table-column label="消耗时长(ms)" align="center" prop="runtime" width="100"/>
-            <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+            <el-table-column label="创建时间" align="center" prop="createTime" width="450">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
             </el-table-column>
 
@@ -234,7 +234,6 @@
           </el-form-item>
           </el-form>
         </div>
-
         <template>
           <el-table
             :data="apireportList"
@@ -250,22 +249,22 @@
                 <span v-text="getIndex(scope.$index)"></span>
               </template>
             </el-table-column>
-            <el-table-column :show-overflow-tooltip="true"  label="执行计划" align="center" prop="batchname" width="80"/>
-            <el-table-column :show-overflow-tooltip="true"  label="测试场景" align="center" prop="scenename" width="80"/>
-            <el-table-column :show-overflow-tooltip="true"  label="用例名" align="center" prop="casename" width="120"/>
-            <el-table-column :show-overflow-tooltip="true"  label="API" align="center" prop="apiname" width="80"/>
+            <el-table-column :show-overflow-tooltip="true"  label="执行计划" align="center" prop="batchname" width="150"/>
+            <el-table-column :show-overflow-tooltip="true"  label="测试场景" align="center" prop="scenename" width="150"/>
+            <el-table-column :show-overflow-tooltip="true"  label="用例名" align="center" prop="casename" width="150"/>
+            <el-table-column :show-overflow-tooltip="true"  label="API" align="center" prop="apiname" width="150"/>
             <el-table-column label="请求方式" align="center" prop="requestmethod" width="80"/>
 
-            <el-table-column label="状态" align="center" prop="status" width="50">
+            <el-table-column label="状态" align="center" prop="status" width="70">
               <template slot-scope="scope">
                 <span v-if="scope.row.status === '失败'" style="color:red">{{ scope.row.status }}</span>
                 <span v-else style="color: #37B328">{{ scope.row.status }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="微服务" align="center" prop="deployunitname" width="120"/>
+            <el-table-column label="微服务" align="center" prop="deployunitname" width="150"/>
 
 
-            <el-table-column label="请求地址" align="center" prop="url" width="80">
+            <el-table-column label="请求地址" align="center" prop="url" width="100">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                   <p>{{ scope.row.url }}</p>
@@ -276,7 +275,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="请求头" align="center" prop="requestheader" width="80">
+            <el-table-column label="请求头" align="center" prop="requestheader" width="100">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top">
                   <p>{{ scope.row.requestheader }}</p>
@@ -287,7 +286,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="请求数据" align="center" prop="requestdatas" width="80">
+            <el-table-column label="请求数据" align="center" prop="requestdatas" width="100">
               <template slot-scope="scope">
                 <el-popover trigger="hover" placement="top-start">
                   <p>{{ scope.row.requestdatas }}</p>
@@ -346,7 +345,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="创建时间" align="center" prop="createTime" width="120">
+            <el-table-column  :show-overflow-tooltip="true"  label="创建时间" align="center" prop="createTime" width="300">
               <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
             </el-table-column>
           </el-table>
