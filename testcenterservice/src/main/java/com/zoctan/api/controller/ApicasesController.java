@@ -614,6 +614,15 @@ public class ApicasesController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
+
+        Condition scenecase = new Condition(TestsceneTestcase.class);
+        scenecase.createCriteria().andCondition("testcaseid = " + id);
+        List<TestsceneTestcase> testsceneTestcaseList= testsceneTestcaseService.listByCondition(scenecase);
+        if(testsceneTestcaseList.size()>0)
+        {
+            return ResultGenerator.genFailedResult("该用例存在测试场景使用中，不能删除");
+        }
+
         Apicases apicases = apicasesService.getById(id);
         apicasesService.deleteById(id);
         //删除用例值数据

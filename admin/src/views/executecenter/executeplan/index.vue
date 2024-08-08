@@ -5572,7 +5572,7 @@
               this.tmpplanbatch.creator = this.name
               this.tmpplanbatch.batchname = ''
             }).catch(res => {
-              // this.$message.error('执行失败')
+              this.$message.error(res)
             })
           }
         }

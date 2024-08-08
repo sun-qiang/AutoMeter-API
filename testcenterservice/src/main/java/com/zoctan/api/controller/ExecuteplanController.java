@@ -94,58 +94,32 @@ public class ExecuteplanController {
     }
 
     @PostMapping("/checkcondition")
-    public Result checkcondition(@RequestBody Executeplan executeplan) {
-        try {
-            // 检查此计划下是否有装载用例
-            Long planid = executeplan.getId();
-            Long envid = executeplan.getEnvid();
-            String enviromentname = executeplan.getEnviromentname();
-            Condition con = new Condition(TestplanTestscene.class);
-            con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
-                    .andCondition("testplanid = " + planid);
-            List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
-            Integer casenum = 0;
-            for (TestplanTestscene tes : testplanTestsceneList) {
-                Condition scenecon = new Condition(TestsceneTestcase.class);
-                scenecon.createCriteria().andCondition("testscenenid = " + tes.getTestscenenid());
-                List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
-                casenum = casenum + testsceneTestcaseList.size();
+    public Result checkcondition(@RequestBody Executeplan executeplan) throws Exception {
+        // 检查此计划下是否有装载用例
+        Long planid = executeplan.getId();
+        Long envid = executeplan.getEnvid();
+        String enviromentname = executeplan.getEnviromentname();
+        Condition con = new Condition(TestplanTestscene.class);
+        con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
+                .andCondition("testplanid = " + planid);
+        List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
+        for (TestplanTestscene tes : testplanTestsceneList) {
+            Condition scenecon = new Condition(TestsceneTestcase.class);
+            scenecon.createCriteria().andCondition("testscenenid = " + tes.getTestscenenid());
+            List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.listByCondition(scenecon);
+            if (testsceneTestcaseList.size() == 0) {
+                throw new Exception("该测试集合的测试场景: "+tes.getScenename()+" 还未装载测试用例，请先添加用例");
             }
-            if (casenum.intValue() == 0) {
-                return ResultGenerator.genFailedResult("该测试集合下还未装载测试用例，请先装载需要运行的测试场景和用例");
-            } else {
-                for (TestplanTestscene tets : testplanTestsceneList) {
-                    Long Sceneid = tets.getTestscenenid();
-                    List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.finddeployunitbyscenenid(Sceneid);
-                    for (TestsceneTestcase tt : testsceneTestcaseList) {
-
-                        Integer machinenum = macdepunitService.findmachinenumbyenvidanddeployid(envid, tt.getDeployunitid());
-                        if (machinenum.intValue() == 0) {
-                            return ResultGenerator.genFailedResult("该测试集合的用例所在的微服务: " + tt.getDeployunitname() + " 在环境: " + enviromentname + " 中未完成配置,请先完成集合所运行的环境微服务配置");
-                        }
-                    }
+        }
+        for (TestplanTestscene tets : testplanTestsceneList) {
+            Long Sceneid = tets.getTestscenenid();
+            List<TestsceneTestcase> testsceneTestcaseList = testsceneTestcaseService.finddeployunitbyscenenid(Sceneid);
+            for (TestsceneTestcase tt : testsceneTestcaseList) {
+                Integer machinenum = macdepunitService.findmachinenumbyenvidanddeployid(envid, tt.getDeployunitid());
+                if (machinenum.intValue() == 0) {
+                    throw new Exception("该测试集合的用例所在的微服务: " + tt.getDeployunitname() + " 在环境: " + enviromentname + " 中未完成配置,请先完成集合所运行的环境微服务配置");
                 }
-//                List<ExecuteplanTestcase> deployidlist = execplantestcaseService.finddeployunitbyplanid(planid);
-//                if(deployidlist.size()==0)
-//                {
-//                    return ResultGenerator.genFailedResult("该执行计划下用例所在的所有微服务不存在，请检查是否被删除！");
-//                }
-//                else
-//                {
-//                    for (ExecuteplanTestcase ect: deployidlist) {
-//                        Long deployid=ect.getDeployunitid();
-//                        String deployname=ect.getDeployunitname();
-//                        Integer machinenum= macdepunitService.findmachinenumbyenvidanddeployid(envid,deployid);
-//                        if(machinenum.intValue()==0)
-//                        {
-//                            return ResultGenerator.genFailedResult("该执行计划的用例所在的微服务: "+deployname+" 在环境: "+enviromentname+" 中未完成部署！");
-//                        }
-//                    }
-//                    return ResultGenerator.genOkResult();
-//                }
             }
-        } catch (ServiceException se) {
-            return ResultGenerator.genFailedResult(se.getMessage());
         }
         return ResultGenerator.genOkResult();
     }
@@ -176,23 +150,19 @@ public class ExecuteplanController {
         List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
         if (executeplanbatchList.size() > 0) {
             return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
-        } else
-        {
-            Executeplan existexecuteplan=executeplanService.getBy("id",executeplan.getId());
-            if(!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype()))
-            {
+        } else {
+            Executeplan existexecuteplan = executeplanService.getBy("id", executeplan.getId());
+            if (!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype())) {
                 Condition pscon = new Condition(TestplanTestscene.class);
                 pscon.createCriteria().andCondition("testplanid = " + executeplan.getId());
                 List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(pscon);
-                if(testplanTestsceneList.size()>0)
-                {
+                if (testplanTestsceneList.size() > 0) {
                     return ResultGenerator.genFailedResult("请先删除当前测试集合下的测试场景再修改集合类型！！");
-                } else
-                {
+                } else {
                     executeplanService.update(executeplan);
                     return ResultGenerator.genOkResult();
                 }
-            }else {
+            } else {
                 executeplanService.update(executeplan);
                 return ResultGenerator.genOkResult();
             }
@@ -265,24 +235,20 @@ public class ExecuteplanController {
             List<Executeplanbatch> executeplanbatchList = executeplanbatchService.listByCondition(con);
             if (executeplanbatchList.size() > 0) {
                 return ResultGenerator.genFailedResult("当前测试集合有正在运行的执行计划，无法修改！！");
-            } else
-            {
-                Executeplan existexecuteplan=executeplanService.getBy("id",executeplan.getId());
+            } else {
+                Executeplan existexecuteplan = executeplanService.getBy("id", executeplan.getId());
                 executeplan.setLastmodifyTime(new Date());
-                if(!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype()))
-                {
+                if (!executeplan.getUsetype().equalsIgnoreCase(existexecuteplan.getUsetype())) {
                     Condition pscon = new Condition(TestplanTestscene.class);
                     pscon.createCriteria().andCondition("testplanid = " + executeplan.getId());
                     List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(pscon);
-                    if(testplanTestsceneList.size()>0)
-                    {
-                        return ResultGenerator.genFailedResult("此测试集合中存在类型为："+existexecuteplan.getUsetype()+"的测试场景，若需要修改集合为："+executeplan.getUsetype()+" 类型，请先删除集合下的测试场景");
-                    } else
-                    {
+                    if (testplanTestsceneList.size() > 0) {
+                        return ResultGenerator.genFailedResult("此测试集合中存在类型为：" + existexecuteplan.getUsetype() + "的测试场景，若需要修改集合为：" + executeplan.getUsetype() + " 类型，请先删除集合下的测试场景");
+                    } else {
                         executeplanService.update(executeplan);
                         return ResultGenerator.genOkResult();
                     }
-                }else {
+                } else {
                     executeplanService.update(executeplan);
                     return ResultGenerator.genOkResult();
                 }
