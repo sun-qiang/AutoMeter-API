@@ -103,6 +103,9 @@ public class ExecuteplanController {
         con.createCriteria().andCondition("projectid = " + executeplan.getProjectid())
                 .andCondition("testplanid = " + planid);
         List<TestplanTestscene> testplanTestsceneList = testplanTestsceneService.listByCondition(con);
+        if(testplanTestsceneList.size() == 0) {
+            throw new Exception("该测试集合未添加测试场景，请先添加测试场景");
+        }
         for (TestplanTestscene tes : testplanTestsceneList) {
             Condition scenecon = new Condition(TestsceneTestcase.class);
             scenecon.createCriteria().andCondition("testscenenid = " + tes.getTestscenenid());
