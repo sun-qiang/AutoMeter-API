@@ -151,6 +151,38 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/executecenter',
+    component: Layout,
+    name: '执行中心',
+    icon: 'execute',
+    children: [
+      { path: 'apicases/list', name: '接口用例库', component: _import('assets/cases/apicases/index'), meta: { title: '接口用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
+      { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
+      { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
+      { path: 'executeplan/list', name: '测试集合管理', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
+      // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
+      // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},
+      { path: 'executeplanbatch/list', name: '执行计划管理', component: _import('executecenter/executeplanbatch/index'), meta: { title: '执行计划', permission: ['executeplanbatch:list'] }}
+    ]
+  },
+  {
+    path: '/reportcenter',
+    component: Layout,
+    name: '报告中心',
+    icon: 'report',
+    children: [
+      // { path: 'testconditionreport/list', name: '条件执行报告', component: _import('reportcenter/testconditionreport/index'), meta: { title: '条件执行报告', permission: ['testconditionreport:list'] }},
+      { path: 'apinewreport/list', name: '功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
+      // { path: 'apinewtmpreport/list', alwaysShow: false, name: '集合功能报告11', component: _import('reportcenter/apinewtmpreport/index'), meta: { title: '集合功能报告1', permission: ['apireport:list'] }},
+      { path: 'apireport/list', name: '功能报告明细', component: _import('reportcenter/apireport/index'), meta: { title: '功能报告明细', permission: ['apireport:list'] }},
+      { path: 'apinewperreport/list', name: '性能总览报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '性能总览报告', permission: ['apireport:list'] }},
+      { path: 'apiperformancegrap/list', name: '性能图表总览', component: _import('reportcenter/apiperformancegrap/index'), meta: { title: '性能图表总览', permission: ['apiperformancegrap:list'] }},
+      // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
+      // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
+      { path: 'apiperformancestatistics/list', name: '性能回归对比', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能回归对比', permission: ['apiperformancestatistics:list'] }}
+    ]
+  },
+  {
     path: '/testvariables',
     component: Layout,
     name: '变量管理',
@@ -191,38 +223,6 @@ export const asyncRouterMap = [
     children: [
       { path: 'slaver/list', name: '测试执行机', component: _import('dispatch/slaver/index'), meta: { title: '测试执行机', permission: ['slaver:list'] }},
       { path: 'dispatch/list', name: '调度管理', component: _import('dispatch/dispatch/index'), meta: { title: '调度管理', permission: ['dispatch:list'] }}
-    ]
-  },
-  {
-    path: '/executecenter',
-    component: Layout,
-    name: '执行中心',
-    icon: 'execute',
-    children: [
-      { path: 'apicases/list', name: '接口用例库', component: _import('assets/cases/apicases/index'), meta: { title: '接口用例库', permission: ['apicases:list'] }, icon: 'testmanager' },
-      { path: 'testscene/list', name: '功能测试场景', component: _import('executecenter/testscene/index'), meta: { title: '功能测试场景', permission: ['testscene:list'] }},
-      { path: 'testperscene/list', name: '性能测试场景', component: _import('executecenter/testperscene/index'), meta: { title: '性能测试场景', permission: ['testscene:list'] }},
-      { path: 'executeplan/list', name: '测试集合管理', component: _import('executecenter/executeplan/index'), meta: { title: '测试集合', permission: ['executeplan:list'] }},
-      // { path: 'executeplancase/list', name: '场景用例', component: _import('executecenter/executeplancase/index'), meta: { title: '场景用例', permission: ['executeplan:list'] }},
-      // { path: 'processtestcase/list', name: '流程用例', component: _import('executecenter/processtestcase/index'), meta: { title: '流程用例', permission: ['processtestcase:list'] }},
-      { path: 'executeplanbatch/list', name: '执行计划管理', component: _import('executecenter/executeplanbatch/index'), meta: { title: '执行计划', permission: ['executeplanbatch:list'] }}
-    ]
-  },
-  {
-    path: '/reportcenter',
-    component: Layout,
-    name: '报告中心',
-    icon: 'report',
-    children: [
-      // { path: 'testconditionreport/list', name: '条件执行报告', component: _import('reportcenter/testconditionreport/index'), meta: { title: '条件执行报告', permission: ['testconditionreport:list'] }},
-      { path: 'apinewreport/list', name: '功能报告', component: _import('reportcenter/apinewreport/index'), meta: { title: '集合功能报告', permission: ['apireport:list'] }},
-      // { path: 'apinewtmpreport/list', alwaysShow: false, name: '集合功能报告11', component: _import('reportcenter/apinewtmpreport/index'), meta: { title: '集合功能报告1', permission: ['apireport:list'] }},
-      { path: 'apireport/list', name: '功能报告明细', component: _import('reportcenter/apireport/index'), meta: { title: '功能报告明细', permission: ['apireport:list'] }},
-      { path: 'apinewperreport/list', name: '性能总览报告', component: _import('reportcenter/apinewperreport/index'), meta: { title: '性能总览报告', permission: ['apireport:list'] }},
-      { path: 'apiperformancegrap/list', name: '性能图表总览', component: _import('reportcenter/apiperformancegrap/index'), meta: { title: '性能图表总览', permission: ['apiperformancegrap:list'] }},
-      // { path: 'apireportstatics/list', name: '功能统计报告', component: _import('reportcenter/apireportstatics/index'), meta: { title: '功能统计报告', permission: ['apireportstatics:list'] }},
-      // { path: 'apiperformancereport/list', name: '性能明细报告', component: _import('reportcenter/apiperformancereport/index'), meta: { title: '性能明细报告', permission: ['apiperformancereport:list'] }},
-      { path: 'apiperformancestatistics/list', name: '性能回归对比', component: _import('reportcenter/apiperformancestatistics/index'), meta: { title: '性能回归对比', permission: ['apiperformancestatistics:list'] }}
     ]
   },
   // {

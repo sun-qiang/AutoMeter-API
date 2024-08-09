@@ -24,7 +24,10 @@
             <el-input clearable v-model="search.deployunitname" clearable @keyup.enter.native="searchBy" placeholder="服务名"></el-input>
           </el-form-item>
           <el-form-item label="协议:">
-            <el-input clearable v-model="search.protocal" clearable @keyup.enter.native="searchBy" placeholder="协议"></el-input>
+             <el-select style="width: 120px" v-model="search.protocal" placeholder="协议" clearable>
+            <el-option label="http" value="http"></el-option>
+            <el-option label="https" value="https"></el-option>
+          </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="searchBy" :loading="btnLoading">查询</el-button>
@@ -49,7 +52,7 @@
 
       <el-table-column :show-overflow-tooltip="true"  label="服务名" align="center" prop="deployunitname" width="150"/>
       <el-table-column label="协议" align="center" prop="protocal" width="80"/>
-      <el-table-column label="访问端口" align="center" prop="port" width="80"/>
+      <el-table-column  :show-overflow-tooltip="true"  label="访问端口" align="center" prop="port" width="80"/>
       <el-table-column :show-overflow-tooltip="true"  label="基础路径" align="center" prop="baseurl" width="150"/>
       <el-table-column label="API数" align="center" prop="apicounts" sortable width="80"/>
       <el-table-column label="维护人" align="center" prop="creator" width="80"/>
@@ -125,8 +128,9 @@
         </el-form-item>
         <el-form-item label="端口" prop="port" required>
           <el-input style="width: 500px"
-            type="text"
-            maxlength="40"
+                    oninput="if(value > 65535) value = 65535; if(value < 0 || value == '' || value == null) value = 1;"
+                    type="number"
+            maxlength="5"
             prefix-icon="el-icon-message"
             auto-complete="off"
             v-model="tmpdepunit.port"

@@ -111,6 +111,7 @@ public class ParseResponeHelp {
             throw new Exception("接口变量来源Header不符合表达式规范，正确例如Vary[1]");
         }
         for (Header header : headerList) {
+            ParseResponeHelp.log.info("ParseHeader Header key:" + header.getName()+" value is: "+header.getValue());
             String Key = Path.substring(0, Path.indexOf("["));
             if (header.getName().equalsIgnoreCase(Key)) {
                 if (Path.contains("]")) {

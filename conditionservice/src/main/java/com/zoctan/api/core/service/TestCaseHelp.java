@@ -17,6 +17,7 @@ import com.zoctan.api.service.*;
 import com.zoctan.api.util.MD5;
 import com.zoctan.api.util.RadomVariables;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.cookie.Cookie;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -1123,6 +1124,11 @@ public class TestCaseHelp {
         TestHttp testHttp = new TestHttp();
         if (requestObject.getProtocal().equals("http") || requestObject.getProtocal().equals("https")) {
             result = testHttp.doService(requestObject, 30000);
+        }
+        List<Cookie> cookieList= result.getCookies();
+        for (Cookie c : cookieList)
+        {
+            TestCaseHelp.log.info("cookieList key :  " + c.getName()+" values is:"+c.getValue());
         }
         return result;
     }

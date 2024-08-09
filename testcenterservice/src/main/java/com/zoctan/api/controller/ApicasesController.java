@@ -2094,7 +2094,7 @@ public class ApicasesController {
                 return ResultGenerator.genFailedResult(ExceptionMess);
             }
         } else {
-            return ResultGenerator.genFailedResult("当前环境未部署此用例API所在的微服务，请先完成环境下的部署！");
+            return ResultGenerator.genFailedResult("当前选择环境未配置调试用例所属的微服务，请先到测试环境中完善配置微服务！");
         }
     }
 

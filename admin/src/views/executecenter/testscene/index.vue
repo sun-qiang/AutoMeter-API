@@ -208,24 +208,21 @@
       <div class="filter-container" >
         <el-form :inline="true"  >
           <el-form-item  label="微服务:" prop="deployunitname" >
-            <el-select style="width: 120px" v-model="searchcase.deployunitname" filterable placeholder="微服务" @change="deployunitselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="searchcase.deployunitname" filterable clearable  placeholder="微服务" @change="deployunitselectChanged($event)">
               <div v-for="(depname, index) in deployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname" />
               </div>
             </el-select>
           </el-form-item>
           <el-form-item  label="模块:" prop="modelname" >
-            <el-select style="width: 120px" v-model="searchcase.modelname" filterable placeholder="模块" @change="modelselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="searchcase.modelname" filterable clearable  placeholder="模块" @change="modelselectChanged($event)">
               <div v-for="(model, index) in modelList" :key="index">
                 <el-option :label="model.modelname" :value="model.modelname" />
               </div>
             </el-select>
           </el-form-item>
           <el-form-item label="API:">
-            <el-select style="width: 120px" v-model="searchcase.apiname" filterable placeholder="api名" @change="ApiselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="searchcase.apiname" filterable clearable  placeholder="api名" @change="ApiselectChanged($event)">
               <div v-for="(api, index) in apiList" :key="index">
                 <el-option :label="api.apiname" :value="api.apiname"/>
               </div>
@@ -1018,24 +1015,21 @@
       <div class="filter-container" >
         <el-form :inline="true"  >
           <el-form-item  label="微服务:" prop="deployunitname" >
-            <el-select style="width: 120px" v-model="addsearchcase.deployunitname" required filterable placeholder="微服务" @change="addcasedeployunitselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="addsearchcase.deployunitname" required filterable clearable placeholder="微服务" @change="addcasedeployunitselectChanged($event)">
               <div v-for="(depname, index) in deployunitList" :key="index">
                 <el-option :label="depname.deployunitname" :value="depname.deployunitname" />
               </div>
             </el-select>
           </el-form-item>
           <el-form-item  label="模块:" prop="modelname" >
-            <el-select style="width: 120px" v-model="addsearchcase.modelname" filterable placeholder="模块" @change="addcasemodelselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="addsearchcase.modelname" filterable clearable placeholder="模块" @change="addcasemodelselectChanged($event)">
               <div v-for="(model, index) in modelList" :key="index">
                 <el-option :label="model.modelname" :value="model.modelname" />
               </div>
             </el-select>
           </el-form-item>
           <el-form-item label="API:">
-            <el-select style="width: 120px" v-model="addsearchcase.apiname" filterable placeholder="api名" @change="addcaseApiselectChanged($event)">
-              <el-option label="请选择" value />
+            <el-select style="width: 120px" v-model="addsearchcase.apiname" filterable clearable placeholder="api名" @change="addcaseApiselectChanged($event)">
               <div v-for="(api, index) in addcaseapiList" :key="index">
                 <el-option :label="api.apiname" :value="api.apiname"/>
               </div>
@@ -5656,38 +5650,50 @@ export default {
       this.searchcase.modelid = 0
       this.searchcase.apiid = 0
       this.searchcase.deployunitid = 0
+      this.searchcase.apiname = ''
+      this.searchcase.modelname = ''
+      this.apiList = null
+      this.modelList = null
       for (let i = 0; i < this.deployunitList.length; i++) {
         if (this.deployunitList[i].deployunitname === e) {
           this.searchcase.deployunitid = this.deployunitList[i].id
         }
       }
-      this.searchdeployunitmodel(this.searchcase)
-      this.apiList = null
-      this.searchcase.apiname = ''
-      getapiListbydeploy(this.searchcase).then(response => {
-        this.apiList = response.data
-      }).catch(res => {
-        this.$message.error('加载api列表失败')
-      })
+      if (this.searchcase.deployunitid !== 0) {
+        this.searchdeployunitmodel(this.searchcase)
+        this.apiList = null
+        this.searchcase.apiname = ''
+        getapiListbydeploy(this.searchcase).then(response => {
+          this.apiList = response.data
+        }).catch(res => {
+          this.$message.error('加载api列表失败')
+        })
+      }
     },
     addcasedeployunitselectChanged(e) {
       this.addsearchcase.modelid = 0
       this.addsearchcase.apiid = 0
+      this.addsearchcase.deployunitid = 0
+      this.addsearchcase.apiname = ''
+      this.addsearchcase.modelname = ''
+      this.addcaseapiList = null
+      this.addcasemodelList = null
       for (let i = 0; i < this.deployunitList.length; i++) {
         if (this.deployunitList[i].deployunitname === e) {
           this.addsearchcase.deployunitid = this.deployunitList[i].id
         }
       }
-      this.searchdeployunitmodel(this.addsearchcase)
-      this.addcaseapiList = null
-      this.addsearchcase.apiname = ''
-      this.addsearchcase.deployunitname = e
-      console.log(222222222222222222222222222222222222222222222)
-      getapiListbydeploy(this.addsearchcase).then(response => {
-        this.addcaseapiList = response.data
-      }).catch(res => {
-        this.$message.error('加载api列表失败')
-      })
+      if (this.addsearchcase.deployunitid !== 0) {
+        this.searchdeployunitmodel(this.addsearchcase)
+        this.addcaseapiList = null
+        this.addsearchcase.apiname = ''
+        this.addsearchcase.deployunitname = e
+        getapiListbydeploy(this.addsearchcase).then(response => {
+          this.addcaseapiList = response.data
+        }).catch(res => {
+          this.$message.error('加载api列表失败')
+        })
+      }
     },
     modelselectChanged(e) {
       this.searchcase.modelid = 0

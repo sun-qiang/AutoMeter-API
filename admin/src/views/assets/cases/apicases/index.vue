@@ -292,8 +292,18 @@
         :model="tmpapicases"
         ref="tmpapicases"
       >
+        <el-form-item label="用例名" prop="casename" required>
+          <el-input style="width: 500px"
+                    type="text"
+                    maxlength="40"
+                    prefix-icon="el-icon-edit"
+                    auto-complete="off"
+                    v-model.trim="tmpapicases.casename"
+          />
+        </el-form-item>
+
         <el-form-item label="微服务" prop="deployunitname" required >
-          <el-select v-model="tmpapicases.deployunitname" clearable  style="width: 500px" placeholder="微服务" @change="selectChanged($event)">
+          <el-select v-model="tmpapicases.deployunitname" filterable clearable  style="width: 500px" placeholder="微服务" @change="selectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(depunitname, index) in deployunitList" :key="index">
               <el-option :label="depunitname.deployunitname" :value="depunitname.deployunitname" required/>
@@ -301,7 +311,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="模块" prop="modelname" >
-          <el-select v-model="tmpapicases.modelname" clearable  style="width: 500px" placeholder="模块" @change="modelselectChanged($event)">
+          <el-select v-model="tmpapicases.modelname" filterable clearable  style="width: 500px" placeholder="模块" @change="modelselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(model, index) in modelList" :key="index">
               <el-option :label="model.modelname" :value="model.modelname" required/>
@@ -310,7 +320,7 @@
         </el-form-item>
 
         <el-form-item label="API" prop="apiname" required >
-          <el-select v-model="tmpapicases.apiname" clearable  style="width: 500px" placeholder="API" @change="apiselectChanged($event)">
+          <el-select v-model="tmpapicases.apiname" clearable filterable  style="width: 500px" placeholder="API" @change="apiselectChanged($event)">
             <el-option label="请选择" value="''" style="display: none" />
             <div v-for="(apiname, index) in apiList" :key="index">
               <el-option :label="apiname.apiname" :value="apiname.apiname" required/>
@@ -323,15 +333,7 @@
             <el-option label="性能" value="性能"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用例名" prop="casename" required>
-          <el-input style="width: 500px"
-            type="text"
-            maxlength="40"
-            prefix-icon="el-icon-edit"
-            auto-complete="off"
-            v-model.trim="tmpapicases.casename"
-          />
-        </el-form-item>
+
 
         <div v-if="threadloopvisible">
         <el-form-item label="线程数" prop="threadnum" required>
