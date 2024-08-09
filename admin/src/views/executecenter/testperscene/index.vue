@@ -52,13 +52,13 @@
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true"  label="测试场景名" align="center" prop="scenename" width="150"/>
-      <el-table-column label="类型" align="center" prop="usetype" width="100"/>
-      <el-table-column label="用例数" align="center" prop="casenums" width="100"/>
-      <el-table-column label="维护人" align="center" prop="creator" width="100"/>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+      <el-table-column label="类型" align="center" prop="usetype" width="80"/>
+      <el-table-column label="用例数" align="center" prop="casenums" width="80"/>
+      <el-table-column label="维护人" align="center" prop="creator" width="80"/>
+      <el-table-column label="创建时间" align="center" prop="createTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.createTime) }}</template>
       </el-table-column>
-      <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="160">
+      <el-table-column label="最后修改时间" align="center" prop="lastmodifyTime" width="150">
         <template slot-scope="scope">{{ unix2CurrentTime(scope.row.lastmodifyTime) }}
         </template>
       </el-table-column>
