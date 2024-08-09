@@ -63,7 +63,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="管理" align="center" width="480"
+      <el-table-column label="管理" align="center"
                        v-if="hasPermission('testscene:update')  || hasPermission('testscene:delete')">
         <template slot-scope="scope">
           <el-button
