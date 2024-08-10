@@ -2056,7 +2056,6 @@ public class ApicasesController {
                 TestHttp testHttp = new TestHttp();
                 String VisitType = api.getVisittype();
                 TestResponeData respon = testHttp.doService(Protocal, ApiStyle, resource, header, paramers, PostData, VisitType, requestcontenttype, 2000);
-
                 long End = new Date().getTime();
                 long CostTime = End - Start;
                 respon.setResponeTime(CostTime);
