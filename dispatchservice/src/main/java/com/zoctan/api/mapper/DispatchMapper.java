@@ -49,7 +49,10 @@ public interface DispatchMapper extends MyMapper<Dispatch> {
 
 
 
+    void updatedispatchstatusmemo(@Param("status") String status,@Param("memo") String memo, @Param("execplanid") Long execplanid, @Param("batchname") String batchname);
+
     void updatedispatchstatusbyplanandbatch(@Param("status") String status, @Param("execplanid") Long execplanid, @Param("batchname") String batchname);
+
 
     void updatedispatchcancel(@Param("status") String status, @Param("execplanid") Long execplanid, @Param("batchid") Long batchid, @Param("memo") String memo);
 

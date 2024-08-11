@@ -10,6 +10,7 @@
     <result column="enviromentname" jdbcType="VARCHAR" property="enviromentname" />
     <result column="executeplanname" jdbcType="VARCHAR" property="executeplanname" />
     <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="conditionstatus" jdbcType="VARCHAR" property="conditionstatus" />
     <result column="usetype" jdbcType="VARCHAR" property="usetype" />
     <result column="businesstype" jdbcType="VARCHAR" property="businesstype" />
     <result column="memo" jdbcType="VARCHAR" property="memo" />

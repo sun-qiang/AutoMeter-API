@@ -303,7 +303,8 @@ public class TestPlanCaseController {
             fw.write(jmxcontent);
         } catch (Exception ex) {
             TestPlanCaseController.log.error("保存jmx文件发生异常，请检查!" + ex.getMessage());
-            return ResultGenerator.genFailedResult("保存jmx文件发生异常，请检查!" + ex.getMessage());
+            throw new Exception("执行机Slaver运行性能测试保存jmx文件发生异常异常：" + ex.getMessage());
+//            return ResultGenerator.genFailedResult("保存jmx文件发生异常，请检查!" + ex.getMessage());
         } finally {
             if (null != fw) {
                 try {
@@ -326,7 +327,8 @@ public class TestPlanCaseController {
         } catch (Exception ex) {
             dispatchMapper.updatescenedispatchstatusandmemo("调度异常", "执行机Slaver运行性能测试异常：" + ex.getMessage(), dispatch.getSlaverid(), dispatch.getExecuteplanid(), Batchid, Sceneid);
             TestPlanCaseController.log.info("性能任务-调度异常。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。ExecuteHttpPerformancePlanScene异常报错..。。。。。。。。。。。。。。。。。。。。。。。。。" + ex.getMessage());
-            return ResultGenerator.genFailedResult(ex.getMessage());
+//            return ResultGenerator.genFailedResult(ex.getMessage());
+            throw new Exception("执行机Slaver运行性能测试异常：" + ex.getMessage());
         }
         //}
         return ResultGenerator.genOkResult();
@@ -391,7 +393,8 @@ public class TestPlanCaseController {
             slaverMapper.updateSlaverStaus(SlaverId, "运行中");
         } catch (Exception ex) {
             TestPlanCaseController.log.info("调用JmeterCMD异常：。。。。。。。。" + ex.getMessage());
-            return ResultGenerator.genFailedResult(ex.getMessage());
+            throw new Exception(ex.getMessage());
+//            return ResultGenerator.genFailedResult(ex.getMessage());
         }
         return ResultGenerator.genOkResult();
     }

@@ -139,7 +139,10 @@
   </update>
 
 
-
+  <update id="updatedispatchstatusmemo">
+    update  dispatch set status=#{status} ,memo=#{memo}, lastmodify_time = DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') where
+      execplanid = #{execplanid}  and batchname = #{batchname}
+  </update>
 
 
   <update id="updatedispatchstatusbyplanandbatch">

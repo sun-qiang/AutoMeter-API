@@ -134,7 +134,7 @@ public class TestconditionController {
 
 
     @PostMapping("/planconditionreday")
-    public Result planconditionreday(@RequestBody Dispatch dispatch) {
+    public Result planconditionreday(@RequestBody Dispatch dispatch)  {
         Long Planid = dispatch.getExecplanid();
         String Batchname = dispatch.getBatchname();
         int conditionsum = 0;
@@ -203,6 +203,9 @@ public class TestconditionController {
     public Result exec(@RequestBody Dispatch dispatch) {
         Long Planid = dispatch.getExecplanid();
         Executeplan executeplan = executeplanService.getBy("id", Planid);
+        //更新状态进行中
+        executeplan.setConditionstatus("进行中");
+        executeplanService.update(executeplan);
 
         Map<String, Object> conditionmap = new HashMap<>();
         conditionmap.put("subconditionid", Planid);
@@ -216,24 +219,27 @@ public class TestconditionController {
                     TestconditionController.log.info("开始顺序处理计划前置条件-接口子条件-============：");
                     ConditionApi conditionApi = conditionApiService.getBy("id", conditionid);
                     conditionApi(conditionApi, executeplan, dispatch.getBatchname());
-//                    APICondition(Planid, dispatch.getBatchname(), executeplan, dispatch.getSlaverid());
                     TestconditionController.log.info("完成顺序处理计划前置条件-接口子条件-============：");
                 }
                 if (conditionOrder.getSubconditiontype().equals("前置数据库条件")) {
                     TestconditionController.log.info("开始顺序处理计划前置条件-数据库子条件-============：");
                     ConditionDb conditionDb = conditionDbService.getBy("id", conditionid);
                     conditionDb(conditionDb, dispatch);
-//                    DBCondition(Planid, dispatch);
                     TestconditionController.log.info("完成顺序处理计划前置条件-数据库子条件-============：");
                 }
                 if (conditionOrder.getSubconditiontype().equals("前置脚本条件")) {
                     TestconditionController.log.info("开始顺序处理用例前置条件-脚本子条件-============：");
                     ConditionScript conditionScript = conditionScriptService.getBy("id", conditionid);
                     conditionScript(conditionScript, dispatch, Planid);
-//                    ScriptCondition(dispatch.getTestcaseid(), dispatch, Planid);
                     TestconditionController.log.info("完成顺序处理用例前置条件-脚本子条件-============：");
                 }
             }
+            executeplan.setConditionstatus("已完成");
+            executeplanService.update(executeplan);
+        }else
+        {
+            executeplan.setConditionstatus("已完成");
+            executeplanService.update(executeplan);
         }
         return ResultGenerator.genOkResult();
     }

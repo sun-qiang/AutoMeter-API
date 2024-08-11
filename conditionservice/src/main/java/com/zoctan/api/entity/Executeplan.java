@@ -45,6 +45,19 @@ public class Executeplan {
      */
     private String status;
 
+    public String getConditionstatus() {
+        return conditionstatus;
+    }
+
+    public void setConditionstatus(String conditionstatus) {
+        this.conditionstatus = conditionstatus;
+    }
+
+    private String conditionstatus;
+
+
+
+
     public String getUsetype() {
         return usetype;
     }
